@@ -73,9 +73,16 @@ def scan_and_set_encoding():
         has_dummy_name = ida_bytes.has_dummy_name(flags)
         # Skip non-dummy names
         if not has_dummy_name:
-            continue
-        
-        if ida_bytes.is_strlit(flags):
+            if not ida_bytes.is_strlit(flags): continue
+            content = ida_bytes.get_strlit_contents(ea, -1, idc.STRTYPE_C)
+            if len(content) <= 1: continue
+            ea_next = ida_bytes.get_item_end(ea)
+            if ea_next <= ea or ea_next == idc.BADADDR: continue
+
+            flags_next = ida_bytes.get_full_flags(ea_next)
+            if not ida_bytes.is_unknown(flags_next) or ida_bytes.get_byte(ea_next-1) == 0:
+                continue
+        elif ida_bytes.is_strlit(flags):
             content = ida_bytes.get_strlit_contents(ea, -1, idc.STRTYPE_C)
             if len(content) > 1:
                 continue
@@ -103,7 +110,6 @@ def scan_and_set_encoding():
         if sz <= 0:
             continue
 
-        #print(f"try get_bytes {ea}, {sz}")
         data_bytes = ida_bytes.get_bytes(ea, sz, ida_bytes.GMB_READALL)
         customs = [x for x in data_bytes if (0xA1 <= x and x <= 0xDF)]
         customs2 = [x for x in data_bytes if (0x81 <= x and x <= 0x9F)]
