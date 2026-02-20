@@ -2,6 +2,7 @@ import idc
 import idautils
 import ida_segment
 import ida_bytes
+import re
 
 def get_segm_by_name(name):
     for seg_ea in idautils.Segments():
@@ -144,30 +145,41 @@ def explain_flags(ea):
         "prev_unknown": hex(ida_bytes.prev_unknown(ea, seg.start_ea)),
     }
 
+def _yara_to_regex(hexstring):
+    qmark = False
+    for byte in hexstring.split():
+        if byte == "??":
+            out = ".."
+            if not qmark:
+                qmark = True
+                out = "(" + out
+        elif len(byte) == 2 and byte[0] == "?":
+             
+            out = ".)" + byte[1]
+            if not qmark:
+                out = "(" + out
+                qmark = False
+        elif len(byte) == 2 and byte[1] == "?":
+            out = byte[0] + "(."
+            qmark = True
+        else:
+            out = byte
+            if qmark:
+                out = ")" + out
+                qmark = False
+        
+        yield out
+
+    if qmark:
+        yield ")"
+
+def yara_to_regex(hexstring):
+    return re.compile("".join(_yara_to_regex(hexstring)))
+
 if __name__ == '__main__':
     segm = get_segm_by_name(".rdata")
 
-    count = 0
-    for ea in list_unknowns(segm.start_ea, segm.end_ea, lambda ea, flags: ida_bytes.get_byte(ea) != 0):
-        #print(f"{hex(ea)}")
-        nullterminated = find_nullterminated(ea, segm.end_ea)
-        if nullterminated == idc.BADADDR: continue
-        sz = nullterminated - ea
-        if sz <= 3: continue
-        data_bytes = ida_bytes.get_bytes(ea, sz, ida_bytes.GMB_READALL)
+    data = _yara_to_regex("55 8b ec 51 89 4d fc 8b e5 5d ( c3 | c2 ?? ?? )")
+    print(data)
+    rex = yara_to_regex("55 8b ec 51 89 4d fc 8b e5 5d ( c3 | c2 ?? ?? )")
 
-        if maybe_ascii(data_bytes):
-            print(f"Processing ascii {hex(ea)}: {name}, size {sz}")
-        elif maybe_shiftjis(data_bytes):
-            print(f"Processing shift-jis {hex(ea)}: {name}, size {sz}")
-        else:
-            print(f"- got size {sz}")
-            continue
-
-        count += 1
-        if count > 30: break
-
-    print(f"Found {count} unknowns in .rdata.")
-    #ea = idc.get_screen_ea()
-    #print(hex(ea), explain_flags(ea))
-    

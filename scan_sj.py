@@ -5,11 +5,6 @@ import ida_nalt
 import ida_bytes
 import ida_segment
 import importlib
-
-# pip install chardet
-#import chardet
-#print(chardet.__version__)
-
 import lister
 importlib.reload(lister)
 
