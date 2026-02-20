@@ -27,8 +27,12 @@ def list_everything(start_ea, end_ea):
             next_ea = ea + 1
         ea = next_ea
 
+def align_up(ea, align):
+    return (ea + align - 1) & ~(align - 1)
+
 def list_unknowns(start_ea, end_ea, pred = None):
-    ea = start_ea
+    print(f"list unknowns ... ({hex(start_ea)} - {hex(end_ea)})")
+    ea = align_up(start_ea, 4)
     while ea < end_ea:
         flags = ida_bytes.get_full_flags(ea)
         if ida_bytes.is_unknown(flags):
@@ -38,12 +42,43 @@ def list_unknowns(start_ea, end_ea, pred = None):
         next_ea = ida_bytes.next_unknown(ea, end_ea)
         if next_ea == ea:
             next_ea = ea + 1
-        ea = next_ea
+        ea = align_up(next_ea, 4)
 
 def list_all_Heads(start_ea, end_ea):
     for head in idautils.Heads(start_ea, end_ea):
         name = idc.get_name(head)
         print(f"{hex(head)}: {name}")
+
+def find_nullterminated(ea, end_ea=None):
+    if end_ea is None:
+        end_ea = ida_segment.getseg(ea).end_ea
+    nullterminated = idc.BADADDR
+    for find_ea in range(ea, end_ea):
+        if ida_bytes.get_byte(find_ea) == 0:
+            nullterminated = find_ea+1
+            break
+        if find_ea != ea:
+            find_flags = ida_bytes.get_full_flags(find_ea)
+            if ida_bytes.has_any_name(find_flags):
+                break
+    return nullterminated
+
+def maybe_shiftjis(data_bytes):
+    return any((0xA1 <= x <= 0xDF) or (0x81 <= x <= 0x9F) for x in data_bytes)
+    #customs = [x for x in data_bytes if (0xA1 <= x and x <= 0xDF)]
+    #customs2 = [x for x in data_bytes if (0x81 <= x and x <= 0x9F)]
+    #return len(customs) > 0 or len(customs2) > 0
+
+def maybe_ascii(data_bytes):
+    if data_bytes[-1] == 0:
+        data_bytes = data_bytes[:-1]
+    return all(0x20 <= x <= 0x7E or x in [0x0D, 0x0A, 0x09] for x in data_bytes)
+
+def item_end_is_notnull(ea):
+    ea_next = ida_bytes.get_item_end(ea)
+    if ea_next <= ea or ea_next == idc.BADADDR: return False
+    flags_next = ida_bytes.get_full_flags(ea_next)
+    return ida_bytes.is_unknown(flags_next) and ida_bytes.get_byte(ea_next-1) != 0
 
 def explain_flags(ea):
     flags =ida_bytes.get_full_flags(ea)
@@ -114,9 +149,23 @@ if __name__ == '__main__':
 
     count = 0
     for ea in list_unknowns(segm.start_ea, segm.end_ea, lambda ea, flags: ida_bytes.get_byte(ea) != 0):
-        print(f"{hex(ea)}")
+        #print(f"{hex(ea)}")
+        nullterminated = find_nullterminated(ea, segm.end_ea)
+        if nullterminated == idc.BADADDR: continue
+        sz = nullterminated - ea
+        if sz <= 3: continue
+        data_bytes = ida_bytes.get_bytes(ea, sz, ida_bytes.GMB_READALL)
+
+        if maybe_ascii(data_bytes):
+            print(f"Processing ascii {hex(ea)}: {name}, size {sz}")
+        elif maybe_shiftjis(data_bytes):
+            print(f"Processing shift-jis {hex(ea)}: {name}, size {sz}")
+        else:
+            print(f"- got size {sz}")
+            continue
+
         count += 1
-        if count > 20: break
+        if count > 30: break
 
     print(f"Found {count} unknowns in .rdata.")
     #ea = idc.get_screen_ea()

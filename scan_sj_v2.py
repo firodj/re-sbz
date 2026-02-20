@@ -13,8 +13,7 @@ import importlib
 import lister
 importlib.reload(lister)
 
-from lister import get_segm_by_name, list_everything
-
+from lister import get_segm_by_name, list_everything, find_nullterminated, maybe_shiftjis, item_end_is_notnull
 
 def get_or_create_encoding(name):
     # Try using add_encoding logic or just listing
@@ -52,7 +51,7 @@ def scan_and_set_encoding():
         return
     start_ea = seg.start_ea
     end_ea = seg.end_ea
-    #end_ea = 0x007ED8F0 + 0x1000
+    #end_ea = 0x7fb708
     print(f"Found .rdata: ({hex(start_ea)} - {hex(end_ea)})")
     
     # Using STRTYPE_C (0) + Shift-JIS
@@ -74,18 +73,15 @@ def scan_and_set_encoding():
         # Skip non-dummy names
         if not has_dummy_name:
             if not ida_bytes.is_strlit(flags): continue
-            content = ida_bytes.get_strlit_contents(ea, -1, idc.STRTYPE_C)
-            if len(content) <= 1: continue
-            ea_next = ida_bytes.get_item_end(ea)
-            if ea_next <= ea or ea_next == idc.BADADDR: continue
 
-            flags_next = ida_bytes.get_full_flags(ea_next)
-            if not ida_bytes.is_unknown(flags_next) or ida_bytes.get_byte(ea_next-1) == 0:
-                continue
+            content = ida_bytes.get_strlit_contents(ea, -1, idc.STRTYPE_C)
+            if len(content) < 1: continue
+            if not item_end_is_notnull(ea): continue
+
         elif ida_bytes.is_strlit(flags):
             content = ida_bytes.get_strlit_contents(ea, -1, idc.STRTYPE_C)
-            if len(content) > 1:
-                continue
+            if len(content) < 1: continue
+            if not item_end_is_notnull(ea): continue
 
             if ida_nalt.get_str_encoding_idx(ida_nalt.get_str_type(ea)) == sjis_idx:
                 continue
@@ -93,16 +89,7 @@ def scan_and_set_encoding():
         elif not ida_bytes.is_byte(flags) and not ida_bytes.is_unknown(flags):
             continue
 
-        nullterminated = idc.BADADDR
-        for find_ea in range(ea, end_ea):
-            if ida_bytes.get_byte(find_ea) == 0:
-                nullterminated = find_ea+1
-                break
-            if find_ea != ea:
-                find_flags = ida_bytes.get_full_flags(find_ea)
-                if ida_bytes.has_any_name(find_flags):
-                    break
-        #nullterminated = ida_bytes.find_byte(ea, end_ea-ea, 0, 0)
+        nullterminated = find_nullterminated(ea, end_ea)
         if nullterminated == idc.BADADDR:
             continue
     
@@ -111,10 +98,7 @@ def scan_and_set_encoding():
             continue
 
         data_bytes = ida_bytes.get_bytes(ea, sz, ida_bytes.GMB_READALL)
-        customs = [x for x in data_bytes if (0xA1 <= x and x <= 0xDF)]
-        customs2 = [x for x in data_bytes if (0x81 <= x and x <= 0x9F)]
-        if len(customs) == 0 and len(customs2) == 0:
-            continue
+        if not maybe_shiftjis(data_bytes): continue
 
         print(f"Processing {hex(ea)}: {name}, size {sz}")
         ida_bytes.create_strlit(ea, sz, new_type)
