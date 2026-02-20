@@ -73,18 +73,25 @@ def scan_and_set_encoding():
         # Skip non-dummy names
         if not has_dummy_name:
             if not ida_bytes.is_strlit(flags): continue
-
-            content = ida_bytes.get_strlit_contents(ea, -1, idc.STRTYPE_C)
+            str_type = ida_nalt.get_str_type(ea)
+            
+            content = ida_bytes.get_strlit_contents(ea, -1, str_type)
             if len(content) < 1: continue
             if not item_end_is_notnull(ea): continue
 
         elif ida_bytes.is_strlit(flags):
-            content = ida_bytes.get_strlit_contents(ea, -1, idc.STRTYPE_C)
-            if len(content) < 1: continue
-            if not item_end_is_notnull(ea): continue
-
-            if ida_nalt.get_str_encoding_idx(ida_nalt.get_str_type(ea)) == sjis_idx:
+            str_type = ida_nalt.get_str_type(ea)
+            content = ida_bytes.get_strlit_contents(ea, -1, str_type)
+            is_shiftjis = ida_nalt.get_str_encoding_idx(ida_nalt.get_str_type(ea)) == sjis_idx
+            if len(content) < 1:
+                if is_shiftjis:
+                    print("Found empty string at " + hex(ea))
+                    # Fix:
+                    ida_bytes.create_byte(ea, 1)
                 continue
+
+            if not item_end_is_notnull(ea): continue
+            if is_shiftjis: continue
                 
         elif not ida_bytes.is_byte(flags) and not ida_bytes.is_unknown(flags):
             continue
@@ -98,7 +105,27 @@ def scan_and_set_encoding():
             continue
 
         data_bytes = ida_bytes.get_bytes(ea, sz, ida_bytes.GMB_READALL)
+
         if not maybe_shiftjis(data_bytes): continue
+
+        try:
+            us = data_bytes.decode('shift-jis')
+            if us[-1] == '\x00': us = us[:-1]
+            invalid = False
+            for c in us:
+                b = c.encode('shift-jis')
+                if len(b) != 1: continue
+                i = ord(b)
+                if i >= 0x7F:
+                    invalid = True
+                    break
+                if i < 0x20 and not i in [0x09, 0x0A, 0x0D]:
+                    invalid = True
+                    break
+            if invalid: continue
+
+        except:
+            continue
 
         print(f"Processing {hex(ea)}: {name}, size {sz}")
         ida_bytes.create_strlit(ea, sz, new_type)
