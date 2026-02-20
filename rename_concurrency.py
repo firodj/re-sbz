@@ -5,14 +5,31 @@ import ida_name
 import idc
 import ida_bytes
 
+def check_prolog(func):
+    # 0: push ebp
+    # 1: mov ebp, esp
+    # 2: push ecx
+    # 3: mov [ebp+var_4], ecx
+    prolog = b'\x55\x8b\xec\x51\x89\x4d\xfc'
+    return ida_bytes.get_bytes(func.start_ea, 7) == prolog
+
+def check_epilog(func):
+    # 6: mov esp, ebp
+    # 7: pop ebp
+    # 8: retn
+    epilog = b'\x8b\xe5\x5d\xc3'
+    return ida_bytes.get_bytes(func.end_ea - 4, 4) == epilog
+
 def get_getter_offset(func_ea):
     # Pattern we are looking for:
     # 0: push ebp
     # 1: mov ebp, esp
     # 2: push ecx
     # 3: mov [ebp+var_4], ecx
+
     # 4: mov eax, [ebp+var_4]
     # 5: mov eax, [eax + OFFSET]  <-- The key instruction
+
     # 6: mov esp, ebp
     # 7: pop ebp
     # 8: retn
@@ -34,19 +51,17 @@ def get_getter_offset(func_ea):
 
     # Check key instruction at index 5
     key_ea = insns[5]
-    mnem = idc.print_insn_mnem(key_ea)
     
-    if mnem != "mov":
-        return None
-        
     # Check operands: op1=eax, op2=[eax+OFFSET]
     # We can check op types. 
     # op1 type should be o_reg (1), reg should be 0 (eax)
     # op2 type should be o_displ (4) or o_phrase (3 - for [eax])
     
     insn = ida_ua.insn_t()
-    ida_ua.decode_insn(insn, key_ea)
-    
+    ida_ua.decode_insn(insn, key_ea) 
+    if insn.get_canon_mnem() != "mov":
+        return None
+        
     if insn.Op1.type != ida_ua.o_reg or insn.Op1.reg != 0: # eax
         return None
         
@@ -71,7 +86,7 @@ def get_getter_offset(func_ea):
     prev_ea = insns[4]
     insn_prev = ida_ua.insn_t()
     ida_ua.decode_insn(insn_prev, prev_ea)
-    if insn_prev.itype != ida_ua.NN_mov: return None
+    if insn_prev.get_canon_mnem() != "mov": return None
     if insn_prev.Op1.type != ida_ua.o_reg or insn_prev.Op1.reg != 0: return None # eax
     
     return offset
@@ -84,9 +99,10 @@ def rename_concurrency_getters():
     for func_ea in idautils.Functions():
         name = idc.get_name(func_ea)
         
-        if "@Concurrency@" in name and "Get_Member_" not in name:
+        if "@Concurrency@" in name or "unknown_libname" in name:
             offset = get_getter_offset(func_ea)
             
+            #print(f"Function: {name}, {func_ea:X}")
             if offset is not None:
                 new_name = f"Get_Member_{offset:X}_Val_{func_ea:X}"
                 
