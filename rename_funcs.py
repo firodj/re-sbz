@@ -16,6 +16,18 @@ def disp_to_offset(hexstring):
         return 0
     elif hexstring[0] in ('4', '8'):
         return hexstring_to_offset(hexstring[2:])
+
+    print("Unknown offset type: " + hexstring)
+    return None
+
+def disp_to_offset_2(hexstring):
+    if len(hexstring) == 0:
+        return 0
+    elif hexstring[0:2] == '83':
+        return hexstring_to_offset(hexstring[4:])
+    elif hexstring[0:2] == '05':
+        return hexstring_to_offset(hexstring[2:])
+
     print("Unknown offset type: " + hexstring)
     return None
     
@@ -46,8 +58,8 @@ def rename_functions():
             "description": "Empty member function"
         },
         {
-            "name": lambda m: f"Get_This",
-            "yara": "55 8b ec 51 89 4d fc 8b 45 fc 8b e5 5d ( c3 | c2 ?? ?? )",
+            "name": lambda m: f"Get_Elem_{disp_to_offset_2(m.group(1)):X}_Val",
+            "yara": "55 8b ec 51 89 4d fc 8b 45 fc ( 83 c0 ?? | 05 ?? ?? ?? ?? | ) 8b e5 5d ( c3 | c2 ?? ?? )",
             "prefix": "55 8b ec 51 89 4d fc 8b",
             "description": "Returns this pointer"
         },

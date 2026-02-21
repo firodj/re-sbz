@@ -114,12 +114,20 @@ def explain_flags(ea):
     if ida_bytes.is_strlit(flags):
         result.append("strlit")
         #print(ida_nalt.get_str_type(idc.get_screen_ea()))
+    if ida_bytes.is_float(flags):
+        result.append("float")
+    if ida_bytes.is_double(flags):
+        result.append("double")
     if ida_bytes.is_struct(flags):
         result.append("struct")
     if ida_bytes.is_enum0(flags):
         result.append("enum0")
     if ida_bytes.is_enum1(flags):
         result.append("enum1")
+    if ida_bytes.is_align(flags):
+        result.append("align")
+    if ida_bytes.is_custom(flags):
+        result.append("custom")
 
     # get current segemnt
     seg = ida_segment.getseg(ea)
