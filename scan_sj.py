@@ -4,9 +4,8 @@ import idautils
 import ida_nalt
 import ida_bytes
 import ida_segment
-import importlib
-import lister
-importlib.reload(lister)
+
+idaapi.require('lister')
 
 from lister import get_segm_by_name, list_everything, find_nullterminated, maybe_shiftjis, item_end_is_notnull
 

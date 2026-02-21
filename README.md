@@ -15,3 +15,7 @@ Scans .text segment for function prologues and creates functions in IDA.
 ## rename_funcs.py
 
 Renames functions in IDA based on patterns.
+
+## miscs.py
+
+Miscellaneous functions that dont depend on IDA API.

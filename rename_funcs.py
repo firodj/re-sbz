@@ -12,9 +12,9 @@ def hexstring_to_offset(hexstr):
     return int.from_bytes(bytes.fromhex(hexstr), byteorder='little')
     
 def disp_to_offset(hexstring):
-    if hexstring[0:2] == '00':
+    if hexstring[0] == '0':
         return 0
-    elif hexstring[0:2] in ('40', '80'):
+    elif hexstring[0] in ('4', '8'):
         return hexstring_to_offset(hexstring[2:])
     print("Unknown offset type: " + hexstring)
     return None
@@ -40,6 +40,12 @@ def rename_functions():
             "description": "Empty member function"
         },
         {
+            "name": lambda m: f"Empty_Member_Func",
+            "yara": "55 8b ec 5d ( c3 | c2 ?? ?? )",
+            "prefix": "55 8b ec 5d",
+            "description": "Empty member function"
+        },
+        {
             "name": lambda m: f"Get_This",
             "yara": "55 8b ec 51 89 4d fc 8b 45 fc 8b e5 5d ( c3 | c2 ?? ?? )",
             "prefix": "55 8b ec 51 89 4d fc 8b",
@@ -56,7 +62,13 @@ def rename_functions():
             "yara": "55 8b ec 51 89 4d fc 33 c0 8b e5 5d ( c3 | c2 ?? ?? )",
             "prefix": "55 8b ec 51 89 4d fc 33",
             "description": "Returns 0"
-        }
+        },
+        {
+            "name": lambda m: f"Set_Member_{disp_to_offset(m.group(1)):X}_Val",
+            "yara": "55 8b ec 51 89 4d fc 8b 45 fc 8b 4d 08 89 ( 08 | 48 ?? | 88 ?? ?? ?? ?? ) ( 8b 45 fc | ) 8b e5 5d ( c3 | c2 ?? ?? )",
+            "prefix": "55 8b ec 51 89 4d fc 8b 45 fc 8b 4d 08",
+            "description": "Set [this+X] Then Returns this"
+        },
     ]
 
     print("Starting function rename scan...")
