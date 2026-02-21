@@ -19,3 +19,8 @@ Renames functions in IDA based on patterns.
 ## miscs.py
 
 Miscellaneous functions that dont depend on IDA API.
+
+
+# Notes
+
+Done! Renamed sub_695F00 → EnsureTrailingSlash.
