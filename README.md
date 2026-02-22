@@ -20,7 +20,17 @@ Renames functions in IDA based on patterns.
 
 Miscellaneous functions that dont depend on IDA API.
 
+# create_class_struct.py
+
+Generic IDA Pro Python script to create a C struct for a class by analyzing
+its constructor.
 
 # Notes
 
 Done! Renamed sub_695F00 → EnsureTrailingSlash.
+
+# IDA Plugin
+
+* https://github.com/herosi/PyClassInformer (better than his IDA_ClassInformer)
+* https://github.com/mrexodia/ida-pro-mcp (IDA MCP Server)
+* https://github.com/oopsmishap/HexRaysPyTools (Structure Builder)
