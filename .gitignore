@@ -4,3 +4,9 @@ __pycache__
 *.exe
 *.exe_*
 *.exe.*
+
+*.dll
+
+data/
+
+*.7z
