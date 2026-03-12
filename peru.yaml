@@ -1,0 +1,6 @@
+imports:
+    unpacktool: tools/unpacktool/  # This is where we want peru to put the module.
+
+git module unpacktool:
+    url: https://github.com/AniccaY/UnpackTool-R18_Game.git
+

@@ -72,6 +72,7 @@ def get_func_disasm_offsets(func_ea):
     ea = func.start_ea
     while ea < func.start_ea + 32:   # look only in prologue
         mnem = idc.print_insn_mnem(ea)
+        print(f"1st: {ea:X} {mnem}")
         if mnem == 'MOV':
             op0 = idc.print_operand(ea, 0)
             op1 = idc.print_operand(ea, 1)
@@ -85,6 +86,7 @@ def get_func_disasm_offsets(func_ea):
     ea = func.start_ea
     while ea < func.end_ea:
         mnem = idc.print_insn_mnem(ea)
+        print(f"2nd: {ea:X} {mnem}")
 
         # Reload of 'this' from its stack slot
         if mnem == 'MOV' and ecx_slot:
@@ -365,14 +367,18 @@ def build_and_apply_struct(
 # CONFIG  –  edit this section and run the script
 # ===========================================================================
 if __name__ == "__main__":
-
+    current_ea = idaapi.get_screen_ea()
+    func_ea = ida_funcs.get_func(current_ea).start_ea
+    print(f"func_ea = {func_ea:X}")
+    members = parse_constructor_layout(func_ea)
+    print(members)
     # ---- Example 1: SBShopScene -------------------------------------------
-    build_and_apply_struct(
-        func_ea     = 0x512870,          # constructor address
-        struct_name = "SBShopScene",     # desired struct name
-        total_size  = 0x1CE1C,           # from allocation before the call
-        vftable_name= "SBShopScene::`vftable'",
-    )
+    # build_and_apply_struct(
+    #     func_ea     = 0x512870,          # constructor address
+    #     struct_name = "SBShopScene",     # desired struct name
+    #     total_size  = 0x1CE1C,           # from allocation before the call
+    #     vftable_name= "SBShopScene::`vftable'",
+    # )
 
     # ---- Example 2: SBNightShopScene  (uncomment to use) ------------------
     # build_and_apply_struct(

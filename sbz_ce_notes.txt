@@ -1,0 +1,11 @@
+Sexy Beach Zero English.exe=400000
+
+Sexy Beach Zero English.exe+480680 = sbScriptScene
+
+Sexy Beach Zero English.exe+14A563 - Sexy Beach Zero English.exe+480680,00000000,126D1250,00000014,...
+
+Breakpoint 0088DBB4 (Sexy Beach Zero English.exe+48DBB4)
+
+CreateDialogParam
+
+The Template from Resources
