@@ -5,6 +5,14 @@
 import os
 from io import BytesIO
 
+def bin2ascii(b):
+    res = []
+    for x in b:
+        if x < 0x20 or x > 0x7e:
+            res.append('.')
+        else:
+            res.append(chr(x))
+    return "".join(res)
 
 def decode(s: bytes, encoding=None):
     if encoding is None:
@@ -50,19 +58,39 @@ class FileItem:
 def unpack(path, s_dir):
     dir_, file = os.path.split(path)
     with open(path, 'rb') as f:
+        pos = f.tell()
         count = int.from_bytes(f.read(4), 'little')
-        size = f.read(4)
+        print(f"{pos:#08x}: count = {count}")
+
+        pos = f.tell()
+        size = int.from_bytes(f.read(4), 'little')
+        print(f"{pos:#08x}: size = {size}")
         out = []
-        for i in range(count):
-            out.append(FileItem(f.read(32).strip(b'\x00')))
+        for i in range(count):  
+            pos = f.tell()
+            file_name = f.read(32).strip(b'\x00')
+            item = FileItem(file_name)
+            print(f"{pos:#08x}: file_name[{i}] = {item.name}")
+            out.append(item)
 
         for i in range(count):
-            out[i].size = int.from_bytes(f.read(4), 'little')
+            pos = f.tell()
+            file_size = int.from_bytes(f.read(4), 'little')
+            print(f"{pos:#08x}: file_size[{i}] = {file_size}")
+            out[i].size = file_size
 
         for i in range(count):
-            out[i].data = f.read(out[i].size)
-    for i in out:
-        i.save_as_file(os.path.join(s_dir, os.path.splitext(file)[0]))
+            pos = f.tell()
+            file_data = f.read(out[i].size)
+            print(f"{pos:#08x}: file_data[{i}] = {bin2ascii(file_data[:16])}")
+            out[i].data = file_data
+
+        s_path = os.path.join(s_dir, f'{os.path.splitext(file)[0]}')
+        if not os.path.exists(s_path):
+            os.makedirs(s_path, exist_ok=True)
+        for i in out:
+            print(i, s_path)
+            i.save_as_file(s_path)
 
 
 def unpack_pp_files(path: str, s_path: str):
@@ -103,4 +131,5 @@ def pack_pp_files(path: str, s_path: str):
         pack(os.path.join(path, pp_dir), s_path)
 
 if __name__ == '__main__':
-    unpack('./data/base.pp', './out')
+    appdir = os.getenv('APPDIR')
+    unpack(os.path.join(appdir, 'data', 'base.pp'), os.path.join(appdir, 'out'))
