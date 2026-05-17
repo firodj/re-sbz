@@ -1,6 +1,9 @@
 import os
 from io import BytesIO
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # 0x70A2ED
 special_header = [0x6B, 0x42, 0x6C, 0xA2, 0x72, 0x30, 0x7D, 0x22]
 
@@ -88,12 +91,15 @@ def decrypt_header_data(data: bytearray) -> bytearray:
     return out
 
 def decrypt_content_data(data: bytearray) -> bytearray:
+    if data[:8] == special_header:
+        data = data[8:]
 
     # SBZ VA Address: 0x4016DB
-    key = [0x14,0x6F,0x07,0xB8,0x9A,0x0E,0x84,0x44,
-            0x59,0x25,0x8E,0x18,0xBC,0x39,0x9E,0x5C,
-            0x99,0x7A,0xA0,0x92,0xD4,0xB7,0xBC,0x55,
-            0x1E,0x2E,0x88,0x27,0x14,0xA1,0xE6,0x27
+    key = [
+        0x14,0x6F,0x07,0xB8,0x9A,0x0E,0x84,0x44,
+        0x59,0x25,0x8E,0x18,0xBC,0x39,0x9E,0x5C,
+        0x99,0x7A,0xA0,0x92,0xD4,0xB7,0xBC,0x55,
+        0x1E,0x2E,0x88,0x27,0x14,0xA1,0xE6,0x27
     ]
     
     size = len(data)
@@ -107,6 +113,7 @@ def decrypt_content_data(data: bytearray) -> bytearray:
     return out
 
 def unpack(path, s_dir):
+    out = []
     dir_, file = os.path.split(path)
     with open(path, 'rb') as f:
         pos = f.tell()
@@ -129,7 +136,6 @@ def unpack(path, s_dir):
         print(f"{pos:#08x}: size = {size}")
 
         pos = pos_toc
-        out = []
         for i in range(count):
             name = full_data[i * 268 : i * 268 + 260].decode('utf-8').strip('\x00')
             print(f"{pos:#08x}: name[{i}] = {name}")
@@ -156,6 +162,13 @@ def unpack(path, s_dir):
             item = FileItem(name, size, data)
             out.append(item)
 
+    s_path = os.path.join(s_dir, f'{os.path.splitext(file)[0]}')
+    if not os.path.exists(s_path):
+        os.makedirs(s_path, exist_ok=True)
+    for i in out:
+        print(i, s_path)
+        i.save_as_file(s_path)
+
 if __name__ == '__main__':
     appdir = os.getenv('APPDIR')
-    unpack(os.path.join(appdir, 'data', 'sb01_00.pp'), os.path.join(appdir, 'out'))
+    unpack(os.path.join(appdir, 'data', 'sb07_00.pp'), os.path.join(appdir, 'out'))

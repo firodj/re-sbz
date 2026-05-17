@@ -41,7 +41,7 @@
 |sb01_50 contains what appears to be animation files.|
 |sb02_00 to sb02_04 Contain ... the Voice files for each respective character.|
 |sb02_98 and sb02_99 also contain voice files.|
-|The models are contained in the same sb03_00.PP file.|
+|sb03_00 the models are contained in the file.|
 |sb03_01 contains the environment ... the Maps also the Props in the environment. Also contains items like the beachball etc..|
 |sb05_00 contains what seems to be animation + Liquid effects such as the lotion and eeehhh cum lol.|
 |Things like accessories and what not are contained in sb06_00 and sb07_00, sb08_00 and sb09_00 (for expansion volumes 1 thru 3). You could potentially create an sbXX_XXXXX.pp file with swimsuit textures and the game will load it as long as you point to it from the sb00_00.pp\sw*.lst swimsuit definitions.|
