@@ -1,0 +1,333 @@
+the hongire thing wasnt quite right yo, so here is an atempt to make it right.
+based on hongfire and the aa2 code
+written as pseudo code
+
+
+struct XXFile {
+
+        DWORD version
+        BYTE ??
+        BYTE[17] ??
+
+        Object root
+
+        Rest (dont care for now)
+
+
+}
+
+struct Object {
+        NAME name
+        DWORD childCount
+        FMatrix4x4 trans
+        _if version < 8
+                BYTE[0x10] ??
+        _else
+                BYTE[0x20] ??
+        DWORD meshCount;
+        float[3] mesh min size?
+        float[3] mesh max size?
+        _if version < 8
+                BYTE[0x10]
+        _else
+                BYTE[0x40]
+        _if version >= 6
+                NAME someName
+
+        _if meshCount > 0
+                BYTE meshType
+                MeshInfo[meshCount] meshes
+                WORD someCount
+                DWORD ???
+                DWORD ???
+                _if version >= 6
+                        MYSTERYSTRUCT[someCount]
+                _else ???
+                DWORD nBones
+                Bone[nBones] bones
+
+        Object children[childCount]
+
+}
+
+struct MeshInfo {
+        _if version < 8
+                BYTE[0x10]
+        _else
+                BYTE[0x40]
+        DWORD ??
+        DWORD faceCount
+        WORD[faceCount] faces
+        DWORD vertexCount
+        _if version >= 4
+                VERTEX[vertexCount] vertices
+        _else ?????
+        _if version >= 5
+                DWORD[5] outline color and another one
+        _else ?????
+        __if version >= 2
+                BYTE[0x60] ???
+                DWORD ???
+        _else ????
+        _if version >= 3
+                _if version < 6
+                        BYTE[0x40] ???
+                _else
+                        BYTE[0x100] ???
+        _else ????
+        _if version >= 6
+                BYTE[0x1C] ???
+        _if version >= 8
+                BYTE ???
+                NAME ???
+                DWORD[3] ???
+                DWORD ???
+
+        
+}
+
+struct Bone {
+        NAME name
+        DWORD ??? (bone index?)
+        FMatrix4x4 trans
+}
+
+struct MYSTERYSTRUCT { //70b each, though written into a 0x54 size struct in memory
+        WORD
+        DWORD
+        DWORD
+        DWORD
+        DWORD[3]
+        DWORD
+        DWORD
+        DWORD
+        DWORD
+        DWORD
+        DWORD
+        DWORD
+        DWORD
+        DWORD
+        DWORD
+        DWORD
+}
+
+struct VERTEX { total size of 70 bytes
+        WORD index
+        float[3]
+        float[3]
+        float[4]
+        DWORD[7]
+}
+
+struct NAME {
+        DWORD length
+        char[length] name       // "encrypted", each chars is ~ed
+}
+
+/*
+found this on hongfire, seems to not be completely right, so im modifing it a bit as i go
+
+The .xx file format. 
+Open this text file in notepad or the formatting looks like crap.
+-Rawmonk
+
+--------------------------------------------------------------------------------------------------------------
+All values in litle endian first (Intel x86)
+
+CHAR     1 Byte ASCII
+WORD    16 bit unsigned
+DWORD   32 bit unsigned (LongWord)
+FLOAT   32 bit float    (Single)
+b       byte
+
+
+Pseudo Code:
+--------------------------------------------------------------------------------------------------------------
+Read_Object(NumberOfchildren)
+        for each NumberOfchildren
+                FileRead Object
+                if Object.MeshCount > 0
+                        FileRead Meshes
+                        FileRead BoneCount
+                        if BoneCount > 0 
+                                FileRead Bones
+                if Object.NumberOfChildren > 0
+                        Read_Object(Object.NumberOfChildren)
+
+
+
+HEADER
+--------------------------------------------------------------------------------------------------------------
+
+    ID     ?              ?
+ |------|-----|------------------------|
+    5b   DWORD           17b
+
+
+OBJECT SECTION
+--------------------------------------------------------------------------------------------------------------
+
+OBJECT NAME
+  Length    Object Name   00                                                    --
+ |------|----------------|--|   (For each CHAR xor 0xFF)                         |
+  DWORD                   1b                                                     |
+        |-- Length x CHAR --|                                                    |
+                                                                                 |
+                                                                                 |
+Transformation                                                                   |
+  Child Count                            Matrix                                  |
+ |------------||-------------------------------------------------------|         |
+  DWORD                                 16 x FLOAT                               |--- If "Mesh Count" = 0 just
+               |-------------------------- 64b ------------------------|         |    repeat this section
+                                                                                 |
+                                                                                 |
+                                                                                 |
+//inserted                                                                       |
+| ------- |                                                                      |
+16b if headerid <= 7, 32b else                                                   |
+                                                                                 |
+MESH COUNT AND MESH MAXIMUM SIZE?                                                |
+  Mesh Count MIN SIZE?   MAX SIZE?     ?                                         |
+ |----------|-----------|-----------|----------------------------------|         |
+  DWORD      3 x FLOAT   3 x FLOAT    16b if headerid <= 7, 64b else             |
+ |----------------------- <44b or 92b> --------------------------------|         |
+                                                                                --
+
+
+MESH SECTION
+--------------------------------------------------------------------------------------------------------------
+
+  Mesh Type     ( Value 0 - standard mesh or 1 - User interface graphic
+ |---------|      Mesh type 1 always have 1 mesh with 4 vertices and 2 faces )
+     1b         
+
+
+MESH HEADER                                                                     --
+         ?        Material ID                                                    |
+ |---------------|-----------|                                                   |
+        16b          DWORD                                                       |
+ |------------ 20b ----------|                                                   |
+                                                                                 |
+                                                                                 |
+FACES (Number of faces = Face count / 3)                                         |
+  Face count FIRST  SECOND THIRD                                                 |
+ |----------|------|------|------|--..                                           |
+    DWORD    WORD   WORD   WORD                                                  |--- Repeat "Mesh Count" times
+            |------ count x 2b -------|                                          |
+                                                                                 |
+                                                                                 |
+VERTICES NORMALS UVS ETC                                                         |
+  Vertex count Index  V-Coords   Weight     Bone   Normal     UV                 |
+ |------------|------|----------|----------|------|----------|----------|--..    |
+     DWORD     DWORD  3 x FLOAT  3 x FLOAT  4 x 1b 3 x FLOAT  2 x FLOAT          |
+              |---------------------- Count x 52b --------------------------|    |
+                                                                                --                                      
+
+
+MESH SCALE INFO                                         --
+  Top Left   Top Right   Bottom Left  Bottom Right       |
+ |----------|----------|-------------|------------|      |--- Read if 
+  2 x FLOAT 2 x FLOAT     2 x Float    2 x FLOAT         |    "Mesh Type" = 1
+ |--------------------- 32b ----------------------|      |
+                                                        --
+
+Duplicated vertex list
+  Vertex count       ?        Index  V-Coords   Weight     Bone   Normal     UV
+ |------------|--------------|------|----------|----------|------|----------|----------|--..
+      WORD           8b
+                             |---------------------- Count x 52b --------------------------|
+
+
+BONE SECTION
+--------------------------------------------------------------------------------------------------------------
+
+  Bone count 
+ |----------|
+    DWORD    
+
+
+BONE NAME                                                                       --
+  Length    Bone Name     00                                                     |
+ |------|----------------|--|   (For each CHAR xor 0xFF)                         |
+  DWORD                   1b                                                     |
+        |-- Length x CHAR --|                                                    |
+                                                                                 |
+                                                                                 |--- Repeat "Bone Count" times
+ BONE INDEX                             Matrix                                   |
+|------------||-------------------------------------------------------|          |
+ DWORD                                 16 x FLOAT                                |
+              |-------------------------- 64b ------------------------|          |
+                                                                                --
+
+
+
+MATERIALS (After all objects have been read)
+--------------------------------------------------------------------------------------------------------------
+
+    ?   Material Count
+ |-----|--------------|
+  DWORD     DWORD
+
+
+  Length   Material Name  00                                                    --
+ |------|----------------|--|   (For each CHAR xor 0xFF)                         |
+  DWORD                   1b                                                     |
+        |-- Length x CHAR --|                                                    |
+                                                                                 |
+                                                                                 |
+  Diffuse    Ambient    Specular   Emmisive   SpecPower                          |
+ |----------|----------|----------|----------|----------|                        |
+  4 x FLOAT  4 x FLOAT  4 x FLOAT  4 x FLOAT  FLOAT                              |
+ |----------------------- 68b --------------------------|                        |
+                                                                                 |
+                                                                                 |
+  Length   Texture Name   00                                    --               |
+ |------|----------------|--|   (For each CHAR xor 0xFF)         |               |---- Repeat "Material Count" times
+  DWORD                   1b                                     |               |
+        |-- Length x CHAR --|                                    |               |
+                                                                 |               |
+                                                                 |-- x 4         |
+  Texture Type         ?                                         |               |
+ |------------|------------------|                               |               |
+     DWORD            12b                                        |               |
+                                                                --               |
+                                                                                 |
+              ?                                                                  |
+ |--------------------------|                                                    |
+             88b                                                                 |
+                                                                                --
+
+
+TEXTURES
+--------------------------------------------------------------------------------------------------------------
+
+  Texture Count
+ |-------------|
+     DWORD
+
+
+  Length   Texture Name   00                                                    --
+ |------|----------------|--|   (For each CHAR xor 0xFF)                         |
+  DWORD                   1b                                                     |
+        |-- Length x CHAR --|                                                    |
+                                                                                 |
+                                                                                 |
+                                                                                 |
+  0x00  Width  Height   0x01   0x01  Format  0x03  Img Type Checksum File Size   |
+ |-----|------|-------|------|------|------|------|--------|--------|---------|  |---- Repeat "Texture Count" times
+  DWORD DWORD  DWORD   DWORD  DWORD  DWORD  DWORD  DWORD    BYTE     DWORD       |
+                                                                                 |
+                                                                                 |
+              Texture File                                                       |
+ |------------------------------------|                                          |
+              File Size x b                                                      |
+                                                                                --
+
+Format = bmp 0x14, tga 0x15
+Checksum = read every 32 byte of the file from address 0x00 to the end
+           add them together in a DWORD then do DWORD & 0x000000FF = Checksum
+Img Type = bmp 0x00, tga 0x02 might be imagetype for tga 0=none,1=indexed,2=rgb,3=grey,+8=rle packed
+
+--------------------------------------------------------------------------------------------------------------
+END oF FILE
+*/
