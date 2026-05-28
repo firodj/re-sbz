@@ -1,0 +1,1 @@
+{"version": 1.0, "query": "(i.op is idaapi.cit_expr and\ni.cexpr.op is idaapi.cot_asg and\ni.cexpr.x.op is idaapi.cot_var and\ni.cexpr.y.op is idaapi.cot_call and\ni.cexpr.y.x.op is idaapi.cot_obj and\nget_name(i.cexpr.y.x.obj_ea).split('@')[0] == '??2' and\ni.cexpr.y.a[0].op is idaapi.cot_num)", "query_type": 1, "ast_type": 1, "help": "new query", "scope": 1}
