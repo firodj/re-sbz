@@ -1,6 +1,13 @@
 imports:
     unpacktool: tools/unpacktool/  # This is where we want peru to put the module.
+    hxtb: ./
 
 git module unpacktool:
     url: https://github.com/AniccaY/UnpackTool-R18_Game.git
+
+git module hxtb:
+    url: https://github.com/patois/HexraysToolbox.git
+    pick:
+        - hxtb.py
+        - hxtb_shell.py
 
