@@ -92,8 +92,8 @@ async def main():
         await upload_to_mega_async(OUTPUT_7Z_FILE, MEGA_EMAIL, MEGA_PASSWORD)
         
         # Optional Step 3: Clean up local file
-        # if os.path.exists(OUTPUT_7Z_FILE):
-        #     os.remove(OUTPUT_7Z_FILE)
+        if os.path.exists(OUTPUT_7Z_FILE):
+            os.remove(OUTPUT_7Z_FILE)
 
 if __name__ == "__main__":
     if os.path.exists(FILE_TO_COMPRESS):
