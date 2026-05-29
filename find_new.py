@@ -1,4 +1,5 @@
 import idaapi
+import idautils
 import hxtb
 import ida_kernwin
 
