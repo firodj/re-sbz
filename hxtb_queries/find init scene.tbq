@@ -1,0 +1,1 @@
+{"version": 1.0, "query": "(i.op is idaapi.cot_call and\nidaapi.get_name(i.x.obj_ea).startswith(\"InitScene_\") and\ni.x.op is idaapi.cot_obj)", "query_type": 1, "ast_type": 1, "help": "new query", "scope": 1}
