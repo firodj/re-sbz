@@ -1,3 +1,4 @@
+import typing_extensions
 from bonus import mshtml_find_element_obj
 import ida_bytes
 import ida_ua
@@ -21,6 +22,46 @@ dtype_to_size = {
     ida_ua.dt_byte64: (64, None), # Zword / 64-bytes / DWORD*8
 }
 
+regs_base = {
+    'al': 'eax',
+    'ah': 'eax',
+    'ax': 'eax',
+    'bl': 'ebx',
+    'bh': 'ebx',
+    'bx': 'ebx',
+    'cl': 'ecx',
+    'ch': 'ecx',
+    'cx': 'ecx',
+    'dl': 'edx',
+    'dh': 'edx',
+    'dx': 'edx',
+}
+
+def analyze_basic_block(start_ea):
+    # 2. Find the function containing the cursor
+    func = ida_funcs.get_func(start_ea)
+    if not func:
+        print("[-] Error: Cursor is not inside a function.")
+        return
+
+    start_ea = func.start_ea
+
+    # 3. Flow-chart the function to find basic blocks
+    flowchart = ida_gdl.qflow_chart_t("", func, func.start_ea, func.end_ea, 0)
+    
+    # 4. Find the specific basic block containing 'here()'
+    current_block = None
+    for block in flowchart:
+        if block.start_ea <= start_ea < block.end_ea:
+            current_block = block
+            break
+            
+    if not current_block:
+        print("[-] Error: Could not isolate the current basic block.")
+        return None
+
+    return (start_ea, current_block.end_ea)
+
 def analyze_struct_offsets(start_ea, target_reg_name="ecx", this_type: ida_typeinf.tinfo_t = None):
     # 1. Extract this type
     # Get the exact UDT structure details to find its members name
@@ -43,20 +84,7 @@ def analyze_struct_offsets(start_ea, target_reg_name="ecx", this_type: ida_typei
         return
 
     start_ea = func.start_ea
-
-    # 3. Flow-chart the function to find basic blocks
-    flowchart = ida_gdl.qflow_chart_t("", func, func.start_ea, func.end_ea, 0)
     
-    # 4. Find the specific basic block containing 'here()'
-    current_block = None
-    for block in flowchart:
-        if block.start_ea <= start_ea < block.end_ea:
-            current_block = block
-            break
-            
-    if not current_block:
-        print("[-] Error: Could not isolate the current basic block.")
-        return
     
     # get function signature
     # tif = ida_typeinf.tinfo_t()
@@ -64,10 +92,10 @@ def analyze_struct_offsets(start_ea, target_reg_name="ecx", this_type: ida_typei
     #     print("[-] Fail to get function frame")
     #     return
 
-    end_ea = current_block.end_ea
+    end_ea = func.end_ea
     current_ea = start_ea
     var_this = None
-    tracked_regs = set(target_reg_name)
+    tracked_regs = { target_reg_name }
 
     print(f"--- Analyzing offsets for base register '{target_reg_name}' from {start_ea:X} to {end_ea:X} ---")
     
@@ -79,8 +107,10 @@ def analyze_struct_offsets(start_ea, target_reg_name="ecx", this_type: ida_typei
             continue
 
         # Check if ebp is the first operand (destination)
-        if insn.get_canon_mnem() not in ("cmp", "test"):
-            reg_stack = ida_idp.get_reg_name(insn.Op1.reg, 4).lower()
+        if insn.get_canon_mnem() not in ("cmp", "test") and insn.Op1.type == ida_ua.o_reg:
+            #print(f"[{current_ea:X}] insn.Op1.reg: {insn.Op1.reg}, {insn.Op1.dtype}")
+            operand_size = ida_ua.get_dtype_size(insn.Op1.dtype)
+            reg_stack = ida_idp.get_reg_name(insn.Op1.reg, operand_size).lower()
             if reg_stack in ("ebp"):
                 print(f"[{current_ea:X}] ebp modified")
 
@@ -88,16 +118,20 @@ def analyze_struct_offsets(start_ea, target_reg_name="ecx", this_type: ida_typei
         # e.g., mov [ebp+var_4],ecx
         if insn.get_canon_mnem() == "mov" and insn.Op1.type == ida_ua.o_displ:
             # Check if Op1 is pointing to your stack variable
-            reg_stack = ida_idp.get_reg_name(insn.Op1.reg, 4).lower()
-            if reg_stack in ("ebp", "esp"):
+            operand_size = ida_ua.get_dtype_size(insn.Op1.dtype)
+            reg_stack = ida_idp.get_reg_name(insn.Op1.reg, operand_size).lower()
+            if reg_stack in ("ebp", "esp") and insn.Op2.type == ida_ua.o_reg:
                 # if insn.Op1.addr matches your local variable offset:
-                reg_src = ida_idp.get_reg_name(insn.Op2.reg, 4).lower()
+                operand_size = ida_ua.get_dtype_size(insn.Op2.dtype)
+                reg_src = ida_idp.get_reg_name(insn.Op2.reg, operand_size).lower()
+
                 if reg_src == target_reg_name and var_this is None:
                     var_this = (reg_stack, insn.Op1.addr)
                     print(f"[{current_ea:X}] found var_this: {target_reg_name} -> {var_this[0]} + {var_this[1]:X}")
 
         if insn.get_canon_mnem() == "add" and insn.Op1.type == ida_ua.o_reg:
-            reg_dst = ida_idp.get_reg_name(insn.Op1.reg, 4).lower()
+            operand_size = ida_ua.get_dtype_size(insn.Op1.dtype)
+            reg_dst = ida_idp.get_reg_name(insn.Op1.reg, operand_size).lower()
             if reg_dst in tracked_regs:
                 if insn.Op2.type == ida_ua.o_imm:
                     offset = insn.Op2.value
@@ -116,7 +150,11 @@ def analyze_struct_offsets(start_ea, target_reg_name="ecx", this_type: ida_typei
 
         # 2.a. Remove tracked register first
         if insn.get_canon_mnem() == "mov" and insn.Op1.type == ida_ua.o_reg:
-            reg_dst = ida_idp.get_reg_name(insn.Op1.reg, 4).lower()
+            operand_size = ida_ua.get_dtype_size(insn.Op1.dtype)
+            reg_dst = ida_idp.get_reg_name(insn.Op1.reg, operand_size).lower()
+            if operand_size != 4:
+                reg_dst = regs_base.get(reg_dst, reg_dst)
+
             if reg_dst in tracked_regs:
                 tracked_regs.remove(reg_dst)
                 print(f"[{current_ea:X}] remove tracked regs: {reg_dst}")
@@ -125,13 +163,16 @@ def analyze_struct_offsets(start_ea, target_reg_name="ecx", this_type: ida_typei
         # e.g., mov eax, [ebp+var_4]
         if insn.get_canon_mnem() == "mov" and insn.Op2.type == ida_ua.o_displ:
             # Check if Op2 is pointing to your stack variable
-            reg_stack = ida_idp.get_reg_name(insn.Op2.reg, 4).lower()
+            operand_size = ida_ua.get_dtype_size(insn.Op2.dtype)
+            reg_stack = ida_idp.get_reg_name(insn.Op2.reg, operand_size).lower()
             if reg_stack in ("ebp", "esp") and var_this is not None:
                 if var_this[0] == reg_stack and var_this[1] == insn.Op2.addr:
                     # if insn.Op2.addr matches your local variable offset:
-                    reg_dst = ida_idp.get_reg_name(insn.Op1.reg, 4).lower()
-                    tracked_regs.add(reg_dst)
-                    print(f"[{current_ea:X}] add tracked regs: {reg_dst}")
+                    operand_size = ida_ua.get_dtype_size(insn.Op1.dtype)
+                    if operand_size == 4:
+                        reg_dst = ida_idp.get_reg_name(insn.Op1.reg, operand_size).lower()
+                        tracked_regs.add(reg_dst)
+                        print(f"[{current_ea:X}] add tracked regs: {reg_dst}")
 
         # Iterate through the instruction's operands (usually up to 2 or 3)
         for op_idx, op in enumerate(insn.ops):
@@ -141,7 +182,8 @@ def analyze_struct_offsets(start_ea, target_reg_name="ecx", this_type: ida_typei
                 
                 # Get the name of the base register used in the operand
                 # op.reg holds the ID of the register (e.g., ecx)
-                reg_name = ida_idp.get_reg_name(op.reg, 4).lower() # 4 bytes width for 32-bit registers
+                operand_size = 4 # 4 bytes width for 32-bit base registers
+                reg_name = ida_idp.get_reg_name(op.reg, operand_size).lower()
 
                 if reg_name in tracked_regs:
                 #if reg_name and reg_name.lower() == target_reg_name.lower():
@@ -160,19 +202,6 @@ def analyze_struct_offsets(start_ea, target_reg_name="ecx", this_type: ida_typei
                         width[0],
                     )
 
-                    # add     ecx, 80h
-
-                    # new_member = ida_typeinf.udm_t()
-                    # new_member.name = f"field_{offset:X}"
-                    # new_member.type = ida_typeinf.tinfo_t(width[1]) # or use parse_decl
-                    # new_member.offset = offset # Optional: specify explicit offset
-
-                    # 4. Add member to the container and re-create the type
-                    #udt_details.push_back(new_member)
-                    #print(f"add new member {new_member}")
-
-                    #break # Move to next instruction once found
-                    
         current_ea = idc.next_head(current_ea)
     
     for a in range(len(udt_details)):
