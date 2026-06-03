@@ -1,0 +1,1 @@
+{"version": 1.0, "query": "(i.op is idaapi.cit_expr and\ni.cexpr.op is idaapi.cot_call and\ni.cexpr.x.op is idaapi.cot_obj and\nidaapi.get_name(i.cexpr.x.obj_ea) in ('memset', '_memset'))", "query_type": 1, "ast_type": 1, "help": "find memset", "scope": 0}
