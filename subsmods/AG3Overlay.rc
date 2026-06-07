@@ -1,0 +1,137 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_CONFIG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 287
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 320
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CONFIG_DIALOG DIALOGEX 0, 0, 294, 327
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Graphics and Fonts",IDC_STATIC,7,7,100,113
+    CTEXT           "Resolution",IDC_STATIC,15,17,84,10
+    COMBOBOX        IDC_RESOLUTION,15,27,84,112,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "Font Face",IDC_STATIC,15,42,84,10
+    COMBOBOX        IDC_FONT_FACE,15,52,84,108,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "Font Size",IDC_STATIC,15,67,84,10
+    EDITTEXT        IDC_FONT_SIZE,15,77,84,12,ES_AUTOHSCROLL
+    CTEXT           "Force Locale",IDC_STATIC,15,92,84,10
+    COMBOBOX        IDC_FORCE_LOCALE,15,102,84,108,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Subtitles",IDC_STATIC,114,7,173,113
+    CONTROL         "",IDC_SUBTITLE_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_VSCROLL | WS_TABSTOP,121,34,158,60,WS_EX_CLIENTEDGE
+    PUSHBUTTON      "Create New",ID_CREATE_NEW_SUBTITLE,121,99,44,14
+    PUSHBUTTON      "Up",ID_SUBTITLE_UP,177,99,23,14,WS_DISABLED
+    PUSHBUTTON      "Down",ID_SUBTITLE_DOWN,205,99,29,14,WS_DISABLED
+    PUSHBUTTON      "Add File",ID_ADD,239,99,40,14
+    GROUPBOX        "Names and Colors",IDC_STATIC,7,122,280,160
+    LTEXT           "PP File",IDC_STATIC,15,137,22,8
+    EDITTEXT        IDC_PP_NAME,39,135,64,12,ES_AUTOHSCROLL
+    LTEXT           "Name",IDC_STATIC,15,153,19,8
+    EDITTEXT        IDC_GIRL_NAME,39,151,64,12,ES_AUTOHSCROLL
+    LTEXT           "Text Color",IDC_STATIC,15,169,34,8
+    EDITTEXT        IDC_TEXT_COLOR,52,167,51,12,ES_AUTOHSCROLL
+    LTEXT           "Outline",IDC_STATIC,108,137,26,8
+    EDITTEXT        IDC_OUTLINE_COLOR,136,135,51,12,ES_AUTOHSCROLL
+    LTEXT           "Shadow",IDC_STATIC,108,152,26,8
+    EDITTEXT        IDC_SHADOW_COLOR,136,150,51,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Edit",ID_EDIT_GIRL,136,166,51,12
+    PUSHBUTTON      "All",ID_ALL_OUTLINE,192,135,14,12
+    PUSHBUTTON      "All",ID_ALL_SHADOW,192,150,14,12
+    GROUPBOX        "AG3 Names",IDC_STATIC,212,129,69,50
+    CONTROL         "Use Forename",IDC_AG3_FIRST,"Button",BS_AUTORADIOBUTTON | WS_GROUP,218,141,60,10
+    CONTROL         "Use Surname",IDC_AG3_LAST,"Button",BS_AUTORADIOBUTTON,218,153,58,10
+    CONTROL         "Use File Name",IDC_AG3_FILE,"Button",BS_AUTORADIOBUTTON,218,165,60,10
+    CONTROL         "",IDC_COLOR_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_VSCROLL | WS_TABSTOP,13,183,268,83,WS_EX_CLIENTEDGE
+    CONTROL         "Don't show girl names",IDC_HIDE_GIRL_NAMES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,269,85,10
+    CONTROL         "",IDC_SAMPLE,"Static",SS_BITMAP | SS_SUNKEN,7,287,115,33
+    PUSHBUTTON      "Fix Registry",ID_FIX_REG,237,287,50,14
+    DEFPUSHBUTTON   "OK",IDOK,129,306,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,183,306,50,14
+    PUSHBUTTON      "Apply",ID_APPLY,237,306,50,14
+    EDITTEXT        IDC_MIN_SUB_DURATION,180,17,55,12,ES_AUTOHSCROLL
+    LTEXT           "Min Sub Duration",IDC_STATIC,123,19,54,8
+    CONTROL         "Romanize names in Hako",IDC_ROMANIZE_NAMES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,109,269,95,10
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

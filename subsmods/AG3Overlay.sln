@@ -1,0 +1,49 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AG3Overlay", "AG3Overlay.vcproj", "{4DE691C5-E71A-4B84-B426-59CDDD679EE9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4A580EC2-32DD-4958-ACC0-89E93A1C632B} = {4A580EC2-32DD-4958-ACC0-89E93A1C632B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AG3OverlayInjector", "AG3OverlayInjector.vcproj", "{EBEAF4CD-0582-4FBA-B9D8-446127169AFC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4A580EC2-32DD-4958-ACC0-89E93A1C632B} = {4A580EC2-32DD-4958-ACC0-89E93A1C632B}
+		{4DE691C5-E71A-4B84-B426-59CDDD679EE9} = {4DE691C5-E71A-4B84-B426-59CDDD679EE9}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ppExtract", "ppExtract.vcproj", "{4A580EC2-32DD-4958-ACC0-89E93A1C632B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WaveMonitor", "WaveMonitor.vcproj", "{8E4B795E-1563-44AA-B0A0-4CA2ECF54991}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EBEAF4CD-0582-4FBA-B9D8-446127169AFC} = {EBEAF4CD-0582-4FBA-B9D8-446127169AFC}
+		{4DE691C5-E71A-4B84-B426-59CDDD679EE9} = {4DE691C5-E71A-4B84-B426-59CDDD679EE9}
+		{4A580EC2-32DD-4958-ACC0-89E93A1C632B} = {4A580EC2-32DD-4958-ACC0-89E93A1C632B}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4DE691C5-E71A-4B84-B426-59CDDD679EE9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4DE691C5-E71A-4B84-B426-59CDDD679EE9}.Debug|Win32.Build.0 = Debug|Win32
+		{4DE691C5-E71A-4B84-B426-59CDDD679EE9}.Release|Win32.ActiveCfg = Release|Win32
+		{4DE691C5-E71A-4B84-B426-59CDDD679EE9}.Release|Win32.Build.0 = Release|Win32
+		{EBEAF4CD-0582-4FBA-B9D8-446127169AFC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EBEAF4CD-0582-4FBA-B9D8-446127169AFC}.Debug|Win32.Build.0 = Debug|Win32
+		{EBEAF4CD-0582-4FBA-B9D8-446127169AFC}.Release|Win32.ActiveCfg = Release|Win32
+		{EBEAF4CD-0582-4FBA-B9D8-446127169AFC}.Release|Win32.Build.0 = Release|Win32
+		{4A580EC2-32DD-4958-ACC0-89E93A1C632B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4A580EC2-32DD-4958-ACC0-89E93A1C632B}.Debug|Win32.Build.0 = Debug|Win32
+		{4A580EC2-32DD-4958-ACC0-89E93A1C632B}.Release|Win32.ActiveCfg = Release|Win32
+		{4A580EC2-32DD-4958-ACC0-89E93A1C632B}.Release|Win32.Build.0 = Release|Win32
+		{8E4B795E-1563-44AA-B0A0-4CA2ECF54991}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8E4B795E-1563-44AA-B0A0-4CA2ECF54991}.Debug|Win32.Build.0 = Debug|Win32
+		{8E4B795E-1563-44AA-B0A0-4CA2ECF54991}.Release|Win32.ActiveCfg = Release|Win32
+		{8E4B795E-1563-44AA-B0A0-4CA2ECF54991}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
