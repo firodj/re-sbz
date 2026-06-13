@@ -102,11 +102,11 @@ If you can't see the arrow you have to buy the books in the shop at night. I thi
 
 The below is a translation of the F2 status screen.
 
-[![](https://web.archive.org/web/20250425115953im_/https://wiki.anime-sharing.com/hgames/images/thumb/d/d8/-SBZ-F2Screen_Girl.png/300px--SBZ-F2Screen_Girl.png)](https://web.archive.org/web/20250425115953/https://wiki.anime-sharing.com/hgames/index.php?title=File:-SBZ-F2Screen_Girl.png)
+[![](./img/1200px--SBZ-F2Screen_Girl.png)](https://web.archive.org/web/20250425115953/https://wiki.anime-sharing.com/hgames/index.php?title=File:-SBZ-F2Screen_Girl.png)
 
 Translated F2 Screen for the Girls
 
-[![](https://web.archive.org/web/20250425115953im_/https://wiki.anime-sharing.com/hgames/images/thumb/c/cc/-SBZ-F2Screen_Player.png/300px--SBZ-F2Screen_Player.png)](https://web.archive.org/web/20250425115953/https://wiki.anime-sharing.com/hgames/index.php?title=File:-SBZ-F2Screen_Player.png)
+[![](./img/1200px--SBZ-F2Screen_Player.png)](https://web.archive.org/web/20250425115953/https://wiki.anime-sharing.com/hgames/index.php?title=File:-SBZ-F2Screen_Player.png)
 
 Translated F2 Screen for the Player
 
@@ -253,6 +253,50 @@ Controls:
 -   Others: "**Y**" Disable/Enable Following Cam' *Otherwise* FixedCam' **(**Only in "DanceEvents" On 'FreeMode'!**)**
 
 **A**ttention!**:** *"Camera Rotation" Is NOT The same as "Point Of View", In Other Words; In fact you should move to the opposite directions to move the camera to the desired direction**.***=)
+
+Characters
+==========
+
+A little about the characters.
+
+Ai
+--
+
+[![Ai](./img/01_ai.jpg)](https://web.archive.org/web/20251206212133/https://wiki.anime-sharing.com/hgames/index.php?title=File:01_ai.jpg "Ai")
+
+-   Previously appeared in: Real Girlfriend
+
+Bael Altarus
+------------
+
+[![Bael](./img/02_bael.jpg)](https://web.archive.org/web/20251206212133/https://wiki.anime-sharing.com/hgames/index.php?title=File:02_bael.jpg "Bael")
+
+-   Previously appeared in: Des Blood 4, Sexy Beach 2 West expansion, Sexy Beach 3 Gravure Disk, and Digital Girl Baeru
+
+Bael started in **Des Blood 4** as the second-in-command to the game's villain along with **Des Blood 4** heroine, Esk Andersson. She then went on to **Sexy Beach 2 West Expansion** where players could challenge her to billiards. In Sexy Beach 3, she was cast as the hotel receptionist; she was voted in a poll for the most popular Illusion girl for **Sexy Beach 3 expansion gravure disk** where she became playable.
+
+Rin Kuwabara
+------------
+
+[![Rin](./img/03_rin.jpg)](https://web.archive.org/web/20251206212133/https://wiki.anime-sharing.com/hgames/index.php?title=File:03_rin.jpg "Rin")
+
+-   Previously appeared in: Biko 3 and Digita Girl Rin\
+Rin was a schoolgirl that appeared in Illusion's stalker sim **Biko 3 ,** she then appeared in Illusion's 3D poser **Digital Girl Rin**
+
+Hotaru
+------
+
+[![Hotaru](./img/04_hotal.jpg)](https://web.archive.org/web/20251206212133/https://wiki.anime-sharing.com/hgames/index.php?title=File:04_hotal.jpg "Hotaru")
+
+-   Previously appeared in: DesBlood VR\
+A biological experiment gone awry, Hotaru killed the scientist who created her after having sex with him. She is the villain of **Des Blood VR** opposite Maria Andersson (who was also in Sexy Beach 3).
+
+Setsuna Yagami
+--------------
+
+[![Setsuna](./img/05_setsuna.jpg)](https://web.archive.org/web/20251206212133/https://wiki.anime-sharing.com/hgames/index.php?title=File:05_setsuna.jpg "Setsuna")
+
+-   Previously appeared in: Battle Raper 2
 
 # Sexy Beach ZERO: H Guide
 

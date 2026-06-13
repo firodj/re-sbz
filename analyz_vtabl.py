@@ -90,7 +90,7 @@ def main():
         #print(ea, info)
         s = info[1]
         start_ea = info[2]
-        new_name = re.sub(r'sub_', f'method_{ea-base_ea:X}_', s)
+        new_name = re.sub(r'(.)sub_', r'\1tod_' + f'{ea-base_ea:X}_', s)
         
         # Apply the name
         # SN_NOWARN prevents IDA from popping up warning dialogs if the name is a duplicate
