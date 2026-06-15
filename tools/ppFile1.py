@@ -5,6 +5,9 @@
 import os
 from io import BytesIO
 
+from dotenv import load_dotenv
+load_dotenv()
+
 def bin2ascii(b):
     res = []
     for x in b:
@@ -132,4 +135,5 @@ def pack_pp_files(path: str, s_path: str):
 
 if __name__ == '__main__':
     appdir = os.getenv('APPDIR')
+    print(f"APPDIR={appdir}")
     unpack(os.path.join(appdir, 'data', 'base.pp'), os.path.join(appdir, 'out'))

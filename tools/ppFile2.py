@@ -106,10 +106,17 @@ def decrypt_content_data(data: bytearray) -> bytearray:
     out = bytearray()
 
     # SBZ VA Address: 0x0070A271
-    for offset in range(size):
+    i = 0
+    size_aligned = size & ~3
+    size_padded  = size & 3
+    for offset in range(size_aligned):
+        
         key_idx = offset & 0x1f
         out.append(data[offset] ^ key[key_idx])
-    
+
+    for offset in range(size_padded):
+        out.append(data[size_aligned + offset])
+        
     return out
 
 def unpack(path, s_dir):
@@ -171,4 +178,5 @@ def unpack(path, s_dir):
 
 if __name__ == '__main__':
     appdir = os.getenv('APPDIR')
-    unpack(os.path.join(appdir, 'data', 'sb07_00.pp'), os.path.join(appdir, 'out'))
+    print(f"APPDIR={appdir}")
+    unpack(os.path.join(appdir, 'data', 'sb00_00.pp'), os.path.join(appdir, 'out'))
