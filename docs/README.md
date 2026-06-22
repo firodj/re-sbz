@@ -29,3 +29,20 @@ field_218
 pfnDo_1C
 pfnDo_18
 field_21C
+
+## Reading File
+
+1. LoadXX_70DDC0
+   - CPack::GetSubFileFromPP_70C9C0
+     - CPack::GetSubFile_70C770
+   - LoadOldPPFile_7196F0
+2. ScnObjLoadDataFromPP_70E050
+   - CPack::GetSubFileFromPP_70C9C0
+   - LoadOldPPFile_7196F0
+3. CPack::LoadHeader_70C5A0
+   - CPack::GetSubFileFromPP_70C9C0
+     - CPack::GetSubFile_70C770
+5. LoadSubFile_695220
+   - GetFileContent_719230
+   - CPack::GetSubFileFromPP_70C9C0
+   - LoadOldPPFile_7196F0

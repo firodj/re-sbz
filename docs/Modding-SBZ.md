@@ -17,15 +17,15 @@ How to use Illusion Wizzard
 PP files
 --------
 
--   The .sdt files with the story is in sb00_00, which also contains lst files as well as other important things.
--   sb01_00 contains .wav files i assume bgm and sfx.
+-   The `.sdt` files with the story is in `sb00_00`, which also contains lst files as well as other important things.
+-   `sb01_00` contains .wav files i assume bgm and sfx.
     -   All background music except the dance minigame music is in OGG format, you can encode your MP3s to OGG and replace them to listen to them ingame.
--   sb01_50 contains what appears to be animation files.
--   sb02_00 to sb02_04 Contain ... the Voice files for each respective character.
--   sb02_98 and sb02_99 also contain voice files.
--   sb03_00.pp contains the models.
--   sb03_01 contains the environment ... the Maps also the Props in the environment. Also contains items like the beachball etc..
--   sb05_00 contains what seems to be animation + Liquid effects such as the lotion and eeehhh cum lol.
--   Things like accessories and what not are contained in sb06_00 and sb07_00, sb08_00 and sb09_00 (for expansion volumes 1 thru 3). You could potentially create an sbXX_XXXXX.pp file with swimsuit textures and the game will load it as long as you point to it from the sb00_00.pp\sw*.lst swimsuit definitions.
--   sb07_00 is important to UI translation since everything here is the image files for the UI as well as icons and whatnot.
--   There is also a sb99_99 which contains 2 files... centerXX.xx and cm.tga I have no idea what this is for.
+-   `sb01_50` contains what appears to be animation files.
+-   `sb02_00` to `sb02_04` Contain ... the Voice files for each respective character.
+-   `sb02_98` and `sb02_99` also contain voice files.
+-   `sb03_00.pp` contains the models.
+-   `sb03_01` contains the environment ... the Maps also the Props in the environment. Also contains items like the beachball etc..
+-   `sb05_00` contains what seems to be animation + Liquid effects such as the lotion and eeehhh cum lol.
+-   Things like accessories and what not are contained in `sb06_00` and `sb07_00`, `sb08_00` and `sb09_00` (for expansion volumes 1 thru 3). You could potentially create an `sbXX_XXXXX.pp` file with swimsuit textures and the game will load it as long as you point to it from the `sb00_00.pp\sw*.lst` swimsuit definitions.
+-   `sb07_00` is important to UI translation since everything here is the image files for the UI as well as icons and whatnot.
+-   There is also a `sb99_99` which contains 2 files... centerXX.xx and cm.tga I have no idea what this is for.
