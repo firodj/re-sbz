@@ -17,7 +17,7 @@ How to use Illusion Wizzard
 PP files
 --------
 
--   The `.sdt` files with the story is in `sb00_00`, which also contains lst files as well as other important things.
+-   The `.sdt` files with the story is in `sb00_00`, which also contains `.lst` files as well as other important things.
 -   `sb01_00` contains .wav files i assume bgm and sfx.
     -   All background music except the dance minigame music is in OGG format, you can encode your MP3s to OGG and replace them to listen to them ingame.
 -   `sb01_50` contains what appears to be animation files.

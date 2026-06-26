@@ -9,3 +9,16 @@ Breakpoint 0088DBB4 (Sexy Beach Zero English.exe+48DBB4)
 CreateDialogParam
 
 The Template from Resources
+
+0088dbb4 = GameInfo
+
+048DC2C = SBHscene
++2C +28 +2C Girl (float)
+        +30 Man (float)
+
++2C +40 +2C Tank (float)
+
+48DC28 =
++2C +64 +10 Time (float)
++2C +84 +50 Massager (float)
+         +54 Vibrator (float)

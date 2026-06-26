@@ -13,6 +13,7 @@ except LookupError:
 
 class sdtParser:
     def __init__(self, stream):
+        self.ident = 0
         reader = BinaryReader(stream)
 
         format = reader.read_int32()
@@ -26,36 +27,42 @@ class sdtParser:
 
         for i in range(count):
             print("+ submember_18[%d]" % (i))
+            self.ident += 1
             self._parse_submember_18(reader)
+            self.ident -= 1
     
     def _parse_submember_18(self, reader):
         field_0 = reader.read_int32()
         field_14 = reader.read_int32()
         count_C = reader.read_int32()
-        print("  - field_0 =", field_0)
-        print("  - field_14 =", field_14)
-        print("  - count_C =", count_C)
+        print(self.ident*"  " + "- field_0 =", field_0)
+        print(self.ident*"  " + "- field_14 =", field_14)
+        print(self.ident*"  " + "- count_C =", count_C)
 
         for i in range(count_C):
-            print("  + submember_C[%d]" % (i))
+            print(self.ident*"  " + "+ submember_C[%d]" % (i))
+            self.ident += 1
             self._parse_submember_C(reader)
+            self.ident -= 1
 
         count_4 = reader.read_int32()
-        print("  - count_4 =", count_4)
+        print(self.ident*"  " + "- count_4 =", count_4)
         for i in range(count_4):
-            print("  + submember_8[%d]" % (i))
+            print(self.ident*"  " + "+ submember_8[%d]" % (i))
+            self.ident += 1
             self._parse_submember_8(reader)
+            self.ident -= 1
 
     def _parse_submember_C(self, reader):
         field_8 = reader.read_int32()
         name_4 = reader.read_name()
 
-        print("    - field_8 =", field_8)
-        print("    - name_4 =", name_4)
+        print(self.ident*"  " + "- field_8 =", field_8)
+        print(self.ident*"  " + "- name_4 =", name_4)
 
     def _parse_submember_8(self, reader):
         kind = reader.read_byte()
-        print("    - kind = ", hex(kind))
+        print(self.ident*"  " + "- kind = ", hex(kind))
         match kind:
             case 0:
                 self._parse_case_0(reader)
@@ -89,15 +96,15 @@ class sdtParser:
     # comment
     def _parse_case_0(self, reader):
         comment_0 = reader.read_name()
-        print("    - comment_0 =", comment_0)
+        print(self.ident*"  " + "- comment_0 =", comment_0)
 
     def _parse_case_A(self, reader):
         name_0 = reader.read_name()
-        print("    - name_0 =", name_0)
+        print(self.ident*"  " + "- name_0 =", name_0)
     
     def _parse_case_16(self, reader):
         name_0 = reader.read_name()
-        print("    - name_0 =", name_0)
+        print(self.ident*"  " + "- name_0 =", name_0)
 
     def _parse_case_4(self, reader):
         field_0 = reader.read_int32()
@@ -107,42 +114,42 @@ class sdtParser:
         right_14 = reader.read_int32()
         bottom_18 = reader.read_int32()
 
-        print("    - field_0 =", field_0)
-        print("    - image_4 =", image_4)
-        print("    - field_c =", field_c)
-        print("    - field_10 =", field_10)
-        print("    - right_14 =", right_14)
-        print("    - bottom_18 =", bottom_18)
+        print(self.ident*"  " + "- field_0 =", field_0)
+        print(self.ident*"  " + "- image_4 =", image_4)
+        print(self.ident*"  " + "- field_c =", field_c)
+        print(self.ident*"  " + "- field_10 =", field_10)
+        print(self.ident*"  " + "- right_14 =", right_14)
+        print(self.ident*"  " + "- bottom_18 =", bottom_18)
 
     def _parse_case_8(self, reader):
         field_0 = reader.read_int32()
     
-        print("    - play_sound_id_0 =", field_0)
+        print(self.ident*"  " + "- play_sound_id_0 =", field_0)
     
     def _parse_case_17(self, reader):
         field_0 = reader.read_int32()
         byte_4 = reader.read_byte()
 
-        print("    - field_0 =", field_0)
-        print("    - byte_4 =", byte_4)
+        print(self.ident*"  " + "- field_0 =", field_0)
+        print(self.ident*"  " + "- byte_4 =", byte_4)
 
     def _parse_case_2(self, reader):
         blend_mode_0 = reader.read_byte()
         color_4 = reader.read_uint32()
         duration_8 = reader.read_int32()
     
-        print("    - blend_mode_0 =", blend_mode_0)
-        print("    - color_4 =", hex(color_4))
-        print("    - duration_8 =", duration_8)
+        print(self.ident*"  " + "- blend_mode_0 =", blend_mode_0)
+        print(self.ident*"  " + "- color_4 =", hex(color_4))
+        print(self.ident*"  " + "- duration_8 =", duration_8)
 
     def _parse_case_15(self, reader):
         field_0 = reader.read_uint32()
         field_4 = reader.read_uint32()
         field_8 = reader.read_int32()
     
-        print("    - field_0 =", field_0)
-        print("    - field_4 =", field_4)
-        print("    - field_8 =", field_8)
+        print(self.ident*"  " + "- field_0 =", field_0)
+        print(self.ident*"  " + "- field_4 =", field_4)
+        print(self.ident*"  " + "- field_8 =", field_8)
 
     def _parse_case_6(self, reader):
         field_0 = reader.read_int32()
@@ -150,10 +157,10 @@ class sdtParser:
         byte_c = reader.read_byte()
         byte_d = reader.read_byte()
 
-        print("    - sound_id_0 =", field_0)
-        print("    - sound_4 =", name_4)
-        print("    - byte_c =", byte_c)
-        print("    - byte_d =", byte_d)
+        print(self.ident*"  " + "- sound_id_0 =", field_0)
+        print(self.ident*"  " + "- sound_4 =", name_4)
+        print(self.ident*"  " + "- byte_c =", byte_c)
+        print(self.ident*"  " + "- byte_d =", byte_d)
 
     def _parse_case_1(self, reader):
         dialog_id_0 = reader.read_int32()
@@ -161,15 +168,17 @@ class sdtParser:
         sound_file_c = reader.read_name_skip_1()
         count_14 = reader.read_int32()
 
-        print("    - dialog_id_0 =", dialog_id_0)
-        print("    - speaker_name_4 =", speaker_name_4)
-        print("    - sound_file_c =", sound_file_c)
-        print("    - count_14 =", count_14)
+        print(self.ident*"  " + "- dialog_id_0 =", dialog_id_0)
+        print(self.ident*"  " + "- speaker_name_4 =", speaker_name_4)
+        print(self.ident*"  " + "- sound_file_c =", sound_file_c)
+        print(self.ident*"  " + "- count_14 =", count_14)
 
         for i in range(count_14):
-            print("    + struct_14[%d]" % (i))
+            print(self.ident*"  " + "+ struct_14[%d]" % (i))
             s14_byte_0 = reader.read_byte()
-            print("      - byte_0 =", s14_byte_0)
+
+            self.ident += 1
+            print(self.ident*"  " + "- byte_0 =", s14_byte_0)
 
             if s14_byte_0 != 0:
                 s14_byte_1 = reader.read_byte()
@@ -177,55 +186,63 @@ class sdtParser:
                 s14_field_4 = reader.read_int32()
                 s14_field_8 = reader.read_int32()
 
-                print("      - byte_1 =", s14_byte_1)
-                print("      - byte_2 =", s14_byte_2)
-                print("      - field_4 =", s14_field_4)
-                print("      - field_8 =", s14_field_8)
+                print(self.ident*"  " + "- byte_1 =", s14_byte_1)
+                print(self.ident*"  " + "- byte_2 =", s14_byte_2)
+                print(self.ident*"  " + "- field_4 =", s14_field_4)
+                print(self.ident*"  " + "- field_8 =", s14_field_8)
             
             s14_name_c = reader.read_name_skip_1()
-            print("      - name_c =", s14_name_c)
+            print(self.ident*"  " + "- name_c =", s14_name_c)
+            self.ident -=1
 
         s8_count_0 = reader.read_int32()
-        print("    + struct_8")
-        print("      - count_0 =", s8_count_0)
+        print(self.ident*"  " + "+ struct_8")
+
+        self.ident += 1
+        print(self.ident*"  " + "- count_0 =", s8_count_0)
 
         if s8_count_0 > 0:
             raise Exception("to be continue...")
+        self.ident -= 1
     
     def _parse_case_9(self, reader):
         next_file_0 = reader.read_name()
         field_8 = reader.read_int32()
 
-        print("    - next_file_0 =", next_file_0)
-        print("    - field_8 =", field_8)
+        print(self.ident*"  " + "- next_file_0 =", next_file_0)
+        print(self.ident*"  " + "- field_8 =", field_8)
 
     def _parse_case_14(self, reader):
-        print("    end.")
+        print(self.ident*"  " + "- end.")
 
     def _parse_case_18(self, reader):
         field_0 = reader.read_int32()
         count_4 = reader.read_int32()
 
-        print("    - field_0 =", field_0)
-        print("    - count_4 =", count_4)
+        print(self.ident*"  " + "- field_0 =", field_0)
+        print(self.ident*"  " + "- count_4 =", count_4)
 
         for i in range(count_4):
-            print("    + struct_10[%d]" % (i))
+            print(self.ident*"  " + "+ struct_10[%d]" % (i))
+            self.ident += 1
             s10_byte_5 = reader.read_byte()
             s10_byte_4 = reader.read_byte()
             s10_field_0 = reader.read_int32()
             s10_count_8 = reader.read_int32()
 
-            print("      - field_0 =", s10_field_0)
-            print("      - byte_4 =", s10_byte_4)
-            print("      - byte_5 =", s10_byte_5)
-            print("      - count_8 =", s10_count_8)
+            print(self.ident*"  " + "- field_0 =", s10_field_0)
+            print(self.ident*"  " + "- byte_4 =", s10_byte_4)
+            print(self.ident*"  " + "- byte_5 =", s10_byte_5)
+            print(self.ident*"  " + "- count_8 =", s10_count_8)
 
-            print("      <<<<<<<<<<")
+            
             for j in range(s10_count_8):            
-                print("      + submember_8[%d]" % (j))
+                print(self.ident*"  " + "+ submember_8[%d]" % (j))
+                self.ident += 1
                 self._parse_submember_8(reader)
-            print("      >>>>>>>>>>")
+                self.ident -= 1
+            
+            self.ident -=1
     
 # Example usage:
 if __name__ == "__main__":
@@ -235,14 +252,16 @@ if __name__ == "__main__":
 
     appdir = os.getenv('APPDIR')
 
-    items = os.listdir(os.path.join(appdir, 'out/sb00_00/'))
-    for item in items:
-        if item.endswith('.sdt'):
-            full_path = os.path.join(appdir, 'out/sb00_00/', item)
-            with open(full_path, "rb") as f:
-                print("========== ========= ==========")
-                parser = sdtParser(f)
-        
-    # Example of how to use the parser
-    #with open(os.path.join(appdir, 'out/sb00_00/talk_00_06_02.sdt'), "rb") as f:
-    #    parser = sdtParser(f)
+    if True:
+            
+        items = os.listdir(os.path.join(appdir, 'out/sb00_00/'))
+        for item in items:
+            if item.endswith('.sdt'):
+                full_path = os.path.join(appdir, 'out/sb00_00/', item)
+                with open(full_path, "rb") as f:
+                    print("========== ========= ==========")
+                    parser = sdtParser(f)
+    
+    else:
+        with open(os.path.join(appdir, 'out/sb00_00/action_00_99_01.sdt'), "rb") as f:
+            parser = sdtParser(f)
