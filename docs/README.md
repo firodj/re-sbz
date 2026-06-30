@@ -46,3 +46,24 @@ field_21C
    - GetFileContent_719230
    - CPack::GetSubFileFromPP_70C9C0
    - LoadOldPPFile_7196F0
+
+
+## Loading Girl
+
+data/sb03_00.pp
+%s cw_body_%02d_00.xx -> swimsuit number
+%s cw_head_%02d_00.xx -> "N_head" "o01_J_Head"
+%s cw_head_%02d_00.xa
+%s cw_hair_%02d_%02d.xx -> "N_hair" "o01_J_Head"
+%s cw_bust_%02d_00.tty -> mune-ctrl + jiggle physics
+%s cw_hip_%02d_00.tty 
+%s cw_eyes_%02d_00.eyes
+%s cw_neck_%02d_00.neck
+
+data/base.pp
+%s cw_hair_%02d_%02d.kcol -> hair/cloth ctrl
+%s cw_hair_%02d_%02d.kys
+
+data/sb00_00.pp
+cw_push_%02d_00.lst
+scale_%02d_00.lst
