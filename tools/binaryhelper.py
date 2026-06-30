@@ -15,7 +15,39 @@ def _decrypt_name(buf: bytes) -> str:
         return ''
     decrypted = bytes(~b & 0xFF for b in buf)
     decoded_data, consumed = _shift_jis.decode(decrypted)
-    return decoded_data.rstrip('\x00')
+    result = decoded_data.rstrip('\x00')
+
+    # data_1 = len(buf)
+    # data_2 = len(decoded_data)
+    # data_3 = len(result)
+
+    # test = _encrypt_name(result)
+    # data_4 = len(test)
+
+    # print(data_1, data_2, data_3, data_4)
+    
+    return result
+
+
+def _encrypt_name(name: str) -> bytes:
+    if len(name) < 1:
+        encrypted = bytearray(1)
+    else:
+        encoded_data, consumed = _shift_jis.encode(name)
+        encrypted = bytearray(encoded_data) + bytearray(1)
+
+    for i in range(len(encrypted)):
+        encrypted[i] = ~encrypted[i] & 0xFF
+    return bytes(encrypted)
+
+
+def _encrypt_name_fixed(name: str, length: int) -> bytes:
+    encrypted = bytearray(length)
+    encoded = _shift_jis.encode(name)
+    encrypted[:len(encoded)] = encoded[:length]
+    for i in range(len(encrypted)):
+        encrypted[i] = ~encrypted[i] & 0xFF
+    return bytes(encrypted)
 
 
 class BinaryReader:
@@ -83,3 +115,56 @@ class BinaryReader:
     def read_to_end(self) -> bytes:
         return self._stream.read()
 
+
+class BinaryWriter:
+    def __init__(self, stream):
+        self._stream = stream
+
+    def write_byte(self, value: int):
+        self._stream.write(struct.pack('<B', value))
+
+    def write_bytes(self, data: bytes):
+        self._stream.write(data)
+
+    def write_int32(self, value: int):
+        self._stream.write(struct.pack('<i', value))
+
+    def write_uint32(self, value: int):
+        self._stream.write(struct.pack('<I', value))
+
+    def write_single(self, value: float):
+        self._stream.write(struct.pack('<f', value))
+
+    def write_uint16(self, value: int):
+        self._stream.write(struct.pack('<H', value))
+
+    def write_name(self, name: str, length: Optional[int] = None):
+        if length is not None:
+            name_buf = _encrypt_name_fixed(name, length)
+            self.write_int32(len(name_buf))
+            self.write_bytes(name_buf)
+        else:
+            name_buf = _encrypt_name(name)
+            self.write_int32(len(name_buf))
+            self.write_bytes(name_buf)
+
+    def write_name_without_length(self, name: str, length: int):
+        name_buf = _encrypt_name_fixed(name, length)
+        self.write_bytes(name_buf)
+
+    def write_color4(self, color):
+        self.write_single(color[0])
+        self.write_single(color[1])
+        self.write_single(color[2])
+        self.write_single(color[3])
+
+    def write_vector3(self, v):
+        self.write_single(v[0])
+        self.write_single(v[1])
+        self.write_single(v[2])
+
+    def write_quaternion(self, q):
+        self.write_single(q[0])
+        self.write_single(q[1])
+        self.write_single(q[2])
+        self.write_single(q[3])
