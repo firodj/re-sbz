@@ -1,4 +1,4 @@
-from binaryhelper import BinaryReader, BinaryWriter
+from binaryhelper import BinaryReader, BinaryWriter, red_print
 import json
 import io, sys
 import argparse
@@ -8,11 +8,6 @@ try:
     _shift_jis = codecs.lookup('shift_jis')
 except LookupError:
     _shift_jis = codecs.lookup('cp932')
-
-def red_print(*args, **kwargs):
-    print("\033[31m")
-    print(*args)
-    print("\033[0m")
 
 def dbg_print(*args, **kwargs):
     if False:
@@ -219,7 +214,7 @@ class sdtParser:
         return dict(
             kind=0x2,
             blend_mode=blend_mode,
-            color=color,
+            color=hex(color),
             duration=duration,
         )
 
@@ -260,13 +255,15 @@ class sdtParser:
 
     def _parse_case_1(self, reader):
         dialog_id = reader.read_int32()
-        speaker_name = reader.read_name_skip_1()
-        sound_file = reader.read_name_skip_1()
-        count_14 = reader.read_int32()
-
         dbg_print(self.ident*"  " + "- dialog_id =", dialog_id)
+
+        speaker_name = reader.read_name_skip_1()
         dbg_print(self.ident*"  " + "- speaker_name =", speaker_name)
+        
+        sound_file = reader.read_name_skip_1()
         dbg_print(self.ident*"  " + "- sound_file =", sound_file)
+        
+        count_14 = reader.read_int32()
         dbg_print(self.ident*"  " + "- count_14 =", count_14)
 
         sdt_block_1=dict(
@@ -511,7 +508,7 @@ class SdtWriter:
 
     def _write_block_2(self, sdt_block, writer):
         blend_mode = sdt_block['blend_mode']
-        color = sdt_block['color']
+        color = int(sdt_block['color'], 0)
         duration = sdt_block['duration']
 
         writer.write_byte(blend_mode)
@@ -657,6 +654,9 @@ def main():
                 with open(jsonfile_path, "wb") as f:
                     f.write(jsondata.encode("utf-8"))
                     print("wrote to", jsonfile_path)
+
+            else:
+                print(jsondata)
             
         elif args.encode:
 

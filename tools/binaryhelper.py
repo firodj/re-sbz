@@ -9,6 +9,10 @@ try:
 except LookupError:
     _shift_jis = codecs.lookup('cp932')
 
+def red_print(*args, **kwargs):
+    print("\033[31m", end='')
+    print(*args)
+    print("\033[0m", end='')
 
 def _decrypt_name(buf: bytes) -> str:
     if len(buf) < 1:
@@ -17,17 +21,21 @@ def _decrypt_name(buf: bytes) -> str:
     decoded_data, consumed = _shift_jis.decode(decrypted)
     result = decoded_data.rstrip('\x00')
 
-    # data_1 = len(buf)
-    # data_2 = len(decoded_data)
-    # data_3 = len(result)
+    data_1 = len(buf)
+    data_2 = len(decoded_data)
+    data_3 = len(result)
 
-    # test = _encrypt_name(result)
-    # data_4 = len(test)
+    test = _encrypt_name(result)
+    data_4 = len(test)
 
-    # print(data_1, data_2, data_3, data_4)
+    if data_1 != data_4:
+        red_print(">>", data_1, data_2, data_3, data_4)
+        red_print(">> buf =", repr(buf))
+        red_print(">> decoded_data =", repr(decoded_data))
+
+        #raise Exception("data_1 not same with data_4")
     
     return result
-
 
 def _encrypt_name(name: str) -> bytes:
     if len(name) < 1:
@@ -39,7 +47,6 @@ def _encrypt_name(name: str) -> bytes:
     for i in range(len(encrypted)):
         encrypted[i] = ~encrypted[i] & 0xFF
     return bytes(encrypted)
-
 
 def _encrypt_name_fixed(name: str, length: int) -> bytes:
     encrypted = bytearray(length)
@@ -168,3 +175,16 @@ class BinaryWriter:
         self.write_single(q[1])
         self.write_single(q[2])
         self.write_single(q[3])
+
+if __name__ == '__main__':
+    import json
+
+    buf = b'\xff\xff'
+    out = _decrypt_name(buf)
+
+    adict = dict(name=out)
+
+    print(repr(buf))
+    print(repr(out))
+
+    print(json.dumps(adict, indent=4, ensure_ascii=False))
