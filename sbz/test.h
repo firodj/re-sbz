@@ -7,7 +7,7 @@ struct Cebol {
 };
 
 
-struct __fixed Cabal {
+struct __fixed CSBZGlobal {
     int cabal[20];
     Cebol cebol;
 };

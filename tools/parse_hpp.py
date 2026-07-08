@@ -1,3 +1,5 @@
+import json
+
 msvc_keywords = {'__int64'}
 
 from cxxheaderparser.lexer import PlyLexer
@@ -13,7 +15,7 @@ CxxParser._pqname_start_tokens |= msvc_keywords
 from cxxheaderparser.simple import parse_file
 from cxxheaderparser.options import ParserOptions
 from cxxheaderparser.preprocessor import PreprocessorError, make_pcpp_preprocessor
-from cxxheaderparser.types import Type, Pointer, Array, AnonymousName, FundamentalSpecifier, NameSpecifier
+from cxxheaderparser.types import Type, Pointer, Array, FunctionType, AnonymousName,  FundamentalSpecifier, NameSpecifier
 
 import os, sys, io
 import re
@@ -226,9 +228,12 @@ class HxxParser:
         self.classes = dict()
         self.typedefs = dict()
         self.fundamental = {
+            'void': 0,
             '_BYTE': 1,
+
+            'bool': 1,
             'int': 4,
-            'unsigned int': 4,
+            'unsigned int': 4 ,
             'char': 1,
             'float': 4,
             'short': 2,
@@ -299,33 +304,45 @@ class HxxParser:
             k = t.name
             self.typedefs[k] = t
         
-    def calc_type(self, name, classkey=None):
+    def calc_type(self, name):
         try:
             self.depth += 1
 
             if name in self.typedefs:
-                return self.calc_typedef(name)
+                return self._calc_typedef(name)
                 
             elif name in self.classes:
-                return self.calc_class(name, classkey)
+                return self._calc_class(name)
 
             elif name in self.fundamental:
-                return self.fundamental[name]
+                return dict(kind='fundamental', name=name, size=self.fundamental[name])
 
             else:
                 raise NotImplementedError(f"Unknown how to calc {name}")
         finally:
             self.depth -= 1
+    
+    def _skim_type(self, name):
+        if name in self.typedefs:
+            return dict(kind='typedef', name=name)
+            
+        elif name in self.classes:
+            return dict(kind='class', name=name)
 
-    def calc_field(self, field_type):
+        elif name in self.fundamental:
+            return dict(kind='fundamental', name=name)
+
+        else:
+            raise NotImplementedError(f"Unknown not found to skim name {name}")
+
+    def _skim_field(self, field_type):
         if isinstance(field_type, Pointer):
-            # field_type.pointer_of
-            return self.ptr_size
-
+            ptr_to = self._skim_field(field_type.ptr_to)
+            return dict(kind='pointer', ptr_to=ptr_to)
         elif isinstance(field_type, Type):
             if len(field_type.typename.segments) != 1:
                 raise NotImplementedError("expected segments should be 1")
-            classkey = field_type.typename.classkey
+            #classkey = field_type.typename.classkey
             typename = field_type.typename.segments[0]
 
             # if isinstance(typename, NameSpecifier):
@@ -335,43 +352,80 @@ class HxxParser:
             # else:
             #     print(field_type)
 
-            return self.calc_type(typename.format(), classkey)
+            return self._skim_type(typename.format())
+        elif isinstance(field_type, FunctionType):
+            return_type = self._skim_field(field_type.return_type)
+            parameters = [self._skim_field(param.type) for param in field_type.parameters]
+            return dict(kind='function', msvc_convention=field_type.msvc_convention, return_type=return_type, parameters=parameters)
+        else:
+            raise NotImplementedError(f"unknown how to skim type {type(field_type)}")
+
+    def _calc_field(self, field_type):
+        if isinstance(field_type, Pointer):
+            ptr_to = self._skim_field(field_type.ptr_to)
+            return dict(size=self.ptr_size, kind='pointer', ptr_to=ptr_to)
+
+        elif isinstance(field_type, Type):
+            if len(field_type.typename.segments) != 1:
+                raise NotImplementedError("expected segments should be 1")
+            #classkey = field_type.typename.classkey
+            typename = field_type.typename.segments[0]
+
+            # if isinstance(typename, NameSpecifier):
+            #     pass
+            # elif isinstance(typename, FundamentalSpecifier):
+            #     pass
+            # else:
+            #     print(field_type)
+
+            return self.calc_type(typename.format())
    
         elif isinstance(field_type, Array):
-            size = self.calc_field(field_type.array_of)
-            
+            array_of = self._calc_field(field_type.array_of)
+            array_size = array_of['size']
+
             count = int(field_type.size.format(), 0)
-            return count * size
+
+            return dict(kind='array', size=count * array_size, count=count, array_of=array_of)
 
         else:
             raise NotImplementedError(f"unknown how to calc type {type(field_type)}")
 
-    def calc_typedef(self, name):
-        return self.calc_field(self.typedefs[name].type)
+    def _calc_typedef(self, name):
+        type = self._calc_field(self.typedefs[name].type)
+        return dict(kind='typedef', name=name, type=type, size=type['size'])
 
-    def calc_class(self, name, classkey = None):
+    def _calc_class(self, name):
         fields = self.classes[name].fields
+        classkey = self.classes[name].class_decl.typename.classkey
+
         sizes = []
         is_union = classkey == 'union'
         offs = 0
+        field_infos = []
         for i,field in enumerate(fields):
 
-            print("  "*self.depth, hex(offs), i, field.name, type(field.type))
+            #print("  "*self.depth, hex(offs), i, field.name, type(field.type))
+           
+            type_info = self._calc_field(field.type)
+            field_size = type_info['size']
             
-            field_size = self.calc_field(field.type)
+            field_info=dict(offs=offs, name=field.name, size=field_size, type=type_info)
+            field_infos.append(field_info)
+
             sizes.append(field_size)
 
             if not is_union:
                 offs += field_size
         
         if len(sizes) == 0:
-            return 0
+            return dict(kind='class', name=name, classkey=classkey, fields=field_infos, size=0)
 
         if is_union:
             # Todo check
-            return sizes[0]
+            return dict(kind='class', name=name, classkey=classkey, fields=field_infos, size=sizes[0])
         
-        return sum(sizes)
+        return dict(kind='class', name=name, classkey=classkey, fields=field_infos, size=sum(sizes))
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
@@ -381,14 +435,14 @@ if __name__ == '__main__':
     hxxparser = HxxParser()
     hxxparser.parse(sys.argv[1])
 
-    size = hxxparser.calc_type('D3DMATRIX')
-    print('D3DMATRIX', size, hex(size))
+    namez = [
+        'D3DMATRIX',
+        'SBSpecialScene',
+        'CSBZGlobal',
+    ][2]
 
-    size = hxxparser.calc_type('SBSpecialScene')
-    print('SBSpecialScene', size, hex(size))
-
-    size = hxxparser.calc_type('CSBZGlobal')
-    print('CSBZGlobal', size, hex(size))
+    info = hxxparser.calc_type(namez)
+    print(namez, json.dumps(info, indent=4))
 
     # size = hxxparser.calc_type('Cebol')
     # print('Cebol', size)
