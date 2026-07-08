@@ -539,6 +539,9 @@ class xxFrame:
     def __str__(self):
         return self.Name
 
+class xxHeader:
+    def __init__(self):
+        pass
 
 class xxParser:
     """Parser for .xx files."""
@@ -560,18 +563,22 @@ class xxParser:
         
         # Determine format
         self.Format = 0
-        format_buf = reader.read_bytes(5)
         
-        if (format_buf[0] >= 0x01) and (struct.unpack('<i', format_buf[1:5])[0] == 0):
-            self.Format = struct.unpack('<i', format_buf[0:4])[0]
+        #format_buf = reader.read_bytes(5)
+        format_0 = reader.read_uint32()
+        format_4_skip = reader.read_byte()
+
+        if format_0 < 0x100:
+            self.Format = format_0
         else:
-            id_val = struct.unpack('<I', format_buf[0:4])[0]
+            id_val = format_0
             float_ids = [
                 0x3F8F5C29, 0x3F90A3D7, 0x3F91EB85, 0x3F933333,
                 0x3F947AE1, 0x3F95C28F, 0x3F970A3D, 0x3F99999A,
                 0x3FA66666, 0x3FB33333
             ]
             if id_val in float_ids:
+                float_ver = round(struct.unpack('f', struct.pack('I', id_val))[0], 2) 
                 self.Format = -1
         
         # Read header
@@ -579,12 +586,18 @@ class xxParser:
             header_buf_len = 26
         else:
             header_buf_len = 21
+
+        scnobj_field_0 = reader.read_uint32()
+        scnobj_byte_214 = reader.read_byte()
+        scnobj_field_1C3D8 = reader.read_uint32()
         
-        header_buf = bytearray(header_buf_len)
-        header_buf[0:len(format_buf)] = format_buf
-        remaining = reader.read_bytes(header_buf_len - len(format_buf))
-        header_buf[len(format_buf):] = remaining
-        self.Header = bytes(header_buf)
+        #remaining = reader.read_bytes(header_buf_len - 5)
+
+        scnobj_fog_start = reader.read_single()
+        scnobj_fog_end = reader.read_single()
+        scnobj_fog_color = reader.read_single()
+
+        #self.Header = format_buf + remaining
         
         # Parse frame
         self.Frame = self._parse_frame(reader)
@@ -827,9 +840,10 @@ if __name__ == "__main__":
     load_dotenv()
 
     appdir = os.getenv('APPDIR')
-
-    # Example of how to use the parser
-    with open(os.path.join(appdir, 'out/sb03_00/mannequin_00.xx'), "rb") as f:
+    xxfilename = 'out/sb03_00/mannequin_00.xx'
+    print("File:", xxfilename)
+    # Example of how to use the parser 
+    with open(os.path.join(appdir, xxfilename), "rb") as f:
         parser = xxParser(f, "mannequin_00.xx")
         print(f"Format: {parser.Format}")
         print(f"Frame: {parser.Frame}")

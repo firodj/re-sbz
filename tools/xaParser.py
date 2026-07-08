@@ -661,9 +661,10 @@ if __name__ == "__main__":
     load_dotenv()
 
     appdir = os.getenv('APPDIR')
-
+    xafilename = 'out/sb03_00/hand_body_L_00.xa'
+    print("File:", xafilename)
     # Example of how to use the parser
-    with open(os.path.join(appdir, 'out/sb03_00/hand_body_L_00.xa'), "rb") as f:
+    with open(os.path.join(appdir, xafilename), "rb") as f:
         parser = xaParser(f, "hand_body_L_00.xa")
         print(f"Format: {parser.Format}")
         #print(f"MaterialSection: {parser.MaterialSection}")

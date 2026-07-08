@@ -345,3 +345,59 @@
     defer to the secondary transition buffer (ArrObj2C_3D8) so the fade can animate before the scene change takes effect.
 
     Want me to apply these renames in IDA?
+
+.....
+
+  Analysis: sub_6FAFA0
+
+  Signature (from stack frame)
+
+  void __cdecl UpdateWorldMatricesRecursive(
+      CSceneObjectTemp*    pScnObj,        // [esp+0x14] - scene object
+      CScnSubObject_21C*   pSubObjRoot,    // [esp+0x18] - root sub-object
+      D3DMATRIX            parentMatrix    // [esp+0x1C] - parent world matrix (by value!)
+  );
+
+  Stack Frame
+
+  ┌────────┬─────────────┬────────────────────┬────────────────────────────────────────────┐
+  │ Offset │    Name     │        Type        │                Description                 │
+  ├────────┼─────────────┼────────────────────┼────────────────────────────────────────────┤
+  │ -0x0C  │ var_4       │ int                │ pSubObjRoot + 0x54 (matrix pointer)        │
+  ├────────┼─────────────┼────────────────────┼────────────────────────────────────────────┤
+  │ -0x08  │ var_8       │ int                │ Loop counter (child index)                 │
+  ├────────┼─────────────┼────────────────────┼────────────────────────────────────────────┤
+  │ -0x04  │ pSubObj21C  │ CScnFrame_21C*     │ Current child being processed              │
+  ├────────┼─────────────┼────────────────────┼────────────────────────────────────────────┤
+  │ +0x14  │ pScnObj     │ CSceneObjectTemp*  │ Scene object context                       │
+  ├────────┼─────────────┼────────────────────┼────────────────────────────────────────────┤
+  │ +0x18  │ sub_21C_218 │ CScnFrame_21C*     │ Root sub-object (has child count at +8)    │
+  ├────────┼─────────────┼────────────────────┼────────────────────────────────────────────┤
+  │ +0x1C  │ mat4x4      │ D3DMATRIX          │ Parent matrix (64 bytes, passed by value!) │
+  └────────┴─────────────┴────────────────────┴────────────────────────────────────────────┘
+
+  Logic Flow
+```cpp
+  void UpdateWorldMatricesRecursive(CSceneObjectTemp* pScnObj,
+                                    CScnSubObject_21C* pRoot,
+                                    D3DMATRIX parentMatrix) {
+      // 1. Get this node's local matrix pointer (at offset 0x54 in CScnSubObject_21C)
+      D3DMATRIX* pLocalMatrix = &pRoot->localMatrix;  // pRoot + 0x54
+
+      // 2. Compute world matrix: world = local * parent
+      D3DMATRIX worldMatrix;
+      D3DXMatrixMultiply(&worldMatrix, pLocalMatrix, &parentMatrix);
+
+      // 3. Get first child (at offset 0x0C in CScnSubObject_21C)
+      CScnFrame_21C* pChild = pRoot->pFirstChild;  // pRoot + 0x0C
+
+      // 4. Iterate children (count at offset 0x08)
+      for (int i = 0; i < pRoot->childCount; ++i) {    // pRoot + 0x08
+          // 5. RECURSIVE CALL with computed world matrix as new parent
+          UpdateWorldMatricesRecursive(pScnObj, pChild, worldMatrix);
+
+          // 6. Advance to next sibling (stride = 0x21C = sizeof(CScnSubObject_21C))
+          pChild = (CScnFrame_21C*)((BYTE*)pChild + 0x21C);
+      }
+  }
+```
