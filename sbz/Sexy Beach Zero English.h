@@ -69,6 +69,7 @@ struct _devicemodeA;
 struct tagWNDCLASSEXA;
 struct HICON__;
 struct HBRUSH__;
+struct RTTIBaseClassDescriptor;
 struct RTTIBaseClassArray;
 struct tagCHOOSEFONTA;
 struct HBITMAP__;
@@ -77,15 +78,15 @@ struct CPackItem;
 struct _OFSTRUCT;
 struct SBLogoScene;
 struct CStructImage2D_80;
+struct IDirect3DDevice9Vtbl;
 struct _D3DDEVICE_CREATION_PARAMETERS;
 struct _D3DPRESENT_PARAMETERS_;
 struct _D3DDISPLAYMODE;
 struct _D3DCAPS9;
 struct _D3DVIEWPORT9;
-struct _D3DMATRIX;
 struct _D3DMATERIAL9;
-struct _D3DLIGHT9;
 struct _D3DGAMMARAMP;
+struct CHeapAllocator;
 struct IHeapAllocatorVtbl;
 struct CAtlStringMgr;
 struct IAtlStringMgrVtbl;
@@ -99,7 +100,6 @@ struct IISE_SceneEndEffect_CommonVtbl;
 struct IDirect3DDevice9;
 struct IDirect3DTexture9;
 struct IDirect3DTexture9Vtbl;
-struct _D3DSURFACE_DESC;
 struct IDirect3DSurface9;
 struct IDirect3DSurface9Vtbl;
 struct _D3DLOCKED_RECT;
@@ -128,13 +128,11 @@ struct _DIACTIONA;
 struct _DIDEVICEIMAGEINFOHEADERA;
 struct _DIDEVICEIMAGEINFOA;
 struct CBPTestScene;
-struct CCameraCalc;
 struct SBNightShopScene;
 struct CSB_ThreadCtrl;
 struct ICameraCalcVtbl;
 struct CSB_GameInfo;
 struct ICSB_GameInfoVtbl;
-struct CSB_PersonalData;
 struct ICSB_PersonalDataVtbl;
 struct ICSB_PossessionCtrlVtbl;
 struct ICSB_PlayerDataVtbl;
@@ -148,9 +146,11 @@ struct ICDlgCtrlVtbl;
 struct ICOSTextBaseVtbl;
 struct ICOSTextLineVtbl;
 struct ICCameraKeyCfgVtbl;
+struct CCameraNormal;
 struct ICCameraNormalVtbl;
 struct ICCameraKeyParamVtbl;
 struct ICCameraInfoVtbl;
+struct D3DXVECTOR4;
 struct CIS_TestScene;
 struct ICIS_TestSceneVtbl;
 struct ICSB_CameraNormalVtbl;
@@ -163,9 +163,17 @@ struct CDisplayAdapterItem;
 struct ICSYSTEMINFOVtbl;
 struct ICSysInfoDlgVtbl;
 struct _DDSCAPS2;
+struct ID3DXEffect;
+struct D3DXEFFECT_DESC;
+struct D3DXPASS_DESC;
+struct D3DXPARAMETER_DESC;
+struct D3DXTECHNIQUE_DESC;
+struct D3DXFUNCTION_DESC;
 struct ID3DXEffectVtbl;
 struct ISBPlaySceneVtbl;
 struct ID3DXFont;
+struct D3DXFONT_DESCA;
+struct D3DXFONT_DESCW;
 struct ID3DXFontVtbl;
 struct ICISE_OilHandSelectIconCtrl;
 struct CStructImage_5C;
@@ -179,6 +187,7 @@ struct CSB_Path;
 struct ICSB_PathVtbl;
 struct CSB_Sound;
 struct ICSB_SoundVtbl;
+struct CDXSoundBuffer;
 struct ICDXSoundBufferVtbl;
 struct ICDXSoundBufferFXVtb;
 struct CSB_Setting;
@@ -190,6 +199,7 @@ struct CSB_DateTestScene;
 struct COggVorbisFile;
 struct ICWaveFileVtbl;
 struct ISoundFileVtbl;
+struct tWAVEFORMATEX;
 struct ICISE_Object_MapVtbl;
 struct CSceneObjectTemp;
 struct CDXSnd;
@@ -213,7 +223,6 @@ struct CStructCollission_30;
 union ColHitType;
 struct CIME_Manager;
 struct SBMainMapScene;
-struct KK_Font;
 struct CScnFrame_21C;
 struct CScnSubObject_F4;
 struct CScnMaterialSect_58;
@@ -297,6 +306,7 @@ struct CMuneStruct_9B50;
 struct CTCTestTTY;
 struct CSpringCtrl;
 struct CBoneSwayHistory;
+struct CHistoryBase;
 struct ICHistoryBaseVtbl;
 struct ICTimeHistoryBaseVtbl;
 struct ICBoneSwayHistoryVtbl;
@@ -312,6 +322,7 @@ struct CVertexColorStruct_18;
 struct CVcsInfo;
 struct CVertexInfo;
 struct CSB_CosCtrl;
+struct CClothHairCol;
 struct ICIS_OilDataCheckSceneCtrlVtbl;
 struct COilCheckStruct_20;
 struct CCosCtrlStruct_C;
@@ -947,6 +958,47 @@ struct IUnknown
 };
 #pragma pack(pop)
 
+/* 68 */
+#pragma pack(push, 8)
+struct IDispatch
+{
+  struct IDispatchVtbl *lpVtbl;
+};
+#pragma pack(pop)
+
+/* 85 */
+#pragma pack(push, 8)
+struct tagSAFEARRAYBOUND
+{
+  ULONG cElements;
+  LONG lLbound;
+};
+#pragma pack(pop)
+
+/* 84 */
+typedef struct tagSAFEARRAYBOUND SAFEARRAYBOUND;
+
+/* 129 */
+#pragma pack(push, 8)
+struct tagSAFEARRAY
+{
+  USHORT cDims;
+  USHORT fFeatures;
+  ULONG cbElements;
+  ULONG cLocks;
+  PVOID pvData;
+  SAFEARRAYBOUND rgsabound[1];
+};
+#pragma pack(pop)
+
+/* 138 */
+#pragma pack(push, 8)
+struct IRecordInfo
+{
+  struct IRecordInfoVtbl *lpVtbl;
+};
+#pragma pack(pop)
+
 /* 67 */
 typedef int HRESULT;
 
@@ -957,14 +1009,6 @@ struct IUnknownVtbl
   HRESULT (__stdcall *QueryInterface)(IUnknown *This, const IID *const riid, void **ppvObject);
   ULONG (__stdcall *AddRef)(IUnknown *This);
   ULONG (__stdcall *Release)(IUnknown *This);
-};
-#pragma pack(pop)
-
-/* 68 */
-#pragma pack(push, 8)
-struct IDispatch
-{
-  struct IDispatchVtbl *lpVtbl;
 };
 #pragma pack(pop)
 
@@ -994,11 +1038,70 @@ struct IDispatchVtbl
 };
 #pragma pack(pop)
 
+/* 140 */
+typedef const OLECHAR *LPCOLESTR;
+
+/* 127 */
+typedef int BOOL;
+
+/* 139 */
+#pragma pack(push, 8)
+struct IRecordInfoVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IRecordInfo *This, const IID *const riid, void **ppvObject);
+  ULONG (__stdcall *AddRef)(IRecordInfo *This);
+  ULONG (__stdcall *Release)(IRecordInfo *This);
+  HRESULT (__stdcall *RecordInit)(IRecordInfo *This, PVOID pvNew);
+  HRESULT (__stdcall *RecordClear)(IRecordInfo *This, PVOID pvExisting);
+  HRESULT (__stdcall *RecordCopy)(IRecordInfo *This, PVOID pvExisting, PVOID pvNew);
+  HRESULT (__stdcall *GetGuid)(IRecordInfo *This, GUID *pguid);
+  HRESULT (__stdcall *GetName)(IRecordInfo *This, BSTR *pbstrName);
+  HRESULT (__stdcall *GetSize)(IRecordInfo *This, ULONG *pcbSize);
+  HRESULT (__stdcall *GetTypeInfo)(IRecordInfo *This, ITypeInfo **ppTypeInfo);
+  HRESULT (__stdcall *GetField)(IRecordInfo *This, PVOID pvData, LPCOLESTR szFieldName, VARIANT *pvarField);
+  HRESULT (__stdcall *GetFieldNoCopy)(IRecordInfo *This, PVOID pvData, LPCOLESTR szFieldName, VARIANT *pvarField, PVOID *ppvDataCArray);
+  HRESULT (__stdcall *PutField)(IRecordInfo *This, ULONG wFlags, PVOID pvData, LPCOLESTR szFieldName, VARIANT *pvarField);
+  HRESULT (__stdcall *PutFieldNoCopy)(IRecordInfo *This, ULONG wFlags, PVOID pvData, LPCOLESTR szFieldName, VARIANT *pvarField);
+  HRESULT (__stdcall *GetFieldNames)(IRecordInfo *This, ULONG *pcNames, BSTR *rgBstrNames);
+  BOOL (__stdcall *IsMatchingType)(IRecordInfo *This, IRecordInfo *pRecordInfo);
+  PVOID (__stdcall *RecordCreate)(IRecordInfo *This);
+  HRESULT (__stdcall *RecordCreateCopy)(IRecordInfo *This, PVOID pvSource, PVOID *ppvDest);
+  HRESULT (__stdcall *RecordDestroy)(IRecordInfo *This, PVOID pvRecord);
+};
+#pragma pack(pop)
+
 /* 70 */
 #pragma pack(push, 8)
 struct ITypeInfo
 {
   struct ITypeInfoVtbl *lpVtbl;
+};
+#pragma pack(pop)
+
+/* 118 */
+#pragma pack(push, 8)
+struct tagDISPPARAMS
+{
+  VARIANTARG *rgvarg;
+  DISPID *rgdispidNamedArgs;
+  UINT cArgs;
+  UINT cNamedArgs;
+};
+#pragma pack(pop)
+
+/* 120 */
+#pragma pack(push, 8)
+struct tagEXCEPINFO
+{
+  WORD wCode;
+  WORD wReserved;
+  BSTR bstrSource;
+  BSTR bstrDescription;
+  BSTR bstrHelpFile;
+  DWORD dwHelpContext;
+  PVOID pvReserved;
+  HRESULT (__stdcall *pfnDeferredFillIn)(struct tagEXCEPINFO *);
+  SCODE scode;
 };
 #pragma pack(pop)
 
@@ -1144,72 +1247,11 @@ struct tagTYPEATTR
 };
 #pragma pack(pop)
 
-/* 85 */
-#pragma pack(push, 8)
-struct tagSAFEARRAYBOUND
-{
-  ULONG cElements;
-  LONG lLbound;
-};
-#pragma pack(pop)
-
-/* 84 */
-typedef struct tagSAFEARRAYBOUND SAFEARRAYBOUND;
-
-/* 82 */
-#pragma pack(push, 8)
-struct tagARRAYDESC
-{
-  TYPEDESC tdescElem;
-  USHORT cDims;
-  SAFEARRAYBOUND rgbounds[1];
-};
-#pragma pack(pop)
-
 /* 90 */
 #pragma pack(push, 8)
 struct ITypeComp
 {
   struct ITypeCompVtbl *lpVtbl;
-};
-#pragma pack(pop)
-
-/* 93 */
-enum tagDESCKIND
-{
-  DESCKIND_NONE = 0x0,
-  DESCKIND_FUNCDESC = 0x1,
-  DESCKIND_VARDESC = 0x2,
-  DESCKIND_TYPECOMP = 0x3,
-  DESCKIND_IMPLICITAPPOBJ = 0x4,
-  DESCKIND_MAX = 0x5,
-};
-
-/* 92 */
-typedef enum tagDESCKIND DESCKIND;
-
-/* 94 */
-typedef union tagBINDPTR BINDPTR;
-
-/* 91 */
-#pragma pack(push, 8)
-struct ITypeCompVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(ITypeComp *This, const IID *const riid, void **ppvObject);
-  ULONG (__stdcall *AddRef)(ITypeComp *This);
-  ULONG (__stdcall *Release)(ITypeComp *This);
-  HRESULT (__stdcall *Bind)(ITypeComp *This, LPOLESTR szName, ULONG lHashVal, WORD wFlags, ITypeInfo **ppTInfo, DESCKIND *pDescKind, BINDPTR *pBindPtr);
-  HRESULT (__stdcall *BindType)(ITypeComp *This, LPOLESTR szName, ULONG lHashVal, ITypeInfo **ppTInfo, ITypeComp **ppTComp);
-};
-#pragma pack(pop)
-
-/* 95 */
-#pragma pack(push, 8)
-union tagBINDPTR
-{
-  FUNCDESC *lpfuncdesc;
-  VARDESC *lpvardesc;
-  ITypeComp *lptcomp;
 };
 #pragma pack(pop)
 
@@ -1306,15 +1348,6 @@ struct tagFUNCDESC
 };
 #pragma pack(pop)
 
-/* 104 */
-#pragma pack(push, 8)
-struct tagPARAMDESCEX
-{
-  ULONG cBytes;
-  VARIANTARG varDefaultValue;
-};
-#pragma pack(pop)
-
 /* 113 */
 #pragma pack(push, 8)
 union tagVARDESC::$E6274BD6A7149C9CC2413444FF769F0B
@@ -1355,33 +1388,6 @@ struct tagVARDESC
 };
 #pragma pack(pop)
 
-/* 118 */
-#pragma pack(push, 8)
-struct tagDISPPARAMS
-{
-  VARIANTARG *rgvarg;
-  DISPID *rgdispidNamedArgs;
-  UINT cArgs;
-  UINT cNamedArgs;
-};
-#pragma pack(pop)
-
-/* 120 */
-#pragma pack(push, 8)
-struct tagEXCEPINFO
-{
-  WORD wCode;
-  WORD wReserved;
-  BSTR bstrSource;
-  BSTR bstrDescription;
-  BSTR bstrHelpFile;
-  DWORD dwHelpContext;
-  PVOID pvReserved;
-  HRESULT (__stdcall *pfnDeferredFillIn)(struct tagEXCEPINFO *);
-  SCODE scode;
-};
-#pragma pack(pop)
-
 /* 121 */
 #pragma pack(push, 8)
 struct ITypeLib
@@ -1390,11 +1396,56 @@ struct ITypeLib
 };
 #pragma pack(pop)
 
+/* 82 */
+#pragma pack(push, 8)
+struct tagARRAYDESC
+{
+  TYPEDESC tdescElem;
+  USHORT cDims;
+  SAFEARRAYBOUND rgbounds[1];
+};
+#pragma pack(pop)
+
+/* 93 */
+enum tagDESCKIND
+{
+  DESCKIND_NONE = 0x0,
+  DESCKIND_FUNCDESC = 0x1,
+  DESCKIND_VARDESC = 0x2,
+  DESCKIND_TYPECOMP = 0x3,
+  DESCKIND_IMPLICITAPPOBJ = 0x4,
+  DESCKIND_MAX = 0x5,
+};
+
+/* 92 */
+typedef enum tagDESCKIND DESCKIND;
+
+/* 94 */
+typedef union tagBINDPTR BINDPTR;
+
+/* 91 */
+#pragma pack(push, 8)
+struct ITypeCompVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(ITypeComp *This, const IID *const riid, void **ppvObject);
+  ULONG (__stdcall *AddRef)(ITypeComp *This);
+  ULONG (__stdcall *Release)(ITypeComp *This);
+  HRESULT (__stdcall *Bind)(ITypeComp *This, LPOLESTR szName, ULONG lHashVal, WORD wFlags, ITypeInfo **ppTInfo, DESCKIND *pDescKind, BINDPTR *pBindPtr);
+  HRESULT (__stdcall *BindType)(ITypeComp *This, LPOLESTR szName, ULONG lHashVal, ITypeInfo **ppTInfo, ITypeComp **ppTComp);
+};
+#pragma pack(pop)
+
+/* 104 */
+#pragma pack(push, 8)
+struct tagPARAMDESCEX
+{
+  ULONG cBytes;
+  VARIANTARG varDefaultValue;
+};
+#pragma pack(pop)
+
 /* 123 */
 typedef struct tagTLIBATTR TLIBATTR;
-
-/* 127 */
-typedef int BOOL;
 
 /* 122 */
 #pragma pack(push, 8)
@@ -1413,6 +1464,16 @@ struct ITypeLibVtbl
   HRESULT (__stdcall *IsName)(ITypeLib *This, LPOLESTR szNameBuf, ULONG lHashVal, BOOL *pfName);
   HRESULT (__stdcall *FindName)(ITypeLib *This, LPOLESTR szNameBuf, ULONG lHashVal, ITypeInfo **ppTInfo, MEMBERID *rgMemId, USHORT *pcFound);
   void (__stdcall *ReleaseTLibAttr)(ITypeLib *This, TLIBATTR *pTLibAttr);
+};
+#pragma pack(pop)
+
+/* 95 */
+#pragma pack(push, 8)
+union tagBINDPTR
+{
+  FUNCDESC *lpfuncdesc;
+  VARDESC *lpvardesc;
+  ITypeComp *lptcomp;
 };
 #pragma pack(pop)
 
@@ -1438,56 +1499,6 @@ struct tagTLIBATTR
   WORD wMajorVerNum;
   WORD wMinorVerNum;
   WORD wLibFlags;
-};
-#pragma pack(pop)
-
-/* 129 */
-#pragma pack(push, 8)
-struct tagSAFEARRAY
-{
-  USHORT cDims;
-  USHORT fFeatures;
-  ULONG cbElements;
-  ULONG cLocks;
-  PVOID pvData;
-  SAFEARRAYBOUND rgsabound[1];
-};
-#pragma pack(pop)
-
-/* 138 */
-#pragma pack(push, 8)
-struct IRecordInfo
-{
-  struct IRecordInfoVtbl *lpVtbl;
-};
-#pragma pack(pop)
-
-/* 140 */
-typedef const OLECHAR *LPCOLESTR;
-
-/* 139 */
-#pragma pack(push, 8)
-struct IRecordInfoVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IRecordInfo *This, const IID *const riid, void **ppvObject);
-  ULONG (__stdcall *AddRef)(IRecordInfo *This);
-  ULONG (__stdcall *Release)(IRecordInfo *This);
-  HRESULT (__stdcall *RecordInit)(IRecordInfo *This, PVOID pvNew);
-  HRESULT (__stdcall *RecordClear)(IRecordInfo *This, PVOID pvExisting);
-  HRESULT (__stdcall *RecordCopy)(IRecordInfo *This, PVOID pvExisting, PVOID pvNew);
-  HRESULT (__stdcall *GetGuid)(IRecordInfo *This, GUID *pguid);
-  HRESULT (__stdcall *GetName)(IRecordInfo *This, BSTR *pbstrName);
-  HRESULT (__stdcall *GetSize)(IRecordInfo *This, ULONG *pcbSize);
-  HRESULT (__stdcall *GetTypeInfo)(IRecordInfo *This, ITypeInfo **ppTypeInfo);
-  HRESULT (__stdcall *GetField)(IRecordInfo *This, PVOID pvData, LPCOLESTR szFieldName, VARIANT *pvarField);
-  HRESULT (__stdcall *GetFieldNoCopy)(IRecordInfo *This, PVOID pvData, LPCOLESTR szFieldName, VARIANT *pvarField, PVOID *ppvDataCArray);
-  HRESULT (__stdcall *PutField)(IRecordInfo *This, ULONG wFlags, PVOID pvData, LPCOLESTR szFieldName, VARIANT *pvarField);
-  HRESULT (__stdcall *PutFieldNoCopy)(IRecordInfo *This, ULONG wFlags, PVOID pvData, LPCOLESTR szFieldName, VARIANT *pvarField);
-  HRESULT (__stdcall *GetFieldNames)(IRecordInfo *This, ULONG *pcNames, BSTR *rgBstrNames);
-  BOOL (__stdcall *IsMatchingType)(IRecordInfo *This, IRecordInfo *pRecordInfo);
-  PVOID (__stdcall *RecordCreate)(IRecordInfo *This);
-  HRESULT (__stdcall *RecordCreateCopy)(IRecordInfo *This, PVOID pvSource, PVOID *ppvDest);
-  HRESULT (__stdcall *RecordDestroy)(IRecordInfo *This, PVOID pvRecord);
 };
 #pragma pack(pop)
 
@@ -2684,6 +2695,12 @@ struct RTTIClassHierarchyDescriptor
   RTTIBaseClassArray *pBaseClassArray;
 };
 
+/* 340 */
+struct RTTIBaseClassArray
+{
+  RTTIBaseClassDescriptor *arrayOfBaseClassDescriptors[];
+};
+
 /* 339 */
 struct RTTIBaseClassDescriptor
 {
@@ -2694,12 +2711,6 @@ struct RTTIBaseClassDescriptor
   int vdisp;
   int attributes;
   RTTIClassHierarchyDescriptor *pClassDescriptor;
-};
-
-/* 340 */
-struct RTTIBaseClassArray
-{
-  RTTIBaseClassDescriptor *arrayOfBaseClassDescriptors[];
 };
 
 /* 341 */
@@ -2803,6 +2814,7 @@ struct __fixed CSceneCallbacks
 {
   int nID;
   char bEnableAnaglyph;
+  char _gap5[3];
   bool (__cdecl *pfnNew_08)(CSBZGlobal *);
   bool (__cdecl *pfnMainScene_0C)(CSBZGlobal *);
   bool (__cdecl *pfnChildScene_10)(CSBZGlobal *);
@@ -2820,7 +2832,7 @@ struct __fixed CSceneEntry
   char bKilled;
   char nChildCount;
   char childIndices[10];
-  char field_D;
+  char _gapD[3];
   CSceneCallbacks cb;
 };
 
@@ -2831,11 +2843,11 @@ struct CSceneStack
   char nCount;
   char nTopIdx;
   char nPhase;
-  _BYTE gap3;
+  char _gap3;
   CSceneEntry scenes[10];
-  void *pfnPreFrame;
-  int pfnPostUpdate;
-  int pfnPostUpdate2;
+  bool (__cdecl *pfnPreFrame)(CSBZGlobal *pSBZGlobal_a1);
+  bool (__cdecl *pfnPostUpdate)(CSBZGlobal *);
+  bool (__cdecl *pfnPostUpdate2)(CSBZGlobal *);
   bool (__cdecl *pfnMidRender)(CSBZGlobal *);
   bool (__cdecl *pfnPostRender)(CSBZGlobal *);
   char bFrameDirty;
@@ -2848,6 +2860,7 @@ struct CSceneStack
 struct __fixed CStruct_2C
 {
   char field_0;
+  char _gap1[3];
   CSceneCallbacks Scene;
   int nSceneState;
 };
@@ -2881,6 +2894,7 @@ struct __fixed CGlobal_C78C
   int pGameFadeCtrl;
   int pFadeSpriteQuad;
   char field_C788;
+  char _gapC789[3];
 };
 
 /* 581 */
@@ -2892,11 +2906,13 @@ struct __fixed CStructSetting_448
   int ColorBit_C;
   char field_10;
   __int16 field_11;
+  char _gap13;
   char bUseSoftwareRasterizer_14;
   char bHideMessageBoxOnError_CB6D;
   char field_16;
   char field_17;
   char field_18;
+  char _gap19;
   char field_1A;
   char field_1B;
   char bFogEnabled;
@@ -2917,10 +2933,13 @@ struct __fixed CStructSetting_448
   char field_2B;
   char field_2C;
   char field_2D;
+  char _gap2E;
   char bWithoutMouse_CB87;
   char field_30;
   char field_31;
+  char _gap32[1026];
   char field_434;
+  char _gap435[19];
 };
 
 /* 700 */
@@ -2935,6 +2954,7 @@ struct __fixed CStruct_530
 {
   char bLoaded_0;
   char paths[4][260];
+  char _gap411[3];
   int field_414;
   int gap_418[64];
   int nTexCount_518;
@@ -2960,6 +2980,7 @@ struct CPackFormatSecret
 struct __fixed CStruct_5C0
 {
   char nWAAtive;
+  char _gap1[3];
   CSB_CameraBase *SBCameraBase;
   CSB_Key *Key_CFBC;
   CStruct_530 struct530_CFC0;
@@ -3000,9 +3021,11 @@ struct __fixed CGlobal_A618
   int pDX9ScreenBlend_C644;
   int pDX9GaussScreen_C648;
   char byte_C64C;
+  char _gapC64D[3];
   CFXUnk *ptr1byte_C650;
   CEffectFixedFunctionParams *pEffectFixedFuncParams_C654;
-  int gapC658;
+  char bool_C658;
+  char _gapC659[3];
   CEffectAnaglyphParams *pEffectAnaglyphParams_C65C;
   CEffectSpecularParams *pEffectSpecularParams_C660;
   int field_C664;
@@ -3063,8 +3086,12 @@ struct __fixed CStruct_CCD4
   int arrSceneIDsStack[6];
   char field_CD04;
   char bCaptureScreen_CD05;
+  char _gapCD06[2];
   int field_CD08;
 };
+
+/* 410 */
+typedef DWORD D3DCOLOR;
 
 /* 609 */
 typedef struct ID3DXFont *LPD3DXFONT;
@@ -3097,14 +3124,4596 @@ struct __fixed CSBZGlobal
   CStructSetting_448 struct_setting_CB58;
   float fTexScale_CFA0;
   char field_CFA4;
+  char _gapCFA5[3];
   D2D_POINT_2F scrollSpeed;
   char bRequestQuit_CFB0;
+  char _gapCFB1[3];
   CStruct_CCD4 Struct_CCD4_CFB4;
   int nFontSize_19CC0;
-  int field_19CC4;
+  D3DCOLOR textColor_19CC4;
   LPD3DXFONT pFontMSGothic_19CC8;
   CStructInput_70 *pStructInput70;
   CDlgCtrl *pDlgCtrl_19CD0;
+};
+
+/* 424 */
+struct __fixed CSB_CameraBase
+{
+  ICSB_CameraBaseVtbl *lpVtbl;
+  CSB_CameraNormal *pSBCameraNormal;
+  CCameraKeyCfg *pCameraKeyCfg;
+  char field_C;
+  char field_D;
+};
+
+/* 634 */
+struct __fixed CSB_Key
+{
+  ICSB_KeyVtbl *lpVtbl;
+  int bKeys_B8_4[46];
+  CSBZGlobal *pSBZGlobal_BC;
+  CStruct_CCD4 *struct_ccd4_C0;
+  CStruct_5C0 *struct_5c0_C4;
+  CStruct_5C0 *struct_5c0_C8;
+  int field_CC;
+};
+
+/* 378 */
+enum _D3DFORMAT
+{
+  D3DFMT_UNKNOWN = 0x0,
+  D3DFMT_R8G8B8 = 0x14,
+  D3DFMT_A8R8G8B8 = 0x15,
+  D3DFMT_X8R8G8B8 = 0x16,
+  D3DFMT_R5G6B5 = 0x17,
+  D3DFMT_X1R5G5B5 = 0x18,
+  D3DFMT_A1R5G5B5 = 0x19,
+  D3DFMT_A4R4G4B4 = 0x1A,
+  D3DFMT_R3G3B2 = 0x1B,
+  D3DFMT_A8 = 0x1C,
+  D3DFMT_A8R3G3B2 = 0x1D,
+  D3DFMT_X4R4G4B4 = 0x1E,
+  D3DFMT_A2B10G10R10 = 0x1F,
+  D3DFMT_A8B8G8R8 = 0x20,
+  D3DFMT_X8B8G8R8 = 0x21,
+  D3DFMT_G16R16 = 0x22,
+  D3DFMT_A2R10G10B10 = 0x23,
+  D3DFMT_A16B16G16R16 = 0x24,
+  D3DFMT_A8P8 = 0x28,
+  D3DFMT_P8 = 0x29,
+  D3DFMT_L8 = 0x32,
+  D3DFMT_A8L8 = 0x33,
+  D3DFMT_A4L4 = 0x34,
+  D3DFMT_V8U8 = 0x3C,
+  D3DFMT_L6V5U5 = 0x3D,
+  D3DFMT_X8L8V8U8 = 0x3E,
+  D3DFMT_Q8W8V8U8 = 0x3F,
+  D3DFMT_V16U16 = 0x40,
+  D3DFMT_A2W10V10U10 = 0x43,
+  D3DFMT_UYVY = 0x59565955,
+  D3DFMT_R8G8_B8G8 = 0x47424752,
+  D3DFMT_YUY2 = 0x32595559,
+  D3DFMT_G8R8_G8B8 = 0x42475247,
+  D3DFMT_DXT1 = 0x31545844,
+  D3DFMT_DXT2 = 0x32545844,
+  D3DFMT_DXT3 = 0x33545844,
+  D3DFMT_DXT4 = 0x34545844,
+  D3DFMT_DXT5 = 0x35545844,
+  D3DFMT_D16_LOCKABLE = 0x46,
+  D3DFMT_D32 = 0x47,
+  D3DFMT_D15S1 = 0x49,
+  D3DFMT_D24S8 = 0x4B,
+  D3DFMT_D24X8 = 0x4D,
+  D3DFMT_D24X4S4 = 0x4F,
+  D3DFMT_D16 = 0x50,
+  D3DFMT_D32F_LOCKABLE = 0x52,
+  D3DFMT_D24FS8 = 0x53,
+  D3DFMT_D32_LOCKABLE = 0x54,
+  D3DFMT_S8_LOCKABLE = 0x55,
+  D3DFMT_L16 = 0x51,
+  D3DFMT_VERTEXDATA = 0x64,
+  D3DFMT_INDEX16 = 0x65,
+  D3DFMT_INDEX32 = 0x66,
+  D3DFMT_Q16W16V16U16 = 0x6E,
+  D3DFMT_MULTI2_ARGB8 = 0x3154454D,
+  D3DFMT_R16F = 0x6F,
+  D3DFMT_G16R16F = 0x70,
+  D3DFMT_A16B16G16R16F = 0x71,
+  D3DFMT_R32F = 0x72,
+  D3DFMT_G32R32F = 0x73,
+  D3DFMT_A32B32G32R32F = 0x74,
+  D3DFMT_CxV8U8 = 0x75,
+  D3DFMT_A1 = 0x76,
+  D3DFMT_A2B10G10R10_XR_BIAS = 0x77,
+  D3DFMT_BINARYBUFFER = 0xC7,
+  D3DFMT_FORCE_DWORD = 0x7FFFFFFF,
+};
+
+/* 377 */
+typedef enum _D3DFORMAT D3DFORMAT;
+
+/* 440 */
+enum _D3DRESOURCETYPE
+{
+  D3DRTYPE_SURFACE = 0x1,
+  D3DRTYPE_VOLUME = 0x2,
+  D3DRTYPE_TEXTURE = 0x3,
+  D3DRTYPE_VOLUMETEXTURE = 0x4,
+  D3DRTYPE_CUBETEXTURE = 0x5,
+  D3DRTYPE_VERTEXBUFFER = 0x6,
+  D3DRTYPE_INDEXBUFFER = 0x7,
+  D3DRTYPE_FORCE_DWORD = 0x7FFFFFFF,
+};
+
+/* 439 */
+typedef enum _D3DRESOURCETYPE D3DRESOURCETYPE;
+
+/* 622 */
+enum D3DXIMAGE_FILEFORMAT
+{
+  D3DXIFF_BMP = 0x0,
+  D3DXIFF_JPG = 0x1,
+  D3DXIFF_TGA = 0x2,
+  D3DXIFF_PNG = 0x3,
+  D3DXIFF_DDS = 0x4,
+  D3DXIFF_PPM = 0x5,
+  D3DXIFF_DIB = 0x6,
+  D3DXIFF_HDR = 0x7,
+  D3DXIFF_PFM = 0x8,
+  D3DXIFF_FORCE_DWORD = 0x7FFFFFFF,
+};
+
+/* 623 */
+struct D3DXIMAGE_INFO
+{
+  UINT Width;
+  UINT Height;
+  UINT Depth;
+  UINT MipLevels;
+  D3DFORMAT Format;
+  D3DRESOURCETYPE ResourceType;
+  D3DXIMAGE_FILEFORMAT ImageFileFormat;
+};
+
+/* 446 */
+enum _D3DPOOL
+{
+  D3DPOOL_DEFAULT = 0x0,
+  D3DPOOL_MANAGED = 0x1,
+  D3DPOOL_SYSTEMMEM = 0x2,
+  D3DPOOL_SCRATCH = 0x3,
+  D3DPOOL_FORCE_DWORD = 0x7FFFFFFF,
+};
+
+/* 445 */
+typedef enum _D3DPOOL D3DPOOL;
+
+/* 380 */
+enum _D3DMULTISAMPLE_TYPE
+{
+  D3DMULTISAMPLE_NONE = 0x0,
+  D3DMULTISAMPLE_NONMASKABLE = 0x1,
+  D3DMULTISAMPLE_2_SAMPLES = 0x2,
+  D3DMULTISAMPLE_3_SAMPLES = 0x3,
+  D3DMULTISAMPLE_4_SAMPLES = 0x4,
+  D3DMULTISAMPLE_5_SAMPLES = 0x5,
+  D3DMULTISAMPLE_6_SAMPLES = 0x6,
+  D3DMULTISAMPLE_7_SAMPLES = 0x7,
+  D3DMULTISAMPLE_8_SAMPLES = 0x8,
+  D3DMULTISAMPLE_9_SAMPLES = 0x9,
+  D3DMULTISAMPLE_10_SAMPLES = 0xA,
+  D3DMULTISAMPLE_11_SAMPLES = 0xB,
+  D3DMULTISAMPLE_12_SAMPLES = 0xC,
+  D3DMULTISAMPLE_13_SAMPLES = 0xD,
+  D3DMULTISAMPLE_14_SAMPLES = 0xE,
+  D3DMULTISAMPLE_15_SAMPLES = 0xF,
+  D3DMULTISAMPLE_16_SAMPLES = 0x10,
+  D3DMULTISAMPLE_FORCE_DWORD = 0x7FFFFFFF,
+};
+
+/* 379 */
+typedef enum _D3DMULTISAMPLE_TYPE D3DMULTISAMPLE_TYPE;
+
+/* 444 */
+#pragma pack(push, 4)
+struct _D3DSURFACE_DESC
+{
+  D3DFORMAT Format;
+  D3DRESOURCETYPE Type;
+  DWORD Usage;
+  D3DPOOL Pool;
+  D3DMULTISAMPLE_TYPE MultiSampleType;
+  DWORD MultiSampleQuality;
+  UINT Width;
+  UINT Height;
+};
+#pragma pack(pop)
+
+/* 443 */
+typedef struct _D3DSURFACE_DESC D3DSURFACE_DESC;
+
+/* 436 */
+typedef struct IDirect3DTexture9 *LPDIRECT3DTEXTURE9;
+
+/* 621 */
+struct __fixed CStructImage_5C
+{
+  int strSize_0;
+  char *name_4;
+  int field_8;
+  D3DXIMAGE_INFO d3dxImageInfo;
+  D3DSURFACE_DESC surfaceDesc_28;
+  char chksum_48;
+  int nSrcDataSize_4C;
+  void *pSrcData_50;
+  int field_54;
+  LPDIRECT3DTEXTURE9 pD3DTexture9_58;
+};
+
+/* 897 */
+struct __fixed CScrSubObject_3B
+{
+  float cDB;
+  float cDG;
+  float cDR;
+};
+
+/* 366 */
+struct __fixed CStructImage2D_80
+{
+  char bFlipV;
+  _BYTE gap1[3];
+  IDirect3DVertexBuffer9 *p_D3DVertexBuffer_2;
+  CStructImage_5C *image_8;
+  float srcWidth;
+  float srcHeight;
+  float posX;
+  float posY;
+  int posZ;
+  float originX;
+  float originY;
+  float scaleX;
+  float scaleY;
+  float cA;
+  float cSB;
+  float cSG;
+  float cSR;
+  float Pitch;
+  float Yaw;
+  float Roll;
+  CScrSubObject_3B cdRGB;
+  float tuLeft;
+  float tuRight;
+  float tvTop;
+  float tvBottom;
+  _BYTE nMaterialID;
+  _BYTE gap69[3];
+  float fTexScale;
+  char bVisible;
+  char flags_71;
+  D2D_POINT_2F scrollSpeed;
+  char scrollOffsetX;
+  char scrollOffsetY;
+  char field_7E;
+  char field_7F;
+};
+
+/* 428 */
+struct __fixed CSB_BackgroundSprite
+{
+  int lpVtbl;
+  CStructImage2D_80 *pImage;
+};
+
+/* 633 */
+struct CISE_SpriteCtrlMembers
+{
+  CStruct_530 *struct_530_0;
+  int struct_collis_4;
+  char field_8;
+  __declspec(align(4)) char field_C;
+  __declspec(align(4)) char field_10;
+  __declspec(align(4)) char field_14;
+  int spLstCount;
+  int field_20;
+};
+
+/* 422 */
+/// was CStruct_10
+struct __fixed CVector_T4
+{
+  int _Alval;
+  CVectorItem_T4 *pFirst;
+  CVectorItem_T4 *pLast;
+  CVectorItem_T4 *pEnd;
+};
+
+/* 628 */
+struct CSB_SpriteCtrl
+{
+  ICSB_SpriteCtrlVtbl *lpVtbl;
+  CISE_SpriteCtrlMembers base_;
+  CVector_T4 Vec4_24;
+};
+
+/* 626 */
+struct __fixed CSB_CursorCtrl
+{
+  ICSB_CursorCtrlVtbl *lpVtbl;
+  CSB_SpriteCtrl csb_sprite_ctrl_4;
+  int field_38;
+  POINT obj_8_3C;
+  CSBZGlobal *pSBZGlobal_44;
+  CStruct_CCD4 *struct_ccd4_48;
+  CStruct_5C0 *struct_5c0_4C;
+  CStruct_5C0 *struct_5c0_50;
+  int field_54;
+  int field_58;
+  CSB_CameraBase *pCameraBase_5C;
+  int Path_60;
+};
+
+/* 447 */
+struct IDirect3DSurface9
+{
+  struct IDirect3DSurface9Vtbl *lpVtbl;
+};
+
+/* 636 */
+struct __fixed CSB_Path
+{
+  ICSB_PathVtbl *lpVtbl;
+  char szPath_4[260];
+};
+
+/* 648 */
+struct __fixed CSB_Setting
+{
+  ICSB_SettingVtbl *lpVtbl;
+  int sndVolumes_4[5];
+  char sndMutes_18[5] __udec;
+  float TextSpeed;
+  char DrawCenter;
+  char DrawMap;
+  char DrawMan;
+  char DrawSon;
+  float DrawManAlpha;
+  char DrawScreenEffect;
+  __int16 BackColorR;
+  __int16 BackColorG;
+  __int16 BackColorB;
+  char field_34;
+  char UsedHand;
+  CSBZGlobal *pSBZGlobal_38;
+  CStruct_CCD4 *struct_ccd4_3C;
+  CStruct_5C0 *struct_5c0_40;
+  CStruct_5C0 *struct_5c0_44;
+  void *ptr_48;
+  CSB_Key *pKey_4C;
+  CSB_CameraBase *pCameraBase_50;
+  CSB_Sound *pSBSound_54;
+};
+
+/* 790 */
+struct __fixed CDXSndState
+{
+  char bFF;
+  char field_1;
+  char index;
+};
+
+/* 638 */
+struct __fixed CSB_Sound
+{
+  ICSB_SoundVtbl *lpVtbl;
+  char field_4;
+  char field_5;
+  char field_6;
+  char field_7;
+  char field_8;
+  char field_9;
+  char obj_20_A[32];
+  char obj_E_2A[14];
+  char field_38;
+  char field_39;
+  char obj_20_3A[32];
+  char obj_E_5A[14];
+  float cdxsdn_volume_0[1];
+  float cdxsdn_volume_1[1];
+  float cdxsdn_volume_3[32];
+  float cdxsdn_volume_4[14];
+  CDXSnd *cdxsdn_0[1];
+  CDXSnd *cdxsdn_1[1];
+  CDXSnd *cdxsnd_2[5];
+  CDXSnd *cdxsnd_3[32];
+  CDXSnd *cdxsnd_4[14];
+  CDXSnd *cdxsdn_5[4];
+  CDXSnd *cdxsdn_6[1];
+  CDXSndState cdxsnd_status_3[32];
+  CDXSndState cdxsnd_status_4[14];
+  CSBZGlobal *pSBZGlobal_29C;
+  CStruct_CCD4 *struct_ccd4_2A0;
+  CStruct_5C0 *struct_5c0_2A4;
+  CStruct_5C0 *struct_5c0_2A8;
+  CGlobal_A618 *pglobal_d618_2AC;
+  CMouseState *pMouseState0;
+  CStruct_530 *struct_530_2B4;
+  CSB_Path *Path_2B8;
+};
+
+/* 741 */
+struct __fixed __declspec(align(4)) CIME_Manager
+{
+  int lpVtbl;
+  HWND hwdn;
+  HIMC himc;
+  void **field_C;
+  int field_10;
+  int field_14;
+  int field_18;
+  void *ptr_1C;
+  int field_20;
+  int field_24;
+  int field_28;
+  void *ptr_2C;
+  char szPath_30;
+  _BYTE gap31[3];
+  _BYTE gap34[1036];
+  int field_440;
+  int field_444;
+  void *field_448;
+  int obj_924_44C;
+  _BYTE gap450[2336];
+  int obj_40_D70;
+  _BYTE gapD74[60];
+  int field_DB0;
+  int field_DB4;
+  int field_DB8;
+  int field_DBC;
+  char field_DC0;
+  char field_DC1;
+  char field_DC2;
+  char field_DC3;
+  char field_DC4;
+  char field_DC5;
+};
+
+/* 545 */
+struct __fixed CSB_Time
+{
+  ICSB_TimeVtbl *lpVtbl;
+  int field_4;
+  int field_8;
+  int field_C;
+  int field_10;
+};
+
+/* 540 */
+struct __fixed CSB_PossessionCtrl
+{
+  ICSB_PossessionCtrlVtbl *lpVtbl;
+  int field_4;
+  int field_10;
+  int field_1C;
+};
+
+/* 542 */
+struct __fixed CPossessionItem
+{
+  int field_0;
+  int field_4;
+  int field_8[5];
+  char field_1C[40];
+};
+
+/* 538 */
+struct __fixed CSB_PersonalData
+{
+  ICSB_PersonalDataVtbl *lpVtbl;
+  int field_4;
+  char field_8;
+  int field_C;
+  int field_48;
+  int field_4C;
+  int field_50;
+  int field_54[4];
+  int field_68;
+  int field_6C;
+  char field_84;
+  void *field_88[2];
+  CSB_PossessionCtrl csb_possesion_ctrl_90;
+  CPossessionItem posession_items_B8[99];
+  int field_1B04;
+  int nLoveCount_1B0C;
+  int field_1B10;
+  int field_1B14;
+  char field_1B19;
+};
+
+/* 543 */
+struct __fixed CSB_PlayerData
+{
+  ICSB_PlayerDataVtbl *lpVtbl;
+  CSB_PossessionCtrl csb_possession_ctrl_4;
+  int field_2C;
+  int field_3C;
+  int field_44;
+  int field_48;
+  int field_84[29];
+};
+
+/* 536 */
+struct __fixed CSB_GameInfo
+{
+  ICSB_GameInfoVtbl *lpVtbl;
+  int nDays_4;
+  int field_8;
+  int nMoney_C;
+  int nSpecialItems_10;
+  CSB_Time csb_time_14;
+  char field_28;
+  CSB_PersonalData array_csb_personal_data_2C[5];
+  CSB_PlayerData csb_player_data_87B8;
+  int field_88B0;
+  int field_88B4;
+  int field_88B8;
+  int field_88BC;
+  int field_88C4;
+  int field_88D4;
+  char field_88E4;
+  char field_88E5;
+  int field_88E8;
+  CSBZGlobal *pSBZGlobal_8998;
+  CStruct_5C0 *struct_5C_899C;
+  int path_89A0;
+};
+
+/* 411 */
+struct CString
+{
+  char *pszData;
+};
+
+/* 476 */
+struct __fixed CSB_CharBase
+{
+  void *lpVtbl;
+  CSceneObjectTemp *pScnObjCwBody_4;
+  char field_8;
+  char field_9;
+  CString Str_C;
+  CString Str_10;
+  CSBZGlobal *pSBZGlobal_14;
+  CStruct_CCD4 *struct_5C0_18;
+  CStruct_5C0 *struct_5C0_1C;
+  CStruct_5C0 *struct_5C0_20;
+  CGlobal_A618 *pGlobal_A618;
+  CMouseState *pMouseState_0;
+  CSB_CameraBase *sb_camera_base_2C;
+};
+
+/* 396 */
+#pragma pack(push, 4)
+struct _D3DMATRIX::$2ECFB1CFDB70179D7AAC67AC21B01902::$40942CBCB8F0A1CDBC81269929B28324
+{
+  float _11;
+  float _12;
+  float _13;
+  float _14;
+  float _21;
+  float _22;
+  float _23;
+  float _24;
+  float _31;
+  float _32;
+  float _33;
+  float _34;
+  float _41;
+  float _42;
+  float _43;
+  float _44;
+};
+#pragma pack(pop)
+
+/* 395 */
+#pragma pack(push, 4)
+union _D3DMATRIX::$2ECFB1CFDB70179D7AAC67AC21B01902
+{
+  #pragma pack(push, 4)
+  struct
+  {
+    float _11;
+    float _12;
+    float _13;
+    float _14;
+    float _21;
+    float _22;
+    float _23;
+    float _24;
+    float _31;
+    float _32;
+    float _33;
+    float _34;
+    float _41;
+    float _42;
+    float _43;
+    float _44;
+  };
+  #pragma pack(pop)
+  float m[4][4];
+};
+#pragma pack(pop)
+
+/* 394 */
+#pragma pack(push, 4)
+struct _D3DMATRIX
+{
+  #pragma pack(push, 4)
+  union
+  {
+    #pragma pack(push, 4)
+    struct
+    {
+      float _11;
+      float _12;
+      float _13;
+      float _14;
+      float _21;
+      float _22;
+      float _23;
+      float _24;
+      float _31;
+      float _32;
+      float _33;
+      float _34;
+      float _41;
+      float _42;
+      float _43;
+      float _44;
+    };
+    #pragma pack(pop)
+    float m[4][4];
+  };
+  #pragma pack(pop)
+};
+#pragma pack(pop)
+
+/* 393 */
+typedef struct _D3DMATRIX D3DMATRIX;
+
+/* 475 */
+struct __fixed CSB_CharFemale
+{
+  CSB_CharBase base;
+  CSceneObjectTemp *pSceneObjCwHead_30;
+  CSceneObjectTemp *pScnObjHair_34;
+  int field_38;
+  CMuneCtrl *pMuneCtrlBust_3C;
+  CMuneCtrl *pMuneCtrlHip_40;
+  int field_44;
+  int field_48;
+  CSB_CosCtrl *pCosCtrl_4C;
+  int field_50;
+  char obj_14_54[20];
+  int field_68;
+  int field_6C;
+  int field_70;
+  int field_74;
+  CSB_VertexScaleCtrl *pVertexScaleCtrl_78;
+  char field_7C;
+  char field_7D;
+  D3DMATRIX mat4x4_80;
+  D3DMATRIX mat4x4_C0;
+  char field_100;
+  char field_101;
+  int field_104;
+  int field_108;
+  char obj_8_10C[8];
+  char field_114;
+  char obj_8_118[8];
+  char field_120;
+  int nIndex_130;
+  CSB_PersonalData *pCSB_PersonalData_134;
+  CScnFrame_21C *pScnMizugi[4];
+};
+
+/* 531 */
+struct __fixed CSB_ThreadCtrl
+{
+  void *lpVtbl;
+  int field_4;
+  int field_10;
+  int field_1C;
+  int field_20;
+  int field_24;
+};
+
+/* 364 */
+struct __fixed SBLogoScene
+{
+  ISBLogoSceneVtbl *lpVtbl;
+  CStructImage2D_80 *spriteLogos_4[2];
+  int field_C;
+  char bSoundLoaded_10;
+  char field_11;
+  CSBZGlobal *pSBZGlobal;
+  CStruct_CCD4 *struct_ccd4_18;
+  CStruct_5C0 *struct_5c0_1C;
+  CStruct_5C0 *struct_5c0_20;
+  CGlobal_A618 *global_D618;
+  CMouseState *pMouseState0_19C84;
+  CSB_CameraBase *pSBCameraBase_2C;
+  CSB_Key *Key_30;
+  CSB_Path *Path_34;
+  CSB_Sound *Sound_38;
+};
+
+/* 547 */
+struct __fixed SBTitleScene
+{
+  ISBTitleSceneVtbl *lpVtbl;
+  CSB_SpriteCtrl csb_sprite_ctrl_4;
+  CSceneObjectTemp *ptr_38;
+  char field_3C;
+  char field_3D;
+  char field_3E;
+  char field_3F;
+  float field_40;
+  int field_44;
+  CSBZGlobal *pSBZGlobal;
+  CStruct_CCD4 *struct_CCD4;
+  CStruct_5C0 *struct_5c0_50;
+  CStruct_5C0 *struct_5c0_54;
+  CGlobal_A618 *global_D618;
+  CMouseState *pMouseState0;
+  CSB_CameraBase *pSBCameraBase_60;
+  CSB_Key *Key_64;
+  CSB_Path *Path_68;
+  CSB_Sound *Sound_6C;
+  CSB_GameInfo *GameInfo_70;
+  CSB_CursorCtrl *CursorCtrl_74;
+  char field_78;
+};
+
+/* 744 */
+struct __fixed CVector_T2C
+{
+  int field_0;
+  void *_Myfirst;
+  void *_Mylast;
+  void *_Myend;
+};
+
+/* 743 */
+struct __fixed KK_Font
+{
+  void *lpVtbl;
+  LPD3DXFONT pFont_4;
+  int pCOM_8;
+};
+
+/* 742 */
+struct __fixed SBMainMapScene
+{
+  int lpVtbl;
+  CSB_SpriteCtrl spriteCtrl;
+  int field_38;
+  int field_3C;
+  int field_40;
+  char field_44;
+  char field_45;
+  int field_48;
+  int field_4C;
+  int field_50;
+  CVector_T2C vec_2C_54;
+  KK_Font kkFonts[2];
+  CSBZGlobal *pSBZGlobal;
+  CStruct_CCD4 *pStructCCD4;
+  CStruct_5C0 *pStruct5C0;
+  CStruct_5C0 *pStruct5C0_2;
+  CGlobal_A618 *pGlobalA618;
+  CMouseState *pMouseState0;
+  CSB_CameraBase *pSBCameraBase;
+  CSB_Key *pKey;
+  CSB_Path *pPath;
+  CSB_GameInfo *pGameInfo;
+  CSB_Sound *pSound;
+  CSB_CursorCtrl *pCursorCtr;
+  char field_AC;
+};
+
+/* 789 */
+struct __fixed SBRoomScene
+{
+  void *lpVtbl;
+  CSB_SpriteCtrl m_sprite_ctrl;
+  int field_38;
+  KK_Font m_kk_font[2];
+  int field_54;
+  int field_58;
+  char field_5C;
+  char _gap5D[3];
+  CSBZGlobal *m_pSBZGlobal;
+  CStruct_CCD4 *m_pstruct_ccd4;
+  CStruct_5C0 *m_pstruct_5c0_1;
+  CStruct_5C0 *m_pstruct_5c0_2;
+  CGlobal_A618 *m_pglobal_d618;
+  CMouseState *m_pmouse_state0;
+  CSB_CameraBase *m_pcamera_base;
+  CSB_Key *m_pkey;
+  CSB_Path *m_ppath;
+  CSB_GameInfo *m_pgame_info;
+  CSB_Sound *m_psound;
+  CSB_CursorCtrl *m_pcursor_ctrl;
+  char field_90;
+  char _gap91[3];
+};
+
+/* 765 */
+struct __fixed CSB_SliderCtrl
+{
+  void *lpVtbl;
+  int vec_4;
+  _BYTE _gap8[12];
+  float flt_14;
+  D2D_POINT_2F scrollSpeed;
+};
+
+/* 748 */
+struct __fixed CScnSubObject_10
+{
+  int field_0;
+  int field_4;
+  char field_8;
+  char field_9;
+  char _gapA[2];
+  CScnSubObject_F4 *ptr_C;
+};
+
+/* 761 */
+struct __fixed CScnAnimAnimationClip_70
+{
+  char name[44];
+  DWORD field_2C;
+  char _gap30[16];
+  float speed_40;
+  int field_44;
+  float start_48;
+  float end_4C;
+  char field_50;
+  char field_51;
+  char field_52;
+  char field_53;
+  int next_54;
+  char field_58;
+  char _gap59[3];
+  int field_5C;
+  char char_60[16];
+};
+
+/* 994 */
+struct __fixed CNeckData
+{
+  DWORD field_0;
+  int field_4;
+  CGlobal_A618 *pGlobalA618_8;
+  CScnFrame_21C *pScnSubObj_C;
+  CScnFrame_21C *pParent_10;
+  int field_14;
+  CNeckStruct_18 *pNeckStruct18_18;
+  __int16 wCount_1C;
+  CNeckStruct_E14 *pNeckE14_20;
+  int field_24;
+  int field_28;
+  int field_2C;
+  int field_30;
+  int field_34;
+  char bool_38;
+  char field_3C;
+  char field_3D;
+  char field_3F;
+  int field_40;
+  int field_44;
+  int field_48;
+  int field_4C;
+  D3DMATRIX mat4x4_50;
+  D3DMATRIX mat4x4_90;
+  D3DMATRIX mat4x4_D0;
+  D3DMATRIX mat4x4_110;
+  D3DMATRIX mat4x4_150;
+  char gap190[48];
+};
+
+/* 1004 */
+struct __fixed CEyesData
+{
+  int field_0;
+  CNeckData eyesData_4;
+  CNeckData eyesData_1C4;
+  char gap384[8];
+  __int16 wCount_38C;
+  CNeckStruct_E14 *pEyesE14_20_390;
+  char gap394[20];
+  char field_3A8;
+  char gap3A9[7];
+};
+
+/* 673 */
+struct __fixed CSceneObjectTemp
+{
+  int field_0;
+  char name_4[64];
+  int field_44;
+  int _gap48[2];
+  int field_50;
+  float floats_54[16];
+  char _gap94[72];
+  char field_DC;
+  char _gapDD[3];
+  char field_E0;
+  char _gapE1[35];
+  char bParseFlag_104;
+  char _gap105[27];
+  char field_120;
+  char _gap121[229];
+  char field_206;
+  char field_207;
+  void *ptr_208;
+  CScnFrame_21C *pScnSubObj21C_20C;
+  CSceneObjectTemp *pScnObj_210;
+  char byte_214;
+  char field_215;
+  char _gap216[2];
+  CScnFrame_21C *pScnFrame_218;
+  int field_21C;
+  int nCountMorphIndexSets;
+  CScnAnimMorphIndexSet_18 *pMorphIndexSets;
+  int nCountMorphKeyframes;
+  CScnAnimMorphKeyFrame_14 *pMorphKeyFrames;
+  int nCountMorphClips;
+  CScnAnimMorphClip_44 *pMorphClips;
+  int _gap238[6];
+  int field_250;
+  int _gap254[6];
+  int field_26C;
+  int field_270;
+  int _gap274[5];
+  float flt_288;
+  int field_28C;
+  float flt_290;
+  int field_294;
+  char field_298;
+  char _gap299;
+  char field_29A;
+  char _gap29B[37];
+  char field_2C0;
+  char _gap2C1[3];
+  char field_2C4;
+  char _gap2C5[3];
+  CScnSubLight_174 *ptr_2C8;
+  int field_2CC;
+  int field_2D0;
+  int field_2D4;
+  int field_2D8;
+  int field_2DC;
+  int field_2E0;
+  int field_2E4;
+  CScnSubObject_10 field_2E8;
+  float fogStart_2F8;
+  float fogEnd_2FC;
+  DWORD fogColor_300;
+  float sum_304;
+  int nCountMaterials_308;
+  CScnMaterial_134 *pMaterials_30C;
+  int nCountMaterials_310;
+  CScnMaterialSect_58 *pMaterialSect_314;
+  int nCountSection2_318;
+  CScnXASection2_38 *pSection2_31C;
+  int nCountSection4_320;
+  CScnXASection4_10 *pSections4_324;
+  int _gap328;
+  int nCountTracks_32C;
+  CScnAnimTrack_19 *pAnimationTracks_330;
+  int _gap334;
+  void *ptr_338;
+  int field_33C;
+  int field_340;
+  void *ptr_344;
+  int field_348;
+  int field_34C;
+  int _gap350[15];
+  int field_38C;
+  int field_390;
+  int field_394;
+  float flt_398;
+  CScnAnimAnimationClip_70 arrAnimClips_39C[1024];
+  int field_1C39C;
+  int field_1C3A0;
+  int field_1C3A4;
+  int _gap1C3A8[10];
+  int nCountArrFrames;
+  CScnFrame_21C *pArrFrames;
+  int field_1C3D8;
+  BYTE *ptr_1C3DC;
+  D3DMATRIX mat4x4_1C3E0;
+  float flt_1C420;
+  int field_1C424;
+  CNeckData neck_1C428;
+  CEyesData eyes_1C5E8;
+  int nXxFormat;
+  int nXAFormat_1C99C;
+  int xlType_1C9A0;
+  int field_1C9A4;
+  char field_1C9A8;
+  char _gap1C9A9[3];
+};
+
+/* 526 */
+struct __fixed CCameraCalc
+{
+  ICameraCalcVtbl *lpVtbl;
+  int field_4;
+  int field_8;
+  int field_C;
+  float field_10;
+  char byte_14;
+  char gap15[3];
+  int field_18;
+  int field_1C;
+  int field_20;
+  D3DMATRIX mat4x4_24;
+  int field_64;
+};
+
+/* 571 */
+struct __fixed CSB_CameraInfo
+{
+  ICSB_CameraInfoVtbl *lpVtbl;
+  int field_4;
+  int field_8;
+  int field_C;
+  int field_10;
+  int field_14;
+  int field_18;
+  int field_1C;
+  int field_20;
+  int field_24;
+  int field_28;
+  int field_2C;
+  float flt_30;
+  float flt_34;
+  char field_38;
+  char field_39;
+  char field_3A;
+  char field_3B;
+  char field_3C;
+  char field_3D;
+  char field_3E;
+  char field_3F;
+  char field_40;
+  char field_41;
+  char field_42;
+  char field_43;
+  char field_44;
+  char field_45;
+  char _gap46[2];
+};
+
+/* 530 */
+struct __fixed SBNightShopScene
+{
+  void *lpVtbl;
+  CSB_SpriteCtrl csb_sprite_ctrl_4;
+  int field_38;
+  int field_3C;
+  int field_40;
+  int field_44;
+  char field_48;
+  int field_4C;
+  int field_54;
+  int field_58;
+  int field_5C;
+  KK_Font *kk_font_array_60[3][3];
+  CSB_SliderCtrl slider_84;
+  int elem_0x10_array_A4;
+  int field_A8;
+  int field_AC;
+  int field_B0;
+  int field_B4;
+  int field_B8;
+  int field_BC;
+  int field_C0;
+  int field_C4;
+  int vec_T1C_CC;
+  int field_D0;
+  int field_D4;
+  int field_D8;
+  int field_DC;
+  int field_E0;
+  CSB_ThreadCtrl *pCSB_ThreadCtrl_E4;
+  int field_E8;
+  int field_118;
+  int field_148;
+  char field_178;
+  CSceneObjectTemp sceneObjs_180;
+  int pfnMidRender_1CB2C;
+  int pfnPostRender_1CB30;
+  CCameraCalc cameraCalc_1CB34;
+  CCameraCalc cameraCalc_1CB9C;
+  CSB_CameraInfo csbCameraInfo_1CC04;
+  int field_1CC4C;
+  int field_1CC50;
+  int field_1CC54;
+  int field_1CC58;
+  char field_1CC5C;
+  int field_1CC60;
+  CSBZGlobal *pSBZGlobal_1CC64;
+  CStruct_CCD4 *struct_ccd4_1CC68;
+  CStruct_5C0 *struct_5c0_1CC6C;
+  CStruct_5C0 *struct_5c0_1CC70;
+  CGlobal_A618 *cglobal_a618_1CC74;
+  CMouseState *pMouseState0_1CC78;
+  CSB_CameraBase *pCameraBase_1CC7C;
+  CSB_Key *pKey_1CC80;
+  CSB_Path *pPath_1CC84;
+  CSB_GameInfo *pGameInfo_1CC88;
+  CSB_Sound *pSound_1CC8C;
+  CSB_CursorCtrl *pCursorCtrl_1CC90;
+  char field_1CC94;
+};
+
+/* 883 */
+struct __fixed SBScriptScene
+{
+  void *lpVtbl;
+  CIS_ScrPlayer *pCIS_ScrPlayer_4;
+  CString strScriptName;
+  _DWORD pSBZGlobal;
+  CStruct_CCD4 *Sturct_CCD4;
+  CStruct_5C0 *Struct_5C0_1;
+  CStruct_5C0 *Struct_5C0_2;
+  CGlobal_A618 *Sturct_D618;
+  CMouseState *MouseState0;
+  CSB_CameraBase *SBCameraBase;
+  CSB_Key *Key;
+  CSB_Path *Path;
+  CSB_GameInfo *GameInfo;
+};
+
+/* 964 */
+struct CYS_SelectSub_14
+{
+  int field_0;
+  int field_4;
+  int field_8;
+  int field_C;
+  int field_18;
+};
+
+/* 963 */
+struct __fixed CYS_Select
+{
+  void *lpVtbl;
+  float flt_4;
+  CYS_SelectSub_14 subobj_8;
+  int field_1C;
+  int field_20;
+};
+
+/* 966 */
+struct __fixed CVector_T4C
+{
+  int field_0;
+  void *_Myfirst;
+  void *_Mylast;
+  void *_Myend;
+};
+
+/* 965 */
+struct __fixed CYS_Slider
+{
+  void *lpVtbl;
+  float flt_4;
+  int field_8;
+  CVector_T4C vec_4C_C;
+  int field_1C;
+  int field_20;
+  int field_24;
+  int field_28;
+  int field_2C;
+};
+
+/* 962 */
+struct __fixed SBEditBodyScene
+{
+  void *lpVtbl;
+  CSB_CharFemale *pSBCharFemale_4;
+  int field_8;
+  int obj_530_C[332];
+  CStructImage2D_80 *pImage_53C;
+  CYS_Select cys_select_540;
+  int field_564;
+  int field_568;
+  int field_56C;
+  int field_570;
+  char field_574;
+  char _gap575[3];
+  int nGirldIndex_578;
+  char field_57C;
+  char _gap57D[3];
+  int vec_8_6_580[6][2];
+  int field_5B0;
+  int obj_14_5B4[5];
+  int obj_14_5C8[5];
+  char field_5DC;
+  char _gap5DD[3];
+  CYS_Slider cys_slider_5E0;
+  CCameraCalc camera_calc_610;
+  CCameraCalc camera_calc_678;
+  CSB_CameraInfo csb_camerainfo_6E0;
+  char setting_field_34;
+  char _gap729[3];
+  CSBZGlobal *pSBZGlobal;
+  CStruct_CCD4 *Struct_ccd4;
+  CStruct_5C0 *Struct_5C0_734;
+  CStruct_5C0 *Struct_5C0_738;
+  CGlobal_A618 *Global_A618;
+  CMouseState *MouseState_0;
+  CSB_CameraBase *pCameraBase;
+  CSB_Key *pKey;
+  CSB_Path *pPath;
+  CSB_GameInfo *pGameInfo;
+  CSB_Sound *pSound;
+  CSB_CursorCtrl *pCursorCtrl;
+};
+
+/* 918 */
+struct __fixed SBLoadSceneSubObj_14
+{
+  int spriteNum_0;
+  int spriteNum_1;
+  int spriteNum_2;
+  int spriteNum_3;
+  int spriteNum_4;
+};
+
+/* 917 */
+struct __fixed SBLoadSceneSubObj_10
+{
+  WORD field_0;
+  WORD field_2;
+  __int16 field_4;
+  WORD field_6;
+  WORD field_8;
+  WORD field_A;
+  WORD field_C;
+  WORD field_E;
+};
+
+/* 916 */
+struct __fixed SBLoadSceneSubObj_38
+{
+  int field_0;
+  int field_4;
+  int field_8;
+  SBLoadSceneSubObj_14 obj_14_C;
+  char obj_5_20[5];
+  char _gap25;
+  SBLoadSceneSubObj_10 obj_10_26;
+  char field_36;
+  char _gap37;
+};
+
+/* 915 */
+struct __fixed SBLoadScene
+{
+  int lpVtbl;
+  CSB_SpriteCtrl sprite_ctrl_4;
+  int nActionNum_38;
+  SBLoadSceneSubObj_38 ArrSaveFiles_E_3C[99];
+  int field_15E4;
+  int nSaveSlot_15E8;
+  KK_Font kk_fonts_15EC[3];
+  CSB_SliderCtrl slider_ctrl_1610;
+  int field_1630;
+  int field_1634;
+  CSBZGlobal *pSBZGlobal_1638;
+  CStruct_CCD4 *struct_ccd4_163C;
+  CStruct_5C0 *struct_5c0_1640;
+  CStruct_5C0 *struct_5c0_1644;
+  CGlobal_A618 *struct_d618_1648;
+  CMouseState *pMouseState_0_164C;
+  CSB_CameraBase *pCameraBase_1650;
+  CSB_Key *pKey_1654;
+  CSB_Path *pPath_1658;
+  CSB_GameInfo *pGameInfo_165C;
+  CSB_Sound *pSound_1660;
+  CSB_CursorCtrl *pCursorCtrl_1664;
+  char nActionState_1668;
+  char _gap1669[3];
+};
+
+/* 725 */
+struct __fixed SBCheckScene
+{
+  void *lpVtbl;
+  CStructImage2D_80 *pPic_4;
+  CStructImage2D_80 *pPic_8;
+  CSB_SpriteCtrl spriteCtrl_C;
+  int field_40;
+  POINT mouseCursorPos;
+  char field_4C;
+  char field_4D;
+  CSBZGlobal *pSBZGlobal;
+  CStruct_CCD4 *structCCD4;
+  CStruct_5C0 *struct5C0_1;
+  CStruct_5C0 *struct5C0_2;
+  CGlobal_A618 *cglobalA618_60;
+  CMouseState *mouseState_0;
+  CSB_CameraBase *pCameraBase;
+  CSB_Key *pKey;
+  CSB_Path *pPath;
+  CSB_GameInfo *pGameInfo;
+  CSB_Sound *pSound;
+  CSB_CursorCtrl *pCursorCtrl;
+};
+
+/* 525 */
+struct __fixed CBPTestScene
+{
+  ICBPTestSceneVtbl *lpVtbl;
+  CSBZGlobal *pSBZGlobal_4;
+  CStruct_CCD4 *struct_ccd4_8;
+  CStruct_5C0 *struct_5c0_C;
+  CStruct_5C0 *struct_5c0_10;
+  int field_14;
+  int field_18;
+  CSB_CameraBase *pCameraBase_1C;
+  CSB_Path *pPath_20;
+  CSB_Key *pKey_24;
+};
+
+/* 631 */
+struct CISE_SpriteCtrl
+{
+  ICISE_SpriteCtrlVtbl *lpVtbl;
+  CISE_SpriteCtrlMembers m_;
+};
+
+/* 654 */
+struct __fixed CSB_DateTestScene
+{
+  int lpVtbl;
+  CISE_SpriteCtrl sprite_ctrl_4;
+  int field_28;
+  int obj_14_2C;
+  int field_34;
+  CSBZGlobal *pSBZGlobal_40;
+  CStruct_CCD4 *struct_ccd4_44;
+  CStruct_CCD4 *struct_ccd4_48;
+  CStruct_CCD4 *struct_ccd4_4C;
+  int field_50;
+  int field_54;
+  CSB_CameraBase *pSBCameraBase_58;
+  CSB_Path *pPath_5C;
+  CSB_Key *pKey_60;
+  CSB_CursorCtrl *pCursorCtrl_64;
+};
+
+/* 972 */
+struct __fixed CTCTestTTY
+{
+  void *lpVtbl;
+  CSceneObjectTemp *pScnObj_4;
+  CMuneCtrl *pMuneCtrl_8;
+  int field_C;
+  D3DMATRIX mat4x4_10;
+  int field_50[9];
+  int field_74[4];
+  int field_84[5];
+  int field_98;
+  CSBZGlobal *pSBZGlobal;
+  CStruct_CCD4 *StructCCD4;
+  CStruct_5C0 *Stturct5C0_A4;
+  CStruct_5C0 *Struct5C0_A8;
+  CGlobal_A618 *GlobalA618;
+  CMouseState *pMouseState;
+  CSB_CameraBase *pCameraBase;
+  CSB_Path *pPath;
+};
+
+/* 568 */
+struct __fixed CIS_TestScene
+{
+  ICIS_TestSceneVtbl *lpVtbl;
+  CSBZGlobal *pSBZGlobal_4;
+  CStruct_5C0 *field_8;
+  CStruct_5C0 *field_C;
+  CStruct_5C0 *field_10;
+  int field_14;
+  int field_18;
+  int field_1C;
+  int field_20;
+};
+
+/* 793 */
+struct __fixed SBSpecialScene
+{
+  int lpVtbl;
+  int field_4;
+  int field_8;
+  int field_C;
+  int field_10;
+  int field_14;
+  char obj_530_18[1328];
+  char obj_530_548[1328];
+  int cys_select_A78;
+  char _gapA7C[32];
+  int cys_sp_move_A9C;
+  char _gapAA0[72];
+  int vec_AE8;
+  char _gapAEC[12];
+  int field_AF8;
+  char _gapAFC[800];
+  int field_E1C;
+  char _gapE20[800];
+  int field_1140;
+  int field_1144;
+  int field_1148;
+  char field_114C;
+  char _gap114D[3];
+  int field_1150;
+  int field_1154;
+  int field_1158;
+  int field_115C;
+  int field_1160;
+  int field_1164;
+  int field_1168;
+  int field_116C;
+  int field_1170;
+  char field_1174;
+  char _gap1175[3];
+  int field_1178;
+  int field_117C;
+  char field_1180;
+  char _gap1181[3];
+  int field_1184;
+  int field_1188;
+  int field_118C;
+  int field_1190;
+  int field_1194;
+  int field_1198;
+  int field_119C;
+  int field_11A0;
+  int field_11A4;
+  int field_11A8;
+  int field_11AC;
+  int field_11B0;
+  int field_11B4;
+  char field_11B8;
+  char field_11B9;
+  char _gap11BA[2];
+  int field_11BC;
+  int field_11C0;
+  int field_11C4;
+  int field_11C8;
+  int field_11CC;
+  int field_11D0;
+  int field_11D4;
+  int field_11D8;
+  int field_11DC;
+  int field_11E0;
+  int field_11E4;
+  int field_11E8;
+  int field_11EC;
+  int field_11F0;
+  int field_11F4;
+  int field_11F8;
+  int field_11FC;
+  int field_1200;
+  int field_1204;
+  int field_1208;
+  int field_120C;
+  int field_1210;
+  int field_1214;
+  int field_1218;
+  int field_121C;
+  int field_1220;
+  int field_1224;
+  int field_1228;
+  int field_122C;
+  int field_1230;
+  int field_1234;
+  int field_1238;
+  int field_123C;
+  int field_1240;
+  int field_1244;
+  int field_1248;
+  int field_124C;
+  int field_1250;
+  int field_1254;
+  int field_1258;
+  int field_125C;
+  int field_1260;
+  int field_1264;
+  int field_1268;
+  int field_126C;
+  int field_1270;
+  int field_1274;
+  int field_1278;
+  int field_127C;
+  char field_1280;
+  char field_1281;
+  char field_1282;
+  char field_1283;
+  int field_1284;
+  int field_1288;
+  char field_128C;
+  char field_128D;
+  char field_128E;
+  char field_128F;
+  int field_1290;
+  int field_1294;
+  char field_1298[3];
+  char _gap129B;
+  int field_129C;
+  int field_12A0;
+  int field_12A4;
+  int field_12A8;
+  int field_12AC;
+  int field_12B0;
+  int field_12B4;
+  char field_12B8;
+  char _gap12B9[3];
+  int field_12BC;
+  CSBZGlobal *pSBZGlobal;
+  CStruct_CCD4 *struct_ccd4;
+  CStruct_5C0 *struct_5c0_0;
+  CStruct_5C0 *struct_5c0_1;
+  CGlobal_A618 *global_D618;
+  CMouseState *pMouseState0;
+  CSB_CameraBase *field_12D8;
+  CSB_Key *pKey;
+  CSB_Path *pPath;
+  CSB_GameInfo *pGameInfo;
+  CSB_Sound *pSound;
+  CSB_CursorCtrl *pCursorCtrl;
+};
+
+/* 404 */
+enum _D3DLIGHTTYPE
+{
+  D3DLIGHT_POINT = 0x1,
+  D3DLIGHT_SPOT = 0x2,
+  D3DLIGHT_DIRECTIONAL = 0x3,
+  D3DLIGHT_FORCE_DWORD = 0x7FFFFFFF,
+};
+
+/* 403 */
+typedef enum _D3DLIGHTTYPE D3DLIGHTTYPE;
+
+/* 400 */
+struct _D3DCOLORVALUE
+{
+  float r;
+  float g;
+  float b;
+  float a;
+};
+
+/* 399 */
+typedef struct _D3DCOLORVALUE D3DCOLORVALUE;
+
+/* 406 */
+struct _D3DVECTOR
+{
+  float x;
+  float y;
+  float z;
+};
+
+/* 405 */
+typedef struct _D3DVECTOR D3DVECTOR;
+
+/* 402 */
+#pragma pack(push, 4)
+struct _D3DLIGHT9
+{
+  D3DLIGHTTYPE Type;
+  D3DCOLORVALUE Diffuse;
+  D3DCOLORVALUE Specular;
+  D3DCOLORVALUE Ambient;
+  D3DVECTOR Position;
+  D3DVECTOR Direction;
+  float Range;
+  float Falloff;
+  float Attenuation0;
+  float Attenuation1;
+  float Attenuation2;
+  float Theta;
+  float Phi;
+};
+#pragma pack(pop)
+
+/* 401 */
+typedef struct _D3DLIGHT9 D3DLIGHT9;
+
+/* 766 */
+struct __fixed CScnSubLight_174
+{
+  int nLen_0;
+  char *name_4;
+  char field_8;
+  char field_9;
+  char _gapA[2];
+  int field_C[26];
+  D3DLIGHT9 d3dLight_74;
+  D3DMATRIX *mat4x4_DC;
+  D3DMATRIX mat4x4_E0;
+  D3DMATRIX mat4x4_120;
+  CScnFrame_21C *ptr_160;
+  int nLen_164;
+  char *name_168;
+  int field_16C;
+  char field_170;
+  char field_171;
+  char field_172;
+  char field_173;
+};
+
+/* 712 */
+struct __fixed CFXUnk
+{
+  char field_0;
+};
+
+/* 606 */
+typedef struct ID3DXEffect *LPD3DXEFFECT;
+
+/* 709 */
+struct __fixed CEffectFixedFunctionParams
+{
+  LPD3DXEFFECT pFixedFunctionFX_0;
+  LPD3DXEFFECT pBoneTextureFX_4;
+  LPD3DXEFFECT pFixedFunctionVS2FX_8;
+  int FixedFunctionFX_g_mW;
+  int field_10;
+  int field_14;
+  int field_18;
+  int field_1C;
+  int field_20;
+  int field_24;
+  int field_28;
+  int field_2C;
+  int field_30;
+  int field_34;
+  int field_38;
+  int field_3C;
+  int field_40;
+  int field_44;
+  int field_48;
+  int field_4C;
+  int field_50;
+  int field_54;
+  int field_58;
+  int field_5C;
+  int field_60;
+  int field_64;
+  int field_68;
+  int field_6C;
+  int field_70;
+  int field_74;
+  int field_78;
+  int field_7C;
+  int field_80;
+  int field_84;
+  int field_88;
+  int field_8C;
+  int field_90;
+  int field_94;
+  int field_98;
+  int field_9C;
+  int field_A0;
+  int field_A4;
+  int field_A8;
+  int field_AC;
+  int field_B0;
+  int field_B4;
+  int field_B8;
+  int field_BC;
+  int field_C0;
+  int field_C4;
+  int field_C8;
+  int field_CC;
+  int field_D0;
+  int field_D4;
+  int field_D8;
+  int field_DC;
+  int field_E0;
+  int field_E4;
+  int field_E8;
+  int field_EC;
+  int field_F0;
+  int field_F4;
+  int field_F8;
+  int field_FC;
+  int field_100;
+  int FixedFunctionFX_osTechB_H_NoTex_UV3;
+  int BoneTextureFX_g_avX;
+  int field_10C;
+  int field_110;
+  int field_114;
+  int field_118;
+  int field_11C;
+  int field_120;
+  int field_124;
+  int field_128;
+  int pBoneTextureFX_osTech;
+  int FixedFunctionVS2FX_g_mW;
+  int field_134;
+  int field_138;
+  int field_13C;
+  int field_140;
+  int field_144;
+  int field_148;
+  int field_14C;
+  int field_150;
+  int field_154;
+  int field_158;
+  int field_15C;
+  int field_160;
+  int field_164;
+  int field_168;
+  int field_16C;
+  int field_170;
+  int field_174;
+  int field_178;
+  int field_17C;
+  int field_180;
+  int field_184;
+  int field_188;
+  int field_18C;
+  int field_190;
+  int field_194;
+  int field_198;
+  int field_19C;
+  int field_1A0;
+  int field_1A4;
+  int field_1A8;
+  int field_1AC;
+  int field_1B0;
+  int field_1B4;
+  int field_1B8;
+  int field_1BC;
+  int field_1C0;
+  int field_1C4;
+  int field_1C8;
+  int field_1CC;
+  int field_1D0;
+  int field_1D4;
+  int field_1D8;
+  int FixedFunctionVS2FX_osTechB_S_H_UV2;
+  int FixedFunctionVS2FX_osTechB_S_H_UV3;
+  int field_1E4;
+};
+
+/* 708 */
+struct __fixed CEffectAnaglyphParams
+{
+  IDirect3DDevice9 *pD3D9;
+  LPD3DXEFFECT pAnaglyphFX;
+  int g_txDecal;
+  int g_txBlack;
+  int g_fAlpha;
+  int osAnaglpyhOverlay;
+  IDirect3DBaseTexture9 *pBaseTexture_18;
+  LPDIRECT3DTEXTURE9 pTexture_40;
+  LPDIRECT3DTEXTURE9 pTexture_54;
+  IDirect3DSurface9 *pNewZStencilSurface_68;
+  IDirect3DSurface9 *pRenderTarget_6C;
+  IDirect3DSurface9 *pZStencilSurface_70;
+  int field_74;
+  int field_78;
+};
+
+/* 713 */
+struct __fixed CEffectSpecularParams
+{
+  int field_0;
+  int field_4;
+  LPD3DXEFFECT field_8[2];
+  int field_10;
+  int field_14;
+};
+
+/* 675 */
+typedef struct IDirectSound8 *LPDIRECTSOUND8;
+
+/* 682 */
+typedef struct IDirectSoundBuffer *LPDIRECTSOUNDBUFFER;
+
+/* 695 */
+typedef float D3DVALUE;
+
+/* 694 */
+struct _DS3DLISTENER
+{
+  DWORD dwSize;
+  D3DVECTOR vPosition;
+  D3DVECTOR vVelocity;
+  D3DVECTOR vOrientFront;
+  D3DVECTOR vOrientTop;
+  D3DVALUE flDistanceFactor;
+  D3DVALUE flRolloffFactor;
+  D3DVALUE flDopplerFactor;
+};
+
+/* 693 */
+typedef struct _DS3DLISTENER DS3DLISTENER;
+
+/* 456 */
+struct __fixed CDXSoundParamFX
+{
+  void *lpVtbl;
+  CString Str4;
+  int field_8;
+  char field_C[9];
+  float field_18;
+  float field_1C;
+  float field_20;
+  float field_24;
+  int field_28;
+  float field_2C;
+  int field_30;
+  int field_34;
+  float field_38;
+  float field_3C;
+  float field_40;
+  float field_44;
+  float field_48;
+  float field_4C;
+  float field_50;
+  float field_54;
+  float field_58;
+  float field_5C;
+  float field_60;
+  float field_64;
+  float field_68;
+  float field_6C;
+  int field_70;
+  float field_74;
+  float field_78;
+  float field_7C;
+  float field_80;
+  int field_84;
+  float field_88;
+  int field_8C;
+  int field_90;
+  int field_94;
+  float field_98;
+  float field_9C;
+  int field_A0;
+  int field_A4;
+  int field_A8;
+  float field_AC;
+  float field_B0;
+  int field_B4;
+  int field_B8;
+  int field_BC;
+  float field_C0;
+  float field_C4;
+  int field_C8;
+  float field_CC;
+  int field_D0;
+  float field_D4;
+  float field_D8;
+  float field_DC;
+  float field_E0;
+  int field_E4;
+  int field_E8;
+};
+
+/* 803 */
+struct _DS3DBUFFER
+{
+  DWORD dwSize;
+  D3DVECTOR vPosition;
+  D3DVECTOR vVelocity;
+  DWORD dwInsideConeAngle;
+  DWORD dwOutsideConeAngle;
+  D3DVECTOR vConeOrientation;
+  LONG lConeOutsideVolume;
+  D3DVALUE flMinDistance;
+  D3DVALUE flMaxDistance;
+  DWORD dwMode;
+};
+
+/* 805 */
+typedef struct _DS3DBUFFER DS3DBUFFER;
+
+/* 457 */
+struct __fixed CDXSoundParam3D
+{
+  void *lpVtbl;
+  CString Str4;
+  int field_8;
+  char field_C;
+  char field_D;
+  int field_10;
+  int field_14;
+  int field_18;
+  int field_1C;
+  int field_20;
+  int field_24;
+  int field_28;
+  int field_2C;
+  int field_30;
+  float field_34;
+  int field_38;
+  float field_3C;
+  int field_40;
+  float field_44;
+  float field_48;
+  float field_4C;
+  DS3DBUFFER ds3dbuf_50;
+  char field_90;
+  int dwCooperativeLevel_94;
+  int dwFlags_98;
+};
+
+/* 455 */
+struct __fixed CDXSoundStruct_25C
+{
+  LPDIRECTSOUND8 pDS8;
+  LPDIRECTSOUNDBUFFER pDS8Buffer_4;
+  IDirectSound3DListener *pDS83DListener_8;
+  D3DMATRIX matrix4x4_C;
+  D3DMATRIX matrix4x4_4C;
+  DS3DLISTENER listenerParams_8C;
+  char bComUninit_CC;
+  int field_D0;
+  CDXSoundParamFX DXSoundParamFX;
+  CDXSoundParam3D DXSoundParam3D;
+};
+
+/* 699 */
+struct __fixed CMouseState
+{
+  BYTE bButtons[4];
+  D2D_POINT_2F nCursorRaw;
+  int lZ;
+  D2D_POINT_2F nCursor;
+  char flags;
+};
+
+/* 610 */
+struct ID3DXFont
+{
+  ID3DXFontVtbl *lpVtbl;
+};
+
+/* 420 */
+struct __fixed CVector_T18
+{
+  int vec_0;
+  CVectorItem_T18 *pFirst;
+  CVectorItem_T18 *pLast;
+  CVectorItem_T18 *pEnd;
+};
+
+/* 419 */
+struct __fixed CStructInput_70
+{
+  CVector_T4 Vec4A;
+  CVector_T18 Vec24;
+  int nCount_20;
+  CVector_T4 Vec4B;
+  int field_34;
+  int field_38;
+  CVector_T4 Vec3;
+  CVector_T4 Vec4C;
+  float field_5C;
+  int field_60;
+  int field_64;
+  int field_68;
+  int field_6C;
+};
+
+/* 551 */
+struct __fixed CDlgCtrl
+{
+  ICDlgCtrlVtbl *lpVtbl;
+  int field_4;
+  int object_28_8[];
+};
+
+/* 425 */
+struct ICSB_CameraBaseVtbl
+{
+  void *(__thiscall *CSB_CameraBase__method_0_403560)(void *this, char);
+  char (__thiscall *CCameraBase__method_4_649330)(CSB_CameraBase *this, CSB_CameraNormal *pSBCameraNormal, CCameraKeyCfg *pCameraKeyCfg);
+  char (__thiscall *CCameraBase__method_8_6493E0)(int this);
+  int (__thiscall *CCameraBase__method_C_649490)(_DWORD **this, int, int, int, int);
+  int (__thiscall *CCameraBase__method_10_6494E0)(_DWORD **this, int);
+  int (__thiscall *CCameraBase__method_14_4034B0)(_DWORD **this, int, int, int, int, int);
+  int (__thiscall *CCameraBase__method_18_4034F0)(_DWORD **this);
+  int (__thiscall *CCameraBase__method_1C_403510)(_DWORD **this);
+};
+
+/* 563 */
+struct __fixed CCameraKeyParam
+{
+  ICCameraKeyParamVtbl *lpVtbl;
+  float flt_4;
+  float flt_8;
+  float flt_C;
+};
+
+/* 527 */
+struct __fixed CCameraInfo
+{
+  ICCameraInfoVtbl *lpVtbl;
+  int field_4;
+  int field_8;
+  int field_C;
+  int field_10;
+  int field_14;
+  int field_18;
+  int field_1C;
+  int field_20;
+  int field_24;
+  int field_28;
+  int field_2C;
+  float field_30;
+  float field_34;
+  char field_38;
+  char field_39;
+  char field_3A;
+  char field_3B;
+  char field_3C;
+  char field_3D;
+  char field_3E;
+  char field_3F;
+};
+
+/* 573 */
+struct CCameraNormalMembers
+{
+  char field_4;
+  int field_8;
+  char field_C;
+  char bNotDrawCenter;
+  char field_E;
+  int field_10;
+  D3DMATRIX mat4x4_14;
+  D3DMATRIX mat4x4_54;
+  D3DMATRIX mat4x4_94;
+  CCameraKeyParam camKeyParam_D4;
+  CCameraKeyParam camKeyParam_E4;
+  CCameraKeyParam camKeyParam_F4;
+  CCameraKeyParam camKeyParam_104;
+  CCameraKeyParam camKeyParam_114;
+  CCameraKeyParam camKeyParam_124;
+  CCameraKeyParam camKeyParam_134;
+  CCameraKeyParam camKeyParam_144;
+  CCameraInfo cam_info_154;
+  CCameraCalc *p_camera_calc_194;
+  CCameraCalc cam_calc_198;
+  CCameraCalc cam_calc_200;
+  int field_268;
+};
+
+/* 427 */
+struct __fixed CSB_CameraNormal
+{
+  ICSB_CameraNormalVtbl *lpVtbl;
+  CCameraNormalMembers base_;
+  CSB_CameraInfo csbcam_info_26C;
+  int field_2B4;
+  char field_2B8;
+};
+
+/* 426 */
+struct __fixed CCameraKeyCfg
+{
+  ICCameraKeyCfgVtbl *lpVtbl;
+  char field_4;
+  char field_5;
+  char field_6;
+  char field_7;
+  char field_8;
+  char field_9;
+  char field_A;
+  char field_B;
+  char field_C;
+  char field_D;
+  char field_E;
+  char field_F;
+  char field_10;
+  char field_11;
+  char field_12;
+  char field_13;
+  char field_14;
+  char field_15;
+  char field_16;
+  char field_17;
+  char field_18;
+  char field_19;
+  char field_1A;
+};
+
+/* 635 */
+struct ICSB_KeyVtbl
+{
+  _DWORD *(__thiscall *CSB_Key__sub_487B30)(_DWORD *this, char);
+};
+
+/* 437 */
+struct IDirect3DTexture9
+{
+  struct IDirect3DTexture9Vtbl *lpVtbl;
+};
+
+/* 627 */
+struct ICSB_CursorCtrlVtbl
+{
+  char *(__thiscall *CSB_CursorCtrl__sub_486BD0)(char *this, char);
+};
+
+/* 629 */
+struct ICSB_SpriteCtrlVtbl
+{
+  int (__thiscall *IsPointInRect_492FF0)(CSB_SpriteCtrl *this, int x, int y, _DWORD *pOut);
+};
+
+/* 921 */
+struct __fixed CVectorItem_T4
+{
+  char field_0;
+  char field_1;
+  char field_2;
+  char field_3;
+};
+
+/* 449 */
+typedef struct _D3DLOCKED_RECT D3DLOCKED_RECT;
+
+/* 448 */
+struct IDirect3DSurface9Vtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirect3DSurface9 *This, const IID *const riid, void **ppvObj);
+  ULONG (__stdcall *AddRef)(IDirect3DSurface9 *This);
+  ULONG (__stdcall *Release)(IDirect3DSurface9 *This);
+  HRESULT (__stdcall *GetDevice)(IDirect3DSurface9 *This, IDirect3DDevice9 **ppDevice);
+  HRESULT (__stdcall *SetPrivateData)(IDirect3DSurface9 *This, const GUID *const refguid, const void *pData, DWORD SizeOfData, DWORD Flags);
+  HRESULT (__stdcall *GetPrivateData)(IDirect3DSurface9 *This, const GUID *const refguid, void *pData, DWORD *pSizeOfData);
+  HRESULT (__stdcall *FreePrivateData)(IDirect3DSurface9 *This, const GUID *const refguid);
+  DWORD (__stdcall *SetPriority)(IDirect3DSurface9 *This, DWORD PriorityNew);
+  DWORD (__stdcall *GetPriority)(IDirect3DSurface9 *This);
+  void (__stdcall *PreLoad)(IDirect3DSurface9 *This);
+  D3DRESOURCETYPE (__stdcall *GetType)(IDirect3DSurface9 *This);
+  HRESULT (__stdcall *GetContainer)(IDirect3DSurface9 *This, const IID *const riid, void **ppContainer);
+  HRESULT (__stdcall *GetDesc)(IDirect3DSurface9 *This, D3DSURFACE_DESC *pDesc);
+  HRESULT (__stdcall *LockRect)(IDirect3DSurface9 *This, D3DLOCKED_RECT *pLockedRect, const RECT *pRect, DWORD Flags);
+  HRESULT (__stdcall *UnlockRect)(IDirect3DSurface9 *This);
+  HRESULT (__stdcall *GetDC)(IDirect3DSurface9 *This, HDC *phdc);
+  HRESULT (__stdcall *ReleaseDC)(IDirect3DSurface9 *This, HDC hdc);
+  LPCWSTR Name;
+  UINT Width;
+  UINT Height;
+  DWORD Usage;
+  D3DFORMAT Format;
+  D3DPOOL Pool;
+  D3DMULTISAMPLE_TYPE MultiSampleType;
+  DWORD MultiSampleQuality;
+  DWORD Priority;
+  UINT LockCount;
+  UINT DCCount;
+};
+
+/* 637 */
+struct ICSB_PathVtbl
+{
+  _DWORD *(__thiscall *CSB_Path__sub_49B980)(_DWORD *this, char);
+};
+
+/* 649 */
+struct ICSB_SettingVtbl
+{
+  _DWORD *(__thiscall *CSB_Setting__sub_483520)(_DWORD *this, char);
+};
+
+/* 639 */
+struct ICSB_SoundVtbl
+{
+  _DWORD *(__thiscall *CSB_Sound__sub_4A1150)(_DWORD *this, char);
+};
+
+/* 674 */
+struct __fixed CDXSnd
+{
+  CDXSoundBuffer *pDXSoundBuffer;
+  CDXSoundStruct_25C *pDXSoundStruct;
+};
+
+/* 537 */
+struct ICSB_GameInfoVtbl
+{
+  _DWORD *(__thiscall *CSB_GameInfo__sub_477C10)(_DWORD *this, char bFree);
+};
+
+/* 546 */
+struct ICSB_TimeVtbl
+{
+  _DWORD *(__thiscall *CSB_Time__sub_4776A0)(_DWORD *this, char);
+};
+
+/* 539 */
+struct ICSB_PersonalDataVtbl
+{
+  _DWORD *(__thiscall *CSB_PersonalData__sub_477A50)(CSB_PersonalData *this, char bFree);
+};
+
+/* 541 */
+struct ICSB_PossessionCtrlVtbl
+{
+  _DWORD *(__thiscall *CSB_PossessionCtrl__sub_477880)(_DWORD *this, char bFree);
+};
+
+/* 544 */
+struct ICSB_PlayerDataVtbl
+{
+  _DWORD *(__thiscall *CSB_PlayerData__sub_477B60)(_DWORD *this, char);
+};
+
+/* 989 */
+struct __fixed CBoneSwayStruct_18
+{
+  CScnFrame_21C *pscnsubobj21c_0;
+  D3DMATRIX *pmat4x4_4;
+  D3DMATRIX *pmat4x4_8;
+  CScnFrame_21C *pparent_C;
+  D3DMATRIX *pmat4x4_10;
+  D3DMATRIX *pmat4x4_14;
+};
+
+/* 988 */
+struct __fixed CBoneSwayStruct_174
+{
+  char pos_0;
+  CBoneSwayStruct_18 objs18_x10[10];
+  char gapF4[48];
+  D3DMATRIX mat4x4_124;
+  char field_164;
+  char byte_168;
+  char field_16B;
+  char field_16C;
+  char field_170;
+};
+
+/* 980 */
+struct __fixed CBoneSwayStruct_C
+{
+  int field_0;
+  int field_4;
+  int field_8;
+};
+
+/* 975 */
+struct CMuneSubStruct_C
+{
+  BYTE byte_24;
+  BYTE byte_25;
+  BYTE byte_26;
+  int field_28;
+  int field_2C;
+};
+
+/* 974 */
+struct __fixed CMuneStruct_6C
+{
+  int field_0;
+  int field_4;
+  int field_8;
+  int ptr_C;
+  int field_10;
+  int field_14;
+  int field_18;
+  int field_1C;
+  int field_20;
+  CMuneSubStruct_C objC_24;
+  int field_30;
+  int field_34;
+  float flt_38;
+  float flt_3C;
+  int field_40;
+  int field_44;
+  int field_48;
+  int field_4C;
+  float flt_50;
+  float flt_54;
+  float flt_58;
+  float flt_5C;
+  BYTE byte_60;
+  int field_64;
+  BYTE byte_68;
+  char field_69;
+  char field_6A;
+  char field_6B;
+};
+
+/* 973 */
+struct __fixed CMuneStruct_26C
+{
+  BYTE field_0;
+  __int16 nIndex_2;
+  char char_4[64];
+  int field_44;
+  char byte_48;
+  char byte_49;
+  int field_4C;
+  CMuneStruct_6C muneObj6C_50[5];
+};
+
+/* 651 */
+struct __fixed CBoneSwayBase
+{
+  ICBoneSwayBaseVtbl *lpVtbl;
+  char field_4;
+  char field_5;
+  CBoneSwayStruct_174 obj174_x5[5];
+  int ints_x5_74C[5];
+  CBoneSwayStruct_C objC_x5[5];
+  CMuneStruct_26C muneStruct26C;
+  CSpringCtrl *pSprintCtrls_A08[5];
+  CBoneSwayHistory *pBoneSwyHist_A1C[5];
+  CBoneSwayHistory *pBoneSwyHist_A30[5];
+};
+
+/* 653 */
+struct __fixed CMuneCtrl
+{
+  int lpVtbl;
+  CGlobal_A618 *pGlobalA618;
+  CSceneObjectTemp *pScnCwBody_8;
+  CBoneSwayBase array_cbone_sway_base[2];
+  char field_1494;
+  char obj_5_1495[5];
+  char field_149A;
+  CMuneStruct_9B50 *MuneStruct9B50_149C;
+  char field_14A0;
+  int obj_10_14A4;
+  int field_14B4;
+  char field_14B8;
+  D3DMATRIX mat4x4_14BC;
+};
+
+/* 1029 */
+struct CVector_CosCtrlStructC
+{
+  int _Alval;
+  CCosCtrlStruct_C *_Myfirst;
+  CCosCtrlStruct_C *_Mylast;
+  CCosCtrlStruct_C *_Myend;
+};
+
+/* 1015 */
+struct __fixed CSB_CosCtrl
+{
+  void *lpVtbl;
+  int field_4;
+  int field_8;
+  CVector_CosCtrlStructC cosCtrlstructcs;
+  int field_1C[5][2];
+  int field_44;
+  CSBZGlobal *pSBZGlobal;
+  CStruct_CCD4 *pStructCCD4;
+  CGlobal_A618 *pGlobalD618;
+  CSceneObjectTemp *pScnObjCwBody;
+};
+
+/* 1006 */
+struct __fixed CVector_T10
+{
+  int _Alval;
+  int _Myfirst;
+  int _Mylast;
+  int _Myend;
+};
+
+/* 1005 */
+struct __fixed CSB_VertexScaleCtrl
+{
+  void *lpVtbl;
+  CVector_T10 ArrayVertexScaleData_4;   ///< T = CVertexScaleData
+  CSBZGlobal *pSBZGlobal;
+  CStruct_CCD4 *structCCD4;
+};
+
+/* 615 */
+typedef D3DVECTOR D3DXVECTOR3;
+
+/* 747 */
+struct __fixed CScnFrame_21C
+{
+  int nNameLen;
+  char *pName;
+  int nChildCount;
+  CScnFrame_21C *pFirstChild;
+  CScnFrame_21C *pParent_;
+  D3DMATRIX mat4x4_14;
+  D3DMATRIX localMat4x4_54;
+  D3DMATRIX mat4x4_94;
+  D3DMATRIX invMat4x4_D4;
+  D3DMATRIX worldMat4x4_114;
+  int field_154;
+  int unknown_158[4];
+  int nSubMeshCount;
+  D3DXVECTOR3 bounds[2];
+  CScnSubMesh_11C *pSubMeshes;
+  __int16 nCountVertexDups;
+  char _gap18A[2];
+  int nMode_18C;                        ///< 0x141C
+                                        ///< 0x111C
+                                        ///< 0x112
+                                        ///< 0x412
+  int field_190;
+  CScnVertex_54 *pVertexes_194;
+  BYTE meshNumVec2PerVex;
+  char _gap199[3];
+  int nCountBones_19C;
+  CScnBone_50 *pBones_1A0;
+  float float_1A4;
+  int field_1A8;
+  BYTE byte_1AC;
+  BYTE byte_1AD;
+  char _gap1AE[2];
+  BYTE byFxIdx_1B0;
+  BYTE field_1B1;
+  char _gap1B2;
+  char byte_1B3;
+  char _gap1B4;
+  char byte_1B5;
+  char _gap1B6[2];
+  char byte_1B8;
+  char _gap1B9[3];
+  CSceneObjectTemp *pScbObj_1BC;
+  char field_1C0;
+  char field_1C1;
+  char field_1C2;
+  char _gap1C3;
+  int dwFlags_1C4;
+  char field_1C8;
+  char bSita_1C9;
+  char _gap1CA[2];
+  char _gap1CC[76];
+  char field_218;
+  char _gap219[3];
+};
+
+/* 550 */
+struct ISBLogoSceneVtbl
+{
+  SBLogoScene *(__thiscall *SBLogoScene__Destroy_544C90)(SBLogoScene *this, char);
+};
+
+/* 548 */
+struct ISBTitleSceneVtbl
+{
+  void *(__thiscall *SBTitleScene__Destroy_501000)(void *this, char);
+};
+
+/* 755 */
+struct __fixed CScnAnimMorphIndexSet_18
+{
+  int nNameLen;
+  char *pName;
+  int field_8;
+  int nCountVertices;
+  WORD *pMeshIndices;
+  WORD *pMorphIndices;
+};
+
+/* 756 */
+struct __fixed CScnAnimMorphKeyFrame_14
+{
+  int nNameLen;
+  char *pName;
+  int nCountVertices;
+  D3DXVECTOR3 *pPositionList;
+  D3DXVECTOR3 *pNormalList;
+};
+
+/* 757 */
+struct __fixed CScnAnimMorphClip_44
+{
+  int index;
+  int nMeshNameLen;
+  char *pMeshName;
+  CScnFrame_21C *pFrame;
+  int nNameLen;
+  char *pName;
+  CScnAnimMorphIndexSet_18 *pMorphIndexSet;
+  int nCountKeyFrameRefs;
+  CScnAnimMorphKeyFrameRef_15 *pMorphKeyFrameRefs;
+  int gap_24[8];
+};
+
+/* 749 */
+struct __fixed CScnSubObject_F4
+{
+  int field_0;
+  int field_4;
+  void *pIdxBuf_8;
+  void *pVertexes_C;
+  IDirect3DIndexBuffer9 *pIdxBuffer_10;
+  IDirect3DVertexBuffer9 *pVertexBuf_14;
+  IDirect3DVertexBuffer9 *pDxVertexBuf_18;
+  int field_1C[4];
+  int field_2C[4];
+  int field_3C[4];
+  int field_4C[4];
+  int field_5C[4];
+  int vec_6C[4][3];
+  int field_9C;
+  BYTE nCount_A0;
+  char field_A1;
+  char _gapA2[2];
+  int field_A4;
+  char field_A8;
+  char _gapA9[3];
+  int field_AC;
+  char field_B0;
+  char _gapB1[3];
+  LPDIRECT3DTEXTURE9 pTextures_B4[4];
+  IDirect3DSurface9 *pSurfLevel_C4[4];
+  LPDIRECT3DTEXTURE9 pTextures_D4[2];
+  IDirect3DSurface9 *pSurfLevels_DC[2];
+  LPDIRECT3DTEXTURE9 pDxTexture_E4;
+  IDirect3DSurface9 *pDxSurfLevel_E8;
+  IDirect3DSurface9 *pRenderTarget_EC;
+  IDirect3DSurface9 *pDepthStencilSurface_F0;
+};
+
+/* 1033 */
+typedef D3DCOLORVALUE DXGI_RGBA;
+
+/* 1032 */
+struct __fixed CScnMaterialAttr_44
+{
+  DXGI_RGBA diffuse;
+  DXGI_RGBA ambient;
+  DXGI_RGBA specular;
+  DXGI_RGBA emmisive;
+  float power;
+};
+
+/* 771 */
+struct __fixed CScnMaterialTex_1C
+{
+  int nLen_0;
+  char *name_4;
+  CStructImage_5C *pImage_8;
+  int unk_C[4];
+};
+
+/* 751 */
+struct __fixed CScnMaterial_134
+{
+  int nNameLen;
+  char *pName;
+  CScnMaterialAttr_44 attr1;
+  CScnMaterialTex_1C textures1[4];
+  int field_BC;
+  CScnMaterialTex_1C textures2[4];
+  int field_130;
+};
+
+/* 750 */
+struct __fixed CScnMaterialSect_58
+{
+  int nLen_0;
+  char *name_4;
+  CScnMaterial_134 *ptr_8;
+  CScnMaterialAttr_44 attr_C;
+  int nCountColors_50;
+  CScnMaterialColor_48 *ptr_54;
+};
+
+/* 753 */
+struct __fixed CScnXASection2_38
+{
+  int field_0;
+  int nLen_4;
+  char *name_8;
+  CScnFrame_21C *pScnFrame_C;
+  char field_10;
+  char field_11;
+  char _gap12[2];
+  int field_14;
+  char field_18;
+  char field_19;
+  char _gap1A[2];
+  int nSize_1C;
+  CScnXASection2Block_8 *pBlocks_20;
+  int field_24;
+  int field_28;
+  char field_2C;
+  char field_2D;
+  char _gap2E[2];
+  int field_30;
+  int field_34;
+};
+
+/* 759 */
+struct __fixed CScnXASection4_10
+{
+  int nCount_0;
+  CScnXASection4Item_AC *pItems_4;
+  char _gap8[8];
+};
+
+/* 762 */
+struct __fixed CScnAnimTrack_19
+{
+  int nNameLen;
+  char *pName;
+  int nCountKeyframes;
+  int field_C;
+  CScnAnimKeyFrame_34 *pAnimKeyframes;
+  CScnFrame_21C *pFrame;
+};
+
+/* 996 */
+struct __fixed CNeckStruct_18
+{
+  CScnFrame_21C *pScnSubObj21C_0;
+  CSceneObjectTemp *pScnObj_4;
+  CVector_T18 vecT18_8;
+};
+
+/* 993 */
+struct CNeckSturct_70
+{
+  char field_0[64];
+  int field_40;
+  int field_44;
+  int field_48;
+  int field_4C;
+  int field_50;
+  int field_54;
+  int field_58;
+  int field_5C;
+  int field_60;
+  int field_64;
+  int field_68;
+  int field_6C;
+};
+
+/* 995 */
+struct __fixed CNeckStruct_E14
+{
+  CNeckSturct_70 data[32];
+  int gapE00[5];
+};
+
+/* 535 */
+struct ICameraCalcVtbl
+{
+  _DWORD *(__thiscall *CCameraCalc__method_0_418A00)(_DWORD *this, char);
+  _DWORD *(__stdcall *CCameraCalc__Copy_4187B0)(_DWORD *, _DWORD *);
+};
+
+/* 572 */
+struct ICSB_CameraInfoVtbl
+{
+  CSB_CameraInfo *(__thiscall *Destroy_41B590)(CSB_CameraInfo *this, char bFree);
+  CSB_CameraInfo *(__stdcall *Copy_41B340)(CSB_CameraInfo *a1, CSB_CameraInfo *a2);
+};
+
+/* 889 */
+struct __fixed CScrSubObject_8
+{
+  char nPackType_0;
+  char _gap1[3];
+  CString str_4;
+};
+
+/* 894 */
+struct __fixed CScrSubObject_3
+{
+  CString str_0;
+  CString str_4;
+};
+
+/* 888 */
+struct __fixed CScrSubObject_54
+{
+  CPackFormatSecret *pPackFmtSec_0;
+  CScrSubObject_8 ScrSubObj_8_1;
+  CScrSubObject_3 ScrSubObj_3_sb00_00_pp_C;
+  CScrSubObject_3 ScrSubObj_3_sb00_00_pp_14;
+  CScrSubObject_3 ScrSubObj_3_sb03_00_pp_1C;
+  CScrSubObject_3 ScrSubObj_sb03_01_pp_24;
+  CScrSubObject_3 ScrSubObj_3_sb07_00_pp_2C;
+  CScrSubObject_3 ScrSubObj_3_34;
+  CScrSubObject_3 ScrSubObj_3_sb01_00_pp_3C;
+  CScrSubObject_3 ScrSubObj_3_sb01_00_pp_44;
+  CScrSubObject_3 ScrSubObj_3_sb02_99_pp_4C;
+};
+
+/* 946 */
+struct __fixed CISE_SDTIndex
+{
+  int nPageID_0;
+  int nBlockID_4;
+  char bPassThruBlock_8;
+  char bNextBlock_9;
+  char bDoneBlock_A;
+  char field_B;
+};
+
+/* 890 */
+struct __fixed CScrSubObject_7
+{
+  int field_0;
+  char field_4;
+  char field_5;
+  char field_6;
+  char field_7;
+};
+
+/* 892 */
+struct __fixed CScrSubObject_6B
+{
+  float fVolume_0;
+  char bMute_4;
+  char _gap5[3];
+};
+
+/* 893 */
+struct __fixed CScrSubObject_6C
+{
+  CScrSubObject_6B ScrSubObj_6B_0;
+  CScrSubObject_6B ScrSubObj_6B_8;
+  CScrSubObject_6B ScrSubObj_6B_10;
+  CScrSubObject_6B ScrSubObj_6B_18;
+};
+
+/* 891 */
+struct __fixed CScrSubObject_6A
+{
+  char byte_0;
+  char _gap1[3];
+  float flt_4;
+  CScrSubObject_6C ScrSubObj_6C_8;
+};
+
+/* 895 */
+struct CISE_ScriptPlayerMembers
+{
+  _DWORD dword4;
+  _DWORD dword8;
+  CScrSubObject_54 ScrSubObj_54_C;
+  CISE_SDTIndex sdtIndexes_60;
+  CSDT_Struct *pSDTStruct_6C;
+  CScrSubObject_7 ScrSubObj_7_70;
+  CScrSubObject_6A CScrSubObj_6A_78;
+  void *ptr_A0;
+  CISE_ScriptPlayer_SubMode_BackLog *pSubModeBackLog_A4;
+  CIS_InputCtrl *pCIS_InputCtrl_A8;
+  CScriptPlayer_MerahCtrl *pMerahCtrl_A8;
+  void *ptr_AC;
+  void *pTextBox_B0;
+  void *ptr_B4;
+  void *ptr_B8;
+  void *ptr_BC;
+  void *ptr_C0;
+  void *ptr_C4;
+  void *pMovieCtrl_C8;
+  void *pCIS_DefSpCtrl_CC;
+  CSP_Adv_Struct_2480 *AdvCharactr_Struct_2480;
+  void *pCursorCtrl_D4;
+  void *ptr_D8;
+  void *ptr_E0;
+  void *ptr_E4;
+  void *ptr_E8;
+  void *pCISE_ScriptPlayer_SceneShiftCtrl_EC;
+  void *ptr_F0;
+  void *pFunctionCall_F4;
+};
+
+/* 896 */
+struct __fixed CScrSubObject_3A
+{
+  char field_0;
+  char _gap1[3];
+  CScrSubObject_3B ScrSubObj_3B_4;
+  char field_10;
+  char _gap11[3];
+  CScrSubObject_3B ScrSubObjCDRGB_3B_14;
+};
+
+/* 884 */
+struct __fixed CIS_ScrPlayer
+{
+  ICIS_ScrPlayerVtbl *lpVtbl;
+  CISE_ScriptPlayerMembers base_;
+  CScrSubObject_3A ScrSubObj_3A_F8;
+};
+
+/* 650 */
+struct ICBPTestSceneVtbl
+{
+  CBPTestScene *(__thiscall *CBPTestScene__sub_418D80)(CBPTestScene *this, char bFree);
+};
+
+/* 632 */
+struct ICISE_SpriteCtrlVtbl
+{
+  int (__thiscall *CISE_SpriteCtrl__sub_471110)(_DWORD *this, int, int, int *);
+};
+
+/* 569 */
+struct ICIS_TestSceneVtbl
+{
+  _DWORD *(__thiscall *CIS_TestScene__sub_61EEE0)(_DWORD *this, char);
+};
+
+/* 594 */
+struct ID3DXEffect
+{
+  ID3DXEffectVtbl *lpVtbl;
+};
+
+/* 435 */
+struct IDirect3DDevice9
+{
+  struct IDirect3DDevice9Vtbl *lpVtbl;
+};
+
+/* 676 */
+struct IDirectSound8
+{
+  struct IDirectSound8Vtbl *lpVtbl;
+};
+
+/* 683 */
+struct IDirectSoundBuffer
+{
+  struct IDirectSoundBufferVtbl *lpVtbl;
+};
+
+/* 434 */
+typedef struct IDirect3DDevice9 *LPDIRECT3DDEVICE9;
+
+/* 613 */
+typedef struct ID3DXSprite *LPD3DXSPRITE;
+
+/* 614 */
+struct ID3DXFontVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(ID3DXFont *This, const IID *const iid, LPVOID *ppv);
+  ULONG (__stdcall *AddRef)(ID3DXFont *This);
+  ULONG (__stdcall *Release)(ID3DXFont *This);
+  HRESULT (__stdcall *GetDevice)(ID3DXFont *This, LPDIRECT3DDEVICE9 *ppDevice);
+  HRESULT (__stdcall *GetDescA)(ID3DXFont *This, D3DXFONT_DESCA *pDesc);
+  HRESULT (__stdcall *GetDescW)(ID3DXFont *This, D3DXFONT_DESCW *pDesc);
+  BOOL (__stdcall *GetTextMetricsA)(ID3DXFont *This, TEXTMETRICA *pTextMetrics);
+  BOOL (__stdcall *GetTextMetricsW)(ID3DXFont *This, TEXTMETRICW *pTextMetrics);
+  HDC (__stdcall *GetDC)(ID3DXFont *This);
+  HRESULT (__stdcall *GetGlyphData)(ID3DXFont *This, UINT Glyph, LPDIRECT3DTEXTURE9 *ppTexture, RECT *pBlackBox, POINT *pCellInc);
+  HRESULT (__stdcall *PreloadCharacters)(ID3DXFont *This, UINT First, UINT Last);
+  HRESULT (__stdcall *PreloadGlyphs)(ID3DXFont *This, UINT First, UINT Last);
+  HRESULT (__stdcall *PreloadTextA)(ID3DXFont *This, LPCSTR pString, INT Count);
+  HRESULT (__stdcall *PreloadTextW)(ID3DXFont *This, LPCWSTR pString, INT Count);
+  INT (__stdcall *DrawTextA)(ID3DXFont *This, LPD3DXSPRITE pSprite, LPCSTR pString, INT Count, LPRECT pRect, DWORD Format, D3DCOLOR Color);
+  INT (__stdcall *DrawTextW)(ID3DXFont *This, LPD3DXSPRITE pSprite, LPCWSTR pString, INT Count, LPRECT pRect, DWORD Format, D3DCOLOR Color);
+  HRESULT (__stdcall *OnLostDevice)(ID3DXFont *This);
+  HRESULT (__stdcall *OnResetDevice)(ID3DXFont *This);
+};
+
+/* 922 */
+struct __fixed CVectorItem_T18
+{
+  char field_0;
+  char field_1;
+  char field_2;
+  char field_3;
+  char field_4;
+  char field_5;
+  char field_6;
+  char field_7;
+  char field_8;
+  char field_9;
+  char field_A;
+  char field_B;
+  char field_C;
+  char field_D;
+  char field_E;
+  char field_F;
+  char field_10;
+  char field_11;
+  char field_12;
+  char field_13;
+  char field_14;
+  char field_15;
+  char field_16;
+  char field_17;
+};
+
+/* 552 */
+struct ICDlgCtrlVtbl
+{
+  _DWORD *(__thiscall *CDlgCtrl__sub_406470)(_DWORD *this, char);
+};
+
+/* 570 */
+struct ICSB_CameraNormalVtbl
+{
+  _DWORD *(__thiscall *Destroy_486060)(CSB_CameraNormal *this, char);
+  CSB_CameraNormal *(__thiscall *CSB_CameraNormal__method_4_485040)(CSB_CameraNormal *this);
+  char (__thiscall *CCameraNormal__method_8_647830)(CCameraNormal *this, int a2, CString *a3, CPackFormatSecret *a4, char a5, CString *a6, char a7);
+  char (__thiscall *CCameraNormal__method_C_6478D0)(CCameraNormal *this);
+  int (__thiscall *CCameraNormal__method_10_647930)(CCameraNormal *this, CCameraKeyCfg *a2, int a3, int a4, int a5, int a6);
+  char (__thiscall *CCameraNormal__method_14_647A80)(CCameraNormal *this, CCameraKeyCfg *a2, unsigned int a3);
+  char (__thiscall *CSB_CameraNormal__method_18_484960)(_DWORD *this, int, int, float, float, float);
+  char (__thiscall *CSB_CameraNormal__method_1C_483940)(int this, float, float, float);
+  char (__thiscall *CSB_CameraNormal__method_20_483B50)(int this, float);
+  char (__thiscall *CSB_CameraNormal__method_24_483C00)(int this, float);
+  char (__thiscall *CSB_CameraNormal__method_28_483D10)(int this, float);
+  char (__thiscall *CSB_CameraNormal__method_2C_483E20)(int this, float);
+  char (__thiscall *CSB_CameraNormal__method_30_483F30)(int this, float);
+  char (__thiscall *CSB_CameraNormal__method_34_483FD0)(int this, float);
+  char (__thiscall *CSB_CameraNormal__method_38_484070)(int this);
+  char (__stdcall *CCameraNormal__method_3C_6491A0)(CCameraNormal *a1, int a2, char a3);
+  int (__thiscall *CCameraNormal__method_40_485CF0)(CCameraNormal *this);
+  int (__thiscall *CCameraNormal__method_44_485E00)(CCameraNormal *this, int a1);
+  int (__thiscall *CCameraNormal__method_48_485E20)(CCameraNormal *this, int a1);
+  int (__thiscall *CCameraNormal__method_4C_485E40)(CCameraNormal *this, int a1);
+  int (__thiscall *CCameraNormal__method_50_485E60)(CCameraNormal *this, int a1);
+  int (__thiscall *CCameraNormal__method_54_485E80)(CCameraNormal *this, int a1);
+  int (__thiscall *CCameraNormal__method_58_485EA0)(int this, int);
+  int (__thiscall *CSB_CameraNormal__method_5C_485EF0)(int this, int);
+  int (__thiscall *CSB_CameraNormal__method_60_485F10)(int this, int);
+};
+
+/* 564 */
+struct ICCameraKeyParamVtbl
+{
+  _DWORD *(__thiscall *Destroy_485BB0)(_DWORD *this, char);
+  double (__thiscall *method_4_647440)(float *this, unsigned int, char, char);
+  void (__thiscall *method_8_44E000)(void *this, void *a2);
+  double (__thiscall *method_C_485B40)(float *this);
+  int (__thiscall *method_10_485B60)(_DWORD *this, int, int);
+  _DWORD *(__thiscall *method_14_485B80)(_DWORD *this, _DWORD *, _DWORD *);
+};
+
+/* 566 */
+struct ICCameraInfoVtbl
+{
+  CCameraInfo *(__thiscall *Destroy_418CB0)(CCameraInfo *this, char bFree);
+  CCameraInfo *(__stdcall *Copy_418AF0)(CCameraInfo *a1, CCameraInfo *a2);
+};
+
+/* 560 */
+struct ICCameraKeyCfgVtbl
+{
+  CCameraKeyCfg *(__thiscall *Destroy_403140)(CCameraKeyCfg *this, char);
+  char (__thiscall *CCameraKeyCfg__method_4_647270)(_BYTE *this);
+  char (__thiscall *CCameraKeyCfg__method_8_6472C0)(_BYTE *this);
+};
+
+/* 442 */
+enum _D3DTEXTUREFILTERTYPE
+{
+  D3DTEXF_NONE = 0x0,
+  D3DTEXF_POINT = 0x1,
+  D3DTEXF_LINEAR = 0x2,
+  D3DTEXF_ANISOTROPIC = 0x3,
+  D3DTEXF_PYRAMIDALQUAD = 0x6,
+  D3DTEXF_GAUSSIANQUAD = 0x7,
+  D3DTEXF_CONVOLUTIONMONO = 0x8,
+  D3DTEXF_FORCE_DWORD = 0x7FFFFFFF,
+};
+
+/* 441 */
+typedef enum _D3DTEXTUREFILTERTYPE D3DTEXTUREFILTERTYPE;
+
+/* 438 */
+struct IDirect3DTexture9Vtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirect3DTexture9 *This, const IID *const riid, void **ppvObj);
+  ULONG (__stdcall *AddRef)(IDirect3DTexture9 *This);
+  ULONG (__stdcall *Release)(IDirect3DTexture9 *This);
+  HRESULT (__stdcall *GetDevice)(IDirect3DTexture9 *This, IDirect3DDevice9 **ppDevice);
+  HRESULT (__stdcall *SetPrivateData)(IDirect3DTexture9 *This, const GUID *const refguid, const void *pData, DWORD SizeOfData, DWORD Flags);
+  HRESULT (__stdcall *GetPrivateData)(IDirect3DTexture9 *This, const GUID *const refguid, void *pData, DWORD *pSizeOfData);
+  HRESULT (__stdcall *FreePrivateData)(IDirect3DTexture9 *This, const GUID *const refguid);
+  DWORD (__stdcall *SetPriority)(IDirect3DTexture9 *This, DWORD PriorityNew);
+  DWORD (__stdcall *GetPriority)(IDirect3DTexture9 *This);
+  void (__stdcall *PreLoad)(IDirect3DTexture9 *This);
+  D3DRESOURCETYPE (__stdcall *GetType)(IDirect3DTexture9 *This);
+  DWORD (__stdcall *SetLOD)(IDirect3DTexture9 *This, DWORD LODNew);
+  DWORD (__stdcall *GetLOD)(IDirect3DTexture9 *This);
+  DWORD (__stdcall *GetLevelCount)(IDirect3DTexture9 *This);
+  HRESULT (__stdcall *SetAutoGenFilterType)(IDirect3DTexture9 *This, D3DTEXTUREFILTERTYPE FilterType);
+  D3DTEXTUREFILTERTYPE (__stdcall *GetAutoGenFilterType)(IDirect3DTexture9 *This);
+  void (__stdcall *GenerateMipSubLevels)(IDirect3DTexture9 *This);
+  HRESULT (__stdcall *GetLevelDesc)(IDirect3DTexture9 *This, UINT Level, D3DSURFACE_DESC *pDesc);
+  HRESULT (__stdcall *GetSurfaceLevel)(IDirect3DTexture9 *This, UINT Level, IDirect3DSurface9 **ppSurfaceLevel);
+  HRESULT (__stdcall *LockRect)(IDirect3DTexture9 *This, UINT Level, D3DLOCKED_RECT *pLockedRect, const RECT *pRect, DWORD Flags);
+  HRESULT (__stdcall *UnlockRect)(IDirect3DTexture9 *This, UINT Level);
+  HRESULT (__stdcall *AddDirtyRect)(IDirect3DTexture9 *This, const RECT *pDirtyRect);
+  LPCWSTR Name;
+  UINT Width;
+  UINT Height;
+  UINT Levels;
+  DWORD Usage;
+  D3DFORMAT Format;
+  D3DPOOL Pool;
+  DWORD Priority;
+  DWORD LOD;
+  D3DTEXTUREFILTERTYPE FilterType;
+  UINT LockCount;
+};
+
+/* 450 */
+#pragma pack(push, 4)
+struct _D3DLOCKED_RECT
+{
+  INT Pitch;
+  void *pBits;
+};
+#pragma pack(pop)
+
+/* 644 */
+struct CDXSoundBufferMembers
+{
+  CString Str_0;
+  int cbMemSize_4;
+  int cbDataSize_8;
+  int dwDurationMs_C;
+  char field_10;
+  int fCurrentLevel_14;
+  int nMaxLoops_18;
+  int nLoopCount_1C;
+  int dwPlayFlags_20;
+  LPDIRECTSOUNDBUFFER pDSBuffer_24;
+  int dwBufferFlags_28;
+  int lVolume_2C;
+  CDXSoundStruct_25C *pSoundStruct25C_30;
+  int field_34;
+};
+
+/* 641 */
+struct __fixed CDXSoundBuffer
+{
+  ICDXSoundBufferVtbl *lpVtbl;
+  CDXSoundBufferMembers m_;
+};
+
+/* 652 */
+struct ICBoneSwayBaseVtbl
+{
+  _DWORD *(__thiscall *CBoneSwayBase__sub_41EED0)(_DWORD *this, char);
+};
+
+/* 976 */
+struct __fixed CSpringCtrl
+{
+  ICSpringCtrlVtbl *lpVtbl;
+  int field_4;
+  int field_8;
+  int field_C;
+  int field_10;
+  int field_14;
+  int field_18;
+  WORD field_1C;
+  WORD field_1E;
+  __int16 nCount_20;
+  CSpringStruct_3C *pSpringStruct3C_24;
+  __int16 nCount_28;
+  CSpringStruct_14 *pSprintStruct14_2C;
+  int field_30;
+  int field_34;
+  int field_38;
+  int field_3C;
+  int field_40;
+  int field_44;
+};
+
+/* 982 */
+struct CHistoryBaseMembers
+{
+  int nCount_4;
+  D3DXVECTOR3 d3dvectors_x5[5];
+  D3DXVECTOR3 *pd3dvector3_x5[5];
+};
+
+/* 983 */
+struct __fixed CTimeHistoryData
+{
+  void *lpVtbl;
+  int field_4;
+  int field_8;
+  int field_C;
+  D3DXVECTOR3 d3dvector3_10;
+};
+
+/* 984 */
+struct CTimeHistoryBaseMembers
+{
+  int nCount_58;
+  CTimeHistoryData timeHistoryData_x5[5];
+  CTimeHistoryData *ptrTimeHistoryDatas_x5[5];
+};
+
+/* 977 */
+struct __fixed CBoneSwayHistory
+{
+  ICBoneSwayHistoryVtbl *lpVtbl;
+  CHistoryBaseMembers historybase_;
+  CTimeHistoryBaseMembers timehistorybase_58;
+};
+
+/* 968 */
+struct __fixed CMuneStruct_9B50
+{
+  float formatVersion_0;
+  WORD count_4;
+  CMuneStruct_26C muneObj26C_8[64];
+  int field_9B08;
+  int field_9B24;
+  int field_9B48;
+};
+
+/* 1025 */
+struct __fixed CCosCtrlStruct_C
+{
+  CSceneObjectTemp *pXX_0;
+  CClothHairCol *pClothHairCol_4;
+  CClothHair *pClothHair_8;
+};
+
+/* 782 */
+typedef struct IDirect3DCubeTexture9 *LPDIRECT3DCUBETEXTURE9;
+
+/* 1031 */
+struct __fixed CScnSubMeshStruct_18
+{
+  int field_0;
+  int field_4;
+  int field_8;
+  int field_C;
+  int field_10;
+  char byte_14;
+};
+
+/* 767 */
+struct __fixed CScnSubMesh_11C
+{
+  char field_0;
+  char _gap1[2];
+  char nIdx_3;
+  char field_4;
+  char field_5;
+  char _gap6[2];
+  char field_8;
+  char field_9;
+  char flags_A;
+  char field_B;
+  int field_C;
+  int nMaterialIdx_10;
+  int nFacesVexCount_14;
+  CScnFace *pfacesVexIndices_18;
+  IDirect3DIndexBuffer9 *pIndexBuffer_1C;
+  CScnMaterial_134 *pMaterial_20;
+  int nVerticesCount_24;
+  IDirect3DVertexBuffer9 *pVertexBuf_28;
+  CScnVertex_54 *pVertexes_2C;
+  D3DXVECTOR2 *pVecs2_30;
+  D3DXVECTOR2 *pVecs2_34;
+  D3DXVECTOR2 *pVecs2_38;
+  char _gap3C[4];
+  float field_40[5];
+  IDirect3DVertexBuffer9 *pVertexBuf_54;
+  LPDIRECT3DTEXTURE9 pTexture_58;
+  int field_5C;
+  int field_60;
+  int field_64;
+  int field_68;
+  LPDIRECT3DTEXTURE9 pTexture_6C;
+  LPDIRECT3DTEXTURE9 pTexture_70;
+  LPDIRECT3DCUBETEXTURE9 pCubeTexture_74;
+  float flt_78;
+  CScnSubMeshStruct_18 objs_18_7C[4];
+  float floats_DC[16];
+};
+
+/* 769 */
+struct __fixed CScnBaseVertex_34
+{
+  __int16 index;
+  char _gap2[2];
+  D3DXVECTOR3 position;
+  int weights[3];
+  char boneIndices[4];
+  D3DXVECTOR3 normal;
+  float u;
+  float v;
+};
+
+/* 768 */
+struct __fixed CScnVertex_54
+{
+  CScnBaseVertex_34 base_0;
+  float flt_34;
+  float flt_38;
+  float flt_3C;
+  float flt_40;
+  int field_44;
+  int field_48;
+  char _gap4C[8];
+};
+
+/* 597 */
+typedef D3DMATRIX D3DXMATRIX;
+
+/* 770 */
+struct __fixed CScnBone_50
+{
+  int nLen_0;
+  char *name_4;
+  int index;
+  D3DXMATRIX mat4x4;
+  D3DXMATRIX *pMat4x4_4C;
+};
+
+/* 758 */
+struct __fixed CScnAnimMorphKeyFrameRef_15
+{
+  int index;
+  int nNameLen;
+  char byte_8;
+  char byte_9;
+  char _gapA[2];
+  char *pName;
+  CScnAnimMorphKeyFrame_14 *pMorphKeyFrame;
+};
+
+/* 752 */
+struct __fixed CScnMaterialColor_48
+{
+  CScnMaterialAttr_44 attr_0;
+  int field_44;
+};
+
+/* 754 */
+struct __fixed CScnXASection2Block_8
+{
+  int field_0;
+  BYTE byte_4;
+  char _gap5[3];
+};
+
+/* 760 */
+struct __fixed CScnXASection4Item_AC
+{
+  int field_0[26];
+  char field_68[64];
+  int field_A8;
+};
+
+/* 787 */
+struct D3DXQUATERNION
+{
+  FLOAT x;
+  FLOAT y;
+  FLOAT z;
+  FLOAT w;
+};
+
+/* 763 */
+struct __fixed CScnAnimKeyFrame_34
+{
+  int index;
+  D3DXQUATERNION rotation;
+  char bytes_14[8];
+  D3DXVECTOR3 translation;
+  D3DXVECTOR3 scaling;
+};
+
+/* 885 */
+struct ICIS_ScrPlayerVtbl
+{
+  _DWORD *(__thiscall *CIS_ScrPlayer__sub_62EDF0)(_DWORD *this, char);
+  char *(__thiscall *CIS_ScrPlayer__sub_62DE40)(_DWORD *this);
+  void (__thiscall *CISE_ScriptPlayer__sub_444A30)(int this);
+  CSBZGlobal *(__thiscall *CIS_ScrPlayer__sub_62EA50)(int this);
+  void (__thiscall *CISE_ScriptPlayer__sub_446290)(int *this);
+  void (*field_14)();
+  void (*field_18)();
+  void (*field_1C)();
+  void (*field_20)();
+  void (*field_24)();
+  char (*CIS_ScrPlayer__unknown_libname_176)();
+};
+
+/* 908 */
+struct __fixed CTextLogCtrlVecSubItem_8
+{
+  int len_0;
+  char *pszName_4;
+};
+
+/* 927 */
+struct __fixed CSDT_Struct
+{
+  int nFormat_0;
+  CTextLogCtrlVecSubItem_8 txtItem_4;
+  int nCount_C;
+  CSDT_SubMember_18 *subMember18_10;
+};
+
+/* 899 */
+struct __fixed CISE_ScriptPlayer_SubMode_Common_Members
+{
+  CIS_ScrPlayer *pCIS_ScrPlayer;
+};
+
+/* 898 */
+struct __fixed CISE_ScriptPlayer_SubMode_BackLog
+{
+  ICISE_ScriptPlayer_SubMode_BackLogVtbl *lpVtbl;
+  CISE_ScriptPlayer_SubMode_Common_Members base_;
+  CStructImage2D_80 *pImage_8;
+};
+
+/* 954 */
+struct __fixed CSP_InputCtrl_Struct_14A
+{
+  char bOnKey0;
+  char bOnKey2;
+  char bOnKey1;
+  char bOnKey1E;
+  char bOnKey1F;
+  char field_5;
+  char bOnKey20_ZPos_6;
+  char bOnKey21_ZNeg_7;
+  int field_8;
+  int field_C;
+  char field_10;
+  char field_11;
+  char field_12;
+  char bOnKey14;
+};
+
+/* 957 */
+struct __fixed CSP_InputCtrl_Struct_14B
+{
+  D2D_POINT_2F cursorRawX;
+  int lZ;
+  D2D_POINT_2F MouseCursor;
+};
+
+/* 953 */
+struct __fixed CSP_InputCtrl_Field8
+{
+  CSP_InputCtrl_Struct_14A obj_14A_0;
+  char field_14;
+  char bOnKey23;
+  char _gap16[2];
+  CSP_InputCtrl_Struct_14B obj_14B_18;
+};
+
+/* 955 */
+struct __fixed CISE_ScriptPlayer_InputCtrlMembers
+{
+  CIS_ScrPlayer *pScrPlayer_4;
+  CSP_InputCtrl_Field8 obj_8;
+  char field_34;
+  char _gap31[3];
+};
+
+/* 951 */
+struct __fixed CIS_InputCtrl
+{
+  ICIS_InputCtrlVtbl *lpVtbl;
+  CISE_ScriptPlayer_InputCtrlMembers base_;
+};
+
+/* 925 */
+struct __fixed CScriptPlayer_MerahCtrlSubObj_14
+{
+  int field_0;
+  int field_4;
+  int field_8;
+  int field_C;
+  CStructImage2D_80 *pImage_10;
+};
+
+/* 924 */
+struct __fixed CScriptPlayer_MerahCtrlSubObj_18
+{
+  CScriptPlayer_MerahCtrlSubObj_14 subObj_10_0;
+  int field_14;
+};
+
+/* 923 */
+struct __fixed CScriptPlayer_MerahCtrl
+{
+  CScriptPlayer_MerahCtrlSubObj_18 arrSubObj_18_0[2];
+  CScriptPlayer_MerahCtrlSubObj_10 *pSubObj_10_30;
+};
+
+/* 959 */
+struct __fixed CSP_Adv_Struct_124
+{
+  char field_0;
+  char name_1[260];
+  char _gap105[3];
+  char field_108;
+  char field_109;
+  char field_10A;
+  char field_10B;
+  char field_10C;
+  char field_10D;
+  char field_10E;
+  char field_10F;
+  char field_110;
+  char field_111;
+  char field_112;
+  char field_113;
+  char field_114;
+  char field_115;
+  char field_116;
+  char field_117;
+  char field_118;
+  char field_119;
+  char field_11A;
+  char field_11B;
+  float field_11C;
+  char field_120;
+  char _gap121[3];
+};
+
+/* 958 */
+struct __fixed CSP_Adv_Struct_2480
+{
+  CSP_Adv_Struct_124 data_0[32];
+};
+
+/* 596 */
+typedef LPCSTR D3DXHANDLE;
+
+/* 604 */
+typedef struct ID3DXEffectPool *LPD3DXEFFECTPOOL;
+
+/* 605 */
+typedef struct ID3DXEffectStateManager *LPD3DXEFFECTSTATEMANAGER;
+
+/* 607 */
+struct ID3DXEffectVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(ID3DXEffect *This, const IID *const iid, LPVOID *ppv);
+  ULONG (__stdcall *AddRef)(ID3DXEffect *This);
+  ULONG (__stdcall *Release)(ID3DXEffect *This);
+  HRESULT (__stdcall *GetDesc)(ID3DXEffect *This, D3DXEFFECT_DESC *pDesc);
+  HRESULT (__stdcall *GetParameterDesc)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXPARAMETER_DESC *pDesc);
+  HRESULT (__stdcall *GetTechniqueDesc)(ID3DXEffect *This, D3DXHANDLE hTechnique, D3DXTECHNIQUE_DESC *pDesc);
+  HRESULT (__stdcall *GetPassDesc)(ID3DXEffect *This, D3DXHANDLE hPass, D3DXPASS_DESC *pDesc);
+  HRESULT (__stdcall *GetFunctionDesc)(ID3DXEffect *This, D3DXHANDLE hShader, D3DXFUNCTION_DESC *pDesc);
+  D3DXHANDLE (__stdcall *GetParameter)(ID3DXEffect *This, D3DXHANDLE hParameter, UINT Index);
+  D3DXHANDLE (__stdcall *GetParameterByName)(ID3DXEffect *This, D3DXHANDLE hParameter, LPCSTR pName);
+  D3DXHANDLE (__stdcall *GetParameterBySemantic)(ID3DXEffect *This, D3DXHANDLE hParameter, LPCSTR pSemantic);
+  D3DXHANDLE (__stdcall *GetParameterElement)(ID3DXEffect *This, D3DXHANDLE hParameter, UINT Index);
+  D3DXHANDLE (__stdcall *GetTechnique)(ID3DXEffect *This, UINT Index);
+  D3DXHANDLE (__stdcall *GetTechniqueByName)(ID3DXEffect *This, LPCSTR pName);
+  D3DXHANDLE (__stdcall *GetPass)(ID3DXEffect *This, D3DXHANDLE hTechnique, UINT Index);
+  D3DXHANDLE (__stdcall *GetPassByName)(ID3DXEffect *This, D3DXHANDLE hTechnique, LPCSTR pName);
+  D3DXHANDLE (__stdcall *GetFunction)(ID3DXEffect *This, UINT Index);
+  D3DXHANDLE (__stdcall *GetFunctionByName)(ID3DXEffect *This, LPCSTR pName);
+  D3DXHANDLE (__stdcall *GetAnnotation)(ID3DXEffect *This, D3DXHANDLE hObject, UINT Index);
+  D3DXHANDLE (__stdcall *GetAnnotationByName)(ID3DXEffect *This, D3DXHANDLE hObject, LPCSTR pName);
+  HRESULT (__stdcall *SetValue)(ID3DXEffect *This, D3DXHANDLE hParameter, LPCVOID pData, UINT Bytes);
+  HRESULT (__stdcall *GetValue)(ID3DXEffect *This, D3DXHANDLE hParameter, LPVOID pData, UINT Bytes);
+  HRESULT (__stdcall *SetBool)(ID3DXEffect *This, D3DXHANDLE hParameter, BOOL b);
+  HRESULT (__stdcall *GetBool)(ID3DXEffect *This, D3DXHANDLE hParameter, BOOL *pb);
+  HRESULT (__stdcall *SetBoolArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const BOOL *pb, UINT Count);
+  HRESULT (__stdcall *GetBoolArray)(ID3DXEffect *This, D3DXHANDLE hParameter, BOOL *pb, UINT Count);
+  HRESULT (__stdcall *SetInt)(ID3DXEffect *This, D3DXHANDLE hParameter, INT n);
+  HRESULT (__stdcall *GetInt)(ID3DXEffect *This, D3DXHANDLE hParameter, INT *pn);
+  HRESULT (__stdcall *SetIntArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const INT *pn, UINT Count);
+  HRESULT (__stdcall *GetIntArray)(ID3DXEffect *This, D3DXHANDLE hParameter, INT *pn, UINT Count);
+  HRESULT (__stdcall *SetFloat)(ID3DXEffect *This, D3DXHANDLE hParameter, FLOAT f);
+  HRESULT (__stdcall *GetFloat)(ID3DXEffect *This, D3DXHANDLE hParameter, FLOAT *pf);
+  HRESULT (__stdcall *SetFloatArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const FLOAT *pf, UINT Count);
+  HRESULT (__stdcall *GetFloatArray)(ID3DXEffect *This, D3DXHANDLE hParameter, FLOAT *pf, UINT Count);
+  HRESULT (__stdcall *SetVector)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXVECTOR4 *pVector);
+  HRESULT (__stdcall *GetVector)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXVECTOR4 *pVector);
+  HRESULT (__stdcall *SetVectorArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXVECTOR4 *pVector, UINT Count);
+  HRESULT (__stdcall *GetVectorArray)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXVECTOR4 *pVector, UINT Count);
+  HRESULT (__stdcall *SetMatrix)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXMATRIX *pMatrix);
+  HRESULT (__stdcall *GetMatrix)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXMATRIX *pMatrix);
+  HRESULT (__stdcall *SetMatrixArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXMATRIX *pMatrix, UINT Count);
+  HRESULT (__stdcall *GetMatrixArray)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXMATRIX *pMatrix, UINT Count);
+  HRESULT (__stdcall *SetMatrixPointerArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXMATRIX **ppMatrix, UINT Count);
+  HRESULT (__stdcall *GetMatrixPointerArray)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXMATRIX **ppMatrix, UINT Count);
+  HRESULT (__stdcall *SetMatrixTranspose)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXMATRIX *pMatrix);
+  HRESULT (__stdcall *GetMatrixTranspose)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXMATRIX *pMatrix);
+  HRESULT (__stdcall *SetMatrixTransposeArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXMATRIX *pMatrix, UINT Count);
+  HRESULT (__stdcall *GetMatrixTransposeArray)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXMATRIX *pMatrix, UINT Count);
+  HRESULT (__stdcall *SetMatrixTransposePointerArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXMATRIX **ppMatrix, UINT Count);
+  HRESULT (__stdcall *GetMatrixTransposePointerArray)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXMATRIX **ppMatrix, UINT Count);
+  HRESULT (__stdcall *SetString)(ID3DXEffect *This, D3DXHANDLE hParameter, LPCSTR pString);
+  HRESULT (__stdcall *GetString)(ID3DXEffect *This, D3DXHANDLE hParameter, LPCSTR *ppString);
+  HRESULT (__stdcall *SetTexture)(ID3DXEffect *This, D3DXHANDLE hParameter, LPDIRECT3DBASETEXTURE9 pTexture);
+  HRESULT (__stdcall *GetTexture)(ID3DXEffect *This, D3DXHANDLE hParameter, LPDIRECT3DBASETEXTURE9 *ppTexture);
+  HRESULT (__stdcall *GetPixelShader)(ID3DXEffect *This, D3DXHANDLE hParameter, LPDIRECT3DPIXELSHADER9 *ppPShader);
+  HRESULT (__stdcall *GetVertexShader)(ID3DXEffect *This, D3DXHANDLE hParameter, LPDIRECT3DVERTEXSHADER9 *ppVShader);
+  HRESULT (__stdcall *SetArrayRange)(ID3DXEffect *This, D3DXHANDLE hParameter, UINT uStart, UINT uEnd);
+  HRESULT (__stdcall *GetPool)(ID3DXEffect *This, LPD3DXEFFECTPOOL *ppPool);
+  HRESULT (__stdcall *SetTechnique)(ID3DXEffect *This, D3DXHANDLE hTechnique);
+  D3DXHANDLE (__stdcall *GetCurrentTechnique)(ID3DXEffect *This);
+  HRESULT (__stdcall *ValidateTechnique)(ID3DXEffect *This, D3DXHANDLE hTechnique);
+  HRESULT (__stdcall *FindNextValidTechnique)(ID3DXEffect *This, D3DXHANDLE hTechnique, D3DXHANDLE *pTechnique);
+  BOOL (__stdcall *IsParameterUsed)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXHANDLE hTechnique);
+  HRESULT (__stdcall *Begin)(ID3DXEffect *This, UINT *pPasses, DWORD Flags);
+  HRESULT (__stdcall *BeginPass)(ID3DXEffect *This, UINT Pass);
+  HRESULT (__stdcall *CommitChanges)(ID3DXEffect *This);
+  HRESULT (__stdcall *EndPass)(ID3DXEffect *This);
+  HRESULT (__stdcall *End)(ID3DXEffect *This);
+  HRESULT (__stdcall *GetDevice)(ID3DXEffect *This, LPDIRECT3DDEVICE9 *ppDevice);
+  HRESULT (__stdcall *OnLostDevice)(ID3DXEffect *This);
+  HRESULT (__stdcall *OnResetDevice)(ID3DXEffect *This);
+  HRESULT (__stdcall *SetStateManager)(ID3DXEffect *This, LPD3DXEFFECTSTATEMANAGER pManager);
+  HRESULT (__stdcall *GetStateManager)(ID3DXEffect *This, LPD3DXEFFECTSTATEMANAGER *ppManager);
+  HRESULT (__stdcall *BeginParameterBlock)(ID3DXEffect *This);
+  D3DXHANDLE (__stdcall *EndParameterBlock)(ID3DXEffect *This);
+  HRESULT (__stdcall *ApplyParameterBlock)(ID3DXEffect *This, D3DXHANDLE hParameterBlock);
+  HRESULT (__stdcall *DeleteParameterBlock)(ID3DXEffect *This, D3DXHANDLE hParameterBlock);
+  HRESULT (__stdcall *CloneEffect)(ID3DXEffect *This, LPDIRECT3DDEVICE9 pDevice, LPD3DXEFFECT *ppEffect);
+  HRESULT (__stdcall *SetRawValue)(ID3DXEffect *This, D3DXHANDLE hParameter, LPCVOID pData, UINT ByteOffset, UINT Bytes);
+};
+
+/* 385 */
+typedef struct _D3DCAPS9 D3DCAPS9;
+
+/* 383 */
+typedef struct _D3DDISPLAYMODE D3DDISPLAYMODE;
+
+/* 371 */
+typedef struct _D3DDEVICE_CREATION_PARAMETERS D3DDEVICE_CREATION_PARAMETERS;
+
+/* 375 */
+typedef struct _D3DPRESENT_PARAMETERS_ D3DPRESENT_PARAMETERS;
+
+/* 407 */
+typedef struct _D3DGAMMARAMP D3DGAMMARAMP;
+
+/* 369 */
+enum MACRO_D3DFVF
+{
+  D3DFVF_RESERVED0 = 0x1,
+  D3DFVF_POSITION_MASK = 0x400E,
+  D3DFVF_XYZ = 0x2,
+  D3DFVF_XYZRHW = 0x4,
+  D3DFVF_XYZB1 = 0x6,
+  D3DFVF_XYZB2 = 0x8,
+  D3DFVF_XYZB3 = 0xA,
+  D3DFVF_XYZB4 = 0xC,
+  D3DFVF_XYZB5 = 0xE,
+  D3DFVF_XYZW = 0x4002,
+  D3DFVF_NORMAL = 0x10,
+  D3DFVF_PSIZE = 0x20,
+  D3DFVF_DIFFUSE = 0x40,
+  D3DFVF_SPECULAR = 0x80,
+  D3DFVF_TEXCOUNT_MASK = 0xF00,
+  D3DFVF_TEXCOUNT_SHIFT = 0x8,
+  D3DFVF_TEX0 = 0x0,
+  D3DFVF_TEX1 = 0x100,
+  D3DFVF_TEX2 = 0x200,
+  D3DFVF_TEX3 = 0x300,
+  D3DFVF_TEX4 = 0x400,
+  D3DFVF_TEX5 = 0x500,
+  D3DFVF_TEX6 = 0x600,
+  D3DFVF_TEX7 = 0x700,
+  D3DFVF_TEX8 = 0x800,
+  D3DFVF_LASTBETA_UBYTE4 = 0x1000,
+  D3DFVF_LASTBETA_D3DCOLOR = 0x8000,
+  D3DFVF_RESERVED2 = 0x6000,
+};
+
+/* 391 */
+typedef struct _D3DVIEWPORT9 D3DVIEWPORT9;
+
+/* 397 */
+typedef struct _D3DMATERIAL9 D3DMATERIAL9;
+
+/* 374 */
+enum _D3DDEVTYPE
+{
+  D3DDEVTYPE_HAL = 0x1,
+  D3DDEVTYPE_REF = 0x2,
+  D3DDEVTYPE_SW = 0x3,
+  D3DDEVTYPE_NULLREF = 0x4,
+  D3DDEVTYPE_FORCE_DWORD = 0x7FFFFFFF,
+};
+
+/* 373 */
+typedef enum _D3DDEVTYPE D3DDEVTYPE;
+
+/* 372 */
+#pragma pack(push, 4)
+struct _D3DDEVICE_CREATION_PARAMETERS
+{
+  UINT AdapterOrdinal;
+  D3DDEVTYPE DeviceType;
+  HWND hFocusWindow;
+  DWORD BehaviorFlags;
+};
+#pragma pack(pop)
+
+/* 382 */
+enum _D3DSWAPEFFECT
+{
+  D3DSWAPEFFECT_DISCARD = 0x1,
+  D3DSWAPEFFECT_FLIP = 0x2,
+  D3DSWAPEFFECT_COPY = 0x3,
+  D3DSWAPEFFECT_OVERLAY = 0x4,
+  D3DSWAPEFFECT_FLIPEX = 0x5,
+  D3DSWAPEFFECT_FORCE_DWORD = 0x7FFFFFFF,
+};
+
+/* 381 */
+typedef enum _D3DSWAPEFFECT D3DSWAPEFFECT;
+
+/* 376 */
+#pragma pack(push, 4)
+struct _D3DPRESENT_PARAMETERS_
+{
+  UINT BackBufferWidth;
+  UINT BackBufferHeight;
+  D3DFORMAT BackBufferFormat;
+  UINT BackBufferCount;
+  D3DMULTISAMPLE_TYPE MultiSampleType;
+  DWORD MultiSampleQuality;
+  D3DSWAPEFFECT SwapEffect;
+  HWND hDeviceWindow;
+  BOOL Windowed;
+  BOOL EnableAutoDepthStencil;
+  D3DFORMAT AutoDepthStencilFormat;
+  DWORD Flags;
+  UINT FullScreen_RefreshRateInHz;
+  UINT PresentationInterval;
+};
+#pragma pack(pop)
+
+/* 384 */
+#pragma pack(push, 4)
+struct _D3DDISPLAYMODE
+{
+  UINT Width;
+  UINT Height;
+  UINT RefreshRate;
+  D3DFORMAT Format;
+};
+#pragma pack(pop)
+
+/* 388 */
+#pragma pack(push, 4)
+struct _D3DVSHADERCAPS2_0
+{
+  DWORD Caps;
+  INT DynamicFlowControlDepth;
+  INT NumTemps;
+  INT StaticFlowControlDepth;
+};
+#pragma pack(pop)
+
+/* 387 */
+typedef struct _D3DVSHADERCAPS2_0 D3DVSHADERCAPS2_0;
+
+/* 390 */
+#pragma pack(push, 4)
+struct _D3DPSHADERCAPS2_0
+{
+  DWORD Caps;
+  INT DynamicFlowControlDepth;
+  INT NumTemps;
+  INT StaticFlowControlDepth;
+  INT NumInstructionSlots;
+};
+#pragma pack(pop)
+
+/* 389 */
+typedef struct _D3DPSHADERCAPS2_0 D3DPSHADERCAPS2_0;
+
+/* 386 */
+#pragma pack(push, 4)
+struct _D3DCAPS9
+{
+  D3DDEVTYPE DeviceType;
+  UINT AdapterOrdinal;
+  DWORD Caps;
+  DWORD Caps2;
+  DWORD Caps3;
+  DWORD PresentationIntervals;
+  DWORD CursorCaps;
+  DWORD DevCaps;
+  DWORD PrimitiveMiscCaps;
+  DWORD RasterCaps;
+  DWORD ZCmpCaps;
+  DWORD SrcBlendCaps;
+  DWORD DestBlendCaps;
+  DWORD AlphaCmpCaps;
+  DWORD ShadeCaps;
+  DWORD TextureCaps;
+  DWORD TextureFilterCaps;
+  DWORD CubeTextureFilterCaps;
+  DWORD VolumeTextureFilterCaps;
+  DWORD TextureAddressCaps;
+  DWORD VolumeTextureAddressCaps;
+  DWORD LineCaps;
+  DWORD MaxTextureWidth;
+  DWORD MaxTextureHeight;
+  DWORD MaxVolumeExtent;
+  DWORD MaxTextureRepeat;
+  DWORD MaxTextureAspectRatio;
+  DWORD MaxAnisotropy;
+  float MaxVertexW;
+  float GuardBandLeft;
+  float GuardBandTop;
+  float GuardBandRight;
+  float GuardBandBottom;
+  float ExtentsAdjust;
+  DWORD StencilCaps;
+  DWORD FVFCaps;
+  DWORD TextureOpCaps;
+  DWORD MaxTextureBlendStages;
+  DWORD MaxSimultaneousTextures;
+  DWORD VertexProcessingCaps;
+  DWORD MaxActiveLights;
+  DWORD MaxUserClipPlanes;
+  DWORD MaxVertexBlendMatrices;
+  DWORD MaxVertexBlendMatrixIndex;
+  float MaxPointSize;
+  DWORD MaxPrimitiveCount;
+  DWORD MaxVertexIndex;
+  DWORD MaxStreams;
+  DWORD MaxStreamStride;
+  DWORD VertexShaderVersion;
+  DWORD MaxVertexShaderConst;
+  DWORD PixelShaderVersion;
+  float PixelShader1xMaxValue;
+  DWORD DevCaps2;
+  float MaxNpatchTessellationLevel;
+  DWORD Reserved5;
+  UINT MasterAdapterOrdinal;
+  UINT AdapterOrdinalInGroup;
+  UINT NumberOfAdaptersInGroup;
+  DWORD DeclTypes;
+  DWORD NumSimultaneousRTs;
+  DWORD StretchRectFilterCaps;
+  D3DVSHADERCAPS2_0 VS20Caps;
+  D3DPSHADERCAPS2_0 PS20Caps;
+  DWORD VertexTextureFilterCaps;
+  DWORD MaxVShaderInstructionsExecuted;
+  DWORD MaxPShaderInstructionsExecuted;
+  DWORD MaxVertexShader30InstructionSlots;
+  DWORD MaxPixelShader30InstructionSlots;
+};
+#pragma pack(pop)
+
+/* 392 */
+#pragma pack(push, 4)
+struct _D3DVIEWPORT9
+{
+  DWORD X;
+  DWORD Y;
+  DWORD Width;
+  DWORD Height;
+  float MinZ;
+  float MaxZ;
+};
+#pragma pack(pop)
+
+/* 398 */
+#pragma pack(push, 4)
+struct _D3DMATERIAL9
+{
+  D3DCOLORVALUE Diffuse;
+  D3DCOLORVALUE Ambient;
+  D3DCOLORVALUE Specular;
+  D3DCOLORVALUE Emissive;
+  float Power;
+};
+#pragma pack(pop)
+
+/* 408 */
+#pragma pack(push, 4)
+struct _D3DGAMMARAMP
+{
+  WORD red[256];
+  WORD green[256];
+  WORD blue[256];
+};
+#pragma pack(pop)
+
+/* 370 */
+struct IDirect3DDevice9Vtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirect3DDevice9 *This, const IID *const riid, void **ppvObj);
+  ULONG (__stdcall *AddRef)(IDirect3DDevice9 *This);
+  ULONG (__stdcall *Release)(IDirect3DDevice9 *This);
+  HRESULT (__stdcall *TestCooperativeLevel)(IDirect3DDevice9 *This);
+  UINT (__stdcall *GetAvailableTextureMem)(IDirect3DDevice9 *This);
+  HRESULT (__stdcall *EvictManagedResources)(IDirect3DDevice9 *This);
+  HRESULT (__stdcall *GetDirect3D)(IDirect3DDevice9 *This, IDirect3D9 **ppD3D9);
+  HRESULT (__stdcall *GetDeviceCaps)(IDirect3DDevice9 *This, D3DCAPS9 *pCaps);
+  HRESULT (__stdcall *GetDisplayMode)(IDirect3DDevice9 *This, UINT iSwapChain, D3DDISPLAYMODE *pMode);
+  HRESULT (__stdcall *GetCreationParameters)(IDirect3DDevice9 *This, D3DDEVICE_CREATION_PARAMETERS *pParameters);
+  HRESULT (__stdcall *SetCursorProperties)(IDirect3DDevice9 *This, UINT XHotSpot, UINT YHotSpot, IDirect3DSurface9 *pCursorBitmap);
+  void (__stdcall *SetCursorPosition)(IDirect3DDevice9 *This, int X, int Y, DWORD Flags);
+  BOOL (__stdcall *ShowCursor)(IDirect3DDevice9 *This, BOOL bShow);
+  HRESULT (__stdcall *CreateAdditionalSwapChain)(IDirect3DDevice9 *This, D3DPRESENT_PARAMETERS *pPresentationParameters, IDirect3DSwapChain9 **pSwapChain);
+  HRESULT (__stdcall *GetSwapChain)(IDirect3DDevice9 *This, UINT iSwapChain, IDirect3DSwapChain9 **pSwapChain);
+  UINT (__stdcall *GetNumberOfSwapChains)(IDirect3DDevice9 *This);
+  HRESULT (__stdcall *Reset)(IDirect3DDevice9 *This, D3DPRESENT_PARAMETERS *pPresentationParameters);
+  HRESULT (__stdcall *Present)(IDirect3DDevice9 *This, const RECT *pSourceRect, const RECT *pDestRect, HWND hDestWindowOverride, const RGNDATA *pDirtyRegion);
+  HRESULT (__stdcall *GetBackBuffer)(IDirect3DDevice9 *This, UINT iSwapChain, UINT iBackBuffer, D3DBACKBUFFER_TYPE Type, IDirect3DSurface9 **ppBackBuffer);
+  HRESULT (__stdcall *GetRasterStatus)(IDirect3DDevice9 *This, UINT iSwapChain, D3DRASTER_STATUS *pRasterStatus);
+  HRESULT (__stdcall *SetDialogBoxMode)(IDirect3DDevice9 *This, BOOL bEnableDialogs);
+  void (__stdcall *SetGammaRamp)(IDirect3DDevice9 *This, UINT iSwapChain, DWORD Flags, const D3DGAMMARAMP *pRamp);
+  void (__stdcall *GetGammaRamp)(IDirect3DDevice9 *This, UINT iSwapChain, D3DGAMMARAMP *pRamp);
+  HRESULT (__stdcall *CreateTexture)(IDirect3DDevice9 *This, UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture9 **ppTexture, HANDLE *pSharedHandle);
+  HRESULT (__stdcall *CreateVolumeTexture)(IDirect3DDevice9 *This, UINT Width, UINT Height, UINT Depth, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DVolumeTexture9 **ppVolumeTexture, HANDLE *pSharedHandle);
+  HRESULT (__stdcall *CreateCubeTexture)(IDirect3DDevice9 *This, UINT EdgeLength, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DCubeTexture9 **ppCubeTexture, HANDLE *pSharedHandle);
+  HRESULT (__stdcall *CreateVertexBuffer)(IDirect3DDevice9 *This, UINT Length, DWORD Usage, MACRO_D3DFVF FVF, D3DPOOL Pool, IDirect3DVertexBuffer9 **ppVertexBuffer, HANDLE *pSharedHandle);
+  HRESULT (__stdcall *CreateIndexBuffer)(IDirect3DDevice9 *This, UINT Length, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DIndexBuffer9 **ppIndexBuffer, HANDLE *pSharedHandle);
+  HRESULT (__stdcall *CreateRenderTarget)(IDirect3DDevice9 *This, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9 **ppSurface, HANDLE *pSharedHandle);
+  HRESULT (__stdcall *CreateDepthStencilSurface)(IDirect3DDevice9 *This, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Discard, IDirect3DSurface9 **ppSurface, HANDLE *pSharedHandle);
+  HRESULT (__stdcall *UpdateSurface)(IDirect3DDevice9 *This, IDirect3DSurface9 *pSourceSurface, const RECT *pSourceRect, IDirect3DSurface9 *pDestinationSurface, const POINT *pDestPoint);
+  HRESULT (__stdcall *UpdateTexture)(IDirect3DDevice9 *This, IDirect3DBaseTexture9 *pSourceTexture, IDirect3DBaseTexture9 *pDestinationTexture);
+  HRESULT (__stdcall *GetRenderTargetData)(IDirect3DDevice9 *This, IDirect3DSurface9 *pRenderTarget, IDirect3DSurface9 *pDestSurface);
+  HRESULT (__stdcall *GetFrontBufferData)(IDirect3DDevice9 *This, UINT iSwapChain, IDirect3DSurface9 *pDestSurface);
+  HRESULT (__stdcall *StretchRect)(IDirect3DDevice9 *This, IDirect3DSurface9 *pSourceSurface, const RECT *pSourceRect, IDirect3DSurface9 *pDestSurface, const RECT *pDestRect, D3DTEXTUREFILTERTYPE Filter);
+  HRESULT (__stdcall *ColorFill)(IDirect3DDevice9 *This, IDirect3DSurface9 *pSurface, const RECT *pRect, D3DCOLOR color);
+  HRESULT (__stdcall *CreateOffscreenPlainSurface)(IDirect3DDevice9 *This, UINT Width, UINT Height, D3DFORMAT Format, D3DPOOL Pool, IDirect3DSurface9 **ppSurface, HANDLE *pSharedHandle);
+  HRESULT (__stdcall *SetRenderTarget)(IDirect3DDevice9 *This, DWORD RenderTargetIndex, IDirect3DSurface9 *pRenderTarget);
+  HRESULT (__stdcall *GetRenderTarget)(IDirect3DDevice9 *This, DWORD RenderTargetIndex, IDirect3DSurface9 **ppRenderTarget);
+  HRESULT (__stdcall *SetDepthStencilSurface)(IDirect3DDevice9 *This, IDirect3DSurface9 *pNewZStencil);
+  HRESULT (__stdcall *GetDepthStencilSurface)(IDirect3DDevice9 *This, IDirect3DSurface9 **ppZStencilSurface);
+  HRESULT (__stdcall *BeginScene)(IDirect3DDevice9 *This);
+  HRESULT (__stdcall *EndScene)(IDirect3DDevice9 *This);
+  HRESULT (__stdcall *Clear)(IDirect3DDevice9 *This, DWORD Count, const D3DRECT *pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil);
+  HRESULT (__stdcall *SetTransform)(IDirect3DDevice9 *This, D3DTRANSFORMSTATETYPE State, const D3DMATRIX *pMatrix);
+  HRESULT (__stdcall *GetTransform)(IDirect3DDevice9 *This, D3DTRANSFORMSTATETYPE State, D3DMATRIX *pMatrix);
+  HRESULT (__stdcall *MultiplyTransform)(IDirect3DDevice9 *This, D3DTRANSFORMSTATETYPE, const D3DMATRIX *);
+  HRESULT (__stdcall *SetViewport)(IDirect3DDevice9 *This, const D3DVIEWPORT9 *pViewport);
+  HRESULT (__stdcall *GetViewport)(IDirect3DDevice9 *This, D3DVIEWPORT9 *pViewport);
+  HRESULT (__stdcall *SetMaterial)(IDirect3DDevice9 *This, const D3DMATERIAL9 *pMaterial);
+  HRESULT (__stdcall *GetMaterial)(IDirect3DDevice9 *This, D3DMATERIAL9 *pMaterial);
+  HRESULT (__stdcall *SetLight)(IDirect3DDevice9 *This, DWORD Index, const D3DLIGHT9 *);
+  HRESULT (__stdcall *GetLight)(IDirect3DDevice9 *This, DWORD Index, D3DLIGHT9 *);
+  HRESULT (__stdcall *LightEnable)(IDirect3DDevice9 *This, DWORD Index, BOOL Enable);
+  HRESULT (__stdcall *GetLightEnable)(IDirect3DDevice9 *This, DWORD Index, BOOL *pEnable);
+  HRESULT (__stdcall *SetClipPlane)(IDirect3DDevice9 *This, DWORD Index, const float *pPlane);
+  HRESULT (__stdcall *GetClipPlane)(IDirect3DDevice9 *This, DWORD Index, float *pPlane);
+  HRESULT (__stdcall *SetRenderState)(IDirect3DDevice9 *This, D3DRENDERSTATETYPE State, DWORD Value);
+  HRESULT (__stdcall *GetRenderState)(IDirect3DDevice9 *This, D3DRENDERSTATETYPE State, DWORD *pValue);
+  HRESULT (__stdcall *CreateStateBlock)(IDirect3DDevice9 *This, D3DSTATEBLOCKTYPE Type, IDirect3DStateBlock9 **ppSB);
+  HRESULT (__stdcall *BeginStateBlock)(IDirect3DDevice9 *This);
+  HRESULT (__stdcall *EndStateBlock)(IDirect3DDevice9 *This, IDirect3DStateBlock9 **ppSB);
+  HRESULT (__stdcall *SetClipStatus)(IDirect3DDevice9 *This, const D3DCLIPSTATUS9 *pClipStatus);
+  HRESULT (__stdcall *GetClipStatus)(IDirect3DDevice9 *This, D3DCLIPSTATUS9 *pClipStatus);
+  HRESULT (__stdcall *GetTexture)(IDirect3DDevice9 *This, DWORD Stage, IDirect3DBaseTexture9 **ppTexture);
+  HRESULT (__stdcall *SetTexture)(IDirect3DDevice9 *This, DWORD Stage, IDirect3DBaseTexture9 *pTexture);
+  HRESULT (__stdcall *GetTextureStageState)(IDirect3DDevice9 *This, DWORD Stage, D3DTEXTURESTAGESTATETYPE Type, DWORD *pValue);
+  HRESULT (__stdcall *SetTextureStageState)(IDirect3DDevice9 *This, DWORD Stage, D3DTEXTURESTAGESTATETYPE Type, DWORD Value);
+  HRESULT (__stdcall *GetSamplerState)(IDirect3DDevice9 *This, DWORD Sampler, D3DSAMPLERSTATETYPE Type, DWORD *pValue);
+  HRESULT (__stdcall *SetSamplerState)(IDirect3DDevice9 *This, DWORD Sampler, D3DSAMPLERSTATETYPE Type, DWORD Value);
+  HRESULT (__stdcall *ValidateDevice)(IDirect3DDevice9 *This, DWORD *pNumPasses);
+  HRESULT (__stdcall *SetPaletteEntries)(IDirect3DDevice9 *This, UINT PaletteNumber, const PALETTEENTRY *pEntries);
+  HRESULT (__stdcall *GetPaletteEntries)(IDirect3DDevice9 *This, UINT PaletteNumber, PALETTEENTRY *pEntries);
+  HRESULT (__stdcall *SetCurrentTexturePalette)(IDirect3DDevice9 *This, UINT PaletteNumber);
+  HRESULT (__stdcall *GetCurrentTexturePalette)(IDirect3DDevice9 *This, UINT *PaletteNumber);
+  HRESULT (__stdcall *SetScissorRect)(IDirect3DDevice9 *This, const RECT *pRect);
+  HRESULT (__stdcall *GetScissorRect)(IDirect3DDevice9 *This, RECT *pRect);
+  HRESULT (__stdcall *SetSoftwareVertexProcessing)(IDirect3DDevice9 *This, BOOL bSoftware);
+  BOOL (__stdcall *GetSoftwareVertexProcessing)(IDirect3DDevice9 *This);
+  HRESULT (__stdcall *SetNPatchMode)(IDirect3DDevice9 *This, float nSegments);
+  float (__stdcall *GetNPatchMode)(IDirect3DDevice9 *This);
+  HRESULT (__stdcall *DrawPrimitive)(IDirect3DDevice9 *This, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount);
+  HRESULT (__stdcall *DrawIndexedPrimitive)(IDirect3DDevice9 *This, D3DPRIMITIVETYPE, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
+  HRESULT (__stdcall *DrawPrimitiveUP)(IDirect3DDevice9 *This, D3DPRIMITIVETYPE PrimitiveType, UINT PrimitiveCount, const void *pVertexStreamZeroData, UINT VertexStreamZeroStride);
+  HRESULT (__stdcall *DrawIndexedPrimitiveUP)(IDirect3DDevice9 *This, D3DPRIMITIVETYPE PrimitiveType, UINT MinVertexIndex, UINT NumVertices, UINT PrimitiveCount, const void *pIndexData, D3DFORMAT IndexDataFormat, const void *pVertexStreamZeroData, UINT VertexStreamZeroStride);
+  HRESULT (__stdcall *ProcessVertices)(IDirect3DDevice9 *This, UINT SrcStartIndex, UINT DestIndex, UINT VertexCount, IDirect3DVertexBuffer9 *pDestBuffer, IDirect3DVertexDeclaration9 *pVertexDecl, DWORD Flags);
+  HRESULT (__stdcall *CreateVertexDeclaration)(IDirect3DDevice9 *This, const D3DVERTEXELEMENT9 *pVertexElements, IDirect3DVertexDeclaration9 **ppDecl);
+  HRESULT (__stdcall *SetVertexDeclaration)(IDirect3DDevice9 *This, IDirect3DVertexDeclaration9 *pDecl);
+  HRESULT (__stdcall *GetVertexDeclaration)(IDirect3DDevice9 *This, IDirect3DVertexDeclaration9 **ppDecl);
+  HRESULT (__stdcall *SetFVF)(IDirect3DDevice9 *This, DWORD FVF);
+  HRESULT (__stdcall *GetFVF)(IDirect3DDevice9 *This, DWORD *pFVF);
+  HRESULT (__stdcall *CreateVertexShader)(IDirect3DDevice9 *This, const DWORD *pFunction, IDirect3DVertexShader9 **ppShader);
+  HRESULT (__stdcall *SetVertexShader)(IDirect3DDevice9 *This, IDirect3DVertexShader9 *pShader);
+  HRESULT (__stdcall *GetVertexShader)(IDirect3DDevice9 *This, IDirect3DVertexShader9 **ppShader);
+  HRESULT (__stdcall *SetVertexShaderConstantF)(IDirect3DDevice9 *This, UINT StartRegister, const float *pConstantData, UINT Vector4fCount);
+  HRESULT (__stdcall *GetVertexShaderConstantF)(IDirect3DDevice9 *This, UINT StartRegister, float *pConstantData, UINT Vector4fCount);
+  HRESULT (__stdcall *SetVertexShaderConstantI)(IDirect3DDevice9 *This, UINT StartRegister, const int *pConstantData, UINT Vector4iCount);
+  HRESULT (__stdcall *GetVertexShaderConstantI)(IDirect3DDevice9 *This, UINT StartRegister, int *pConstantData, UINT Vector4iCount);
+  HRESULT (__stdcall *SetVertexShaderConstantB)(IDirect3DDevice9 *This, UINT StartRegister, const BOOL *pConstantData, UINT BoolCount);
+  HRESULT (__stdcall *GetVertexShaderConstantB)(IDirect3DDevice9 *This, UINT StartRegister, BOOL *pConstantData, UINT BoolCount);
+  HRESULT (__stdcall *SetStreamSource)(IDirect3DDevice9 *This, UINT StreamNumber, IDirect3DVertexBuffer9 *pStreamData, UINT OffsetInBytes, UINT Stride);
+  HRESULT (__stdcall *GetStreamSource)(IDirect3DDevice9 *This, UINT StreamNumber, IDirect3DVertexBuffer9 **ppStreamData, UINT *OffsetInBytes, UINT *pStride);
+  HRESULT (__stdcall *SetStreamSourceFreq)(IDirect3DDevice9 *This, UINT StreamNumber, UINT Divider);
+  HRESULT (__stdcall *GetStreamSourceFreq)(IDirect3DDevice9 *This, UINT StreamNumber, UINT *Divider);
+  HRESULT (__stdcall *SetIndices)(IDirect3DDevice9 *This, IDirect3DIndexBuffer9 *pIndexData);
+  HRESULT (__stdcall *GetIndices)(IDirect3DDevice9 *This, IDirect3DIndexBuffer9 **ppIndexData);
+  HRESULT (__stdcall *CreatePixelShader)(IDirect3DDevice9 *This, const DWORD *pFunction, IDirect3DPixelShader9 **ppShader);
+  HRESULT (__stdcall *SetPixelShader)(IDirect3DDevice9 *This, IDirect3DPixelShader9 *pShader);
+  HRESULT (__stdcall *GetPixelShader)(IDirect3DDevice9 *This, IDirect3DPixelShader9 **ppShader);
+  HRESULT (__stdcall *SetPixelShaderConstantF)(IDirect3DDevice9 *This, UINT StartRegister, const float *pConstantData, UINT Vector4fCount);
+  HRESULT (__stdcall *GetPixelShaderConstantF)(IDirect3DDevice9 *This, UINT StartRegister, float *pConstantData, UINT Vector4fCount);
+  HRESULT (__stdcall *SetPixelShaderConstantI)(IDirect3DDevice9 *This, UINT StartRegister, const int *pConstantData, UINT Vector4iCount);
+  HRESULT (__stdcall *GetPixelShaderConstantI)(IDirect3DDevice9 *This, UINT StartRegister, int *pConstantData, UINT Vector4iCount);
+  HRESULT (__stdcall *SetPixelShaderConstantB)(IDirect3DDevice9 *This, UINT StartRegister, const BOOL *pConstantData, UINT BoolCount);
+  HRESULT (__stdcall *GetPixelShaderConstantB)(IDirect3DDevice9 *This, UINT StartRegister, BOOL *pConstantData, UINT BoolCount);
+  HRESULT (__stdcall *DrawRectPatch)(IDirect3DDevice9 *This, UINT Handle, const float *pNumSegs, const D3DRECTPATCH_INFO *pRectPatchInfo);
+  HRESULT (__stdcall *DrawTriPatch)(IDirect3DDevice9 *This, UINT Handle, const float *pNumSegs, const D3DTRIPATCH_INFO *pTriPatchInfo);
+  HRESULT (__stdcall *DeletePatch)(IDirect3DDevice9 *This, UINT Handle);
+  HRESULT (__stdcall *CreateQuery)(IDirect3DDevice9 *This, D3DQUERYTYPE Type, IDirect3DQuery9 **ppQuery);
+  D3DDEVICE_CREATION_PARAMETERS CreationParameters;
+  D3DPRESENT_PARAMETERS PresentParameters;
+  D3DDISPLAYMODE DisplayMode;
+  D3DCAPS9 Caps;
+  UINT AvailableTextureMem;
+  UINT SwapChains;
+  UINT Textures;
+  UINT VertexBuffers;
+  UINT IndexBuffers;
+  UINT VertexShaders;
+  UINT PixelShaders;
+  D3DVIEWPORT9 Viewport;
+  D3DMATRIX ProjectionMatrix;
+  D3DMATRIX ViewMatrix;
+  D3DMATRIX WorldMatrix;
+  D3DMATRIX TextureMatrices[8];
+  DWORD FVF;
+  UINT VertexSize;
+  DWORD VertexShaderVersion;
+  DWORD PixelShaderVersion;
+  BOOL SoftwareVertexProcessing;
+  D3DMATERIAL9 Material;
+  D3DLIGHT9 Lights[16];
+  BOOL LightsEnabled[16];
+  D3DGAMMARAMP GammaRamp;
+  RECT ScissorRect;
+  BOOL DialogBoxMode;
+};
+
+/* 679 */
+typedef struct _DSBUFFERDESC DSBUFFERDESC;
+
+/* 678 */
+typedef const DSBUFFERDESC *LPCDSBUFFERDESC;
+
+/* 690 */
+typedef struct _DSCAPS *LPDSCAPS;
+
+/* 677 */
+struct IDirectSound8Vtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectSound8 *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSound8 *This);
+  ULONG (__stdcall *Release)(IDirectSound8 *This);
+  HRESULT (__stdcall *CreateSoundBuffer)(IDirectSound8 *This, LPCDSBUFFERDESC pcDSBufferDesc, LPDIRECTSOUNDBUFFER *ppDSBuffer, LPUNKNOWN pUnkOuter);
+  HRESULT (__stdcall *GetCaps)(IDirectSound8 *This, LPDSCAPS pDSCaps);
+  HRESULT (__stdcall *DuplicateSoundBuffer)(IDirectSound8 *This, LPDIRECTSOUNDBUFFER pDSBufferOriginal, LPDIRECTSOUNDBUFFER *ppDSBufferDuplicate);
+  HRESULT (__stdcall *SetCooperativeLevel)(IDirectSound8 *This, HWND hwnd, DWORD dwLevel);
+  HRESULT (__stdcall *Compact)(IDirectSound8 *This);
+  HRESULT (__stdcall *GetSpeakerConfig)(IDirectSound8 *This, LPDWORD pdwSpeakerConfig);
+  HRESULT (__stdcall *SetSpeakerConfig)(IDirectSound8 *This, DWORD dwSpeakerConfig);
+  HRESULT (__stdcall *Initialize)(IDirectSound8 *This, LPCGUID pcGuidDevice);
+  HRESULT (__stdcall *VerifyCertification)(IDirectSound8 *This, LPDWORD pdwCertified);
+};
+
+/* 685 */
+typedef struct _DSBCAPS *LPDSBCAPS;
+
+/* 681 */
+typedef struct tWAVEFORMATEX *LPWAVEFORMATEX;
+
+/* 495 */
+typedef int *LPLONG;
+
+/* 687 */
+typedef struct IDirectSound *LPDIRECTSOUND;
+
+/* 666 */
+typedef struct tWAVEFORMATEX WAVEFORMATEX;
+
+/* 692 */
+typedef const WAVEFORMATEX *LPCWAVEFORMATEX;
+
+/* 684 */
+struct IDirectSoundBufferVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectSoundBuffer *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSoundBuffer *This);
+  ULONG (__stdcall *Release)(IDirectSoundBuffer *This);
+  HRESULT (__stdcall *GetCaps)(IDirectSoundBuffer *This, LPDSBCAPS pDSBufferCaps);
+  HRESULT (__stdcall *GetCurrentPosition)(IDirectSoundBuffer *This, LPDWORD pdwCurrentPlayCursor, LPDWORD pdwCurrentWriteCursor);
+  HRESULT (__stdcall *GetFormat)(IDirectSoundBuffer *This, LPWAVEFORMATEX pwfxFormat, DWORD dwSizeAllocated, LPDWORD pdwSizeWritten);
+  HRESULT (__stdcall *GetVolume)(IDirectSoundBuffer *This, LPLONG plVolume);
+  HRESULT (__stdcall *GetPan)(IDirectSoundBuffer *This, LPLONG plPan);
+  HRESULT (__stdcall *GetFrequency)(IDirectSoundBuffer *This, LPDWORD pdwFrequency);
+  HRESULT (__stdcall *GetStatus)(IDirectSoundBuffer *This, LPDWORD pdwStatus);
+  HRESULT (__stdcall *Initialize)(IDirectSoundBuffer *This, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc);
+  HRESULT (__stdcall *Lock)(IDirectSoundBuffer *This, DWORD dwOffset, DWORD dwBytes, LPVOID *ppvAudioPtr1, LPDWORD pdwAudioBytes1, LPVOID *ppvAudioPtr2, LPDWORD pdwAudioBytes2, DWORD dwFlags);
+  HRESULT (__stdcall *Play)(IDirectSoundBuffer *This, DWORD dwReserved1, DWORD dwPriority, DWORD dwFlags);
+  HRESULT (__stdcall *SetCurrentPosition)(IDirectSoundBuffer *This, DWORD dwNewPosition);
+  HRESULT (__stdcall *SetFormat)(IDirectSoundBuffer *This, LPCWAVEFORMATEX pcfxFormat);
+  HRESULT (__stdcall *SetVolume)(IDirectSoundBuffer *This, LONG lVolume);
+  HRESULT (__stdcall *SetPan)(IDirectSoundBuffer *This, LONG lPan);
+  HRESULT (__stdcall *SetFrequency)(IDirectSoundBuffer *This, DWORD dwFrequency);
+  HRESULT (__stdcall *Stop)(IDirectSoundBuffer *This);
+  HRESULT (__stdcall *Unlock)(IDirectSoundBuffer *This, LPVOID pvAudioPtr1, DWORD dwAudioBytes1, LPVOID pvAudioPtr2, DWORD dwAudioBytes2);
+  HRESULT (__stdcall *Restore)(IDirectSoundBuffer *This);
+};
+
+/* 611 */
+struct D3DXFONT_DESCA
+{
+  INT Height;
+  UINT Width;
+  UINT Weight;
+  UINT MipLevels;
+  BOOL Italic;
+  BYTE CharSet;
+  BYTE OutputPrecision;
+  BYTE Quality;
+  BYTE PitchAndFamily;
+  CHAR FaceName[32];
+};
+
+/* 612 */
+struct D3DXFONT_DESCW
+{
+  INT Height;
+  UINT Width;
+  UINT Weight;
+  UINT MipLevels;
+  BOOL Italic;
+  BYTE CharSet;
+  BYTE OutputPrecision;
+  BYTE Quality;
+  BYTE PitchAndFamily;
+  WCHAR FaceName[32];
+};
+
+/* 561 */
+struct CCameraNormal
+{
+  ICCameraNormalVtbl *lpVtbl;
+  CCameraNormalMembers m_;
+};
+
+/* 643 */
+struct ICDXSoundBufferVtbl
+{
+  CString *(__thiscall *CDXSoundBuffer__Destroy_6DBB60)(CDXSoundBuffer *this, char);
+  int (__thiscall *CDXSoundBuffer__method_4_6DC330)(CDXSoundBuffer *this, CDXSoundStruct_25C *cdxsoundstruct_25c, CString *pstrFileName_a2, CPackFormatSecret *pPackFmtSec_a3, char nType_argC, _DWORD *, int arg14, int, int, int, int);
+  int (__thiscall *CDXSoundBuffer__method_8_6DC4D0)(CString *this, CString *, CString *, int, int, int, int, int);
+  int (__thiscall *CDXSoundBuffer__method_C_6DC600)(CDXSoundBuffer *this, CString *, int, int, CString *, int, int, int, int, int);
+  ULONG (__thiscall *CDXSoundBuffer__Relese_6DCBF0)(CDXSoundBuffer *this);
+  int (__thiscall *CDXSoundBuffer__Play_6DCC30)(CDXSoundBuffer *this, char bLoop, DWORD dwPlayFlags);
+  int (__thiscall *CDXSoundBuffer__PlayLoop_6DCCE0)(CDXSoundBuffer *this, char, int, int);
+  int (__thiscall *CDXSoundBuffer__method_1C_6DCDA0)(_DWORD *this, int);
+  int (__thiscall *CDXSoundBuffer__Stop_6DB640)(CDXSoundBuffer *this);
+  bool (__thiscall *CDXSoundBuffer__IsPlaying_6DCF10)(CDXSoundBuffer *this);
+  bool (__thiscall *CDXSoundBuffer__IsLooping_6DCF70)(_DWORD *this);
+  char (__thiscall *CDXSoundBuffer__UpdateLoop_6DCFD0)(_DWORD *this);
+  char (__thiscall *CDXSoundBuffer__GetAmplitudeLevel_6DD080)(CDXSoundBuffer *this, int *);
+  double (__thiscall *CDXSoundBuffer__GetSmoothedLevel_6DD2D0)(float *this);
+  int (__thiscall *CDXSoundBuffer__ReturnField_38)(_DWORD *this);
+  int (__thiscall *CDXSoundBuffer__ReturnField_28_libname_114)(_DWORD *this);
+  int (__thiscall *CDXSoundBuffer__method_40_6DB680)(CString *this, CString *);
+  int (__thiscall *CDXSoundBuffer__GetName_6DB6A0)(CString *this, CString *);
+  int (__thiscall *CDXSoundBuffer__method_48_6DB6C0)(_DWORD *this, _DWORD *);
+  int (__thiscall *CDXSoundBuffer__method_4C_6DB6E0)(_DWORD *this, _DWORD *);
+  int (__thiscall *CDXSoundBuffer__method_50_6DB700)(_DWORD *this, _DWORD *);
+  int (__thiscall *CDXSoundBuffer__method_54_6DB720)(_BYTE *this, char);
+  int (__thiscall *CDXSoundBuffer__method_58_6DB740)(_BYTE *this, _BYTE *);
+  int (__thiscall *CDXSoundBuffer__method_5C_6DB760)(_DWORD *this, int);
+  int (__thiscall *CDXSoundBuffer__method_60_6DB780)(_DWORD *this, _DWORD *);
+  int (__thiscall *CDXSoundBuffer__method_64_6DB7A0)(_DWORD *this, int);
+  int (__thiscall *CDXSoundBuffer__method_68_6DB7C0)(_DWORD *this, _DWORD *);
+  int (__thiscall *CDXSoundBuffer__method_6C_6DB7E0)(_DWORD *this, _DWORD *);
+  int (__thiscall *CDXSoundBuffer__SetPlayCursor_6DB830)(CDXSoundBuffer *this, DWORD dwPlayCursor);
+  int (__thiscall *CDXSoundBuffer__GetPlayCursor_6DB870)(CDXSoundBuffer *this, DWORD *pdwPlayCursor);
+  int (__thiscall *CDXSoundBuffer__method_78_6DB8B0)(_DWORD **this, int);
+  int (__thiscall *CDXSoundBuffer__SetVolume_6DB900)(CDXSoundBuffer *this, int);
+  int (__thiscall *CDXSoundBuffer__method_80_6DB990)(_DWORD **this, int);
+  int (__thiscall *CDXSoundBuffer__method_84_6DB9D0)(_DWORD *this, int);
+  int (__thiscall *CDXSoundBuffer__method_88_6DBA60)(_DWORD **this, int);
+  int (__thiscall *CDXSoundBuffer__method_8C_6DBAA0)(_DWORD **this, int);
+  int (__thiscall *CDXSoundBuffer__method_90_6DBAE0)(_DWORD **this, int);
+  int (__thiscall *CDXSoundBuffer__method_94_6DBB20)(_DWORD **this, int);
+};
+
+/* 990 */
+struct ICSpringCtrlVtbl
+{
+  _DWORD *(__thiscall *CSpringCtrl__Destroy_646670)(CSpringCtrl *this, char a2);
+  int (__stdcall *CSpringCtrl__sub_646620)(int, int, int, float, float, float);
+};
+
+/* 991 */
+struct __fixed CSpringStruct_3C
+{
+  char flt_0;
+  float flt_4;
+  float flt_8;
+  int field_C;
+  int field_10;
+  int field_14;
+  int field_18;
+  int field_1C;
+  int field_20;
+  int field_24;
+  int field_28;
+  int field_2C;
+  int field_30;
+  int field_34;
+  int field_38;
+};
+
+/* 992 */
+struct __fixed CSpringStruct_14
+{
+  __int16 field_0;
+  __int16 field_2;
+  float flt_4;
+  int field_8;
+  int field_C;
+  char field_10;
+};
+
+/* 986 */
+struct ICBoneSwayHistoryVtbl
+{
+  _DWORD *(__thiscall *CBoneSwayHistory__Destroy_646710)(CBoneSwayHistory *this, char a2);
+  char (__thiscall *CHistoryBase__sub_646FF0)(CHistoryBase *this, int a2);
+  int (__thiscall *CHistoryBase__sub_646E70)(CHistoryBase *this, int a2, int a3);
+  int (__thiscall *CHistoryBase__sub_646EA0)(CHistoryBase *this, int a2, int a3);
+  _DWORD *(__stdcall *CVectorHistory__sub_6466E0)(_DWORD *, _DWORD *);
+  float *(__stdcall *CVectorHistory__sub_654E80)(float *, float *, float *, float);
+};
+
+/* 1016 */
+struct __fixed CClothHairCol
+{
+  void *lpVtbl;
+  CGlobal_A618 *pGlobalD618;
+  float version_8;
+  int nCount_C;
+  int obj_C_10;
+  CClothHairStruct_2B4 *pobjs2B4_1C;
+  CString strPPFile_20;
+  CPackFormatSecret *pPackFmtSec_24;
+  char nPackType_28;
+};
+
+/* 1028 */
+struct __fixed CClothHair
+{
+};
+
+/* 1030 */
+struct __fixed CScnFace
+{
+  WORD idx_0;
+  WORD idx_2;
+  WORD idx_4;
+};
+
+/* 788 */
+struct D3DXVECTOR2
+{
+  FLOAT x;
+  FLOAT y;
+};
+
+/* 783 */
+struct IDirect3DCubeTexture9
+{
+  struct IDirect3DCubeTexture9Vtbl *lpVtbl;
+};
+
+/* 928 */
+struct __fixed CSDT_SubMember_18
+{
+  int nPageID_0;
+  int nCount_4;
+  CSDT_SubMember_8 *subMember8_8;
+  int nCount_C;
+  CSDT_SubMember_C *subMemberC_10;
+  int field_14;
+};
+
+/* 902 */
+struct ICISE_ScriptPlayer_SubMode_BackLogVtbl
+{
+  CISE_ScriptPlayer_SubMode_BackLog *(__thiscall *CISE_ScriptPlayer_SubMode_BackLog__Destroy_465D20)(CISE_ScriptPlayer_SubMode_BackLog *this, char bFree);
+  void (*tod_4)();
+  char (__thiscall *CISE_ScriptPlayer_SubMode_BackLog__sub_465770)(int this, int);
+  char (__thiscall *CISE_ScriptPlayer_SubMode_BackLog__sub_465940)(char **this);
+  void (__thiscall *CISE_ScriptPlayer_SubMode_BackLog__sub_465B20)(int this);
+  void (*CISE_ScriptPlayer_SubMode_BackLog__unknown_libname_32)();
+};
+
+/* 956 */
+struct ICIS_InputCtrlVtbl
+{
+  _DWORD *(__thiscall *CIS_InputCtrl__sub_62D980)(CIS_InputCtrl *this);
+};
+
+/* 926 */
+struct __fixed CScriptPlayer_MerahCtrlSubObj_10
+{
+  CStructImage2D_80 *pImage_0;
+  int field_4;
+  int field_8;
+  int field_C;
+};
+
+/* 595 */
+struct D3DXEFFECT_DESC
+{
+  LPCSTR Creator;
+  UINT Parameters;
+  UINT Techniques;
+  UINT Functions;
+};
+
+/* 599 */
+enum D3DXPARAMETER_CLASS
+{
+  D3DXPC_SCALAR = 0x0,
+  D3DXPC_VECTOR = 0x1,
+  D3DXPC_MATRIX_ROWS = 0x2,
+  D3DXPC_MATRIX_COLUMNS = 0x3,
+  D3DXPC_OBJECT = 0x4,
+  D3DXPC_STRUCT = 0x5,
+  D3DXPC_FORCE_DWORD = 0x7FFFFFFF,
+};
+
+/* 600 */
+enum D3DXPARAMETER_TYPE
+{
+  D3DXPT_VOID = 0x0,
+  D3DXPT_BOOL = 0x1,
+  D3DXPT_INT = 0x2,
+  D3DXPT_FLOAT = 0x3,
+  D3DXPT_STRING = 0x4,
+  D3DXPT_TEXTURE = 0x5,
+  D3DXPT_TEXTURE1D = 0x6,
+  D3DXPT_TEXTURE2D = 0x7,
+  D3DXPT_TEXTURE3D = 0x8,
+  D3DXPT_TEXTURECUBE = 0x9,
+  D3DXPT_SAMPLER = 0xA,
+  D3DXPT_SAMPLER1D = 0xB,
+  D3DXPT_SAMPLER2D = 0xC,
+  D3DXPT_SAMPLER3D = 0xD,
+  D3DXPT_SAMPLERCUBE = 0xE,
+  D3DXPT_PIXELSHADER = 0xF,
+  D3DXPT_VERTEXSHADER = 0x10,
+  D3DXPT_PIXELFRAGMENT = 0x11,
+  D3DXPT_VERTEXFRAGMENT = 0x12,
+  D3DXPT_UNSUPPORTED = 0x13,
+  D3DXPT_FORCE_DWORD = 0x7FFFFFFF,
+};
+
+/* 601 */
+struct D3DXPARAMETER_DESC
+{
+  LPCSTR Name;
+  LPCSTR Semantic;
+  D3DXPARAMETER_CLASS Class;
+  D3DXPARAMETER_TYPE Type;
+  UINT Rows;
+  UINT Columns;
+  UINT Elements;
+  UINT Annotations;
+  UINT StructMembers;
+  DWORD Flags;
+  UINT Bytes;
+};
+
+/* 602 */
+struct D3DXTECHNIQUE_DESC
+{
+  LPCSTR Name;
+  UINT Passes;
+  UINT Annotations;
+};
+
+/* 598 */
+struct D3DXPASS_DESC
+{
+  LPCSTR Name;
+  UINT Annotations;
+  const DWORD *pVertexShaderFunction;
+  const DWORD *pPixelShaderFunction;
+};
+
+/* 603 */
+struct D3DXFUNCTION_DESC
+{
+  LPCSTR Name;
+  UINT Annotations;
+};
+
+/* 567 */
+struct D3DXVECTOR4
+{
+  FLOAT x;
+  FLOAT y;
+  FLOAT z;
+  FLOAT w;
+};
+
+/* 680 */
+struct _DSBUFFERDESC
+{
+  DWORD dwSize;
+  DWORD dwFlags;
+  DWORD dwBufferBytes;
+  DWORD dwReserved;
+  LPWAVEFORMATEX lpwfxFormat;
+  GUID guid3DAlgorithm;
+};
+
+/* 691 */
+struct _DSCAPS
+{
+  DWORD dwSize;
+  DWORD dwFlags;
+  DWORD dwMinSecondarySampleRate;
+  DWORD dwMaxSecondarySampleRate;
+  DWORD dwPrimaryBuffers;
+  DWORD dwMaxHwMixingAllBuffers;
+  DWORD dwMaxHwMixingStaticBuffers;
+  DWORD dwMaxHwMixingStreamingBuffers;
+  DWORD dwFreeHwMixingAllBuffers;
+  DWORD dwFreeHwMixingStaticBuffers;
+  DWORD dwFreeHwMixingStreamingBuffers;
+  DWORD dwMaxHw3DAllBuffers;
+  DWORD dwMaxHw3DStaticBuffers;
+  DWORD dwMaxHw3DStreamingBuffers;
+  DWORD dwFreeHw3DAllBuffers;
+  DWORD dwFreeHw3DStaticBuffers;
+  DWORD dwFreeHw3DStreamingBuffers;
+  DWORD dwTotalHwMemBytes;
+  DWORD dwFreeHwMemBytes;
+  DWORD dwMaxContigFreeHwMemBytes;
+  DWORD dwUnlockTransferRateHwBuffers;
+  DWORD dwPlayCpuOverheadSwBuffers;
+  DWORD dwReserved1;
+  DWORD dwReserved2;
+};
+
+/* 686 */
+struct _DSBCAPS
+{
+  DWORD dwSize;
+  DWORD dwFlags;
+  DWORD dwBufferBytes;
+  DWORD dwUnlockTransferRate;
+  DWORD dwPlayCpuOverhead;
+};
+
+/* 667 */
+#pragma pack(push, 1)
+struct tWAVEFORMATEX
+{
+  WORD wFormatTag;
+  WORD nChannels;
+  DWORD nSamplesPerSec;
+  DWORD nAvgBytesPerSec;
+  WORD nBlockAlign;
+  WORD wBitsPerSample;
+  WORD cbSize;
+};
+#pragma pack(pop)
+
+/* 688 */
+struct IDirectSound
+{
+  struct IDirectSoundVtbl *lpVtbl;
+};
+
+/* 562 */
+struct ICCameraNormalVtbl
+{
+  _DWORD *(__thiscall *Destroy_485EC0)(_DWORD *this, char);
+  int (__thiscall *CCameraNormal__method_4_6475B0)(int this);
+  char (__thiscall *CCameraNormal__method_8_647830)(int *this, int, CString *, CPackFormatSecret *, char, CString *, char);
+  char (__thiscall *CCameraNormal__method_C_6478D0)(int *this);
+  int (__thiscall *CCameraNormal__method_10_647930)(_BYTE *this, _BYTE *, int, int, int, int);
+  char (__thiscall *CCameraNormal__method_14_647A80)(char *this, _BYTE *, unsigned int);
+  char (__thiscall *CCameraNormal__method_18_648030)(_BYTE *this, int, int, float, float, float);
+  char (__thiscall *CCameraNormal__method_1C_6486A0)(int this, float, float, float);
+  char (__thiscall *CCameraNormal__method_20_648870)(int this, float);
+  char (__thiscall *CCameraNormal__method_24_648900)(int this, float);
+  char (__thiscall *CCameraNormal__method_28_648A10)(int this, float);
+  char (__thiscall *CCameraNormal__method_2C_648B20)(int this, float);
+  char (__thiscall *CCameraNormal__method_30_648C30)(int this, float);
+  char (__thiscall *CCameraNormal__method_34_648CD0)(int this, float);
+  char (__thiscall *CCameraNormal__method_38_648D70)(int this);
+  char (__stdcall *CCameraNormal__method_3C_6491A0)(int, int, char);
+  int (__thiscall *CCameraNormal__method_40_485CF0)(int this);
+  int (__thiscall *CCameraNormal__method_44_485E00)(int this, int);
+  int (__thiscall *CCameraNormal__method_48_485E20)(int this, int);
+  int (__thiscall *CCameraNormal__method_4C_485E40)(void **this, int);
+  int (__thiscall *CCameraNormal__method_50_485E60)(int this, int);
+  int (__thiscall *CCameraNormal__method_54_485E80)(void **this, int);
+  int (__thiscall *CCameraNormal__method_58_485EA0)(int this, int);
+};
+
+/* 979 */
+struct __fixed CHistoryBase
+{
+  ICHistoryBaseVtbl *lpVtbl;
+  CHistoryBaseMembers m_;
+};
+
+/* 1027 */
+struct __fixed CClothHairMem_134
+{
+  char name_0[256];
+  BYTE byte_100;
+  int field_104;
+  int field_108;
+  int field_10C;
+  int field_110;
+  int field_114;
+  int field_118;
+  int field_11C;
+  int field_120;
+  int field_124;
+  int field_128;
+  __int16 field_12C;
+  __int16 field_12E;
+  __int16 field_130;
+};
+
+/* 1026 */
+struct __fixed CClothHairStruct_2B4
+{
+  char field_0;
+  char field_1;
+  char name[256];
+  CSceneObjectTemp *pScnObj_104;
+  float flt_108;
+  float flt_10C;
+  float flt_110;
+  float flt_114;
+  float flt_118;
+  int field_11C;
+  int field_120;
+  float flt_124;
+  float flt_128;
+  float flt_12C;
+  float *pfloats_130;
+  __int16 field_134;
+  __int16 field_136;
+  __int16 field_138;
+  CClothHairMem_134 clothHairMem_134_13C;
+  float floats_270[6];
+  D3DXVECTOR3 vec3_288;
+  CSceneObjectTemp *pScnObj_294;
+  CScnFrame_21C *pScnSubObj_N_Zentai_298;
+  CScnFrame_21C *pScnSubObj_pPoint_29C;
+  CScnFrame_21C *pScnSubObj_N_Left_2A0;
+  CScnFrame_21C *pScnSubObj_N_Right_2A4;
+  CScnFrame_21C *pScnSubObj_O_Entyu_2A8;
+  CScnFrame_21C *pScnSubObj_O_Left_Sphere_2AC;
+  CScnFrame_21C *pScnSubObj_O_Right_Sphere_2B0;
+};
+
+/* 786 */
+enum _D3DCUBEMAP_FACES
+{
+  D3DCUBEMAP_FACE_POSITIVE_X = 0x0,
+  D3DCUBEMAP_FACE_NEGATIVE_X = 0x1,
+  D3DCUBEMAP_FACE_POSITIVE_Y = 0x2,
+  D3DCUBEMAP_FACE_NEGATIVE_Y = 0x3,
+  D3DCUBEMAP_FACE_POSITIVE_Z = 0x4,
+  D3DCUBEMAP_FACE_NEGATIVE_Z = 0x5,
+  D3DCUBEMAP_FACE_FORCE_DWORD = 0x7FFFFFFF,
+};
+
+/* 785 */
+typedef enum _D3DCUBEMAP_FACES D3DCUBEMAP_FACES;
+
+/* 784 */
+struct IDirect3DCubeTexture9Vtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirect3DCubeTexture9 *This, const IID *const riid, void **ppvObj);
+  ULONG (__stdcall *AddRef)(IDirect3DCubeTexture9 *This);
+  ULONG (__stdcall *Release)(IDirect3DCubeTexture9 *This);
+  HRESULT (__stdcall *GetDevice)(IDirect3DCubeTexture9 *This, IDirect3DDevice9 **ppDevice);
+  HRESULT (__stdcall *SetPrivateData)(IDirect3DCubeTexture9 *This, const GUID *const refguid, const void *pData, DWORD SizeOfData, DWORD Flags);
+  HRESULT (__stdcall *GetPrivateData)(IDirect3DCubeTexture9 *This, const GUID *const refguid, void *pData, DWORD *pSizeOfData);
+  HRESULT (__stdcall *FreePrivateData)(IDirect3DCubeTexture9 *This, const GUID *const refguid);
+  DWORD (__stdcall *SetPriority)(IDirect3DCubeTexture9 *This, DWORD PriorityNew);
+  DWORD (__stdcall *GetPriority)(IDirect3DCubeTexture9 *This);
+  void (__stdcall *PreLoad)(IDirect3DCubeTexture9 *This);
+  D3DRESOURCETYPE (__stdcall *GetType)(IDirect3DCubeTexture9 *This);
+  DWORD (__stdcall *SetLOD)(IDirect3DCubeTexture9 *This, DWORD LODNew);
+  DWORD (__stdcall *GetLOD)(IDirect3DCubeTexture9 *This);
+  DWORD (__stdcall *GetLevelCount)(IDirect3DCubeTexture9 *This);
+  HRESULT (__stdcall *SetAutoGenFilterType)(IDirect3DCubeTexture9 *This, D3DTEXTUREFILTERTYPE FilterType);
+  D3DTEXTUREFILTERTYPE (__stdcall *GetAutoGenFilterType)(IDirect3DCubeTexture9 *This);
+  void (__stdcall *GenerateMipSubLevels)(IDirect3DCubeTexture9 *This);
+  HRESULT (__stdcall *GetLevelDesc)(IDirect3DCubeTexture9 *This, UINT Level, D3DSURFACE_DESC *pDesc);
+  HRESULT (__stdcall *GetCubeMapSurface)(IDirect3DCubeTexture9 *This, D3DCUBEMAP_FACES FaceType, UINT Level, IDirect3DSurface9 **ppCubeMapSurface);
+  HRESULT (__stdcall *LockRect)(IDirect3DCubeTexture9 *This, D3DCUBEMAP_FACES FaceType, UINT Level, D3DLOCKED_RECT *pLockedRect, const RECT *pRect, DWORD Flags);
+  HRESULT (__stdcall *UnlockRect)(IDirect3DCubeTexture9 *This, D3DCUBEMAP_FACES FaceType, UINT Level);
+  HRESULT (__stdcall *AddDirtyRect)(IDirect3DCubeTexture9 *This, D3DCUBEMAP_FACES FaceType, const RECT *pDirtyRect);
+  LPCWSTR Name;
+  UINT Width;
+  UINT Height;
+  UINT Levels;
+  DWORD Usage;
+  D3DFORMAT Format;
+  D3DPOOL Pool;
+  DWORD Priority;
+  DWORD LOD;
+  D3DTEXTUREFILTERTYPE FilterType;
+  UINT LockCount;
+};
+
+/* 931 */
+struct __fixed CSDT_SubMember_8
+{
+  int nType_0;
+  void *data_4;
+};
+
+/* 929 */
+struct __fixed CSDT_SubMember_C
+{
+  CTextLogCtrlVecSubItem_8 vecSubItem_0;
+  int field_8;
+};
+
+/* 689 */
+struct IDirectSoundVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectSound *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSound *This);
+  ULONG (__stdcall *Release)(IDirectSound *This);
+  HRESULT (__stdcall *CreateSoundBuffer)(IDirectSound *This, LPCDSBUFFERDESC pcDSBufferDesc, LPDIRECTSOUNDBUFFER *ppDSBuffer, LPUNKNOWN pUnkOuter);
+  HRESULT (__stdcall *GetCaps)(IDirectSound *This, LPDSCAPS pDSCaps);
+  HRESULT (__stdcall *DuplicateSoundBuffer)(IDirectSound *This, LPDIRECTSOUNDBUFFER pDSBufferOriginal, LPDIRECTSOUNDBUFFER *ppDSBufferDuplicate);
+  HRESULT (__stdcall *SetCooperativeLevel)(IDirectSound *This, HWND hwnd, DWORD dwLevel);
+  HRESULT (__stdcall *Compact)(IDirectSound *This);
+  HRESULT (__stdcall *GetSpeakerConfig)(IDirectSound *This, LPDWORD pdwSpeakerConfig);
+  HRESULT (__stdcall *SetSpeakerConfig)(IDirectSound *This, DWORD dwSpeakerConfig);
+  HRESULT (__stdcall *Initialize)(IDirectSound *This, LPCGUID pcGuidDevice);
+};
+
+/* 981 */
+struct ICHistoryBaseVtbl
+{
+  CHistoryBase *(__thiscall *CHistoryBase__Destroy_646F20)(CHistoryBase *this, char bFree);
+  char (__thiscall *CHistoryBase__sub_646FF0)(CHistoryBase *this, int a2);
+  int (__thiscall *CHistoryBase__sub_646E70)(CHistoryBase *this, int a2, int a3);
+  int (__thiscall *CHistoryBase__sub_646EA0)(CHistoryBase *this, int a2, int a3);
+  void (__noreturn *__purecall)();
 };
 
 /* 355 */
@@ -3121,6 +7730,12 @@ struct CPack
   char field_1D;
   char field_1E;
   char field_1F;
+};
+
+/* 549 */
+struct ICPackVtbl
+{
+  CPack *(__thiscall *CPack__sub_70D270)(CPack *this, char bFree);
 };
 
 /* 356 */
@@ -3274,26 +7889,6 @@ enum __dec MACRO_DXDIAG
 {
   DXDIAG_DX9_SDK_VERSION = 111,
   DXDIAG_E_INSUFFICIENT_BUFFER = -2147024774,
-};
-
-/* 364 */
-struct __fixed SBLogoScene
-{
-  ISBLogoSceneVtbl *lpVtbl;
-  CStructImage2D_80 *spriteLogos_4[2];
-  int field_C;
-  char bSoundLoaded_10;
-  char field_11;
-  CSBZGlobal *pSBZGlobal;
-  CStruct_CCD4 *struct_ccd4_18;
-  CStruct_5C0 *struct_5c0_1C;
-  CStruct_5C0 *struct_5c0_20;
-  CGlobal_A618 *global_D618;
-  CMouseState *pMouseState0_19C84;
-  CSB_CameraBase *pSBCameraBase_2C;
-  CSB_Key *Key_30;
-  CSB_Path *Path_34;
-  CSB_Sound *Sound_38;
 };
 
 /* 365 */
@@ -4718,54 +9313,6 @@ enum MACRO_WM
   WM_GETTITLEBARINFOEX = 0x33F,
 };
 
-/* 897 */
-struct __fixed CScrSubObject_3B
-{
-  float cDB;
-  float cDG;
-  float cDR;
-};
-
-/* 366 */
-struct __fixed CStructImage2D_80
-{
-  char bFlipV;
-  _BYTE gap1[3];
-  IDirect3DVertexBuffer9 *p_D3DVertexBuffer_2;
-  CStructImage_5C *image_8;
-  float srcWidth;
-  float srcHeight;
-  float posX;
-  float posY;
-  int posZ;
-  float originX;
-  float originY;
-  float scaleX;
-  float scaleY;
-  float cA;
-  float cSB;
-  float cSG;
-  float cSR;
-  float Pitch;
-  float Yaw;
-  float Roll;
-  CScrSubObject_3B cdRGB;
-  float tuLeft;
-  float tuRight;
-  float tvTop;
-  float tvBottom;
-  _BYTE nMaterialID;
-  _BYTE gap69[3];
-  float fTexScale;
-  char bVisible;
-  char flags_71;
-  D2D_POINT_2F scrollSpeed;
-  char scrollOffsetX;
-  char scrollOffsetY;
-  char field_7E;
-  char field_7F;
-};
-
 /* 368 */
 enum __bitmask MACRO_D3DUSAGE
 {
@@ -4794,700 +9341,6 @@ enum __bitmask MACRO_D3DUSAGE
   D3DUSAGE_RESTRICT_SHARED_RESOURCE_DRIVER = 0x1000,
 };
 
-/* 369 */
-enum MACRO_D3DFVF
-{
-  D3DFVF_RESERVED0 = 0x1,
-  D3DFVF_POSITION_MASK = 0x400E,
-  D3DFVF_XYZ = 0x2,
-  D3DFVF_XYZRHW = 0x4,
-  D3DFVF_XYZB1 = 0x6,
-  D3DFVF_XYZB2 = 0x8,
-  D3DFVF_XYZB3 = 0xA,
-  D3DFVF_XYZB4 = 0xC,
-  D3DFVF_XYZB5 = 0xE,
-  D3DFVF_XYZW = 0x4002,
-  D3DFVF_NORMAL = 0x10,
-  D3DFVF_PSIZE = 0x20,
-  D3DFVF_DIFFUSE = 0x40,
-  D3DFVF_SPECULAR = 0x80,
-  D3DFVF_TEXCOUNT_MASK = 0xF00,
-  D3DFVF_TEXCOUNT_SHIFT = 0x8,
-  D3DFVF_TEX0 = 0x0,
-  D3DFVF_TEX1 = 0x100,
-  D3DFVF_TEX2 = 0x200,
-  D3DFVF_TEX3 = 0x300,
-  D3DFVF_TEX4 = 0x400,
-  D3DFVF_TEX5 = 0x500,
-  D3DFVF_TEX6 = 0x600,
-  D3DFVF_TEX7 = 0x700,
-  D3DFVF_TEX8 = 0x800,
-  D3DFVF_LASTBETA_UBYTE4 = 0x1000,
-  D3DFVF_LASTBETA_D3DCOLOR = 0x8000,
-  D3DFVF_RESERVED2 = 0x6000,
-};
-
-/* 385 */
-typedef struct _D3DCAPS9 D3DCAPS9;
-
-/* 383 */
-typedef struct _D3DDISPLAYMODE D3DDISPLAYMODE;
-
-/* 371 */
-typedef struct _D3DDEVICE_CREATION_PARAMETERS D3DDEVICE_CREATION_PARAMETERS;
-
-/* 375 */
-typedef struct _D3DPRESENT_PARAMETERS_ D3DPRESENT_PARAMETERS;
-
-/* 407 */
-typedef struct _D3DGAMMARAMP D3DGAMMARAMP;
-
-/* 378 */
-enum _D3DFORMAT
-{
-  D3DFMT_UNKNOWN = 0x0,
-  D3DFMT_R8G8B8 = 0x14,
-  D3DFMT_A8R8G8B8 = 0x15,
-  D3DFMT_X8R8G8B8 = 0x16,
-  D3DFMT_R5G6B5 = 0x17,
-  D3DFMT_X1R5G5B5 = 0x18,
-  D3DFMT_A1R5G5B5 = 0x19,
-  D3DFMT_A4R4G4B4 = 0x1A,
-  D3DFMT_R3G3B2 = 0x1B,
-  D3DFMT_A8 = 0x1C,
-  D3DFMT_A8R3G3B2 = 0x1D,
-  D3DFMT_X4R4G4B4 = 0x1E,
-  D3DFMT_A2B10G10R10 = 0x1F,
-  D3DFMT_A8B8G8R8 = 0x20,
-  D3DFMT_X8B8G8R8 = 0x21,
-  D3DFMT_G16R16 = 0x22,
-  D3DFMT_A2R10G10B10 = 0x23,
-  D3DFMT_A16B16G16R16 = 0x24,
-  D3DFMT_A8P8 = 0x28,
-  D3DFMT_P8 = 0x29,
-  D3DFMT_L8 = 0x32,
-  D3DFMT_A8L8 = 0x33,
-  D3DFMT_A4L4 = 0x34,
-  D3DFMT_V8U8 = 0x3C,
-  D3DFMT_L6V5U5 = 0x3D,
-  D3DFMT_X8L8V8U8 = 0x3E,
-  D3DFMT_Q8W8V8U8 = 0x3F,
-  D3DFMT_V16U16 = 0x40,
-  D3DFMT_A2W10V10U10 = 0x43,
-  D3DFMT_UYVY = 0x59565955,
-  D3DFMT_R8G8_B8G8 = 0x47424752,
-  D3DFMT_YUY2 = 0x32595559,
-  D3DFMT_G8R8_G8B8 = 0x42475247,
-  D3DFMT_DXT1 = 0x31545844,
-  D3DFMT_DXT2 = 0x32545844,
-  D3DFMT_DXT3 = 0x33545844,
-  D3DFMT_DXT4 = 0x34545844,
-  D3DFMT_DXT5 = 0x35545844,
-  D3DFMT_D16_LOCKABLE = 0x46,
-  D3DFMT_D32 = 0x47,
-  D3DFMT_D15S1 = 0x49,
-  D3DFMT_D24S8 = 0x4B,
-  D3DFMT_D24X8 = 0x4D,
-  D3DFMT_D24X4S4 = 0x4F,
-  D3DFMT_D16 = 0x50,
-  D3DFMT_D32F_LOCKABLE = 0x52,
-  D3DFMT_D24FS8 = 0x53,
-  D3DFMT_D32_LOCKABLE = 0x54,
-  D3DFMT_S8_LOCKABLE = 0x55,
-  D3DFMT_L16 = 0x51,
-  D3DFMT_VERTEXDATA = 0x64,
-  D3DFMT_INDEX16 = 0x65,
-  D3DFMT_INDEX32 = 0x66,
-  D3DFMT_Q16W16V16U16 = 0x6E,
-  D3DFMT_MULTI2_ARGB8 = 0x3154454D,
-  D3DFMT_R16F = 0x6F,
-  D3DFMT_G16R16F = 0x70,
-  D3DFMT_A16B16G16R16F = 0x71,
-  D3DFMT_R32F = 0x72,
-  D3DFMT_G32R32F = 0x73,
-  D3DFMT_A32B32G32R32F = 0x74,
-  D3DFMT_CxV8U8 = 0x75,
-  D3DFMT_A1 = 0x76,
-  D3DFMT_A2B10G10R10_XR_BIAS = 0x77,
-  D3DFMT_BINARYBUFFER = 0xC7,
-  D3DFMT_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 377 */
-typedef enum _D3DFORMAT D3DFORMAT;
-
-/* 446 */
-enum _D3DPOOL
-{
-  D3DPOOL_DEFAULT = 0x0,
-  D3DPOOL_MANAGED = 0x1,
-  D3DPOOL_SYSTEMMEM = 0x2,
-  D3DPOOL_SCRATCH = 0x3,
-  D3DPOOL_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 445 */
-typedef enum _D3DPOOL D3DPOOL;
-
-/* 380 */
-enum _D3DMULTISAMPLE_TYPE
-{
-  D3DMULTISAMPLE_NONE = 0x0,
-  D3DMULTISAMPLE_NONMASKABLE = 0x1,
-  D3DMULTISAMPLE_2_SAMPLES = 0x2,
-  D3DMULTISAMPLE_3_SAMPLES = 0x3,
-  D3DMULTISAMPLE_4_SAMPLES = 0x4,
-  D3DMULTISAMPLE_5_SAMPLES = 0x5,
-  D3DMULTISAMPLE_6_SAMPLES = 0x6,
-  D3DMULTISAMPLE_7_SAMPLES = 0x7,
-  D3DMULTISAMPLE_8_SAMPLES = 0x8,
-  D3DMULTISAMPLE_9_SAMPLES = 0x9,
-  D3DMULTISAMPLE_10_SAMPLES = 0xA,
-  D3DMULTISAMPLE_11_SAMPLES = 0xB,
-  D3DMULTISAMPLE_12_SAMPLES = 0xC,
-  D3DMULTISAMPLE_13_SAMPLES = 0xD,
-  D3DMULTISAMPLE_14_SAMPLES = 0xE,
-  D3DMULTISAMPLE_15_SAMPLES = 0xF,
-  D3DMULTISAMPLE_16_SAMPLES = 0x10,
-  D3DMULTISAMPLE_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 379 */
-typedef enum _D3DMULTISAMPLE_TYPE D3DMULTISAMPLE_TYPE;
-
-/* 442 */
-enum _D3DTEXTUREFILTERTYPE
-{
-  D3DTEXF_NONE = 0x0,
-  D3DTEXF_POINT = 0x1,
-  D3DTEXF_LINEAR = 0x2,
-  D3DTEXF_ANISOTROPIC = 0x3,
-  D3DTEXF_PYRAMIDALQUAD = 0x6,
-  D3DTEXF_GAUSSIANQUAD = 0x7,
-  D3DTEXF_CONVOLUTIONMONO = 0x8,
-  D3DTEXF_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 441 */
-typedef enum _D3DTEXTUREFILTERTYPE D3DTEXTUREFILTERTYPE;
-
-/* 410 */
-typedef DWORD D3DCOLOR;
-
-/* 393 */
-typedef struct _D3DMATRIX D3DMATRIX;
-
-/* 391 */
-typedef struct _D3DVIEWPORT9 D3DVIEWPORT9;
-
-/* 397 */
-typedef struct _D3DMATERIAL9 D3DMATERIAL9;
-
-/* 401 */
-typedef struct _D3DLIGHT9 D3DLIGHT9;
-
-/* 374 */
-enum _D3DDEVTYPE
-{
-  D3DDEVTYPE_HAL = 0x1,
-  D3DDEVTYPE_REF = 0x2,
-  D3DDEVTYPE_SW = 0x3,
-  D3DDEVTYPE_NULLREF = 0x4,
-  D3DDEVTYPE_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 373 */
-typedef enum _D3DDEVTYPE D3DDEVTYPE;
-
-/* 372 */
-#pragma pack(push, 4)
-struct _D3DDEVICE_CREATION_PARAMETERS
-{
-  UINT AdapterOrdinal;
-  D3DDEVTYPE DeviceType;
-  HWND hFocusWindow;
-  DWORD BehaviorFlags;
-};
-#pragma pack(pop)
-
-/* 382 */
-enum _D3DSWAPEFFECT
-{
-  D3DSWAPEFFECT_DISCARD = 0x1,
-  D3DSWAPEFFECT_FLIP = 0x2,
-  D3DSWAPEFFECT_COPY = 0x3,
-  D3DSWAPEFFECT_OVERLAY = 0x4,
-  D3DSWAPEFFECT_FLIPEX = 0x5,
-  D3DSWAPEFFECT_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 381 */
-typedef enum _D3DSWAPEFFECT D3DSWAPEFFECT;
-
-/* 376 */
-#pragma pack(push, 4)
-struct _D3DPRESENT_PARAMETERS_
-{
-  UINT BackBufferWidth;
-  UINT BackBufferHeight;
-  D3DFORMAT BackBufferFormat;
-  UINT BackBufferCount;
-  D3DMULTISAMPLE_TYPE MultiSampleType;
-  DWORD MultiSampleQuality;
-  D3DSWAPEFFECT SwapEffect;
-  HWND hDeviceWindow;
-  BOOL Windowed;
-  BOOL EnableAutoDepthStencil;
-  D3DFORMAT AutoDepthStencilFormat;
-  DWORD Flags;
-  UINT FullScreen_RefreshRateInHz;
-  UINT PresentationInterval;
-};
-#pragma pack(pop)
-
-/* 384 */
-#pragma pack(push, 4)
-struct _D3DDISPLAYMODE
-{
-  UINT Width;
-  UINT Height;
-  UINT RefreshRate;
-  D3DFORMAT Format;
-};
-#pragma pack(pop)
-
-/* 388 */
-#pragma pack(push, 4)
-struct _D3DVSHADERCAPS2_0
-{
-  DWORD Caps;
-  INT DynamicFlowControlDepth;
-  INT NumTemps;
-  INT StaticFlowControlDepth;
-};
-#pragma pack(pop)
-
-/* 387 */
-typedef struct _D3DVSHADERCAPS2_0 D3DVSHADERCAPS2_0;
-
-/* 390 */
-#pragma pack(push, 4)
-struct _D3DPSHADERCAPS2_0
-{
-  DWORD Caps;
-  INT DynamicFlowControlDepth;
-  INT NumTemps;
-  INT StaticFlowControlDepth;
-  INT NumInstructionSlots;
-};
-#pragma pack(pop)
-
-/* 389 */
-typedef struct _D3DPSHADERCAPS2_0 D3DPSHADERCAPS2_0;
-
-/* 386 */
-#pragma pack(push, 4)
-struct _D3DCAPS9
-{
-  D3DDEVTYPE DeviceType;
-  UINT AdapterOrdinal;
-  DWORD Caps;
-  DWORD Caps2;
-  DWORD Caps3;
-  DWORD PresentationIntervals;
-  DWORD CursorCaps;
-  DWORD DevCaps;
-  DWORD PrimitiveMiscCaps;
-  DWORD RasterCaps;
-  DWORD ZCmpCaps;
-  DWORD SrcBlendCaps;
-  DWORD DestBlendCaps;
-  DWORD AlphaCmpCaps;
-  DWORD ShadeCaps;
-  DWORD TextureCaps;
-  DWORD TextureFilterCaps;
-  DWORD CubeTextureFilterCaps;
-  DWORD VolumeTextureFilterCaps;
-  DWORD TextureAddressCaps;
-  DWORD VolumeTextureAddressCaps;
-  DWORD LineCaps;
-  DWORD MaxTextureWidth;
-  DWORD MaxTextureHeight;
-  DWORD MaxVolumeExtent;
-  DWORD MaxTextureRepeat;
-  DWORD MaxTextureAspectRatio;
-  DWORD MaxAnisotropy;
-  float MaxVertexW;
-  float GuardBandLeft;
-  float GuardBandTop;
-  float GuardBandRight;
-  float GuardBandBottom;
-  float ExtentsAdjust;
-  DWORD StencilCaps;
-  DWORD FVFCaps;
-  DWORD TextureOpCaps;
-  DWORD MaxTextureBlendStages;
-  DWORD MaxSimultaneousTextures;
-  DWORD VertexProcessingCaps;
-  DWORD MaxActiveLights;
-  DWORD MaxUserClipPlanes;
-  DWORD MaxVertexBlendMatrices;
-  DWORD MaxVertexBlendMatrixIndex;
-  float MaxPointSize;
-  DWORD MaxPrimitiveCount;
-  DWORD MaxVertexIndex;
-  DWORD MaxStreams;
-  DWORD MaxStreamStride;
-  DWORD VertexShaderVersion;
-  DWORD MaxVertexShaderConst;
-  DWORD PixelShaderVersion;
-  float PixelShader1xMaxValue;
-  DWORD DevCaps2;
-  float MaxNpatchTessellationLevel;
-  DWORD Reserved5;
-  UINT MasterAdapterOrdinal;
-  UINT AdapterOrdinalInGroup;
-  UINT NumberOfAdaptersInGroup;
-  DWORD DeclTypes;
-  DWORD NumSimultaneousRTs;
-  DWORD StretchRectFilterCaps;
-  D3DVSHADERCAPS2_0 VS20Caps;
-  D3DPSHADERCAPS2_0 PS20Caps;
-  DWORD VertexTextureFilterCaps;
-  DWORD MaxVShaderInstructionsExecuted;
-  DWORD MaxPShaderInstructionsExecuted;
-  DWORD MaxVertexShader30InstructionSlots;
-  DWORD MaxPixelShader30InstructionSlots;
-};
-#pragma pack(pop)
-
-/* 392 */
-#pragma pack(push, 4)
-struct _D3DVIEWPORT9
-{
-  DWORD X;
-  DWORD Y;
-  DWORD Width;
-  DWORD Height;
-  float MinZ;
-  float MaxZ;
-};
-#pragma pack(pop)
-
-/* 396 */
-#pragma pack(push, 4)
-struct _D3DMATRIX::$2ECFB1CFDB70179D7AAC67AC21B01902::$40942CBCB8F0A1CDBC81269929B28324
-{
-  float _11;
-  float _12;
-  float _13;
-  float _14;
-  float _21;
-  float _22;
-  float _23;
-  float _24;
-  float _31;
-  float _32;
-  float _33;
-  float _34;
-  float _41;
-  float _42;
-  float _43;
-  float _44;
-};
-#pragma pack(pop)
-
-/* 395 */
-#pragma pack(push, 4)
-union _D3DMATRIX::$2ECFB1CFDB70179D7AAC67AC21B01902
-{
-  #pragma pack(push, 4)
-  struct
-  {
-    float _11;
-    float _12;
-    float _13;
-    float _14;
-    float _21;
-    float _22;
-    float _23;
-    float _24;
-    float _31;
-    float _32;
-    float _33;
-    float _34;
-    float _41;
-    float _42;
-    float _43;
-    float _44;
-  };
-  #pragma pack(pop)
-  float m[4][4];
-};
-#pragma pack(pop)
-
-/* 394 */
-#pragma pack(push, 4)
-struct _D3DMATRIX
-{
-  #pragma pack(push, 4)
-  union
-  {
-    #pragma pack(push, 4)
-    struct
-    {
-      float _11;
-      float _12;
-      float _13;
-      float _14;
-      float _21;
-      float _22;
-      float _23;
-      float _24;
-      float _31;
-      float _32;
-      float _33;
-      float _34;
-      float _41;
-      float _42;
-      float _43;
-      float _44;
-    };
-    #pragma pack(pop)
-    float m[4][4];
-  };
-  #pragma pack(pop)
-};
-#pragma pack(pop)
-
-/* 400 */
-struct _D3DCOLORVALUE
-{
-  float r;
-  float g;
-  float b;
-  float a;
-};
-
-/* 399 */
-typedef struct _D3DCOLORVALUE D3DCOLORVALUE;
-
-/* 398 */
-#pragma pack(push, 4)
-struct _D3DMATERIAL9
-{
-  D3DCOLORVALUE Diffuse;
-  D3DCOLORVALUE Ambient;
-  D3DCOLORVALUE Specular;
-  D3DCOLORVALUE Emissive;
-  float Power;
-};
-#pragma pack(pop)
-
-/* 404 */
-enum _D3DLIGHTTYPE
-{
-  D3DLIGHT_POINT = 0x1,
-  D3DLIGHT_SPOT = 0x2,
-  D3DLIGHT_DIRECTIONAL = 0x3,
-  D3DLIGHT_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 403 */
-typedef enum _D3DLIGHTTYPE D3DLIGHTTYPE;
-
-/* 406 */
-struct _D3DVECTOR
-{
-  float x;
-  float y;
-  float z;
-};
-
-/* 405 */
-typedef struct _D3DVECTOR D3DVECTOR;
-
-/* 402 */
-#pragma pack(push, 4)
-struct _D3DLIGHT9
-{
-  D3DLIGHTTYPE Type;
-  D3DCOLORVALUE Diffuse;
-  D3DCOLORVALUE Specular;
-  D3DCOLORVALUE Ambient;
-  D3DVECTOR Position;
-  D3DVECTOR Direction;
-  float Range;
-  float Falloff;
-  float Attenuation0;
-  float Attenuation1;
-  float Attenuation2;
-  float Theta;
-  float Phi;
-};
-#pragma pack(pop)
-
-/* 408 */
-#pragma pack(push, 4)
-struct _D3DGAMMARAMP
-{
-  WORD red[256];
-  WORD green[256];
-  WORD blue[256];
-};
-#pragma pack(pop)
-
-/* 370 */
-struct IDirect3DDevice9Vtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirect3DDevice9 *This, const IID *const riid, void **ppvObj);
-  ULONG (__stdcall *AddRef)(IDirect3DDevice9 *This);
-  ULONG (__stdcall *Release)(IDirect3DDevice9 *This);
-  HRESULT (__stdcall *TestCooperativeLevel)(IDirect3DDevice9 *This);
-  UINT (__stdcall *GetAvailableTextureMem)(IDirect3DDevice9 *This);
-  HRESULT (__stdcall *EvictManagedResources)(IDirect3DDevice9 *This);
-  HRESULT (__stdcall *GetDirect3D)(IDirect3DDevice9 *This, IDirect3D9 **ppD3D9);
-  HRESULT (__stdcall *GetDeviceCaps)(IDirect3DDevice9 *This, D3DCAPS9 *pCaps);
-  HRESULT (__stdcall *GetDisplayMode)(IDirect3DDevice9 *This, UINT iSwapChain, D3DDISPLAYMODE *pMode);
-  HRESULT (__stdcall *GetCreationParameters)(IDirect3DDevice9 *This, D3DDEVICE_CREATION_PARAMETERS *pParameters);
-  HRESULT (__stdcall *SetCursorProperties)(IDirect3DDevice9 *This, UINT XHotSpot, UINT YHotSpot, IDirect3DSurface9 *pCursorBitmap);
-  void (__stdcall *SetCursorPosition)(IDirect3DDevice9 *This, int X, int Y, DWORD Flags);
-  BOOL (__stdcall *ShowCursor)(IDirect3DDevice9 *This, BOOL bShow);
-  HRESULT (__stdcall *CreateAdditionalSwapChain)(IDirect3DDevice9 *This, D3DPRESENT_PARAMETERS *pPresentationParameters, IDirect3DSwapChain9 **pSwapChain);
-  HRESULT (__stdcall *GetSwapChain)(IDirect3DDevice9 *This, UINT iSwapChain, IDirect3DSwapChain9 **pSwapChain);
-  UINT (__stdcall *GetNumberOfSwapChains)(IDirect3DDevice9 *This);
-  HRESULT (__stdcall *Reset)(IDirect3DDevice9 *This, D3DPRESENT_PARAMETERS *pPresentationParameters);
-  HRESULT (__stdcall *Present)(IDirect3DDevice9 *This, const RECT *pSourceRect, const RECT *pDestRect, HWND hDestWindowOverride, const RGNDATA *pDirtyRegion);
-  HRESULT (__stdcall *GetBackBuffer)(IDirect3DDevice9 *This, UINT iSwapChain, UINT iBackBuffer, D3DBACKBUFFER_TYPE Type, IDirect3DSurface9 **ppBackBuffer);
-  HRESULT (__stdcall *GetRasterStatus)(IDirect3DDevice9 *This, UINT iSwapChain, D3DRASTER_STATUS *pRasterStatus);
-  HRESULT (__stdcall *SetDialogBoxMode)(IDirect3DDevice9 *This, BOOL bEnableDialogs);
-  void (__stdcall *SetGammaRamp)(IDirect3DDevice9 *This, UINT iSwapChain, DWORD Flags, const D3DGAMMARAMP *pRamp);
-  void (__stdcall *GetGammaRamp)(IDirect3DDevice9 *This, UINT iSwapChain, D3DGAMMARAMP *pRamp);
-  HRESULT (__stdcall *CreateTexture)(IDirect3DDevice9 *This, UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture9 **ppTexture, HANDLE *pSharedHandle);
-  HRESULT (__stdcall *CreateVolumeTexture)(IDirect3DDevice9 *This, UINT Width, UINT Height, UINT Depth, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DVolumeTexture9 **ppVolumeTexture, HANDLE *pSharedHandle);
-  HRESULT (__stdcall *CreateCubeTexture)(IDirect3DDevice9 *This, UINT EdgeLength, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DCubeTexture9 **ppCubeTexture, HANDLE *pSharedHandle);
-  HRESULT (__stdcall *CreateVertexBuffer)(IDirect3DDevice9 *This, UINT Length, DWORD Usage, MACRO_D3DFVF FVF, D3DPOOL Pool, IDirect3DVertexBuffer9 **ppVertexBuffer, HANDLE *pSharedHandle);
-  HRESULT (__stdcall *CreateIndexBuffer)(IDirect3DDevice9 *This, UINT Length, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DIndexBuffer9 **ppIndexBuffer, HANDLE *pSharedHandle);
-  HRESULT (__stdcall *CreateRenderTarget)(IDirect3DDevice9 *This, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9 **ppSurface, HANDLE *pSharedHandle);
-  HRESULT (__stdcall *CreateDepthStencilSurface)(IDirect3DDevice9 *This, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Discard, IDirect3DSurface9 **ppSurface, HANDLE *pSharedHandle);
-  HRESULT (__stdcall *UpdateSurface)(IDirect3DDevice9 *This, IDirect3DSurface9 *pSourceSurface, const RECT *pSourceRect, IDirect3DSurface9 *pDestinationSurface, const POINT *pDestPoint);
-  HRESULT (__stdcall *UpdateTexture)(IDirect3DDevice9 *This, IDirect3DBaseTexture9 *pSourceTexture, IDirect3DBaseTexture9 *pDestinationTexture);
-  HRESULT (__stdcall *GetRenderTargetData)(IDirect3DDevice9 *This, IDirect3DSurface9 *pRenderTarget, IDirect3DSurface9 *pDestSurface);
-  HRESULT (__stdcall *GetFrontBufferData)(IDirect3DDevice9 *This, UINT iSwapChain, IDirect3DSurface9 *pDestSurface);
-  HRESULT (__stdcall *StretchRect)(IDirect3DDevice9 *This, IDirect3DSurface9 *pSourceSurface, const RECT *pSourceRect, IDirect3DSurface9 *pDestSurface, const RECT *pDestRect, D3DTEXTUREFILTERTYPE Filter);
-  HRESULT (__stdcall *ColorFill)(IDirect3DDevice9 *This, IDirect3DSurface9 *pSurface, const RECT *pRect, D3DCOLOR color);
-  HRESULT (__stdcall *CreateOffscreenPlainSurface)(IDirect3DDevice9 *This, UINT Width, UINT Height, D3DFORMAT Format, D3DPOOL Pool, IDirect3DSurface9 **ppSurface, HANDLE *pSharedHandle);
-  HRESULT (__stdcall *SetRenderTarget)(IDirect3DDevice9 *This, DWORD RenderTargetIndex, IDirect3DSurface9 *pRenderTarget);
-  HRESULT (__stdcall *GetRenderTarget)(IDirect3DDevice9 *This, DWORD RenderTargetIndex, IDirect3DSurface9 **ppRenderTarget);
-  HRESULT (__stdcall *SetDepthStencilSurface)(IDirect3DDevice9 *This, IDirect3DSurface9 *pNewZStencil);
-  HRESULT (__stdcall *GetDepthStencilSurface)(IDirect3DDevice9 *This, IDirect3DSurface9 **ppZStencilSurface);
-  HRESULT (__stdcall *BeginScene)(IDirect3DDevice9 *This);
-  HRESULT (__stdcall *EndScene)(IDirect3DDevice9 *This);
-  HRESULT (__stdcall *Clear)(IDirect3DDevice9 *This, DWORD Count, const D3DRECT *pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil);
-  HRESULT (__stdcall *SetTransform)(IDirect3DDevice9 *This, D3DTRANSFORMSTATETYPE State, const D3DMATRIX *pMatrix);
-  HRESULT (__stdcall *GetTransform)(IDirect3DDevice9 *This, D3DTRANSFORMSTATETYPE State, D3DMATRIX *pMatrix);
-  HRESULT (__stdcall *MultiplyTransform)(IDirect3DDevice9 *This, D3DTRANSFORMSTATETYPE, const D3DMATRIX *);
-  HRESULT (__stdcall *SetViewport)(IDirect3DDevice9 *This, const D3DVIEWPORT9 *pViewport);
-  HRESULT (__stdcall *GetViewport)(IDirect3DDevice9 *This, D3DVIEWPORT9 *pViewport);
-  HRESULT (__stdcall *SetMaterial)(IDirect3DDevice9 *This, const D3DMATERIAL9 *pMaterial);
-  HRESULT (__stdcall *GetMaterial)(IDirect3DDevice9 *This, D3DMATERIAL9 *pMaterial);
-  HRESULT (__stdcall *SetLight)(IDirect3DDevice9 *This, DWORD Index, const D3DLIGHT9 *);
-  HRESULT (__stdcall *GetLight)(IDirect3DDevice9 *This, DWORD Index, D3DLIGHT9 *);
-  HRESULT (__stdcall *LightEnable)(IDirect3DDevice9 *This, DWORD Index, BOOL Enable);
-  HRESULT (__stdcall *GetLightEnable)(IDirect3DDevice9 *This, DWORD Index, BOOL *pEnable);
-  HRESULT (__stdcall *SetClipPlane)(IDirect3DDevice9 *This, DWORD Index, const float *pPlane);
-  HRESULT (__stdcall *GetClipPlane)(IDirect3DDevice9 *This, DWORD Index, float *pPlane);
-  HRESULT (__stdcall *SetRenderState)(IDirect3DDevice9 *This, D3DRENDERSTATETYPE State, DWORD Value);
-  HRESULT (__stdcall *GetRenderState)(IDirect3DDevice9 *This, D3DRENDERSTATETYPE State, DWORD *pValue);
-  HRESULT (__stdcall *CreateStateBlock)(IDirect3DDevice9 *This, D3DSTATEBLOCKTYPE Type, IDirect3DStateBlock9 **ppSB);
-  HRESULT (__stdcall *BeginStateBlock)(IDirect3DDevice9 *This);
-  HRESULT (__stdcall *EndStateBlock)(IDirect3DDevice9 *This, IDirect3DStateBlock9 **ppSB);
-  HRESULT (__stdcall *SetClipStatus)(IDirect3DDevice9 *This, const D3DCLIPSTATUS9 *pClipStatus);
-  HRESULT (__stdcall *GetClipStatus)(IDirect3DDevice9 *This, D3DCLIPSTATUS9 *pClipStatus);
-  HRESULT (__stdcall *GetTexture)(IDirect3DDevice9 *This, DWORD Stage, IDirect3DBaseTexture9 **ppTexture);
-  HRESULT (__stdcall *SetTexture)(IDirect3DDevice9 *This, DWORD Stage, IDirect3DBaseTexture9 *pTexture);
-  HRESULT (__stdcall *GetTextureStageState)(IDirect3DDevice9 *This, DWORD Stage, D3DTEXTURESTAGESTATETYPE Type, DWORD *pValue);
-  HRESULT (__stdcall *SetTextureStageState)(IDirect3DDevice9 *This, DWORD Stage, D3DTEXTURESTAGESTATETYPE Type, DWORD Value);
-  HRESULT (__stdcall *GetSamplerState)(IDirect3DDevice9 *This, DWORD Sampler, D3DSAMPLERSTATETYPE Type, DWORD *pValue);
-  HRESULT (__stdcall *SetSamplerState)(IDirect3DDevice9 *This, DWORD Sampler, D3DSAMPLERSTATETYPE Type, DWORD Value);
-  HRESULT (__stdcall *ValidateDevice)(IDirect3DDevice9 *This, DWORD *pNumPasses);
-  HRESULT (__stdcall *SetPaletteEntries)(IDirect3DDevice9 *This, UINT PaletteNumber, const PALETTEENTRY *pEntries);
-  HRESULT (__stdcall *GetPaletteEntries)(IDirect3DDevice9 *This, UINT PaletteNumber, PALETTEENTRY *pEntries);
-  HRESULT (__stdcall *SetCurrentTexturePalette)(IDirect3DDevice9 *This, UINT PaletteNumber);
-  HRESULT (__stdcall *GetCurrentTexturePalette)(IDirect3DDevice9 *This, UINT *PaletteNumber);
-  HRESULT (__stdcall *SetScissorRect)(IDirect3DDevice9 *This, const RECT *pRect);
-  HRESULT (__stdcall *GetScissorRect)(IDirect3DDevice9 *This, RECT *pRect);
-  HRESULT (__stdcall *SetSoftwareVertexProcessing)(IDirect3DDevice9 *This, BOOL bSoftware);
-  BOOL (__stdcall *GetSoftwareVertexProcessing)(IDirect3DDevice9 *This);
-  HRESULT (__stdcall *SetNPatchMode)(IDirect3DDevice9 *This, float nSegments);
-  float (__stdcall *GetNPatchMode)(IDirect3DDevice9 *This);
-  HRESULT (__stdcall *DrawPrimitive)(IDirect3DDevice9 *This, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount);
-  HRESULT (__stdcall *DrawIndexedPrimitive)(IDirect3DDevice9 *This, D3DPRIMITIVETYPE, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
-  HRESULT (__stdcall *DrawPrimitiveUP)(IDirect3DDevice9 *This, D3DPRIMITIVETYPE PrimitiveType, UINT PrimitiveCount, const void *pVertexStreamZeroData, UINT VertexStreamZeroStride);
-  HRESULT (__stdcall *DrawIndexedPrimitiveUP)(IDirect3DDevice9 *This, D3DPRIMITIVETYPE PrimitiveType, UINT MinVertexIndex, UINT NumVertices, UINT PrimitiveCount, const void *pIndexData, D3DFORMAT IndexDataFormat, const void *pVertexStreamZeroData, UINT VertexStreamZeroStride);
-  HRESULT (__stdcall *ProcessVertices)(IDirect3DDevice9 *This, UINT SrcStartIndex, UINT DestIndex, UINT VertexCount, IDirect3DVertexBuffer9 *pDestBuffer, IDirect3DVertexDeclaration9 *pVertexDecl, DWORD Flags);
-  HRESULT (__stdcall *CreateVertexDeclaration)(IDirect3DDevice9 *This, const D3DVERTEXELEMENT9 *pVertexElements, IDirect3DVertexDeclaration9 **ppDecl);
-  HRESULT (__stdcall *SetVertexDeclaration)(IDirect3DDevice9 *This, IDirect3DVertexDeclaration9 *pDecl);
-  HRESULT (__stdcall *GetVertexDeclaration)(IDirect3DDevice9 *This, IDirect3DVertexDeclaration9 **ppDecl);
-  HRESULT (__stdcall *SetFVF)(IDirect3DDevice9 *This, DWORD FVF);
-  HRESULT (__stdcall *GetFVF)(IDirect3DDevice9 *This, DWORD *pFVF);
-  HRESULT (__stdcall *CreateVertexShader)(IDirect3DDevice9 *This, const DWORD *pFunction, IDirect3DVertexShader9 **ppShader);
-  HRESULT (__stdcall *SetVertexShader)(IDirect3DDevice9 *This, IDirect3DVertexShader9 *pShader);
-  HRESULT (__stdcall *GetVertexShader)(IDirect3DDevice9 *This, IDirect3DVertexShader9 **ppShader);
-  HRESULT (__stdcall *SetVertexShaderConstantF)(IDirect3DDevice9 *This, UINT StartRegister, const float *pConstantData, UINT Vector4fCount);
-  HRESULT (__stdcall *GetVertexShaderConstantF)(IDirect3DDevice9 *This, UINT StartRegister, float *pConstantData, UINT Vector4fCount);
-  HRESULT (__stdcall *SetVertexShaderConstantI)(IDirect3DDevice9 *This, UINT StartRegister, const int *pConstantData, UINT Vector4iCount);
-  HRESULT (__stdcall *GetVertexShaderConstantI)(IDirect3DDevice9 *This, UINT StartRegister, int *pConstantData, UINT Vector4iCount);
-  HRESULT (__stdcall *SetVertexShaderConstantB)(IDirect3DDevice9 *This, UINT StartRegister, const BOOL *pConstantData, UINT BoolCount);
-  HRESULT (__stdcall *GetVertexShaderConstantB)(IDirect3DDevice9 *This, UINT StartRegister, BOOL *pConstantData, UINT BoolCount);
-  HRESULT (__stdcall *SetStreamSource)(IDirect3DDevice9 *This, UINT StreamNumber, IDirect3DVertexBuffer9 *pStreamData, UINT OffsetInBytes, UINT Stride);
-  HRESULT (__stdcall *GetStreamSource)(IDirect3DDevice9 *This, UINT StreamNumber, IDirect3DVertexBuffer9 **ppStreamData, UINT *OffsetInBytes, UINT *pStride);
-  HRESULT (__stdcall *SetStreamSourceFreq)(IDirect3DDevice9 *This, UINT StreamNumber, UINT Divider);
-  HRESULT (__stdcall *GetStreamSourceFreq)(IDirect3DDevice9 *This, UINT StreamNumber, UINT *Divider);
-  HRESULT (__stdcall *SetIndices)(IDirect3DDevice9 *This, IDirect3DIndexBuffer9 *pIndexData);
-  HRESULT (__stdcall *GetIndices)(IDirect3DDevice9 *This, IDirect3DIndexBuffer9 **ppIndexData);
-  HRESULT (__stdcall *CreatePixelShader)(IDirect3DDevice9 *This, const DWORD *pFunction, IDirect3DPixelShader9 **ppShader);
-  HRESULT (__stdcall *SetPixelShader)(IDirect3DDevice9 *This, IDirect3DPixelShader9 *pShader);
-  HRESULT (__stdcall *GetPixelShader)(IDirect3DDevice9 *This, IDirect3DPixelShader9 **ppShader);
-  HRESULT (__stdcall *SetPixelShaderConstantF)(IDirect3DDevice9 *This, UINT StartRegister, const float *pConstantData, UINT Vector4fCount);
-  HRESULT (__stdcall *GetPixelShaderConstantF)(IDirect3DDevice9 *This, UINT StartRegister, float *pConstantData, UINT Vector4fCount);
-  HRESULT (__stdcall *SetPixelShaderConstantI)(IDirect3DDevice9 *This, UINT StartRegister, const int *pConstantData, UINT Vector4iCount);
-  HRESULT (__stdcall *GetPixelShaderConstantI)(IDirect3DDevice9 *This, UINT StartRegister, int *pConstantData, UINT Vector4iCount);
-  HRESULT (__stdcall *SetPixelShaderConstantB)(IDirect3DDevice9 *This, UINT StartRegister, const BOOL *pConstantData, UINT BoolCount);
-  HRESULT (__stdcall *GetPixelShaderConstantB)(IDirect3DDevice9 *This, UINT StartRegister, BOOL *pConstantData, UINT BoolCount);
-  HRESULT (__stdcall *DrawRectPatch)(IDirect3DDevice9 *This, UINT Handle, const float *pNumSegs, const D3DRECTPATCH_INFO *pRectPatchInfo);
-  HRESULT (__stdcall *DrawTriPatch)(IDirect3DDevice9 *This, UINT Handle, const float *pNumSegs, const D3DTRIPATCH_INFO *pTriPatchInfo);
-  HRESULT (__stdcall *DeletePatch)(IDirect3DDevice9 *This, UINT Handle);
-  HRESULT (__stdcall *CreateQuery)(IDirect3DDevice9 *This, D3DQUERYTYPE Type, IDirect3DQuery9 **ppQuery);
-  D3DDEVICE_CREATION_PARAMETERS CreationParameters;
-  D3DPRESENT_PARAMETERS PresentParameters;
-  D3DDISPLAYMODE DisplayMode;
-  D3DCAPS9 Caps;
-  UINT AvailableTextureMem;
-  UINT SwapChains;
-  UINT Textures;
-  UINT VertexBuffers;
-  UINT IndexBuffers;
-  UINT VertexShaders;
-  UINT PixelShaders;
-  D3DVIEWPORT9 Viewport;
-  D3DMATRIX ProjectionMatrix;
-  D3DMATRIX ViewMatrix;
-  D3DMATRIX WorldMatrix;
-  D3DMATRIX TextureMatrices[8];
-  DWORD FVF;
-  UINT VertexSize;
-  DWORD VertexShaderVersion;
-  DWORD PixelShaderVersion;
-  BOOL SoftwareVertexProcessing;
-  D3DMATERIAL9 Material;
-  D3DLIGHT9 Lights[16];
-  BOOL LightsEnabled[16];
-  D3DGAMMARAMP GammaRamp;
-  RECT ScissorRect;
-  BOOL DialogBoxMode;
-};
-
 /* 409 */
 struct CCustomVertex
 {
@@ -5501,12 +9354,6 @@ struct CCustomVertex
   float tv;
 };
 
-/* 411 */
-struct CString
-{
-  char *pszData;
-};
-
 /* 412 */
 #pragma pack(push, 1)
 struct CStringData
@@ -5517,25 +9364,6 @@ struct CStringData
   int nRefs;
 };
 #pragma pack(pop)
-
-/* 413 */
-struct CHeapAllocator
-{
-  IHeapAllocatorVtbl *lpVtbl;
-  HANDLE hHeap __bin;
-  char bInitialized;
-  char gap_9[3];
-};
-
-/* 414 */
-struct IHeapAllocatorVtbl
-{
-  LPVOID (__thiscall *Alloc)(CHeapAllocator *this, SIZE_T dwBytes);
-  BOOL (__thiscall *Free)(CHeapAllocator *this, LPVOID lpMem);
-  LPVOID (__thiscall *ReAlloc)(CHeapAllocator *this, LPVOID lpMem, SIZE_T dwBytes);
-  SIZE_T (__thiscall *Size)(CHeapAllocator *this, LPCVOID lpMem);
-  CHeapAllocator *(__thiscall *Destroy)(CHeapAllocator *this, char bFree);
-};
 
 /* 417 */
 struct CNilStringData
@@ -5564,6 +9392,25 @@ struct IAtlStringMgrVtbl
   CNilStringData *(__thiscall *GetNilString)(CAtlStringMgr *this);
   CAtlStringMgr *(__thiscall *Clone)(CAtlStringMgr *this);
   CAtlStringMgr *(__thiscall *Destroy)(CAtlStringMgr *this, char bFree);
+};
+
+/* 413 */
+struct CHeapAllocator
+{
+  IHeapAllocatorVtbl *lpVtbl;
+  HANDLE hHeap __bin;
+  char bInitialized;
+  char gap_9[3];
+};
+
+/* 414 */
+struct IHeapAllocatorVtbl
+{
+  LPVOID (__thiscall *Alloc)(CHeapAllocator *this, SIZE_T dwBytes);
+  BOOL (__thiscall *Free)(CHeapAllocator *this, LPVOID lpMem);
+  LPVOID (__thiscall *ReAlloc)(CHeapAllocator *this, LPVOID lpMem, SIZE_T dwBytes);
+  SIZE_T (__thiscall *Size)(CHeapAllocator *this, LPCVOID lpMem);
+  CHeapAllocator *(__thiscall *Destroy)(CHeapAllocator *this, char bFree);
 };
 
 /* 418 */
@@ -11486,43 +15333,6 @@ enum __dec MACRO_HRESULT : __int64
   WU_E_SLS_INVALID_REVISION = -2145078783LL,
 };
 
-/* 422 */
-/// was CStruct_10
-struct __fixed CVector_T4
-{
-  int _Alval;
-  CVectorItem_T4 *pFirst;
-  CVectorItem_T4 *pLast;
-  CVectorItem_T4 *pEnd;
-};
-
-/* 420 */
-struct __fixed CVector_T18
-{
-  int vec_0;
-  CVectorItem_T18 *pFirst;
-  CVectorItem_T18 *pLast;
-  CVectorItem_T18 *pEnd;
-};
-
-/* 419 */
-struct __fixed CStructInput_70
-{
-  CVector_T4 Vec4A;
-  CVector_T18 Vec24;
-  int nCount_20;
-  CVector_T4 Vec4B;
-  int field_34;
-  int field_38;
-  CVector_T4 Vec3;
-  CVector_T4 Vec4C;
-  float field_5C;
-  int field_60;
-  int field_64;
-  int field_68;
-  int field_6C;
-};
-
 /* 421 */
 struct __fixed CStruct_18
 {
@@ -11531,187 +15341,6 @@ struct __fixed CStruct_18
   int pData;
   int End;
   int field_10[2];
-};
-
-/* 424 */
-struct __fixed CSB_CameraBase
-{
-  ICSB_CameraBaseVtbl *lpVtbl;
-  CSB_CameraNormal *pSBCameraNormal;
-  CCameraKeyCfg *pCameraKeyCfg;
-  char field_C;
-  char field_D;
-};
-
-/* 425 */
-struct ICSB_CameraBaseVtbl
-{
-  void *(__thiscall *CSB_CameraBase__method_0_403560)(void *this, char);
-  char (__thiscall *CCameraBase__method_4_649330)(CSB_CameraBase *this, CSB_CameraNormal *pSBCameraNormal, CCameraKeyCfg *pCameraKeyCfg);
-  char (__thiscall *CCameraBase__method_8_6493E0)(int this);
-  int (__thiscall *CCameraBase__method_C_649490)(_DWORD **this, int, int, int, int);
-  int (__thiscall *CCameraBase__method_10_6494E0)(_DWORD **this, int);
-  int (__thiscall *CCameraBase__method_14_4034B0)(_DWORD **this, int, int, int, int, int);
-  int (__thiscall *CCameraBase__method_18_4034F0)(_DWORD **this);
-  int (__thiscall *CCameraBase__method_1C_403510)(_DWORD **this);
-};
-
-/* 426 */
-struct __fixed CCameraKeyCfg
-{
-  ICCameraKeyCfgVtbl *lpVtbl;
-  char field_4;
-  char field_5;
-  char field_6;
-  char field_7;
-  char field_8;
-  char field_9;
-  char field_A;
-  char field_B;
-  char field_C;
-  char field_D;
-  char field_E;
-  char field_F;
-  char field_10;
-  char field_11;
-  char field_12;
-  char field_13;
-  char field_14;
-  char field_15;
-  char field_16;
-  char field_17;
-  char field_18;
-  char field_19;
-  char field_1A;
-};
-
-/* 563 */
-struct __fixed CCameraKeyParam
-{
-  ICCameraKeyParamVtbl *lpVtbl;
-  float flt_4;
-  float flt_8;
-  float flt_C;
-};
-
-/* 527 */
-struct __fixed CCameraInfo
-{
-  ICCameraInfoVtbl *lpVtbl;
-  int field_4;
-  int field_8;
-  int field_C;
-  int field_10;
-  int field_14;
-  int field_18;
-  int field_1C;
-  int field_20;
-  int field_24;
-  int field_28;
-  int field_2C;
-  float field_30;
-  float field_34;
-  char field_38;
-  char field_39;
-  char field_3A;
-  char field_3B;
-  char field_3C;
-  char field_3D;
-  char field_3E;
-  char field_3F;
-};
-
-/* 526 */
-struct __fixed CCameraCalc
-{
-  ICameraCalcVtbl *lpVtbl;
-  int field_4;
-  int field_8;
-  int field_C;
-  float field_10;
-  char field_14;
-  int field_18;
-  int field_1C;
-  int field_20;
-  D3DMATRIX mat4x4_24;
-  int field_64;
-};
-
-/* 573 */
-struct CCameraNormalMembers
-{
-  char field_4;
-  int field_8;
-  char field_C;
-  char bNotDrawCenter;
-  char field_E;
-  int field_10;
-  D3DMATRIX mat4x4_14;
-  D3DMATRIX mat4x4_54;
-  D3DMATRIX mat4x4_94;
-  CCameraKeyParam camKeyParam_D4;
-  CCameraKeyParam camKeyParam_E4;
-  CCameraKeyParam camKeyParam_F4;
-  CCameraKeyParam camKeyParam_104;
-  CCameraKeyParam camKeyParam_114;
-  CCameraKeyParam camKeyParam_124;
-  CCameraKeyParam camKeyParam_134;
-  CCameraKeyParam camKeyParam_144;
-  CCameraInfo cam_info_154;
-  CCameraCalc *p_camera_calc_194;
-  CCameraCalc cam_calc_198;
-  CCameraCalc cam_calc_200;
-  int field_268;
-};
-
-/* 571 */
-struct __fixed CSB_CameraInfo
-{
-  ICSB_CameraInfoVtbl *lpVtbl;
-  int field_4;
-  int field_8;
-  int field_C;
-  int field_10;
-  int field_14;
-  int field_18;
-  int field_1C;
-  int field_20;
-  int field_24;
-  int field_28;
-  int field_2C;
-  float flt_30;
-  float flt_34;
-  char field_38;
-  char field_39;
-  char field_3A;
-  char field_3B;
-  char field_3C;
-  char field_3D;
-  char field_3E;
-  char field_3F;
-  char field_40;
-  char field_41;
-  char field_42;
-  char field_43;
-  char field_44;
-  char field_45;
-};
-
-/* 427 */
-struct __fixed CSB_CameraNormal
-{
-  ICSB_CameraNormalVtbl *lpVtbl;
-  CCameraNormalMembers base_;
-  CSB_CameraInfo csbcam_info_26C;
-  int field_2B4;
-  char field_2B8;
-};
-
-/* 428 */
-struct __fixed CSB_BackgroundSprite
-{
-  int lpVtbl;
-  CStructImage2D_80 *pImage;
 };
 
 /* 429 */
@@ -11734,6 +15363,14 @@ struct __fixed CISE_SceneEndEffect_Common
   int field_10;
 };
 
+/* 433 */
+struct IISE_SceneEndEffect_CommonVtbl
+{
+  void *method0;
+  void (__noreturn *method1)();
+  void (__noreturn *method2)();
+};
+
 /* 431 */
 struct __fixed CISE_SceneEndEffect_RotSmall
 {
@@ -11754,155 +15391,6 @@ struct __fixed CISE_SceneEndEffect_TiltEffect
   int field_10;
 };
 
-/* 433 */
-struct IISE_SceneEndEffect_CommonVtbl
-{
-  void *method0;
-  void (__noreturn *method1)();
-  void (__noreturn *method2)();
-};
-
-/* 434 */
-typedef struct IDirect3DDevice9 *LPDIRECT3DDEVICE9;
-
-/* 435 */
-struct IDirect3DDevice9
-{
-  struct IDirect3DDevice9Vtbl *lpVtbl;
-};
-
-/* 436 */
-typedef struct IDirect3DTexture9 *LPDIRECT3DTEXTURE9;
-
-/* 437 */
-struct IDirect3DTexture9
-{
-  struct IDirect3DTexture9Vtbl *lpVtbl;
-};
-
-/* 440 */
-enum _D3DRESOURCETYPE
-{
-  D3DRTYPE_SURFACE = 0x1,
-  D3DRTYPE_VOLUME = 0x2,
-  D3DRTYPE_TEXTURE = 0x3,
-  D3DRTYPE_VOLUMETEXTURE = 0x4,
-  D3DRTYPE_CUBETEXTURE = 0x5,
-  D3DRTYPE_VERTEXBUFFER = 0x6,
-  D3DRTYPE_INDEXBUFFER = 0x7,
-  D3DRTYPE_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 439 */
-typedef enum _D3DRESOURCETYPE D3DRESOURCETYPE;
-
-/* 443 */
-typedef struct _D3DSURFACE_DESC D3DSURFACE_DESC;
-
-/* 449 */
-typedef struct _D3DLOCKED_RECT D3DLOCKED_RECT;
-
-/* 438 */
-struct IDirect3DTexture9Vtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirect3DTexture9 *This, const IID *const riid, void **ppvObj);
-  ULONG (__stdcall *AddRef)(IDirect3DTexture9 *This);
-  ULONG (__stdcall *Release)(IDirect3DTexture9 *This);
-  HRESULT (__stdcall *GetDevice)(IDirect3DTexture9 *This, IDirect3DDevice9 **ppDevice);
-  HRESULT (__stdcall *SetPrivateData)(IDirect3DTexture9 *This, const GUID *const refguid, const void *pData, DWORD SizeOfData, DWORD Flags);
-  HRESULT (__stdcall *GetPrivateData)(IDirect3DTexture9 *This, const GUID *const refguid, void *pData, DWORD *pSizeOfData);
-  HRESULT (__stdcall *FreePrivateData)(IDirect3DTexture9 *This, const GUID *const refguid);
-  DWORD (__stdcall *SetPriority)(IDirect3DTexture9 *This, DWORD PriorityNew);
-  DWORD (__stdcall *GetPriority)(IDirect3DTexture9 *This);
-  void (__stdcall *PreLoad)(IDirect3DTexture9 *This);
-  D3DRESOURCETYPE (__stdcall *GetType)(IDirect3DTexture9 *This);
-  DWORD (__stdcall *SetLOD)(IDirect3DTexture9 *This, DWORD LODNew);
-  DWORD (__stdcall *GetLOD)(IDirect3DTexture9 *This);
-  DWORD (__stdcall *GetLevelCount)(IDirect3DTexture9 *This);
-  HRESULT (__stdcall *SetAutoGenFilterType)(IDirect3DTexture9 *This, D3DTEXTUREFILTERTYPE FilterType);
-  D3DTEXTUREFILTERTYPE (__stdcall *GetAutoGenFilterType)(IDirect3DTexture9 *This);
-  void (__stdcall *GenerateMipSubLevels)(IDirect3DTexture9 *This);
-  HRESULT (__stdcall *GetLevelDesc)(IDirect3DTexture9 *This, UINT Level, D3DSURFACE_DESC *pDesc);
-  HRESULT (__stdcall *GetSurfaceLevel)(IDirect3DTexture9 *This, UINT Level, IDirect3DSurface9 **ppSurfaceLevel);
-  HRESULT (__stdcall *LockRect)(IDirect3DTexture9 *This, UINT Level, D3DLOCKED_RECT *pLockedRect, const RECT *pRect, DWORD Flags);
-  HRESULT (__stdcall *UnlockRect)(IDirect3DTexture9 *This, UINT Level);
-  HRESULT (__stdcall *AddDirtyRect)(IDirect3DTexture9 *This, const RECT *pDirtyRect);
-  LPCWSTR Name;
-  UINT Width;
-  UINT Height;
-  UINT Levels;
-  DWORD Usage;
-  D3DFORMAT Format;
-  D3DPOOL Pool;
-  DWORD Priority;
-  DWORD LOD;
-  D3DTEXTUREFILTERTYPE FilterType;
-  UINT LockCount;
-};
-
-/* 444 */
-#pragma pack(push, 4)
-struct _D3DSURFACE_DESC
-{
-  D3DFORMAT Format;
-  D3DRESOURCETYPE Type;
-  DWORD Usage;
-  D3DPOOL Pool;
-  D3DMULTISAMPLE_TYPE MultiSampleType;
-  DWORD MultiSampleQuality;
-  UINT Width;
-  UINT Height;
-};
-#pragma pack(pop)
-
-/* 447 */
-struct IDirect3DSurface9
-{
-  struct IDirect3DSurface9Vtbl *lpVtbl;
-};
-
-/* 448 */
-struct IDirect3DSurface9Vtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirect3DSurface9 *This, const IID *const riid, void **ppvObj);
-  ULONG (__stdcall *AddRef)(IDirect3DSurface9 *This);
-  ULONG (__stdcall *Release)(IDirect3DSurface9 *This);
-  HRESULT (__stdcall *GetDevice)(IDirect3DSurface9 *This, IDirect3DDevice9 **ppDevice);
-  HRESULT (__stdcall *SetPrivateData)(IDirect3DSurface9 *This, const GUID *const refguid, const void *pData, DWORD SizeOfData, DWORD Flags);
-  HRESULT (__stdcall *GetPrivateData)(IDirect3DSurface9 *This, const GUID *const refguid, void *pData, DWORD *pSizeOfData);
-  HRESULT (__stdcall *FreePrivateData)(IDirect3DSurface9 *This, const GUID *const refguid);
-  DWORD (__stdcall *SetPriority)(IDirect3DSurface9 *This, DWORD PriorityNew);
-  DWORD (__stdcall *GetPriority)(IDirect3DSurface9 *This);
-  void (__stdcall *PreLoad)(IDirect3DSurface9 *This);
-  D3DRESOURCETYPE (__stdcall *GetType)(IDirect3DSurface9 *This);
-  HRESULT (__stdcall *GetContainer)(IDirect3DSurface9 *This, const IID *const riid, void **ppContainer);
-  HRESULT (__stdcall *GetDesc)(IDirect3DSurface9 *This, D3DSURFACE_DESC *pDesc);
-  HRESULT (__stdcall *LockRect)(IDirect3DSurface9 *This, D3DLOCKED_RECT *pLockedRect, const RECT *pRect, DWORD Flags);
-  HRESULT (__stdcall *UnlockRect)(IDirect3DSurface9 *This);
-  HRESULT (__stdcall *GetDC)(IDirect3DSurface9 *This, HDC *phdc);
-  HRESULT (__stdcall *ReleaseDC)(IDirect3DSurface9 *This, HDC hdc);
-  LPCWSTR Name;
-  UINT Width;
-  UINT Height;
-  DWORD Usage;
-  D3DFORMAT Format;
-  D3DPOOL Pool;
-  D3DMULTISAMPLE_TYPE MultiSampleType;
-  DWORD MultiSampleQuality;
-  DWORD Priority;
-  UINT LockCount;
-  UINT DCCount;
-};
-
-/* 450 */
-#pragma pack(push, 4)
-struct _D3DLOCKED_RECT
-{
-  INT Pitch;
-  void *pBits;
-};
-#pragma pack(pop)
-
 /* 451 */
 struct __fixed COldPPFile
 {
@@ -11916,156 +15404,6 @@ struct __fixed COldPPFile
 struct __fixed COldPPSubFileName
 {
   char ch[32];
-};
-
-/* 675 */
-typedef struct IDirectSound8 *LPDIRECTSOUND8;
-
-/* 682 */
-typedef struct IDirectSoundBuffer *LPDIRECTSOUNDBUFFER;
-
-/* 695 */
-typedef float D3DVALUE;
-
-/* 694 */
-struct _DS3DLISTENER
-{
-  DWORD dwSize;
-  D3DVECTOR vPosition;
-  D3DVECTOR vVelocity;
-  D3DVECTOR vOrientFront;
-  D3DVECTOR vOrientTop;
-  D3DVALUE flDistanceFactor;
-  D3DVALUE flRolloffFactor;
-  D3DVALUE flDopplerFactor;
-};
-
-/* 693 */
-typedef struct _DS3DLISTENER DS3DLISTENER;
-
-/* 456 */
-struct __fixed CDXSoundParamFX
-{
-  void *lpVtbl;
-  CString Str4;
-  int field_8;
-  char field_C[9];
-  float field_18;
-  float field_1C;
-  float field_20;
-  float field_24;
-  int field_28;
-  float field_2C;
-  int field_30;
-  int field_34;
-  float field_38;
-  float field_3C;
-  float field_40;
-  float field_44;
-  float field_48;
-  float field_4C;
-  float field_50;
-  float field_54;
-  float field_58;
-  float field_5C;
-  float field_60;
-  float field_64;
-  float field_68;
-  float field_6C;
-  int field_70;
-  float field_74;
-  float field_78;
-  float field_7C;
-  float field_80;
-  int field_84;
-  float field_88;
-  int field_8C;
-  int field_90;
-  int field_94;
-  float field_98;
-  float field_9C;
-  int field_A0;
-  int field_A4;
-  int field_A8;
-  float field_AC;
-  float field_B0;
-  int field_B4;
-  int field_B8;
-  int field_BC;
-  float field_C0;
-  float field_C4;
-  int field_C8;
-  float field_CC;
-  int field_D0;
-  float field_D4;
-  float field_D8;
-  float field_DC;
-  float field_E0;
-  int field_E4;
-  int field_E8;
-};
-
-/* 803 */
-struct _DS3DBUFFER
-{
-  DWORD dwSize;
-  D3DVECTOR vPosition;
-  D3DVECTOR vVelocity;
-  DWORD dwInsideConeAngle;
-  DWORD dwOutsideConeAngle;
-  D3DVECTOR vConeOrientation;
-  LONG lConeOutsideVolume;
-  D3DVALUE flMinDistance;
-  D3DVALUE flMaxDistance;
-  DWORD dwMode;
-};
-
-/* 805 */
-typedef struct _DS3DBUFFER DS3DBUFFER;
-
-/* 457 */
-struct __fixed CDXSoundParam3D
-{
-  void *lpVtbl;
-  CString Str4;
-  int field_8;
-  char field_C;
-  char field_D;
-  int field_10;
-  int field_14;
-  int field_18;
-  int field_1C;
-  int field_20;
-  int field_24;
-  int field_28;
-  int field_2C;
-  int field_30;
-  float field_34;
-  int field_38;
-  float field_3C;
-  int field_40;
-  float field_44;
-  float field_48;
-  float field_4C;
-  DS3DBUFFER ds3dbuf_50;
-  char field_90;
-  int dwCooperativeLevel_94;
-  int dwFlags_98;
-};
-
-/* 455 */
-struct __fixed CDXSoundStruct_25C
-{
-  LPDIRECTSOUND8 pDS8;
-  LPDIRECTSOUNDBUFFER pDS8Buffer_4;
-  IDirectSound3DListener *pDS83DListener_8;
-  D3DMATRIX matrix4x4_C;
-  D3DMATRIX matrix4x4_4C;
-  DS3DLISTENER listenerParams_8C;
-  char bComUninit_CC;
-  int field_D0;
-  CDXSoundParamFX DXSoundParamFX;
-  CDXSoundParam3D DXSoundParam3D;
 };
 
 /* 458 */
@@ -12118,6 +15456,12 @@ struct __fixed SBPlayScene
   int Sound_2D0;
   int CursorCtrl_2D4;
   char field_2D8;
+};
+
+/* 608 */
+struct ISBPlaySceneVtbl
+{
+  filebuf *(__thiscall *SBPlayScene__sub_53E880)(filebuf *this, char);
 };
 
 /* 459 */
@@ -12236,60 +15580,6 @@ union _ULARGE_INTEGER
   };
   struct _ULARGE_INTEGER::$0354AA9C204208F00D0965D07BBE7FAC u;
   ULONGLONG QuadPart;
-};
-
-/* 476 */
-struct __fixed CSB_CharBase
-{
-  void *lpVtbl;
-  CSceneObjectTemp *pScnObjCwBody_4;
-  char field_8;
-  char field_9;
-  CString Str_C;
-  CString Str_10;
-  CSBZGlobal *pSBZGlobal_14;
-  CStruct_CCD4 *struct_5C0_18;
-  CStruct_5C0 *struct_5C0_1C;
-  CStruct_5C0 *struct_5C0_20;
-  CGlobal_A618 *pGlobal_A618;
-  CMouseState *pMouseState_0;
-  CSB_CameraBase *sb_camera_base_2C;
-};
-
-/* 475 */
-struct __fixed CSB_CharFemale
-{
-  CSB_CharBase base;
-  CSceneObjectTemp *pSceneObjCwHead_30;
-  CSceneObjectTemp *pScnObjHair_34;
-  int field_38;
-  CMuneCtrl *pMuneCtrlBust_3C;
-  CMuneCtrl *pMuneCtrlHip_40;
-  int field_44;
-  int field_48;
-  CSB_CosCtrl *pCosCtrl_4C;
-  int field_50;
-  char obj_14_54[20];
-  int field_68;
-  int field_6C;
-  int field_70;
-  int field_74;
-  CSB_VertexScaleCtrl *pVertexScaleCtrl_78;
-  char field_7C;
-  char field_7D;
-  D3DMATRIX mat4x4_80;
-  D3DMATRIX mat4x4_C0;
-  char field_100;
-  char field_101;
-  int field_104;
-  int field_108;
-  char obj_8_10C[8];
-  char field_114;
-  char obj_8_118[8];
-  char field_120;
-  int nIndex_130;
-  CSB_PersonalData *pCSB_PersonalData_134;
-  CScnFrame_21C *pScnMizugi[4];
 };
 
 /* 477 */
@@ -12464,9 +15754,6 @@ struct DIDEVICEINSTANCEA
   WORD wUsage;
 };
 
-/* 495 */
-typedef int *LPLONG;
-
 /* 496 */
 typedef struct DIENVELOPE *LPDIENVELOPE;
 
@@ -12489,55 +15776,10 @@ struct DIEFFECT
   DWORD dwStartDelay;
 };
 
-/* 497 */
-struct DIENVELOPE
-{
-  DWORD dwSize;
-  DWORD dwAttackLevel;
-  DWORD dwAttackTime;
-  DWORD dwFadeLevel;
-  DWORD dwFadeTime;
-};
-
 /* 499 */
 struct IDirectInputEffect
 {
   struct IDirectInputEffectVtbl *lpVtbl;
-};
-
-/* 501 */
-typedef GUID *LPGUID;
-
-/* 502 */
-typedef struct DIEFFECT *LPDIEFFECT;
-
-/* 500 */
-struct IDirectInputEffectVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectInputEffect *This, const IID *const riid, LPVOID *ppvObj);
-  ULONG (__stdcall *AddRef)(IDirectInputEffect *This);
-  ULONG (__stdcall *Release)(IDirectInputEffect *This);
-  HRESULT (__stdcall *Initialize)(IDirectInputEffect *This, HINSTANCE, DWORD, const GUID *const);
-  HRESULT (__stdcall *GetEffectGuid)(IDirectInputEffect *This, LPGUID);
-  HRESULT (__stdcall *GetParameters)(IDirectInputEffect *This, LPDIEFFECT, DWORD);
-  HRESULT (__stdcall *SetParameters)(IDirectInputEffect *This, LPCDIEFFECT, DWORD);
-  HRESULT (__stdcall *Start)(IDirectInputEffect *This, DWORD, DWORD);
-  HRESULT (__stdcall *Stop)(IDirectInputEffect *This);
-  HRESULT (__stdcall *GetEffectStatus)(IDirectInputEffect *This, LPDWORD);
-  HRESULT (__stdcall *Download)(IDirectInputEffect *This);
-  HRESULT (__stdcall *Unload)(IDirectInputEffect *This);
-  HRESULT (__stdcall *Escape)(IDirectInputEffect *This, LPDIEFFESCAPE);
-};
-
-/* 504 */
-struct DIEFFESCAPE
-{
-  DWORD dwSize;
-  DWORD dwCommand;
-  LPVOID lpvInBuffer;
-  DWORD cbInBuffer;
-  LPVOID lpvOutBuffer;
-  DWORD cbOutBuffer;
 };
 
 /* 507 */
@@ -12549,6 +15791,17 @@ struct DIEFFECTINFOA
   DWORD dwStaticParams;
   DWORD dwDynamicParams;
   CHAR tszName[260];
+};
+
+/* 504 */
+struct DIEFFESCAPE
+{
+  DWORD dwSize;
+  DWORD dwCommand;
+  LPVOID lpvInBuffer;
+  DWORD cbInBuffer;
+  LPVOID lpvOutBuffer;
+  DWORD cbOutBuffer;
 };
 
 /* 513 */
@@ -12582,6 +15835,57 @@ struct _DIACTIONFORMATA
   CHAR tszActionMap[260];
 };
 
+/* 522 */
+typedef struct _DIDEVICEIMAGEINFOA *LPDIDEVICEIMAGEINFOA;
+
+/* 521 */
+struct _DIDEVICEIMAGEINFOHEADERA
+{
+  DWORD dwSize;
+  DWORD dwSizeImageInfo;
+  DWORD dwcViews;
+  DWORD dwcButtons;
+  DWORD dwcAxes;
+  DWORD dwcPOVs;
+  DWORD dwBufferSize;
+  DWORD dwBufferUsed;
+  LPDIDEVICEIMAGEINFOA lprgImageInfoArray;
+};
+
+/* 497 */
+struct DIENVELOPE
+{
+  DWORD dwSize;
+  DWORD dwAttackLevel;
+  DWORD dwAttackTime;
+  DWORD dwFadeLevel;
+  DWORD dwFadeTime;
+};
+
+/* 501 */
+typedef GUID *LPGUID;
+
+/* 502 */
+typedef struct DIEFFECT *LPDIEFFECT;
+
+/* 500 */
+struct IDirectInputEffectVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectInputEffect *This, const IID *const riid, LPVOID *ppvObj);
+  ULONG (__stdcall *AddRef)(IDirectInputEffect *This);
+  ULONG (__stdcall *Release)(IDirectInputEffect *This);
+  HRESULT (__stdcall *Initialize)(IDirectInputEffect *This, HINSTANCE, DWORD, const GUID *const);
+  HRESULT (__stdcall *GetEffectGuid)(IDirectInputEffect *This, LPGUID);
+  HRESULT (__stdcall *GetParameters)(IDirectInputEffect *This, LPDIEFFECT, DWORD);
+  HRESULT (__stdcall *SetParameters)(IDirectInputEffect *This, LPCDIEFFECT, DWORD);
+  HRESULT (__stdcall *Start)(IDirectInputEffect *This, DWORD, DWORD);
+  HRESULT (__stdcall *Stop)(IDirectInputEffect *This);
+  HRESULT (__stdcall *GetEffectStatus)(IDirectInputEffect *This, LPDWORD);
+  HRESULT (__stdcall *Download)(IDirectInputEffect *This);
+  HRESULT (__stdcall *Unload)(IDirectInputEffect *This);
+  HRESULT (__stdcall *Escape)(IDirectInputEffect *This, LPDIEFFESCAPE);
+};
+
 /* 519 */
 union _DIACTIONA::$FF32BCD3B87945AB5C5BEB1E82BCBA98
 {
@@ -12605,23 +15909,6 @@ struct _DIACTIONA
   DWORD dwHow;
 };
 
-/* 522 */
-typedef struct _DIDEVICEIMAGEINFOA *LPDIDEVICEIMAGEINFOA;
-
-/* 521 */
-struct _DIDEVICEIMAGEINFOHEADERA
-{
-  DWORD dwSize;
-  DWORD dwSizeImageInfo;
-  DWORD dwcViews;
-  DWORD dwcButtons;
-  DWORD dwcAxes;
-  DWORD dwcPOVs;
-  DWORD dwBufferSize;
-  DWORD dwBufferUsed;
-  LPDIDEVICEIMAGEINFOA lprgImageInfoArray;
-};
-
 /* 523 */
 struct _DIDEVICEIMAGEINFOA
 {
@@ -12634,21 +15921,6 @@ struct _DIDEVICEIMAGEINFOA
   POINT rgptCalloutLine[5];
   RECT rcCalloutRect;
   DWORD dwTextAlign;
-};
-
-/* 525 */
-struct __fixed CBPTestScene
-{
-  ICBPTestSceneVtbl *lpVtbl;
-  CSBZGlobal *pSBZGlobal_4;
-  CStruct_CCD4 *struct_ccd4_8;
-  CStruct_5C0 *struct_5c0_C;
-  CStruct_5C0 *struct_5c0_10;
-  int field_14;
-  int field_18;
-  CSB_CameraBase *pCameraBase_1C;
-  CSB_Path *pPath_20;
-  CSB_Key *pKey_24;
 };
 
 /* 528 */
@@ -12676,295 +15948,68 @@ struct __fixed SBHScene
   char byte_34;
 };
 
-/* 633 */
-struct CISE_SpriteCtrlMembers
-{
-  CStruct_530 *struct_530_0;
-  int struct_collis_4;
-  char field_8;
-  __declspec(align(4)) char field_C;
-  __declspec(align(4)) char field_10;
-  __declspec(align(4)) char field_14;
-  int spLstCount;
-  int field_20;
-};
-
-/* 628 */
-struct CSB_SpriteCtrl
-{
-  ICSB_SpriteCtrlVtbl *lpVtbl;
-  CISE_SpriteCtrlMembers base_;
-  CVector_T4 Vec4_24;
-};
-
-/* 765 */
-struct __fixed CSB_SliderCtrl
-{
-  void *lpVtbl;
-  int vec_4;
-  _BYTE gap8[12];
-  float flt_14;
-  D2D_POINT_2F scrollSpeed;
-};
-
-/* 748 */
-struct __fixed CScnSubObject_10
+/* 961 */
+struct __fixed CHSubObject_4C
 {
   int field_0;
   int field_4;
-  char field_8;
-  char field_9;
-  CScnSubObject_F4 *ptr_C;
-};
-
-/* 761 */
-struct __fixed CScnAnimAnimationClip_70
-{
-  char name[44];
-  DWORD field_2C;
-  float speed_40;
-  int field_44;
-  float start_48;
-  float end_4C;
-  char field_50;
-  char field_51;
-  char field_52;
-  char field_53;
-  int next_54;
-  char field_58;
-  int field_5C;
-  char char_60[16];
-};
-
-/* 994 */
-struct __fixed CNeckData
-{
-  DWORD field_0;
-  int field_4;
-  CGlobal_A618 *pGlobalA618_8;
-  CScnFrame_21C *pScnSubObj_C;
-  CScnFrame_21C *pParent_10;
-  int field_14;
-  CNeckStruct_18 *pNeckStruct18_18;
-  __int16 wCount_1C;
-  CNeckStruct_E14 *pNeckE14_20;
+  int field_8;
+  int field_C;
+  int field_10[5];
   int field_24;
-  int field_28;
+  char field_28;
+  _BYTE gap29[3];
   int field_2C;
   int field_30;
   int field_34;
-  char bool_38;
+  char field_38;
+  char field_39[3];
   char field_3C;
-  char field_3D;
-  char field_3F;
+  char _gap3D[3];
   int field_40;
   int field_44;
-  int field_48;
-  int field_4C;
-  D3DMATRIX mat4x4_50;
-  D3DMATRIX mat4x4_90;
-  D3DMATRIX mat4x4_D0;
-  D3DMATRIX mat4x4_110;
-  D3DMATRIX mat4x4_150;
-  char gap190[48];
+  CString str_48;
 };
 
-/* 1004 */
-struct __fixed CEyesData
+/* 960 */
+struct __fixed CHSubObject_138
 {
-  int field_0;
-  CNeckData eyesData_4;
-  CNeckData eyesData_1C4;
-  char gap384[8];
-  __int16 wCount_38C;
-  CNeckStruct_E14 *pEyesE14_20_390;
-  char gap394[20];
-  char field_3A8;
-  char gap3A9[7];
-};
-
-/* 673 */
-struct __fixed CSceneObjectTemp
-{
-  int field_0;
-  char name_4[64];
-  int field_44;
-  int _gap48[2];
-  int field_50;
-  float floats_54[16];
-  char _gap94[72];
-  char field_DC;
-  char _gapDD[3];
-  char field_E0;
-  char _gapE1[35];
-  char bParseFlag_104;
-  char _gap105[27];
-  char field_120;
-  char _gap121[229];
-  char field_206;
-  char field_207;
-  void *ptr_208;
-  CScnFrame_21C *pScnSubObj21C_20C;
-  CSceneObjectTemp *pScnObj_210;
-  char byte_214;
-  char field_215;
-  char _gap216[2];
-  CScnFrame_21C *pScnFrame_218;
-  int field_21C;
-  int nCountMorphIndexSets;
-  CScnAnimMorphIndexSet_18 *pMorphIndexSets;
-  int nCountMorphKeyframes;
-  CScnAnimMorphKeyFrame_14 *pMorphKeyFrames;
-  int nCountMorphClips;
-  CScnAnimMorphClip_44 *pMorphClips;
-  int _gap238[6];
-  int field_250;
-  int _gap254[6];
-  int field_26C;
-  int field_270;
-  int _gap274[5];
-  float flt_288;
-  int field_28C;
-  float flt_290;
-  int field_294;
-  char field_298;
-  char _gap299;
-  char field_29A;
-  char _gap29B[37];
-  char field_2C0;
-  char _gap2C1[3];
-  char field_2C4;
-  char _gap2C5[3];
-  CScnSubLight_174 *ptr_2C8;
-  int field_2CC;
-  int field_2D0;
-  int field_2D4;
-  int field_2D8;
-  int field_2DC;
-  int field_2E0;
-  int field_2E4;
-  CScnSubObject_10 field_2E8;
-  float fogStart_2F8;
-  float fogEnd_2FC;
-  DWORD fogColor_300;
-  float sum_304;
-  int nCountMaterials_308;
-  CScnMaterial_134 *pMaterials_30C;
-  int nCountMaterials_310;
-  CScnMaterialSect_58 *pMaterialSect_314;
-  int nCountSection2_318;
-  CScnXASection2_38 *pSection2_31C;
-  int nCountSection4_320;
-  CScnXASection4_10 *pSections4_324;
-  int _gap328;
-  int nCountTracks_32C;
-  CScnAnimTrack_19 *pAnimationTracks_330;
-  int _gap334;
-  void *ptr_338;
-  int field_33C;
-  int field_340;
-  void *ptr_344;
-  int field_348;
-  int field_34C;
-  int _gap350[15];
-  int field_38C;
-  int field_390;
-  int field_394;
-  float flt_398;
-  CScnAnimAnimationClip_70 arrAnimClips_39C[1024];
-  int field_1C39C;
-  int field_1C3A0;
-  int field_1C3A4;
-  int _gap1C3A8[10];
-  int nCountArrFrames;
-  CScnFrame_21C *pArrFrames;
-  int field_1C3D8;
-  BYTE *ptr_1C3DC;
-  D3DMATRIX mat4x4_1C3E0;
-  float flt_1C420;
-  int field_1C424;
-  CNeckData neck_1C428;
-  CEyesData eyes_1C5E8;
-  int nXxFormat;
-  int nXAFormat_1C99C;
-  int xlType_1C9A0;
-  int field_1C9A4;
-  char field_1C9A8;
-  char _gap1C9A9[3];
-};
-
-/* 530 */
-struct __fixed SBNightShopScene
-{
-  void *lpVtbl;
-  CSB_SpriteCtrl csb_sprite_ctrl_4;
-  int field_38;
-  int field_3C;
-  int field_40;
-  int field_44;
-  char field_48;
-  int field_4C;
-  int field_54;
-  int field_58;
-  int field_5C;
-  KK_Font *kk_font_array_60[3][3];
-  CSB_SliderCtrl slider_84;
-  int elem_0x10_array_A4;
-  int field_A8;
-  int field_AC;
-  int field_B0;
-  int field_B4;
-  int field_B8;
-  int field_BC;
-  int field_C0;
-  int field_C4;
-  int vec_T1C_CC;
-  int field_D0;
-  int field_D4;
-  int field_D8;
-  int field_DC;
-  int field_E0;
-  CSB_ThreadCtrl *pCSB_ThreadCtrl_E4;
-  int field_E8;
-  int field_118;
-  int field_148;
-  char field_178;
-  CSceneObjectTemp sceneObjs_180;
-  int pfnMidRender_1CB2C;
-  int pfnPostRender_1CB30;
-  CCameraCalc cameraCalc_1CB34;
-  CCameraCalc cameraCalc_1CB9C;
-  CSB_CameraInfo csbCameraInfo_1CC04;
-  int field_1CC4C;
-  int field_1CC50;
-  int field_1CC54;
-  int field_1CC58;
-  char field_1CC5C;
-  int field_1CC60;
-  CSBZGlobal *pSBZGlobal_1CC64;
-  CStruct_CCD4 *struct_ccd4_1CC68;
-  CStruct_5C0 *struct_5c0_1CC6C;
-  CStruct_5C0 *struct_5c0_1CC70;
-  CGlobal_A618 *cglobal_a618_1CC74;
-  CMouseState *pMouseState0_1CC78;
-  CSB_CameraBase *pCameraBase_1CC7C;
-  CSB_Key *pKey_1CC80;
-  CSB_Path *pPath_1CC84;
-  CSB_GameInfo *pGameInfo_1CC88;
-  CSB_Sound *pSound_1CC8C;
-  CSB_CursorCtrl *pCursorCtrl_1CC90;
-  char field_1CC94;
-};
-
-/* 531 */
-struct __fixed CSB_ThreadCtrl
-{
-  void *lpVtbl;
-  int field_4;
-  int field_10;
+  SBHScene *pSBHScene_0;
+  int obj_10_4[4];
+  int field_14;
+  void *ptr_18;
   int field_1C;
   int field_20;
   int field_24;
+  int pEcstasyBarCtrl_28;
+  int field_2C;
+  int field_30;
+  int ptr_obj_8c_34;
+  int field_38;
+  int field_3C;
+  int pLiquidGaugeTank_40;
+  int field_44;
+  int field_48;
+  int field_4C;
+  int field_50;
+  CHSubObject_4C obj_4C_54;
+  int obj_18_A0[6];
+  int field_B8;
+  int field_BC;
+  int obj_2C_C0[11];
+  int obj_1C_EC[7];
+  int field_108;
+  int field_10C;
+  int obj_10_110[4];
+  char _gap120;
+  char field_121;
+  char field_122;
+  char _gap123;
+  int field_124;
+  int field_128;
+  int field_12C;
+  int ptr_obj_18_130;
+  int field_134;
 };
 
 /* 532 */
@@ -13036,192 +16081,6 @@ struct __fixed CStructCamera_7C
   int field_78;
 };
 
-/* 535 */
-struct ICameraCalcVtbl
-{
-  _DWORD *(__thiscall *CCameraCalc__method_0_418A00)(_DWORD *this, char);
-  _DWORD *(__stdcall *CCameraCalc__Copy_4187B0)(_DWORD *, _DWORD *);
-};
-
-/* 545 */
-struct __fixed CSB_Time
-{
-  ICSB_TimeVtbl *lpVtbl;
-  int field_4;
-  int field_8;
-  int field_C;
-  int field_10;
-};
-
-/* 540 */
-struct __fixed CSB_PossessionCtrl
-{
-  ICSB_PossessionCtrlVtbl *lpVtbl;
-  int field_4;
-  int field_10;
-  int field_1C;
-};
-
-/* 542 */
-struct __fixed CPossessionItem
-{
-  int field_0;
-  int field_4;
-  int field_8[5];
-  char field_1C[40];
-};
-
-/* 538 */
-struct __fixed CSB_PersonalData
-{
-  ICSB_PersonalDataVtbl *lpVtbl;
-  int field_4;
-  char field_8;
-  int field_C;
-  int field_48;
-  int field_4C;
-  int field_50;
-  int field_54[4];
-  int field_68;
-  int field_6C;
-  char field_84;
-  void *field_88[2];
-  CSB_PossessionCtrl csb_possesion_ctrl_90;
-  CPossessionItem posession_items_B8[99];
-  int field_1B04;
-  int nLoveCount_1B0C;
-  int field_1B10;
-  int field_1B14;
-  char field_1B19;
-};
-
-/* 543 */
-struct __fixed CSB_PlayerData
-{
-  ICSB_PlayerDataVtbl *lpVtbl;
-  CSB_PossessionCtrl csb_possession_ctrl_4;
-  int field_2C;
-  int field_3C;
-  int field_44;
-  int field_48;
-  int field_84[29];
-};
-
-/* 536 */
-struct __fixed CSB_GameInfo
-{
-  ICSB_GameInfoVtbl *lpVtbl;
-  int nDays_4;
-  int field_8;
-  int nMoney_C;
-  int nSpecialItems_10;
-  CSB_Time csb_time_14;
-  char field_28;
-  CSB_PersonalData array_csb_personal_data_2C[5];
-  CSB_PlayerData csb_player_data_87B8;
-  int field_88B0;
-  int field_88B4;
-  int field_88B8;
-  int field_88BC;
-  int field_88C4;
-  int field_88D4;
-  char field_88E4;
-  char field_88E5;
-  int field_88E8;
-  CSBZGlobal *pSBZGlobal_8998;
-  CStruct_5C0 *struct_5C_899C;
-  int path_89A0;
-};
-
-/* 537 */
-struct ICSB_GameInfoVtbl
-{
-  _DWORD *(__thiscall *CSB_GameInfo__sub_477C10)(_DWORD *this, char bFree);
-};
-
-/* 539 */
-struct ICSB_PersonalDataVtbl
-{
-  _DWORD *(__thiscall *CSB_PersonalData__sub_477A50)(CSB_PersonalData *this, char bFree);
-};
-
-/* 541 */
-struct ICSB_PossessionCtrlVtbl
-{
-  _DWORD *(__thiscall *CSB_PossessionCtrl__sub_477880)(_DWORD *this, char bFree);
-};
-
-/* 544 */
-struct ICSB_PlayerDataVtbl
-{
-  _DWORD *(__thiscall *CSB_PlayerData__sub_477B60)(_DWORD *this, char);
-};
-
-/* 546 */
-struct ICSB_TimeVtbl
-{
-  _DWORD *(__thiscall *CSB_Time__sub_4776A0)(_DWORD *this, char);
-};
-
-/* 547 */
-struct __fixed SBTitleScene
-{
-  ISBTitleSceneVtbl *lpVtbl;
-  CSB_SpriteCtrl csb_sprite_ctrl_4;
-  CSceneObjectTemp *ptr_38;
-  char field_3C;
-  char field_3D;
-  char field_3E;
-  char field_3F;
-  float field_40;
-  int field_44;
-  CSBZGlobal *pSBZGlobal;
-  CStruct_CCD4 *struct_CCD4;
-  CStruct_5C0 *struct_5c0_50;
-  CStruct_5C0 *struct_5c0_54;
-  CGlobal_A618 *global_D618;
-  CMouseState *pMouseState0;
-  CSB_CameraBase *pSBCameraBase_60;
-  CSB_Key *Key_64;
-  CSB_Path *Path_68;
-  CSB_Sound *Sound_6C;
-  CSB_GameInfo *GameInfo_70;
-  CSB_CursorCtrl *CursorCtrl_74;
-  char field_78;
-};
-
-/* 548 */
-struct ISBTitleSceneVtbl
-{
-  void *(__thiscall *SBTitleScene__Destroy_501000)(void *this, char);
-};
-
-/* 549 */
-struct ICPackVtbl
-{
-  CPack *(__thiscall *CPack__sub_70D270)(CPack *this, char bFree);
-};
-
-/* 550 */
-struct ISBLogoSceneVtbl
-{
-  SBLogoScene *(__thiscall *SBLogoScene__Destroy_544C90)(SBLogoScene *this, char);
-};
-
-/* 551 */
-struct __fixed CDlgCtrl
-{
-  ICDlgCtrlVtbl *lpVtbl;
-  int field_4;
-  int object_28_8[];
-};
-
-/* 552 */
-struct ICDlgCtrlVtbl
-{
-  _DWORD *(__thiscall *CDlgCtrl__sub_406470)(_DWORD *this, char);
-};
-
 /* 557 */
 struct COSTextBaseMembers
 {
@@ -13245,6 +16104,13 @@ struct COSTextLine
   char field_C30[2048];
 };
 
+/* 556 */
+struct __fixed ICOSTextLineVtbl
+{
+  void *(__thiscall *COSTextLine__method_0_6CC820)(void *this, char);
+  bool (__thiscall *COSTextLine__method_4_6D7F20)(_DWORD *this);
+};
+
 /* 554 */
 struct COSTextBase
 {
@@ -13257,13 +16123,6 @@ struct __fixed ICOSTextBaseVtbl
 {
   void *(__thiscall *COSTextBase__method_0_6CC790)(void *this, char);
   bool (__thiscall *method_4)(_DWORD *this);
-};
-
-/* 556 */
-struct __fixed ICOSTextLineVtbl
-{
-  void *(__thiscall *COSTextLine__method_0_6CC820)(void *this, char);
-  bool (__thiscall *COSTextLine__method_4_6D7F20)(_DWORD *this);
 };
 
 /* 558 */
@@ -13287,137 +16146,10 @@ struct CCameraBase
   CCameraKeyCfg *pCameraKeyCfg;
 };
 
-/* 560 */
-struct ICCameraKeyCfgVtbl
-{
-  CCameraKeyCfg *(__thiscall *Destroy_403140)(CCameraKeyCfg *this, char);
-  char (__thiscall *CCameraKeyCfg__method_4_647270)(_BYTE *this);
-  char (__thiscall *CCameraKeyCfg__method_8_6472C0)(_BYTE *this);
-};
-
-/* 561 */
-struct CCameraNormal
-{
-  ICCameraNormalVtbl *lpVtbl;
-  CCameraNormalMembers m_;
-};
-
-/* 562 */
-struct ICCameraNormalVtbl
-{
-  _DWORD *(__thiscall *Destroy_485EC0)(_DWORD *this, char);
-  int (__thiscall *CCameraNormal__method_4_6475B0)(int this);
-  char (__thiscall *CCameraNormal__method_8_647830)(int *this, int, CString *, CPackFormatSecret *, char, CString *, char);
-  char (__thiscall *CCameraNormal__method_C_6478D0)(int *this);
-  int (__thiscall *CCameraNormal__method_10_647930)(_BYTE *this, _BYTE *, int, int, int, int);
-  char (__thiscall *CCameraNormal__method_14_647A80)(char *this, _BYTE *, unsigned int);
-  char (__thiscall *CCameraNormal__method_18_648030)(_BYTE *this, int, int, float, float, float);
-  char (__thiscall *CCameraNormal__method_1C_6486A0)(int this, float, float, float);
-  char (__thiscall *CCameraNormal__method_20_648870)(int this, float);
-  char (__thiscall *CCameraNormal__method_24_648900)(int this, float);
-  char (__thiscall *CCameraNormal__method_28_648A10)(int this, float);
-  char (__thiscall *CCameraNormal__method_2C_648B20)(int this, float);
-  char (__thiscall *CCameraNormal__method_30_648C30)(int this, float);
-  char (__thiscall *CCameraNormal__method_34_648CD0)(int this, float);
-  char (__thiscall *CCameraNormal__method_38_648D70)(int this);
-  char (__stdcall *CCameraNormal__method_3C_6491A0)(int, int, char);
-  int (__thiscall *CCameraNormal__method_40_485CF0)(int this);
-  int (__thiscall *CCameraNormal__method_44_485E00)(int this, int);
-  int (__thiscall *CCameraNormal__method_48_485E20)(int this, int);
-  int (__thiscall *CCameraNormal__method_4C_485E40)(void **this, int);
-  int (__thiscall *CCameraNormal__method_50_485E60)(int this, int);
-  int (__thiscall *CCameraNormal__method_54_485E80)(void **this, int);
-  int (__thiscall *CCameraNormal__method_58_485EA0)(int this, int);
-};
-
-/* 564 */
-struct ICCameraKeyParamVtbl
-{
-  _DWORD *(__thiscall *Destroy_485BB0)(_DWORD *this, char);
-  double (__thiscall *method_4_647440)(float *this, unsigned int, char, char);
-  void (__thiscall *method_8_44E000)(void *this, void *a2);
-  double (__thiscall *method_C_485B40)(float *this);
-  int (__thiscall *method_10_485B60)(_DWORD *this, int, int);
-  _DWORD *(__thiscall *method_14_485B80)(_DWORD *this, _DWORD *, _DWORD *);
-};
-
 /* 565 */
 struct __fixed CBase
 {
   void *lpVtbl;
-};
-
-/* 566 */
-struct ICCameraInfoVtbl
-{
-  CCameraInfo *(__thiscall *Destroy_418CB0)(CCameraInfo *this, char bFree);
-  CCameraInfo *(__stdcall *Copy_418AF0)(CCameraInfo *a1, CCameraInfo *a2);
-};
-
-/* 567 */
-struct D3DXVECTOR4
-{
-  FLOAT x;
-  FLOAT y;
-  FLOAT z;
-  FLOAT w;
-};
-
-/* 568 */
-struct __fixed CIS_TestScene
-{
-  ICIS_TestSceneVtbl *lpVtbl;
-  CSBZGlobal *pSBZGlobal_4;
-  CStruct_5C0 *field_8;
-  CStruct_5C0 *field_C;
-  CStruct_5C0 *field_10;
-  int field_14;
-  int field_18;
-  int field_1C;
-  int field_20;
-};
-
-/* 569 */
-struct ICIS_TestSceneVtbl
-{
-  _DWORD *(__thiscall *CIS_TestScene__sub_61EEE0)(_DWORD *this, char);
-};
-
-/* 570 */
-struct ICSB_CameraNormalVtbl
-{
-  _DWORD *(__thiscall *Destroy_486060)(CSB_CameraNormal *this, char);
-  CSB_CameraNormal *(__thiscall *CSB_CameraNormal__method_4_485040)(CSB_CameraNormal *this);
-  char (__thiscall *CCameraNormal__method_8_647830)(CCameraNormal *this, int a2, CString *a3, CPackFormatSecret *a4, char a5, CString *a6, char a7);
-  char (__thiscall *CCameraNormal__method_C_6478D0)(CCameraNormal *this);
-  int (__thiscall *CCameraNormal__method_10_647930)(CCameraNormal *this, CCameraKeyCfg *a2, int a3, int a4, int a5, int a6);
-  char (__thiscall *CCameraNormal__method_14_647A80)(CCameraNormal *this, CCameraKeyCfg *a2, unsigned int a3);
-  char (__thiscall *CSB_CameraNormal__method_18_484960)(_DWORD *this, int, int, float, float, float);
-  char (__thiscall *CSB_CameraNormal__method_1C_483940)(int this, float, float, float);
-  char (__thiscall *CSB_CameraNormal__method_20_483B50)(int this, float);
-  char (__thiscall *CSB_CameraNormal__method_24_483C00)(int this, float);
-  char (__thiscall *CSB_CameraNormal__method_28_483D10)(int this, float);
-  char (__thiscall *CSB_CameraNormal__method_2C_483E20)(int this, float);
-  char (__thiscall *CSB_CameraNormal__method_30_483F30)(int this, float);
-  char (__thiscall *CSB_CameraNormal__method_34_483FD0)(int this, float);
-  char (__thiscall *CSB_CameraNormal__method_38_484070)(int this);
-  char (__stdcall *CCameraNormal__method_3C_6491A0)(CCameraNormal *a1, int a2, char a3);
-  int (__thiscall *CCameraNormal__method_40_485CF0)(CCameraNormal *this);
-  int (__thiscall *CCameraNormal__method_44_485E00)(CCameraNormal *this, int a1);
-  int (__thiscall *CCameraNormal__method_48_485E20)(CCameraNormal *this, int a1);
-  int (__thiscall *CCameraNormal__method_4C_485E40)(CCameraNormal *this, int a1);
-  int (__thiscall *CCameraNormal__method_50_485E60)(CCameraNormal *this, int a1);
-  int (__thiscall *CCameraNormal__method_54_485E80)(CCameraNormal *this, int a1);
-  int (__thiscall *CCameraNormal__method_58_485EA0)(int this, int);
-  int (__thiscall *CSB_CameraNormal__method_5C_485EF0)(int this, int);
-  int (__thiscall *CSB_CameraNormal__method_60_485F10)(int this, int);
-};
-
-/* 572 */
-struct ICSB_CameraInfoVtbl
-{
-  CSB_CameraInfo *(__thiscall *Destroy_41B590)(CSB_CameraInfo *this, char bFree);
-  CSB_CameraInfo *(__stdcall *Copy_41B340)(CSB_CameraInfo *a1, CSB_CameraInfo *a2);
 };
 
 /* 580 */
@@ -13747,269 +16479,6 @@ struct D3DXMACRO
   LPCSTR Definition;
 };
 
-/* 594 */
-struct ID3DXEffect
-{
-  ID3DXEffectVtbl *lpVtbl;
-};
-
-/* 595 */
-struct D3DXEFFECT_DESC
-{
-  LPCSTR Creator;
-  UINT Parameters;
-  UINT Techniques;
-  UINT Functions;
-};
-
-/* 596 */
-typedef LPCSTR D3DXHANDLE;
-
-/* 597 */
-typedef D3DMATRIX D3DXMATRIX;
-
-/* 598 */
-struct D3DXPASS_DESC
-{
-  LPCSTR Name;
-  UINT Annotations;
-  const DWORD *pVertexShaderFunction;
-  const DWORD *pPixelShaderFunction;
-};
-
-/* 599 */
-enum D3DXPARAMETER_CLASS
-{
-  D3DXPC_SCALAR = 0x0,
-  D3DXPC_VECTOR = 0x1,
-  D3DXPC_MATRIX_ROWS = 0x2,
-  D3DXPC_MATRIX_COLUMNS = 0x3,
-  D3DXPC_OBJECT = 0x4,
-  D3DXPC_STRUCT = 0x5,
-  D3DXPC_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 600 */
-enum D3DXPARAMETER_TYPE
-{
-  D3DXPT_VOID = 0x0,
-  D3DXPT_BOOL = 0x1,
-  D3DXPT_INT = 0x2,
-  D3DXPT_FLOAT = 0x3,
-  D3DXPT_STRING = 0x4,
-  D3DXPT_TEXTURE = 0x5,
-  D3DXPT_TEXTURE1D = 0x6,
-  D3DXPT_TEXTURE2D = 0x7,
-  D3DXPT_TEXTURE3D = 0x8,
-  D3DXPT_TEXTURECUBE = 0x9,
-  D3DXPT_SAMPLER = 0xA,
-  D3DXPT_SAMPLER1D = 0xB,
-  D3DXPT_SAMPLER2D = 0xC,
-  D3DXPT_SAMPLER3D = 0xD,
-  D3DXPT_SAMPLERCUBE = 0xE,
-  D3DXPT_PIXELSHADER = 0xF,
-  D3DXPT_VERTEXSHADER = 0x10,
-  D3DXPT_PIXELFRAGMENT = 0x11,
-  D3DXPT_VERTEXFRAGMENT = 0x12,
-  D3DXPT_UNSUPPORTED = 0x13,
-  D3DXPT_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 601 */
-struct D3DXPARAMETER_DESC
-{
-  LPCSTR Name;
-  LPCSTR Semantic;
-  D3DXPARAMETER_CLASS Class;
-  D3DXPARAMETER_TYPE Type;
-  UINT Rows;
-  UINT Columns;
-  UINT Elements;
-  UINT Annotations;
-  UINT StructMembers;
-  DWORD Flags;
-  UINT Bytes;
-};
-
-/* 602 */
-struct D3DXTECHNIQUE_DESC
-{
-  LPCSTR Name;
-  UINT Passes;
-  UINT Annotations;
-};
-
-/* 603 */
-struct D3DXFUNCTION_DESC
-{
-  LPCSTR Name;
-  UINT Annotations;
-};
-
-/* 604 */
-typedef struct ID3DXEffectPool *LPD3DXEFFECTPOOL;
-
-/* 605 */
-typedef struct ID3DXEffectStateManager *LPD3DXEFFECTSTATEMANAGER;
-
-/* 606 */
-typedef struct ID3DXEffect *LPD3DXEFFECT;
-
-/* 607 */
-struct ID3DXEffectVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(ID3DXEffect *This, const IID *const iid, LPVOID *ppv);
-  ULONG (__stdcall *AddRef)(ID3DXEffect *This);
-  ULONG (__stdcall *Release)(ID3DXEffect *This);
-  HRESULT (__stdcall *GetDesc)(ID3DXEffect *This, D3DXEFFECT_DESC *pDesc);
-  HRESULT (__stdcall *GetParameterDesc)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXPARAMETER_DESC *pDesc);
-  HRESULT (__stdcall *GetTechniqueDesc)(ID3DXEffect *This, D3DXHANDLE hTechnique, D3DXTECHNIQUE_DESC *pDesc);
-  HRESULT (__stdcall *GetPassDesc)(ID3DXEffect *This, D3DXHANDLE hPass, D3DXPASS_DESC *pDesc);
-  HRESULT (__stdcall *GetFunctionDesc)(ID3DXEffect *This, D3DXHANDLE hShader, D3DXFUNCTION_DESC *pDesc);
-  D3DXHANDLE (__stdcall *GetParameter)(ID3DXEffect *This, D3DXHANDLE hParameter, UINT Index);
-  D3DXHANDLE (__stdcall *GetParameterByName)(ID3DXEffect *This, D3DXHANDLE hParameter, LPCSTR pName);
-  D3DXHANDLE (__stdcall *GetParameterBySemantic)(ID3DXEffect *This, D3DXHANDLE hParameter, LPCSTR pSemantic);
-  D3DXHANDLE (__stdcall *GetParameterElement)(ID3DXEffect *This, D3DXHANDLE hParameter, UINT Index);
-  D3DXHANDLE (__stdcall *GetTechnique)(ID3DXEffect *This, UINT Index);
-  D3DXHANDLE (__stdcall *GetTechniqueByName)(ID3DXEffect *This, LPCSTR pName);
-  D3DXHANDLE (__stdcall *GetPass)(ID3DXEffect *This, D3DXHANDLE hTechnique, UINT Index);
-  D3DXHANDLE (__stdcall *GetPassByName)(ID3DXEffect *This, D3DXHANDLE hTechnique, LPCSTR pName);
-  D3DXHANDLE (__stdcall *GetFunction)(ID3DXEffect *This, UINT Index);
-  D3DXHANDLE (__stdcall *GetFunctionByName)(ID3DXEffect *This, LPCSTR pName);
-  D3DXHANDLE (__stdcall *GetAnnotation)(ID3DXEffect *This, D3DXHANDLE hObject, UINT Index);
-  D3DXHANDLE (__stdcall *GetAnnotationByName)(ID3DXEffect *This, D3DXHANDLE hObject, LPCSTR pName);
-  HRESULT (__stdcall *SetValue)(ID3DXEffect *This, D3DXHANDLE hParameter, LPCVOID pData, UINT Bytes);
-  HRESULT (__stdcall *GetValue)(ID3DXEffect *This, D3DXHANDLE hParameter, LPVOID pData, UINT Bytes);
-  HRESULT (__stdcall *SetBool)(ID3DXEffect *This, D3DXHANDLE hParameter, BOOL b);
-  HRESULT (__stdcall *GetBool)(ID3DXEffect *This, D3DXHANDLE hParameter, BOOL *pb);
-  HRESULT (__stdcall *SetBoolArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const BOOL *pb, UINT Count);
-  HRESULT (__stdcall *GetBoolArray)(ID3DXEffect *This, D3DXHANDLE hParameter, BOOL *pb, UINT Count);
-  HRESULT (__stdcall *SetInt)(ID3DXEffect *This, D3DXHANDLE hParameter, INT n);
-  HRESULT (__stdcall *GetInt)(ID3DXEffect *This, D3DXHANDLE hParameter, INT *pn);
-  HRESULT (__stdcall *SetIntArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const INT *pn, UINT Count);
-  HRESULT (__stdcall *GetIntArray)(ID3DXEffect *This, D3DXHANDLE hParameter, INT *pn, UINT Count);
-  HRESULT (__stdcall *SetFloat)(ID3DXEffect *This, D3DXHANDLE hParameter, FLOAT f);
-  HRESULT (__stdcall *GetFloat)(ID3DXEffect *This, D3DXHANDLE hParameter, FLOAT *pf);
-  HRESULT (__stdcall *SetFloatArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const FLOAT *pf, UINT Count);
-  HRESULT (__stdcall *GetFloatArray)(ID3DXEffect *This, D3DXHANDLE hParameter, FLOAT *pf, UINT Count);
-  HRESULT (__stdcall *SetVector)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXVECTOR4 *pVector);
-  HRESULT (__stdcall *GetVector)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXVECTOR4 *pVector);
-  HRESULT (__stdcall *SetVectorArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXVECTOR4 *pVector, UINT Count);
-  HRESULT (__stdcall *GetVectorArray)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXVECTOR4 *pVector, UINT Count);
-  HRESULT (__stdcall *SetMatrix)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXMATRIX *pMatrix);
-  HRESULT (__stdcall *GetMatrix)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXMATRIX *pMatrix);
-  HRESULT (__stdcall *SetMatrixArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXMATRIX *pMatrix, UINT Count);
-  HRESULT (__stdcall *GetMatrixArray)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXMATRIX *pMatrix, UINT Count);
-  HRESULT (__stdcall *SetMatrixPointerArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXMATRIX **ppMatrix, UINT Count);
-  HRESULT (__stdcall *GetMatrixPointerArray)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXMATRIX **ppMatrix, UINT Count);
-  HRESULT (__stdcall *SetMatrixTranspose)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXMATRIX *pMatrix);
-  HRESULT (__stdcall *GetMatrixTranspose)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXMATRIX *pMatrix);
-  HRESULT (__stdcall *SetMatrixTransposeArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXMATRIX *pMatrix, UINT Count);
-  HRESULT (__stdcall *GetMatrixTransposeArray)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXMATRIX *pMatrix, UINT Count);
-  HRESULT (__stdcall *SetMatrixTransposePointerArray)(ID3DXEffect *This, D3DXHANDLE hParameter, const D3DXMATRIX **ppMatrix, UINT Count);
-  HRESULT (__stdcall *GetMatrixTransposePointerArray)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXMATRIX **ppMatrix, UINT Count);
-  HRESULT (__stdcall *SetString)(ID3DXEffect *This, D3DXHANDLE hParameter, LPCSTR pString);
-  HRESULT (__stdcall *GetString)(ID3DXEffect *This, D3DXHANDLE hParameter, LPCSTR *ppString);
-  HRESULT (__stdcall *SetTexture)(ID3DXEffect *This, D3DXHANDLE hParameter, LPDIRECT3DBASETEXTURE9 pTexture);
-  HRESULT (__stdcall *GetTexture)(ID3DXEffect *This, D3DXHANDLE hParameter, LPDIRECT3DBASETEXTURE9 *ppTexture);
-  HRESULT (__stdcall *GetPixelShader)(ID3DXEffect *This, D3DXHANDLE hParameter, LPDIRECT3DPIXELSHADER9 *ppPShader);
-  HRESULT (__stdcall *GetVertexShader)(ID3DXEffect *This, D3DXHANDLE hParameter, LPDIRECT3DVERTEXSHADER9 *ppVShader);
-  HRESULT (__stdcall *SetArrayRange)(ID3DXEffect *This, D3DXHANDLE hParameter, UINT uStart, UINT uEnd);
-  HRESULT (__stdcall *GetPool)(ID3DXEffect *This, LPD3DXEFFECTPOOL *ppPool);
-  HRESULT (__stdcall *SetTechnique)(ID3DXEffect *This, D3DXHANDLE hTechnique);
-  D3DXHANDLE (__stdcall *GetCurrentTechnique)(ID3DXEffect *This);
-  HRESULT (__stdcall *ValidateTechnique)(ID3DXEffect *This, D3DXHANDLE hTechnique);
-  HRESULT (__stdcall *FindNextValidTechnique)(ID3DXEffect *This, D3DXHANDLE hTechnique, D3DXHANDLE *pTechnique);
-  BOOL (__stdcall *IsParameterUsed)(ID3DXEffect *This, D3DXHANDLE hParameter, D3DXHANDLE hTechnique);
-  HRESULT (__stdcall *Begin)(ID3DXEffect *This, UINT *pPasses, DWORD Flags);
-  HRESULT (__stdcall *BeginPass)(ID3DXEffect *This, UINT Pass);
-  HRESULT (__stdcall *CommitChanges)(ID3DXEffect *This);
-  HRESULT (__stdcall *EndPass)(ID3DXEffect *This);
-  HRESULT (__stdcall *End)(ID3DXEffect *This);
-  HRESULT (__stdcall *GetDevice)(ID3DXEffect *This, LPDIRECT3DDEVICE9 *ppDevice);
-  HRESULT (__stdcall *OnLostDevice)(ID3DXEffect *This);
-  HRESULT (__stdcall *OnResetDevice)(ID3DXEffect *This);
-  HRESULT (__stdcall *SetStateManager)(ID3DXEffect *This, LPD3DXEFFECTSTATEMANAGER pManager);
-  HRESULT (__stdcall *GetStateManager)(ID3DXEffect *This, LPD3DXEFFECTSTATEMANAGER *ppManager);
-  HRESULT (__stdcall *BeginParameterBlock)(ID3DXEffect *This);
-  D3DXHANDLE (__stdcall *EndParameterBlock)(ID3DXEffect *This);
-  HRESULT (__stdcall *ApplyParameterBlock)(ID3DXEffect *This, D3DXHANDLE hParameterBlock);
-  HRESULT (__stdcall *DeleteParameterBlock)(ID3DXEffect *This, D3DXHANDLE hParameterBlock);
-  HRESULT (__stdcall *CloneEffect)(ID3DXEffect *This, LPDIRECT3DDEVICE9 pDevice, LPD3DXEFFECT *ppEffect);
-  HRESULT (__stdcall *SetRawValue)(ID3DXEffect *This, D3DXHANDLE hParameter, LPCVOID pData, UINT ByteOffset, UINT Bytes);
-};
-
-/* 608 */
-struct ISBPlaySceneVtbl
-{
-  filebuf *(__thiscall *SBPlayScene__sub_53E880)(filebuf *this, char);
-};
-
-/* 610 */
-struct ID3DXFont
-{
-  ID3DXFontVtbl *lpVtbl;
-};
-
-/* 611 */
-struct D3DXFONT_DESCA
-{
-  INT Height;
-  UINT Width;
-  UINT Weight;
-  UINT MipLevels;
-  BOOL Italic;
-  BYTE CharSet;
-  BYTE OutputPrecision;
-  BYTE Quality;
-  BYTE PitchAndFamily;
-  CHAR FaceName[32];
-};
-
-/* 612 */
-struct D3DXFONT_DESCW
-{
-  INT Height;
-  UINT Width;
-  UINT Weight;
-  UINT MipLevels;
-  BOOL Italic;
-  BYTE CharSet;
-  BYTE OutputPrecision;
-  BYTE Quality;
-  BYTE PitchAndFamily;
-  WCHAR FaceName[32];
-};
-
-/* 613 */
-typedef struct ID3DXSprite *LPD3DXSPRITE;
-
-/* 614 */
-struct ID3DXFontVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(ID3DXFont *This, const IID *const iid, LPVOID *ppv);
-  ULONG (__stdcall *AddRef)(ID3DXFont *This);
-  ULONG (__stdcall *Release)(ID3DXFont *This);
-  HRESULT (__stdcall *GetDevice)(ID3DXFont *This, LPDIRECT3DDEVICE9 *ppDevice);
-  HRESULT (__stdcall *GetDescA)(ID3DXFont *This, D3DXFONT_DESCA *pDesc);
-  HRESULT (__stdcall *GetDescW)(ID3DXFont *This, D3DXFONT_DESCW *pDesc);
-  BOOL (__stdcall *GetTextMetricsA)(ID3DXFont *This, TEXTMETRICA *pTextMetrics);
-  BOOL (__stdcall *GetTextMetricsW)(ID3DXFont *This, TEXTMETRICW *pTextMetrics);
-  HDC (__stdcall *GetDC)(ID3DXFont *This);
-  HRESULT (__stdcall *GetGlyphData)(ID3DXFont *This, UINT Glyph, LPDIRECT3DTEXTURE9 *ppTexture, RECT *pBlackBox, POINT *pCellInc);
-  HRESULT (__stdcall *PreloadCharacters)(ID3DXFont *This, UINT First, UINT Last);
-  HRESULT (__stdcall *PreloadGlyphs)(ID3DXFont *This, UINT First, UINT Last);
-  HRESULT (__stdcall *PreloadTextA)(ID3DXFont *This, LPCSTR pString, INT Count);
-  HRESULT (__stdcall *PreloadTextW)(ID3DXFont *This, LPCWSTR pString, INT Count);
-  INT (__stdcall *DrawTextA)(ID3DXFont *This, LPD3DXSPRITE pSprite, LPCSTR pString, INT Count, LPRECT pRect, DWORD Format, D3DCOLOR Color);
-  INT (__stdcall *DrawTextW)(ID3DXFont *This, LPD3DXSPRITE pSprite, LPCWSTR pString, INT Count, LPRECT pRect, DWORD Format, D3DCOLOR Color);
-  HRESULT (__stdcall *OnLostDevice)(ID3DXFont *This);
-  HRESULT (__stdcall *OnResetDevice)(ID3DXFont *This);
-};
-
-/* 615 */
-typedef D3DVECTOR D3DXVECTOR3;
-
 /* 616 */
 struct CEffectSpriteParams
 {
@@ -14094,48 +16563,6 @@ struct __fixed DummyStruct_CFB4
   int field_CCD0;
 };
 
-/* 622 */
-enum D3DXIMAGE_FILEFORMAT
-{
-  D3DXIFF_BMP = 0x0,
-  D3DXIFF_JPG = 0x1,
-  D3DXIFF_TGA = 0x2,
-  D3DXIFF_PNG = 0x3,
-  D3DXIFF_DDS = 0x4,
-  D3DXIFF_PPM = 0x5,
-  D3DXIFF_DIB = 0x6,
-  D3DXIFF_HDR = 0x7,
-  D3DXIFF_PFM = 0x8,
-  D3DXIFF_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 623 */
-struct D3DXIMAGE_INFO
-{
-  UINT Width;
-  UINT Height;
-  UINT Depth;
-  UINT MipLevels;
-  D3DFORMAT Format;
-  D3DRESOURCETYPE ResourceType;
-  D3DXIMAGE_FILEFORMAT ImageFileFormat;
-};
-
-/* 621 */
-struct __fixed CStructImage_5C
-{
-  int strSize_0;
-  char *name_4;
-  int field_8;
-  D3DXIMAGE_INFO d3dxImageInfo;
-  D3DSURFACE_DESC surfaceDesc_28;
-  char chksum_48;
-  int nSrcDataSize_4C;
-  void *pSrcData_50;
-  int field_54;
-  LPDIRECT3DTEXTURE9 pD3DTexture9_58;
-};
-
 /* 624 */
 struct __unaligned __declspec(align(2)) CTGAHeader
 {
@@ -14150,35 +16577,6 @@ struct __unaligned __declspec(align(2)) CTGAHeader
 /* 625 */
 typedef struct IDirect3DSurface9 *LPDIRECT3DSURFACE9;
 
-/* 626 */
-struct __fixed CSB_CursorCtrl
-{
-  ICSB_CursorCtrlVtbl *lpVtbl;
-  CSB_SpriteCtrl csb_sprite_ctrl_4;
-  int field_38;
-  POINT obj_8_3C;
-  CSBZGlobal *pSBZGlobal_44;
-  CStruct_CCD4 *struct_ccd4_48;
-  CStruct_5C0 *struct_5c0_4C;
-  CStruct_5C0 *struct_5c0_50;
-  int field_54;
-  int field_58;
-  CSB_CameraBase *pCameraBase_5C;
-  int Path_60;
-};
-
-/* 627 */
-struct ICSB_CursorCtrlVtbl
-{
-  char *(__thiscall *CSB_CursorCtrl__sub_486BD0)(char *this, char);
-};
-
-/* 629 */
-struct ICSB_SpriteCtrlVtbl
-{
-  int (__thiscall *IsPointInRect_492FF0)(CSB_SpriteCtrl *this, int x, int y, _DWORD *pOut);
-};
-
 /* 630 */
 struct _unused_1
 {
@@ -14186,122 +16584,6 @@ struct _unused_1
   int pHead;
   int pCurrent;
   int pEnd;
-};
-
-/* 631 */
-struct CISE_SpriteCtrl
-{
-  ICISE_SpriteCtrlVtbl *lpVtbl;
-  CISE_SpriteCtrlMembers m_;
-};
-
-/* 632 */
-struct ICISE_SpriteCtrlVtbl
-{
-  int (__thiscall *CISE_SpriteCtrl__sub_471110)(_DWORD *this, int, int, int *);
-};
-
-/* 634 */
-struct __fixed CSB_Key
-{
-  ICSB_KeyVtbl *lpVtbl;
-  int bKeys_B8_4[46];
-  CSBZGlobal *pSBZGlobal_BC;
-  CStruct_CCD4 *struct_ccd4_C0;
-  CStruct_5C0 *struct_5c0_C4;
-  CStruct_5C0 *struct_5c0_C8;
-  int field_CC;
-};
-
-/* 635 */
-struct ICSB_KeyVtbl
-{
-  _DWORD *(__thiscall *CSB_Key__sub_487B30)(_DWORD *this, char);
-};
-
-/* 636 */
-struct __fixed CSB_Path
-{
-  ICSB_PathVtbl *lpVtbl;
-  char szPath_4[260];
-};
-
-/* 637 */
-struct ICSB_PathVtbl
-{
-  _DWORD *(__thiscall *CSB_Path__sub_49B980)(_DWORD *this, char);
-};
-
-/* 790 */
-struct __fixed CDXSndState
-{
-  char bFF;
-  char field_1;
-  char index;
-};
-
-/* 638 */
-struct __fixed CSB_Sound
-{
-  ICSB_SoundVtbl *lpVtbl;
-  char field_4;
-  char field_5;
-  char field_6;
-  char field_7;
-  char field_8;
-  char field_9;
-  char obj_20_A[32];
-  char obj_E_2A[14];
-  char field_38;
-  char field_39;
-  char obj_20_3A[32];
-  char obj_E_5A[14];
-  float cdxsdn_volume_0[1];
-  float cdxsdn_volume_1[1];
-  float cdxsdn_volume_3[32];
-  float cdxsdn_volume_4[14];
-  CDXSnd *cdxsdn_0[1];
-  CDXSnd *cdxsdn_1[1];
-  CDXSnd *cdxsnd_2[5];
-  CDXSnd *cdxsnd_3[32];
-  CDXSnd *cdxsnd_4[14];
-  CDXSnd *cdxsdn_5[4];
-  CDXSnd *cdxsdn_6[1];
-  CDXSndState cdxsnd_status_3[32];
-  CDXSndState cdxsnd_status_4[14];
-  CSBZGlobal *pSBZGlobal_29C;
-  CStruct_CCD4 *struct_ccd4_2A0;
-  CStruct_5C0 *struct_5c0_2A4;
-  CStruct_5C0 *struct_5c0_2A8;
-  CGlobal_A618 *pglobal_d618_2AC;
-  CMouseState *pMouseState0;
-  CStruct_530 *struct_530_2B4;
-  CSB_Path *Path_2B8;
-};
-
-/* 639 */
-struct ICSB_SoundVtbl
-{
-  _DWORD *(__thiscall *CSB_Sound__sub_4A1150)(_DWORD *this, char);
-};
-
-/* 644 */
-struct CDXSoundBufferMembers
-{
-  CString Str_0;
-  int cbMemSize_4;
-  int cbDataSize_8;
-  int dwDurationMs_C;
-  char field_10;
-  int fCurrentLevel_14;
-  int nMaxLoops_18;
-  int nLoopCount_1C;
-  int dwPlayFlags_20;
-  LPDIRECTSOUNDBUFFER pDSBuffer_24;
-  int dwBufferFlags_28;
-  int lVolume_2C;
-  CDXSoundStruct_25C *pSoundStruct25C_30;
-  int field_34;
 };
 
 /* 794 */
@@ -14525,62 +16807,6 @@ struct __fixed CDXSoundBufferFX
   CDXSoundBufferMembersB mB_;
 };
 
-/* 641 */
-struct __fixed CDXSoundBuffer
-{
-  ICDXSoundBufferVtbl *lpVtbl;
-  CDXSoundBufferMembers m_;
-};
-
-/* 642 */
-struct __fixed IDXSound
-{
-  void *lpVtbl;
-};
-
-/* 643 */
-struct ICDXSoundBufferVtbl
-{
-  CString *(__thiscall *CDXSoundBuffer__Destroy_6DBB60)(CDXSoundBuffer *this, char);
-  int (__thiscall *CDXSoundBuffer__method_4_6DC330)(CDXSoundBuffer *this, CDXSoundStruct_25C *cdxsoundstruct_25c, CString *pstrFileName_a2, CPackFormatSecret *pPackFmtSec_a3, char nType_argC, _DWORD *, int arg14, int, int, int, int);
-  int (__thiscall *CDXSoundBuffer__method_8_6DC4D0)(CString *this, CString *, CString *, int, int, int, int, int);
-  int (__thiscall *CDXSoundBuffer__method_C_6DC600)(CDXSoundBuffer *this, CString *, int, int, CString *, int, int, int, int, int);
-  ULONG (__thiscall *CDXSoundBuffer__Relese_6DCBF0)(CDXSoundBuffer *this);
-  int (__thiscall *CDXSoundBuffer__Play_6DCC30)(CDXSoundBuffer *this, char bLoop, DWORD dwPlayFlags);
-  int (__thiscall *CDXSoundBuffer__PlayLoop_6DCCE0)(CDXSoundBuffer *this, char, int, int);
-  int (__thiscall *CDXSoundBuffer__method_1C_6DCDA0)(_DWORD *this, int);
-  int (__thiscall *CDXSoundBuffer__Stop_6DB640)(CDXSoundBuffer *this);
-  bool (__thiscall *CDXSoundBuffer__IsPlaying_6DCF10)(CDXSoundBuffer *this);
-  bool (__thiscall *CDXSoundBuffer__IsLooping_6DCF70)(_DWORD *this);
-  char (__thiscall *CDXSoundBuffer__UpdateLoop_6DCFD0)(_DWORD *this);
-  char (__thiscall *CDXSoundBuffer__GetAmplitudeLevel_6DD080)(CDXSoundBuffer *this, int *);
-  double (__thiscall *CDXSoundBuffer__GetSmoothedLevel_6DD2D0)(float *this);
-  int (__thiscall *CDXSoundBuffer__ReturnField_38)(_DWORD *this);
-  int (__thiscall *CDXSoundBuffer__ReturnField_28_libname_114)(_DWORD *this);
-  int (__thiscall *CDXSoundBuffer__method_40_6DB680)(CString *this, CString *);
-  int (__thiscall *CDXSoundBuffer__GetName_6DB6A0)(CString *this, CString *);
-  int (__thiscall *CDXSoundBuffer__method_48_6DB6C0)(_DWORD *this, _DWORD *);
-  int (__thiscall *CDXSoundBuffer__method_4C_6DB6E0)(_DWORD *this, _DWORD *);
-  int (__thiscall *CDXSoundBuffer__method_50_6DB700)(_DWORD *this, _DWORD *);
-  int (__thiscall *CDXSoundBuffer__method_54_6DB720)(_BYTE *this, char);
-  int (__thiscall *CDXSoundBuffer__method_58_6DB740)(_BYTE *this, _BYTE *);
-  int (__thiscall *CDXSoundBuffer__method_5C_6DB760)(_DWORD *this, int);
-  int (__thiscall *CDXSoundBuffer__method_60_6DB780)(_DWORD *this, _DWORD *);
-  int (__thiscall *CDXSoundBuffer__method_64_6DB7A0)(_DWORD *this, int);
-  int (__thiscall *CDXSoundBuffer__method_68_6DB7C0)(_DWORD *this, _DWORD *);
-  int (__thiscall *CDXSoundBuffer__method_6C_6DB7E0)(_DWORD *this, _DWORD *);
-  int (__thiscall *CDXSoundBuffer__SetPlayCursor_6DB830)(CDXSoundBuffer *this, DWORD dwPlayCursor);
-  int (__thiscall *CDXSoundBuffer__GetPlayCursor_6DB870)(CDXSoundBuffer *this, DWORD *pdwPlayCursor);
-  int (__thiscall *CDXSoundBuffer__method_78_6DB8B0)(_DWORD **this, int);
-  int (__thiscall *CDXSoundBuffer__SetVolume_6DB900)(CDXSoundBuffer *this, int);
-  int (__thiscall *CDXSoundBuffer__method_80_6DB990)(_DWORD **this, int);
-  int (__thiscall *CDXSoundBuffer__method_84_6DB9D0)(_DWORD *this, int);
-  int (__thiscall *CDXSoundBuffer__method_88_6DBA60)(_DWORD **this, int);
-  int (__thiscall *CDXSoundBuffer__method_8C_6DBAA0)(_DWORD **this, int);
-  int (__thiscall *CDXSoundBuffer__method_90_6DBAE0)(_DWORD **this, int);
-  int (__thiscall *CDXSoundBuffer__method_94_6DBB20)(_DWORD **this, int);
-};
-
 /* 645 */
 struct ICDXSoundBufferFXVtb
 {
@@ -14624,198 +16850,314 @@ struct ICDXSoundBufferFXVtb
   int (__thiscall *CDXSoundBuffer__method_94_6DBB20)(_DWORD **this, int);
 };
 
-/* 648 */
-struct __fixed CSB_Setting
+/* 795 */
+struct IDirectSoundBuffer8
 {
-  ICSB_SettingVtbl *lpVtbl;
-  int sndVolumes_4[5];
-  char sndMutes_18[5] __udec;
-  float TextSpeed;
-  char DrawCenter;
-  char DrawMap;
-  char DrawMan;
-  char DrawSon;
-  float DrawManAlpha;
-  char DrawScreenEffect;
-  __int16 BackColorR;
-  __int16 BackColorG;
-  __int16 BackColorB;
-  char field_34;
-  char UsedHand;
-  CSBZGlobal *pSBZGlobal_38;
-  CStruct_CCD4 *struct_ccd4_3C;
-  CStruct_5C0 *struct_5c0_40;
-  CStruct_5C0 *struct_5c0_44;
-  void *ptr_48;
-  CSB_Key *pKey_4C;
-  CSB_CameraBase *pCameraBase_50;
-  CSB_Sound *pSBSound_54;
+  struct IDirectSoundBuffer8Vtbl *lpVtbl;
 };
 
-/* 649 */
-struct ICSB_SettingVtbl
+/* 816 */
+struct IDirectSoundFXChorus
 {
-  _DWORD *(__thiscall *CSB_Setting__sub_483520)(_DWORD *this, char);
+  struct IDirectSoundFXChorusVtbl *lpVtbl;
 };
 
-/* 650 */
-struct ICBPTestSceneVtbl
+/* 823 */
+struct IDirectSoundFXCompressor
 {
-  CBPTestScene *(__thiscall *CBPTestScene__sub_418D80)(CBPTestScene *this, char bFree);
+  struct IDirectSoundFXCompressorVtbl *lpVtbl;
 };
 
-/* 989 */
-struct __fixed CBoneSwayStruct_18
+/* 830 */
+struct IDirectSoundFXDistortion
 {
-  CScnFrame_21C *pscnsubobj21c_0;
-  D3DMATRIX *pmat4x4_4;
-  D3DMATRIX *pmat4x4_8;
-  CScnFrame_21C *pparent_C;
-  D3DMATRIX *pmat4x4_10;
-  D3DMATRIX *pmat4x4_14;
+  struct IDirectSoundFXDistortionVtbl *lpVtbl;
 };
 
-/* 988 */
-struct __fixed CBoneSwayStruct_174
+/* 837 */
+struct IDirectSoundFXEcho
 {
-  char pos_0;
-  CBoneSwayStruct_18 objs18_x10[10];
-  char gapF4[48];
-  D3DMATRIX mat4x4_124;
-  char field_164;
-  char byte_168;
-  char field_16B;
-  char field_16C;
-  char field_170;
+  struct IDirectSoundFXEchoVtbl *lpVtbl;
 };
 
-/* 980 */
-struct __fixed CBoneSwayStruct_C
+/* 844 */
+struct IDirectSoundFXFlanger
 {
-  int field_0;
-  int field_4;
-  int field_8;
+  struct IDirectSoundFXFlangerVtbl *lpVtbl;
 };
 
-/* 975 */
-struct CMuneSubStruct_C
+/* 807 */
+struct IDirectSoundFXGargle
 {
-  BYTE byte_24;
-  BYTE byte_25;
-  BYTE byte_26;
-  int field_28;
-  int field_2C;
+  struct IDirectSoundFXGargleVtbl *lpVtbl;
 };
 
-/* 974 */
-struct __fixed CMuneStruct_6C
+/* 851 */
+struct IDirectSoundFXParamEq
 {
-  int field_0;
-  int field_4;
-  int field_8;
-  int ptr_C;
-  int field_10;
-  int field_14;
-  int field_18;
-  int field_1C;
-  int field_20;
-  CMuneSubStruct_C objC_24;
-  int field_30;
-  int field_34;
-  float flt_38;
-  float flt_3C;
-  int field_40;
-  int field_44;
-  int field_48;
-  int field_4C;
-  float flt_50;
-  float flt_54;
-  float flt_58;
-  float flt_5C;
-  BYTE byte_60;
-  int field_64;
-  BYTE byte_68;
-  char field_69;
-  char field_6A;
-  char field_6B;
+  struct IDirectSoundFXParamEqVtbl *lpVtbl;
 };
 
-/* 973 */
-struct __fixed CMuneStruct_26C
+/* 858 */
+struct IDirectSoundFXWavesReverb
 {
-  BYTE field_0;
-  __int16 nIndex_2;
-  char char_4[64];
-  int field_44;
-  char byte_48;
-  char byte_49;
-  int field_4C;
-  CMuneStruct_6C muneObj6C_50[5];
+  struct IDirectSoundFXWavesReverbVtbl *lpVtbl;
 };
 
-/* 651 */
-struct __fixed CBoneSwayBase
+/* 865 */
+struct IDirectSoundFXI3DL2Reverb
 {
-  ICBoneSwayBaseVtbl *lpVtbl;
-  char field_4;
-  char field_5;
-  CBoneSwayStruct_174 obj174_x5[5];
-  int ints_x5_74C[5];
-  CBoneSwayStruct_C objC_x5[5];
-  CMuneStruct_26C muneStruct26C;
-  CSpringCtrl *pSprintCtrls_A08[5];
-  CBoneSwayHistory *pBoneSwyHist_A1C[5];
-  CBoneSwayHistory *pBoneSwyHist_A30[5];
+  struct IDirectSoundFXI3DL2ReverbVtbl *lpVtbl;
 };
 
-/* 652 */
-struct ICBoneSwayBaseVtbl
+/* 800 */
+struct IDirectSound3DBuffer
 {
-  _DWORD *(__thiscall *CBoneSwayBase__sub_41EED0)(_DWORD *this, char);
+  struct IDirectSound3DBufferVtbl *lpVtbl;
 };
 
-/* 653 */
-struct __fixed CMuneCtrl
+/* 797 */
+typedef struct _DSEFFECTDESC *LPDSEFFECTDESC;
+
+/* 796 */
+struct IDirectSoundBuffer8Vtbl
 {
-  int lpVtbl;
-  CGlobal_A618 *pGlobalA618;
-  CSceneObjectTemp *pScnCwBody_8;
-  CBoneSwayBase array_cbone_sway_base[2];
-  char field_1494;
-  char obj_5_1495[5];
-  char field_149A;
-  CMuneStruct_9B50 *MuneStruct9B50_149C;
-  char field_14A0;
-  int obj_10_14A4;
-  int field_14B4;
-  char field_14B8;
-  D3DMATRIX mat4x4_14BC;
+  HRESULT (__stdcall *QueryInterface)(IDirectSoundBuffer8 *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSoundBuffer8 *This);
+  ULONG (__stdcall *Release)(IDirectSoundBuffer8 *This);
+  HRESULT (__stdcall *GetCaps)(IDirectSoundBuffer8 *This, LPDSBCAPS pDSBufferCaps);
+  HRESULT (__stdcall *GetCurrentPosition)(IDirectSoundBuffer8 *This, LPDWORD pdwCurrentPlayCursor, LPDWORD pdwCurrentWriteCursor);
+  HRESULT (__stdcall *GetFormat)(IDirectSoundBuffer8 *This, LPWAVEFORMATEX pwfxFormat, DWORD dwSizeAllocated, LPDWORD pdwSizeWritten);
+  HRESULT (__stdcall *GetVolume)(IDirectSoundBuffer8 *This, LPLONG plVolume);
+  HRESULT (__stdcall *GetPan)(IDirectSoundBuffer8 *This, LPLONG plPan);
+  HRESULT (__stdcall *GetFrequency)(IDirectSoundBuffer8 *This, LPDWORD pdwFrequency);
+  HRESULT (__stdcall *GetStatus)(IDirectSoundBuffer8 *This, LPDWORD pdwStatus);
+  HRESULT (__stdcall *Initialize)(IDirectSoundBuffer8 *This, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc);
+  HRESULT (__stdcall *Lock)(IDirectSoundBuffer8 *This, DWORD dwOffset, DWORD dwBytes, LPVOID *ppvAudioPtr1, LPDWORD pdwAudioBytes1, LPVOID *ppvAudioPtr2, LPDWORD pdwAudioBytes2, DWORD dwFlags);
+  HRESULT (__stdcall *Play)(IDirectSoundBuffer8 *This, DWORD dwReserved1, DWORD dwPriority, DWORD dwFlags);
+  HRESULT (__stdcall *SetCurrentPosition)(IDirectSoundBuffer8 *This, DWORD dwNewPosition);
+  HRESULT (__stdcall *SetFormat)(IDirectSoundBuffer8 *This, LPCWAVEFORMATEX pcfxFormat);
+  HRESULT (__stdcall *SetVolume)(IDirectSoundBuffer8 *This, LONG lVolume);
+  HRESULT (__stdcall *SetPan)(IDirectSoundBuffer8 *This, LONG lPan);
+  HRESULT (__stdcall *SetFrequency)(IDirectSoundBuffer8 *This, DWORD dwFrequency);
+  HRESULT (__stdcall *Stop)(IDirectSoundBuffer8 *This);
+  HRESULT (__stdcall *Unlock)(IDirectSoundBuffer8 *This, LPVOID pvAudioPtr1, DWORD dwAudioBytes1, LPVOID pvAudioPtr2, DWORD dwAudioBytes2);
+  HRESULT (__stdcall *Restore)(IDirectSoundBuffer8 *This);
+  HRESULT (__stdcall *SetFX)(IDirectSoundBuffer8 *This, DWORD dwEffectsCount, LPDSEFFECTDESC pDSFXDesc, LPDWORD pdwResultCodes);
+  HRESULT (__stdcall *AcquireResources)(IDirectSoundBuffer8 *This, DWORD dwFlags, DWORD dwEffectsCount, LPDWORD pdwResultCodes);
+  HRESULT (__stdcall *GetObjectInPath)(IDirectSoundBuffer8 *This, const GUID *const rguidObject, DWORD dwIndex, const GUID *const rguidInterface, LPVOID *ppObject);
 };
 
-/* 654 */
-struct __fixed CSB_DateTestScene
+/* 818 */
+typedef const DSFXChorus *LPCDSFXChorus;
+
+/* 821 */
+typedef struct _DSFXChorus *LPDSFXChorus;
+
+/* 817 */
+struct IDirectSoundFXChorusVtbl
 {
-  int lpVtbl;
-  CISE_SpriteCtrl sprite_ctrl_4;
-  int field_28;
-  int obj_14_2C;
-  int field_34;
-  CSBZGlobal *pSBZGlobal_40;
-  CStruct_CCD4 *struct_ccd4_44;
-  CStruct_CCD4 *struct_ccd4_48;
-  CStruct_CCD4 *struct_ccd4_4C;
-  int field_50;
-  int field_54;
-  CSB_CameraBase *pSBCameraBase_58;
-  CSB_Path *pPath_5C;
-  CSB_Key *pKey_60;
-  CSB_CursorCtrl *pCursorCtrl_64;
+  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXChorus *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSoundFXChorus *This);
+  ULONG (__stdcall *Release)(IDirectSoundFXChorus *This);
+  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXChorus *This, LPCDSFXChorus pcDsFxChorus);
+  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXChorus *This, LPDSFXChorus pDsFxChorus);
+};
+
+/* 825 */
+typedef const DSFXCompressor *LPCDSFXCompressor;
+
+/* 828 */
+typedef struct _DSFXCompressor *LPDSFXCompressor;
+
+/* 824 */
+struct IDirectSoundFXCompressorVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXCompressor *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSoundFXCompressor *This);
+  ULONG (__stdcall *Release)(IDirectSoundFXCompressor *This);
+  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXCompressor *This, LPCDSFXCompressor pcDsFxCompressor);
+  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXCompressor *This, LPDSFXCompressor pDsFxCompressor);
+};
+
+/* 832 */
+typedef const DSFXDistortion *LPCDSFXDistortion;
+
+/* 835 */
+typedef struct _DSFXDistortion *LPDSFXDistortion;
+
+/* 831 */
+struct IDirectSoundFXDistortionVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXDistortion *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSoundFXDistortion *This);
+  ULONG (__stdcall *Release)(IDirectSoundFXDistortion *This);
+  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXDistortion *This, LPCDSFXDistortion pcDsFxDistortion);
+  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXDistortion *This, LPDSFXDistortion pDsFxDistortion);
+};
+
+/* 839 */
+typedef const DSFXEcho *LPCDSFXEcho;
+
+/* 842 */
+typedef struct _DSFXEcho *LPDSFXEcho;
+
+/* 838 */
+struct IDirectSoundFXEchoVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXEcho *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSoundFXEcho *This);
+  ULONG (__stdcall *Release)(IDirectSoundFXEcho *This);
+  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXEcho *This, LPCDSFXEcho pcDsFxEcho);
+  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXEcho *This, LPDSFXEcho pDsFxEcho);
+};
+
+/* 846 */
+typedef const DSFXFlanger *LPCDSFXFlanger;
+
+/* 849 */
+typedef struct _DSFXFlanger *LPDSFXFlanger;
+
+/* 845 */
+struct IDirectSoundFXFlangerVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXFlanger *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSoundFXFlanger *This);
+  ULONG (__stdcall *Release)(IDirectSoundFXFlanger *This);
+  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXFlanger *This, LPCDSFXFlanger pcDsFxFlanger);
+  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXFlanger *This, LPDSFXFlanger pDsFxFlanger);
+};
+
+/* 809 */
+typedef const DSFXGargle *LPCDSFXGargle;
+
+/* 812 */
+typedef struct _DSFXGargle *LPDSFXGargle;
+
+/* 808 */
+struct IDirectSoundFXGargleVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXGargle *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSoundFXGargle *This);
+  ULONG (__stdcall *Release)(IDirectSoundFXGargle *This);
+  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXGargle *This, LPCDSFXGargle pcDsFxGargle);
+  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXGargle *This, LPDSFXGargle pDsFxGargle);
+};
+
+/* 853 */
+typedef const DSFXParamEq *LPCDSFXParamEq;
+
+/* 856 */
+typedef struct _DSFXParamEq *LPDSFXParamEq;
+
+/* 852 */
+struct IDirectSoundFXParamEqVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXParamEq *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSoundFXParamEq *This);
+  ULONG (__stdcall *Release)(IDirectSoundFXParamEq *This);
+  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXParamEq *This, LPCDSFXParamEq pcDsFxParamEq);
+  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXParamEq *This, LPDSFXParamEq pDsFxParamEq);
+};
+
+/* 860 */
+typedef const DSFXWavesReverb *LPCDSFXWavesReverb;
+
+/* 863 */
+typedef struct _DSFXWavesReverb *LPDSFXWavesReverb;
+
+/* 859 */
+struct IDirectSoundFXWavesReverbVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXWavesReverb *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSoundFXWavesReverb *This);
+  ULONG (__stdcall *Release)(IDirectSoundFXWavesReverb *This);
+  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXWavesReverb *This, LPCDSFXWavesReverb pcDsFxWavesReverb);
+  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXWavesReverb *This, LPDSFXWavesReverb pDsFxWavesReverb);
+};
+
+/* 867 */
+typedef const DSFXI3DL2Reverb *LPCDSFXI3DL2Reverb;
+
+/* 870 */
+typedef struct _DSFXI3DL2Reverb *LPDSFXI3DL2Reverb;
+
+/* 866 */
+struct IDirectSoundFXI3DL2ReverbVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXI3DL2Reverb *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSoundFXI3DL2Reverb *This);
+  ULONG (__stdcall *Release)(IDirectSoundFXI3DL2Reverb *This);
+  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXI3DL2Reverb *This, LPCDSFXI3DL2Reverb pcDsFxI3DL2Reverb);
+  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXI3DL2Reverb *This, LPDSFXI3DL2Reverb pDsFxI3DL2Reverb);
+  HRESULT (__stdcall *SetPreset)(IDirectSoundFXI3DL2Reverb *This, DWORD dwPreset);
+  HRESULT (__stdcall *GetPreset)(IDirectSoundFXI3DL2Reverb *This, LPDWORD pdwPreset);
+  HRESULT (__stdcall *SetQuality)(IDirectSoundFXI3DL2Reverb *This, LONG lQuality);
+  HRESULT (__stdcall *GetQuality)(IDirectSoundFXI3DL2Reverb *This, LONG *plQuality);
+};
+
+/* 802 */
+typedef struct _DS3DBUFFER *LPDS3DBUFFER;
+
+/* 804 */
+typedef const DS3DBUFFER *LPCDS3DBUFFER;
+
+/* 801 */
+struct IDirectSound3DBufferVtbl
+{
+  HRESULT (__stdcall *QueryInterface)(IDirectSound3DBuffer *This, const IID *const, LPVOID *);
+  ULONG (__stdcall *AddRef)(IDirectSound3DBuffer *This);
+  ULONG (__stdcall *Release)(IDirectSound3DBuffer *This);
+  HRESULT (__stdcall *GetAllParameters)(IDirectSound3DBuffer *This, LPDS3DBUFFER pDs3dBuffer);
+  HRESULT (__stdcall *GetConeAngles)(IDirectSound3DBuffer *This, LPDWORD pdwInsideConeAngle, LPDWORD pdwOutsideConeAngle);
+  HRESULT (__stdcall *GetConeOrientation)(IDirectSound3DBuffer *This, D3DVECTOR *pvOrientation);
+  HRESULT (__stdcall *GetConeOutsideVolume)(IDirectSound3DBuffer *This, LPLONG plConeOutsideVolume);
+  HRESULT (__stdcall *GetMaxDistance)(IDirectSound3DBuffer *This, D3DVALUE *pflMaxDistance);
+  HRESULT (__stdcall *GetMinDistance)(IDirectSound3DBuffer *This, D3DVALUE *pflMinDistance);
+  HRESULT (__stdcall *GetMode)(IDirectSound3DBuffer *This, LPDWORD pdwMode);
+  HRESULT (__stdcall *GetPosition)(IDirectSound3DBuffer *This, D3DVECTOR *pvPosition);
+  HRESULT (__stdcall *GetVelocity)(IDirectSound3DBuffer *This, D3DVECTOR *pvVelocity);
+  HRESULT (__stdcall *SetAllParameters)(IDirectSound3DBuffer *This, LPCDS3DBUFFER pcDs3dBuffer, DWORD dwApply);
+  HRESULT (__stdcall *SetConeAngles)(IDirectSound3DBuffer *This, DWORD dwInsideConeAngle, DWORD dwOutsideConeAngle, DWORD dwApply);
+  HRESULT (__stdcall *SetConeOrientation)(IDirectSound3DBuffer *This, D3DVALUE x, D3DVALUE y, D3DVALUE z, DWORD dwApply);
+  HRESULT (__stdcall *SetConeOutsideVolume)(IDirectSound3DBuffer *This, LONG lConeOutsideVolume, DWORD dwApply);
+  HRESULT (__stdcall *SetMaxDistance)(IDirectSound3DBuffer *This, D3DVALUE flMaxDistance, DWORD dwApply);
+  HRESULT (__stdcall *SetMinDistance)(IDirectSound3DBuffer *This, D3DVALUE flMinDistance, DWORD dwApply);
+  HRESULT (__stdcall *SetMode)(IDirectSound3DBuffer *This, DWORD dwMode, DWORD dwApply);
+  HRESULT (__stdcall *SetPosition)(IDirectSound3DBuffer *This, D3DVALUE x, D3DVALUE y, D3DVALUE z, DWORD dwApply);
+  HRESULT (__stdcall *SetVelocity)(IDirectSound3DBuffer *This, D3DVALUE x, D3DVALUE y, D3DVALUE z, DWORD dwApply);
+};
+
+/* 642 */
+struct __fixed IDXSound
+{
+  void *lpVtbl;
 };
 
 /* 656 */
 struct __fixed ISoundFile
 {
   ISoundFileVtbl *lpVtbl;
+};
+
+/* 662 */
+struct ISoundFileVtbl
+{
+  _DWORD *(__thiscall *ISoundFile__Destroy_6DD560_6DD7C0)(ISoundFile *this, char);
+  int (__thiscall *ISoundFile__method_4_6DECE0_6E03B0)(ISoundFile *this, CString *, char *pch, int);
+  int (__thiscall *ISoundFile__method_8_6DEDA0_6E0440)(ISoundFile *this, void *Src, size_t Size);
+  int (__thiscall *ISoundFile__method_C_6DF8C0_6E0950)(ISoundFile *this);
+  HRESULT (__thiscall *ISoundFile__Read_6DFD00_6E0980)(ISoundFile *this, void *pBuffer, size_t cbRequested, size_t *pcbActual);
+  int (__thiscall *ISoundFile__method_14_6DFEE0_6E0A50)(ISoundFile *this, int, unsigned int, _DWORD *);
+  int (__thiscall *ISoundFile__BeginWrite_6DFBE0_6E0A70)(ISoundFile *this);
+  int (__thiscall *ISoundFile__GetMemSize_6DD4B0_6DD6D0)(ISoundFile *this, _DWORD *);
+  int (__thiscall *ISoundFile__method_20_78A400_6DD6B0)(ISoundFile *this);
+  int (__thiscall *ISoundFile__GetDataSize_6DD4D0_6DD710)(ISoundFile *this, _DWORD *);
+  int (__thiscall *ISoundFile__method_28_789900_6DD6F0)(ISoundFile *this);
+  int (__thiscall *ISoundFile__GetDurationMs_6DD4F0_6DD750)(ISoundFile *this, _DWORD *);
+  int (__thiscall *ISoundFile__method_30_5A63F0_6DD730)(ISoundFile *this);
+  int (__thiscall *ISoundFile__GetFormat_6DD530_6DD790)(ISoundFile *this, WAVEFORMATEX *);
+  int (__thiscall *ISoundFile__method_38_6DD510_6DD770)(ISoundFile *this);
 };
 
 /* 657 */
@@ -14849,23 +17191,6 @@ struct __unaligned __declspec(align(4)) COggVorbisFileAt8
   char field_2E0;
   char field_2E1;
 };
-
-/* 667 */
-#pragma pack(push, 1)
-struct tWAVEFORMATEX
-{
-  WORD wFormatTag;
-  WORD nChannels;
-  DWORD nSamplesPerSec;
-  DWORD nAvgBytesPerSec;
-  WORD nBlockAlign;
-  WORD wBitsPerSample;
-  WORD cbSize;
-};
-#pragma pack(pop)
-
-/* 666 */
-typedef struct tWAVEFORMATEX WAVEFORMATEX;
 
 /* 658 */
 struct __fixed COggVorbisFile
@@ -14930,26 +17255,6 @@ struct ICWaveFileVtbl
   int (__thiscall *CWaveFile__method_38_6DD510)(CWaveFile *this);
 };
 
-/* 662 */
-struct ISoundFileVtbl
-{
-  _DWORD *(__thiscall *ISoundFile__Destroy_6DD560_6DD7C0)(ISoundFile *this, char);
-  int (__thiscall *ISoundFile__method_4_6DECE0_6E03B0)(ISoundFile *this, CString *, char *pch, int);
-  int (__thiscall *ISoundFile__method_8_6DEDA0_6E0440)(ISoundFile *this, void *Src, size_t Size);
-  int (__thiscall *ISoundFile__method_C_6DF8C0_6E0950)(ISoundFile *this);
-  HRESULT (__thiscall *ISoundFile__Read_6DFD00_6E0980)(ISoundFile *this, void *pBuffer, size_t cbRequested, size_t *pcbActual);
-  int (__thiscall *ISoundFile__method_14_6DFEE0_6E0A50)(ISoundFile *this, int, unsigned int, _DWORD *);
-  int (__thiscall *ISoundFile__BeginWrite_6DFBE0_6E0A70)(ISoundFile *this);
-  int (__thiscall *ISoundFile__GetMemSize_6DD4B0_6DD6D0)(ISoundFile *this, _DWORD *);
-  int (__thiscall *ISoundFile__method_20_78A400_6DD6B0)(ISoundFile *this);
-  int (__thiscall *ISoundFile__GetDataSize_6DD4D0_6DD710)(ISoundFile *this, _DWORD *);
-  int (__thiscall *ISoundFile__method_28_789900_6DD6F0)(ISoundFile *this);
-  int (__thiscall *ISoundFile__GetDurationMs_6DD4F0_6DD750)(ISoundFile *this, _DWORD *);
-  int (__thiscall *ISoundFile__method_30_5A63F0_6DD730)(ISoundFile *this);
-  int (__thiscall *ISoundFile__GetFormat_6DD530_6DD790)(ISoundFile *this, WAVEFORMATEX *);
-  int (__thiscall *ISoundFile__method_38_6DD510_6DD770)(ISoundFile *this);
-};
-
 /* 663 */
 typedef struct _MMCKINFO *LPMMCKINFO;
 
@@ -14966,6 +17271,19 @@ struct __fixed CISE_Object_Map
   char field_28;
   int field_2C;
   int field_3C;
+};
+
+/* 671 */
+struct ICISE_Object_MapVtbl
+{
+  CISE_Object_Map *(__thiscall *CISE_Object_Map__Destroy_4226E0)(CISE_Object_Map *this, char bFree);
+  int (__thiscall *CISE_Object_Map__tod_4_421670)(int this);
+  void (*field_8)();
+  bool (__thiscall *field_C)(Concurrency::task_options *__hidden this);
+  void *(__thiscall *field_10)(std::_Ref_count_base *__hidden this, const struct type_info *);
+  int (*field_14)();
+  void (__stdcall *field_18)(int);
+  int (__fastcall *CISE_Object_Common__tod_1C_421170)(int);
 };
 
 /* 669 */
@@ -14998,19 +17316,6 @@ struct ICISE_Object_CharaVtbl
   int (__thiscall *CISE_Object_Chara__tod_1C_423C00)(_DWORD *this);
 };
 
-/* 671 */
-struct ICISE_Object_MapVtbl
-{
-  CISE_Object_Map *(__thiscall *CISE_Object_Map__Destroy_4226E0)(CISE_Object_Map *this, char bFree);
-  int (__thiscall *CISE_Object_Map__tod_4_421670)(int this);
-  void (*field_8)();
-  bool (__thiscall *field_C)(Concurrency::task_options *__hidden this);
-  void *(__thiscall *field_10)(std::_Ref_count_base *__hidden this, const struct type_info *);
-  int (*field_14)();
-  void (__stdcall *field_18)(int);
-  int (__fastcall *CISE_Object_Common__tod_1C_421170)(int);
-};
-
 /* 672 */
 struct ICISE_Object_CommonVtbl
 {
@@ -15022,161 +17327,6 @@ struct ICISE_Object_CommonVtbl
   void (__noreturn *field_1)();
   void (__stdcall *field_18)(int);
   int (__fastcall *CISE_Object_Common__tod_1C_421170)(int);
-};
-
-/* 674 */
-struct __fixed CDXSnd
-{
-  CDXSoundBuffer *pDXSoundBuffer;
-  CDXSoundStruct_25C *pDXSoundStruct;
-};
-
-/* 676 */
-struct IDirectSound8
-{
-  struct IDirectSound8Vtbl *lpVtbl;
-};
-
-/* 679 */
-typedef struct _DSBUFFERDESC DSBUFFERDESC;
-
-/* 678 */
-typedef const DSBUFFERDESC *LPCDSBUFFERDESC;
-
-/* 690 */
-typedef struct _DSCAPS *LPDSCAPS;
-
-/* 677 */
-struct IDirectSound8Vtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSound8 *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSound8 *This);
-  ULONG (__stdcall *Release)(IDirectSound8 *This);
-  HRESULT (__stdcall *CreateSoundBuffer)(IDirectSound8 *This, LPCDSBUFFERDESC pcDSBufferDesc, LPDIRECTSOUNDBUFFER *ppDSBuffer, LPUNKNOWN pUnkOuter);
-  HRESULT (__stdcall *GetCaps)(IDirectSound8 *This, LPDSCAPS pDSCaps);
-  HRESULT (__stdcall *DuplicateSoundBuffer)(IDirectSound8 *This, LPDIRECTSOUNDBUFFER pDSBufferOriginal, LPDIRECTSOUNDBUFFER *ppDSBufferDuplicate);
-  HRESULT (__stdcall *SetCooperativeLevel)(IDirectSound8 *This, HWND hwnd, DWORD dwLevel);
-  HRESULT (__stdcall *Compact)(IDirectSound8 *This);
-  HRESULT (__stdcall *GetSpeakerConfig)(IDirectSound8 *This, LPDWORD pdwSpeakerConfig);
-  HRESULT (__stdcall *SetSpeakerConfig)(IDirectSound8 *This, DWORD dwSpeakerConfig);
-  HRESULT (__stdcall *Initialize)(IDirectSound8 *This, LPCGUID pcGuidDevice);
-  HRESULT (__stdcall *VerifyCertification)(IDirectSound8 *This, LPDWORD pdwCertified);
-};
-
-/* 681 */
-typedef struct tWAVEFORMATEX *LPWAVEFORMATEX;
-
-/* 680 */
-struct _DSBUFFERDESC
-{
-  DWORD dwSize;
-  DWORD dwFlags;
-  DWORD dwBufferBytes;
-  DWORD dwReserved;
-  LPWAVEFORMATEX lpwfxFormat;
-  GUID guid3DAlgorithm;
-};
-
-/* 683 */
-struct IDirectSoundBuffer
-{
-  struct IDirectSoundBufferVtbl *lpVtbl;
-};
-
-/* 685 */
-typedef struct _DSBCAPS *LPDSBCAPS;
-
-/* 687 */
-typedef struct IDirectSound *LPDIRECTSOUND;
-
-/* 692 */
-typedef const WAVEFORMATEX *LPCWAVEFORMATEX;
-
-/* 684 */
-struct IDirectSoundBufferVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSoundBuffer *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSoundBuffer *This);
-  ULONG (__stdcall *Release)(IDirectSoundBuffer *This);
-  HRESULT (__stdcall *GetCaps)(IDirectSoundBuffer *This, LPDSBCAPS pDSBufferCaps);
-  HRESULT (__stdcall *GetCurrentPosition)(IDirectSoundBuffer *This, LPDWORD pdwCurrentPlayCursor, LPDWORD pdwCurrentWriteCursor);
-  HRESULT (__stdcall *GetFormat)(IDirectSoundBuffer *This, LPWAVEFORMATEX pwfxFormat, DWORD dwSizeAllocated, LPDWORD pdwSizeWritten);
-  HRESULT (__stdcall *GetVolume)(IDirectSoundBuffer *This, LPLONG plVolume);
-  HRESULT (__stdcall *GetPan)(IDirectSoundBuffer *This, LPLONG plPan);
-  HRESULT (__stdcall *GetFrequency)(IDirectSoundBuffer *This, LPDWORD pdwFrequency);
-  HRESULT (__stdcall *GetStatus)(IDirectSoundBuffer *This, LPDWORD pdwStatus);
-  HRESULT (__stdcall *Initialize)(IDirectSoundBuffer *This, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc);
-  HRESULT (__stdcall *Lock)(IDirectSoundBuffer *This, DWORD dwOffset, DWORD dwBytes, LPVOID *ppvAudioPtr1, LPDWORD pdwAudioBytes1, LPVOID *ppvAudioPtr2, LPDWORD pdwAudioBytes2, DWORD dwFlags);
-  HRESULT (__stdcall *Play)(IDirectSoundBuffer *This, DWORD dwReserved1, DWORD dwPriority, DWORD dwFlags);
-  HRESULT (__stdcall *SetCurrentPosition)(IDirectSoundBuffer *This, DWORD dwNewPosition);
-  HRESULT (__stdcall *SetFormat)(IDirectSoundBuffer *This, LPCWAVEFORMATEX pcfxFormat);
-  HRESULT (__stdcall *SetVolume)(IDirectSoundBuffer *This, LONG lVolume);
-  HRESULT (__stdcall *SetPan)(IDirectSoundBuffer *This, LONG lPan);
-  HRESULT (__stdcall *SetFrequency)(IDirectSoundBuffer *This, DWORD dwFrequency);
-  HRESULT (__stdcall *Stop)(IDirectSoundBuffer *This);
-  HRESULT (__stdcall *Unlock)(IDirectSoundBuffer *This, LPVOID pvAudioPtr1, DWORD dwAudioBytes1, LPVOID pvAudioPtr2, DWORD dwAudioBytes2);
-  HRESULT (__stdcall *Restore)(IDirectSoundBuffer *This);
-};
-
-/* 686 */
-struct _DSBCAPS
-{
-  DWORD dwSize;
-  DWORD dwFlags;
-  DWORD dwBufferBytes;
-  DWORD dwUnlockTransferRate;
-  DWORD dwPlayCpuOverhead;
-};
-
-/* 688 */
-struct IDirectSound
-{
-  struct IDirectSoundVtbl *lpVtbl;
-};
-
-/* 689 */
-struct IDirectSoundVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSound *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSound *This);
-  ULONG (__stdcall *Release)(IDirectSound *This);
-  HRESULT (__stdcall *CreateSoundBuffer)(IDirectSound *This, LPCDSBUFFERDESC pcDSBufferDesc, LPDIRECTSOUNDBUFFER *ppDSBuffer, LPUNKNOWN pUnkOuter);
-  HRESULT (__stdcall *GetCaps)(IDirectSound *This, LPDSCAPS pDSCaps);
-  HRESULT (__stdcall *DuplicateSoundBuffer)(IDirectSound *This, LPDIRECTSOUNDBUFFER pDSBufferOriginal, LPDIRECTSOUNDBUFFER *ppDSBufferDuplicate);
-  HRESULT (__stdcall *SetCooperativeLevel)(IDirectSound *This, HWND hwnd, DWORD dwLevel);
-  HRESULT (__stdcall *Compact)(IDirectSound *This);
-  HRESULT (__stdcall *GetSpeakerConfig)(IDirectSound *This, LPDWORD pdwSpeakerConfig);
-  HRESULT (__stdcall *SetSpeakerConfig)(IDirectSound *This, DWORD dwSpeakerConfig);
-  HRESULT (__stdcall *Initialize)(IDirectSound *This, LPCGUID pcGuidDevice);
-};
-
-/* 691 */
-struct _DSCAPS
-{
-  DWORD dwSize;
-  DWORD dwFlags;
-  DWORD dwMinSecondarySampleRate;
-  DWORD dwMaxSecondarySampleRate;
-  DWORD dwPrimaryBuffers;
-  DWORD dwMaxHwMixingAllBuffers;
-  DWORD dwMaxHwMixingStaticBuffers;
-  DWORD dwMaxHwMixingStreamingBuffers;
-  DWORD dwFreeHwMixingAllBuffers;
-  DWORD dwFreeHwMixingStaticBuffers;
-  DWORD dwFreeHwMixingStreamingBuffers;
-  DWORD dwMaxHw3DAllBuffers;
-  DWORD dwMaxHw3DStaticBuffers;
-  DWORD dwMaxHw3DStreamingBuffers;
-  DWORD dwFreeHw3DAllBuffers;
-  DWORD dwFreeHw3DStaticBuffers;
-  DWORD dwFreeHw3DStreamingBuffers;
-  DWORD dwTotalHwMemBytes;
-  DWORD dwFreeHwMemBytes;
-  DWORD dwMaxContigFreeHwMemBytes;
-  DWORD dwUnlockTransferRateHwBuffers;
-  DWORD dwPlayCpuOverheadSwBuffers;
-  DWORD dwReserved1;
-  DWORD dwReserved2;
 };
 
 /* 696 */
@@ -15368,16 +17518,6 @@ enum MACRO_VK
   VK_OEM_CLEAR = 0xFE,
 };
 
-/* 699 */
-struct __fixed CMouseState
-{
-  BYTE bButtons[4];
-  D2D_POINT_2F nCursorRaw;
-  int lZ;
-  D2D_POINT_2F nCursor;
-  char flags;
-};
-
 /* 701 */
 enum __dec MACRO_DIERR
 {
@@ -15462,152 +17602,6 @@ struct __fixed CGamePadState
   CGamePadTransitionsState transition;
 };
 
-/* 708 */
-struct __fixed CEffectAnaglyphParams
-{
-  IDirect3DDevice9 *pD3D9;
-  LPD3DXEFFECT pAnaglyphFX;
-  int g_txDecal;
-  int g_txBlack;
-  int g_fAlpha;
-  int osAnaglpyhOverlay;
-  IDirect3DBaseTexture9 *pBaseTexture_18;
-  LPDIRECT3DTEXTURE9 pTexture_40;
-  LPDIRECT3DTEXTURE9 pTexture_54;
-  IDirect3DSurface9 *pNewZStencilSurface_68;
-  IDirect3DSurface9 *pRenderTarget_6C;
-  IDirect3DSurface9 *pZStencilSurface_70;
-  int field_74;
-  int field_78;
-};
-
-/* 709 */
-struct __fixed CEffectFixedFunctionParams
-{
-  LPD3DXEFFECT pFixedFunctionFX_0;
-  LPD3DXEFFECT pBoneTextureFX_4;
-  LPD3DXEFFECT pFixedFunctionVS2FX_8;
-  int FixedFunctionFX_g_mW;
-  int field_10;
-  int field_14;
-  int field_18;
-  int field_1C;
-  int field_20;
-  int field_24;
-  int field_28;
-  int field_2C;
-  int field_30;
-  int field_34;
-  int field_38;
-  int field_3C;
-  int field_40;
-  int field_44;
-  int field_48;
-  int field_4C;
-  int field_50;
-  int field_54;
-  int field_58;
-  int field_5C;
-  int field_60;
-  int field_64;
-  int field_68;
-  int field_6C;
-  int field_70;
-  int field_74;
-  int field_78;
-  int field_7C;
-  int field_80;
-  int field_84;
-  int field_88;
-  int field_8C;
-  int field_90;
-  int field_94;
-  int field_98;
-  int field_9C;
-  int field_A0;
-  int field_A4;
-  int field_A8;
-  int field_AC;
-  int field_B0;
-  int field_B4;
-  int field_B8;
-  int field_BC;
-  int field_C0;
-  int field_C4;
-  int field_C8;
-  int field_CC;
-  int field_D0;
-  int field_D4;
-  int field_D8;
-  int field_DC;
-  int field_E0;
-  int field_E4;
-  int field_E8;
-  int field_EC;
-  int field_F0;
-  int field_F4;
-  int field_F8;
-  int field_FC;
-  int field_100;
-  int FixedFunctionFX_osTechB_H_NoTex_UV3;
-  int BoneTextureFX_g_avX;
-  int field_10C;
-  int field_110;
-  int field_114;
-  int field_118;
-  int field_11C;
-  int field_120;
-  int field_124;
-  int field_128;
-  int pBoneTextureFX_osTech;
-  int FixedFunctionVS2FX_g_mW;
-  int field_134;
-  int field_138;
-  int field_13C;
-  int field_140;
-  int field_144;
-  int field_148;
-  int field_14C;
-  int field_150;
-  int field_154;
-  int field_158;
-  int field_15C;
-  int field_160;
-  int field_164;
-  int field_168;
-  int field_16C;
-  int field_170;
-  int field_174;
-  int field_178;
-  int field_17C;
-  int field_180;
-  int field_184;
-  int field_188;
-  int field_18C;
-  int field_190;
-  int field_194;
-  int field_198;
-  int field_19C;
-  int field_1A0;
-  int field_1A4;
-  int field_1A8;
-  int field_1AC;
-  int field_1B0;
-  int field_1B4;
-  int field_1B8;
-  int field_1BC;
-  int field_1C0;
-  int field_1C4;
-  int field_1C8;
-  int field_1CC;
-  int field_1D0;
-  int field_1D4;
-  int field_1D8;
-  int FixedFunctionVS2FX_osTechB_S_H_UV2;
-  int FixedFunctionVS2FX_osTechB_S_H_UV3;
-  int field_1E4;
-};
-
 /* 710 */
 struct __fixed CDX9ScreenBlend
 {
@@ -15627,22 +17621,6 @@ struct __fixed CDX9GaussScreen
   int field_0;
   int field_4;
   int field_3FC;
-};
-
-/* 712 */
-struct __fixed CFXUnk
-{
-  char field_0;
-};
-
-/* 713 */
-struct __fixed CEffectSpecularParams
-{
-  int field_0;
-  int field_4;
-  LPD3DXEFFECT field_8[2];
-  int field_10;
-  int field_14;
 };
 
 /* 714 */
@@ -15842,31 +17820,6 @@ struct __fixed CGlareEffect
   D3DXVECTOR4 field_598[15];
 };
 
-/* 725 */
-struct __fixed SBCheckScene
-{
-  void *lpVtbl;
-  CStructImage2D_80 *pPic_4;
-  CStructImage2D_80 *pPic_8;
-  CSB_SpriteCtrl spriteCtrl_C;
-  int field_40;
-  POINT mouseCursorPos;
-  char field_4C;
-  char field_4D;
-  CSBZGlobal *pSBZGlobal;
-  CStruct_CCD4 *structCCD4;
-  CStruct_5C0 *struct5C0_1;
-  CStruct_5C0 *struct5C0_2;
-  CGlobal_A618 *cglobalA618_60;
-  CMouseState *mouseState_0;
-  CSB_CameraBase *pCameraBase;
-  CSB_Key *pKey;
-  CSB_Path *pPath;
-  CSB_GameInfo *pGameInfo;
-  CSB_Sound *pSound;
-  CSB_CursorCtrl *pCursorCtrl;
-};
-
 /* 728 */
 struct __fixed CTextBaseMembers
 {
@@ -15890,18 +17843,18 @@ struct CTextLine
   WCHAR lineBuf[1024];
 };
 
-/* 727 */
-struct __fixed CTextBase
-{
-  int lpVtbl;
-  CTextBaseMembers m_;
-};
-
 /* 729 */
 struct ICTextLineVtbl
 {
   CTextLine *(__thiscall *CTextLine__Destroy_41B200)(CTextLine *this, char bFree);
   bool (__thiscall *CTextLine__sub_650270)(CTextLine *this);
+};
+
+/* 727 */
+struct __fixed CTextBase
+{
+  int lpVtbl;
+  CTextBaseMembers m_;
 };
 
 /* 730 */
@@ -16021,90 +17974,6 @@ struct CStructCollission_30
   ColHitType param;
 };
 
-/* 741 */
-struct __fixed __declspec(align(4)) CIME_Manager
-{
-  int lpVtbl;
-  HWND hwdn;
-  HIMC himc;
-  void **field_C;
-  int field_10;
-  int field_14;
-  int field_18;
-  void *ptr_1C;
-  int field_20;
-  int field_24;
-  int field_28;
-  void *ptr_2C;
-  char szPath_30;
-  _BYTE gap31[3];
-  _BYTE gap34[1036];
-  int field_440;
-  int field_444;
-  void *field_448;
-  int obj_924_44C;
-  _BYTE gap450[2336];
-  int obj_40_D70;
-  _BYTE gapD74[60];
-  int field_DB0;
-  int field_DB4;
-  int field_DB8;
-  int field_DBC;
-  char field_DC0;
-  char field_DC1;
-  char field_DC2;
-  char field_DC3;
-  char field_DC4;
-  char field_DC5;
-};
-
-/* 744 */
-struct __fixed CVector_T2C
-{
-  int field_0;
-  void *_Myfirst;
-  void *_Mylast;
-  void *_Myend;
-};
-
-/* 743 */
-struct __fixed KK_Font
-{
-  void *lpVtbl;
-  LPD3DXFONT pFont_4;
-  int pCOM_8;
-};
-
-/* 742 */
-struct __fixed SBMainMapScene
-{
-  int lpVtbl;
-  CSB_SpriteCtrl spriteCtrl;
-  int field_38;
-  int field_3C;
-  int field_40;
-  char field_44;
-  char field_45;
-  int field_48;
-  int field_4C;
-  int field_50;
-  CVector_T2C vec_2C_54;
-  KK_Font kkFonts[2];
-  CSBZGlobal *pSBZGlobal;
-  CStruct_CCD4 *pStructCCD4;
-  CStruct_5C0 *pStruct5C0;
-  CStruct_5C0 *pStruct5C0_2;
-  CGlobal_A618 *pGlobalA618;
-  CMouseState *pMouseState0;
-  CSB_CameraBase *pSBCameraBase;
-  CSB_Key *pKey;
-  CSB_Path *pPath;
-  CSB_GameInfo *pGameInfo;
-  CSB_Sound *pSound;
-  CSB_CursorCtrl *pCursorCtr;
-  char field_AC;
-};
-
 /* 745 */
 struct CAcsLineOut
 {
@@ -16158,373 +18027,11 @@ enum __dec ESBZScene : __int32
   SP_EMERGENCY_SCENE = 30,
 };
 
-/* 747 */
-struct __fixed CScnFrame_21C
-{
-  int nNameLen;
-  char *pName;
-  int nChildCount;
-  CScnFrame_21C *pFirstChild;
-  CScnFrame_21C *pParent_;
-  D3DMATRIX mat4x4_14;
-  D3DMATRIX localMat4x4_54;
-  D3DMATRIX mat4x4_94;
-  D3DMATRIX invMat4x4_D4;
-  D3DMATRIX worldMat4x4_114;
-  int field_154;
-  int unknown_158[4];
-  int nSubMeshCount;
-  D3DXVECTOR3 bounds[2];
-  CScnSubMesh_11C *pSubMeshes;
-  __int16 nCountVertexDups;
-  int nMode_18C;                        ///< 0x141C
-                                        ///< 0x111C
-                                        ///< 0x112
-                                        ///< 0x412
-  int field_190;
-  CScnVertex_54 *pVertexes_194;
-  BYTE meshNumVec2PerVex;
-  int nCountBones_19C;
-  CScnBone_50 *pBones_1A0;
-  float float_1A4;
-  int field_1A8;
-  BYTE byte_1AC;
-  BYTE byFxIdx_1B0;
-  BYTE field_1B1;
-  char byte_1B3;
-  char byte_1B5;
-  char byte_1B8;
-  CSceneObjectTemp *pScbObj_1BC;
-  char field_1C0;
-  char field_1C1;
-  char field_1C2;
-  int dwFlags_1C4;
-  char field_1C8;
-  char bSita_1C9;
-  char gap1CC;
-  char field_218;
-};
-
-/* 749 */
-struct __fixed CScnSubObject_F4
-{
-  int field_0;
-  int field_4;
-  void *pIdxBuf_8;
-  void *pVertexes_C;
-  IDirect3DIndexBuffer9 *pIdxBuffer_10;
-  IDirect3DVertexBuffer9 *pVertexBuf_14;
-  IDirect3DVertexBuffer9 *pDxVertexBuf_18;
-  int field_1C[4];
-  int field_2C[4];
-  int field_3C[4];
-  int field_4C[4];
-  int field_5C[4];
-  int vec_6C[4][3];
-  int field_9C;
-  BYTE nCount_A0;
-  char field_A1;
-  int field_A4;
-  char field_A8;
-  int field_AC;
-  char field_B0;
-  LPDIRECT3DTEXTURE9 pTextures_B4[4];
-  IDirect3DSurface9 *pSurfLevel_C4[4];
-  LPDIRECT3DTEXTURE9 pTextures_D4[2];
-  IDirect3DSurface9 *pSurfLevels_DC[2];
-  LPDIRECT3DTEXTURE9 pDxTexture_E4;
-  IDirect3DSurface9 *pDxSurfLevel_E8;
-  IDirect3DSurface9 *pRenderTarget_EC;
-  IDirect3DSurface9 *pDepthStencilSurface_F0;
-};
-
-/* 1033 */
-typedef D3DCOLORVALUE DXGI_RGBA;
-
-/* 1032 */
-struct __fixed CScnMaterialAttr_44
-{
-  DXGI_RGBA diffuse;
-  DXGI_RGBA ambient;
-  DXGI_RGBA specular;
-  DXGI_RGBA emmisive;
-  float power;
-};
-
-/* 750 */
-struct __fixed CScnMaterialSect_58
-{
-  int nLen_0;
-  char *name_4;
-  CScnMaterial_134 *ptr_8;
-  CScnMaterialAttr_44 attr_C;
-  int nCountColors_50;
-  CScnMaterialColor_48 *ptr_54;
-};
-
-/* 771 */
-struct __fixed CScnMaterialTex_1C
-{
-  int nLen_0;
-  char *name_4;
-  CStructImage_5C *pImage_8;
-  int unk_C[4];
-};
-
-/* 751 */
-struct __fixed CScnMaterial_134
-{
-  int nNameLen;
-  char *pName;
-  CScnMaterialAttr_44 attr1;
-  CScnMaterialTex_1C textures1[4];
-  int field_BC;
-  CScnMaterialTex_1C textures2[4];
-  int field_130;
-};
-
-/* 752 */
-struct __fixed CScnMaterialColor_48
-{
-  CScnMaterialAttr_44 attr_0;
-  int field_44;
-};
-
-/* 753 */
-struct __fixed CScnXASection2_38
-{
-  int field_0;
-  int nLen_4;
-  char *name_8;
-  CScnFrame_21C *pScnFrame_C;
-  char field_10;
-  char field_11;
-  int field_14;
-  char field_18;
-  char field_19;
-  int nSize_1C;
-  CScnXASection2Block_8 *pBlocks_20;
-  int field_24;
-  int field_28;
-  char field_2C;
-  char field_2D;
-  int field_30;
-  int field_34;
-};
-
-/* 754 */
-struct __fixed CScnXASection2Block_8
-{
-  int field_0;
-  BYTE byte_4;
-};
-
-/* 755 */
-struct __fixed CScnAnimMorphIndexSet_18
-{
-  int nNameLen;
-  char *pName;
-  int field_8;
-  int nCountVertices;
-  WORD *pMeshIndices;
-  WORD *pMorphIndices;
-};
-
-/* 756 */
-struct __fixed CScnAnimMorphKeyFrame_14
-{
-  int nNameLen;
-  char *pName;
-  int nCountVertices;
-  D3DXVECTOR3 *pPositionList;
-  D3DXVECTOR3 *pNormalList;
-};
-
-/* 757 */
-struct __fixed CScnAnimMorphClip_44
-{
-  int index;
-  int nMeshNameLen;
-  char *pMeshName;
-  CScnFrame_21C *pFrame;
-  int nNameLen;
-  char *pName;
-  CScnAnimMorphIndexSet_18 *pMorphIndexSet;
-  int nCountKeyFrameRefs;
-  CScnAnimMorphKeyFrameRef_15 *pMorphKeyFrameRefs;
-  int gap_24[8];
-};
-
-/* 758 */
-struct __fixed CScnAnimMorphKeyFrameRef_15
-{
-  int index;
-  int nNameLen;
-  char byte_8;
-  char byte_9;
-  char *pName;
-  CScnAnimMorphKeyFrame_14 *pMorphKeyFrame;
-};
-
-/* 759 */
-struct __fixed CScnXASection4_10
-{
-  int nCount_0;
-  CScnXASection4Item_AC *pItems_4;
-  char gap_8[8];
-};
-
-/* 760 */
-struct __fixed CScnXASection4Item_AC
-{
-  int field_0[26];
-  char field_68[64];
-  int field_A8;
-};
-
-/* 762 */
-struct __fixed CScnAnimTrack_19
-{
-  int nNameLen;
-  char *pName;
-  int nCountKeyframes;
-  int field_C;
-  CScnAnimKeyFrame_34 *pAnimKeyframes;
-  CScnFrame_21C *pFrame;
-};
-
-/* 787 */
-struct D3DXQUATERNION
-{
-  FLOAT x;
-  FLOAT y;
-  FLOAT z;
-  FLOAT w;
-};
-
-/* 763 */
-struct __fixed CScnAnimKeyFrame_34
-{
-  int index;
-  D3DXQUATERNION rotation;
-  char bytes_14[8];
-  D3DXVECTOR3 translation;
-  D3DXVECTOR3 scaling;
-};
-
 /* 764 */
 struct __fixed CScnFrameLister_2004
 {
   int nSize;
   CScnFrame_21C *arrPtrFrames[2048];
-};
-
-/* 766 */
-struct __fixed CScnSubLight_174
-{
-  int nLen_0;
-  char *name_4;
-  char field_8;
-  char field_9;
-  int field_C[26];
-  D3DLIGHT9 d3dLight_74;
-  D3DMATRIX *mat4x4_DC;
-  D3DMATRIX mat4x4_E0;
-  D3DMATRIX mat4x4_120;
-  CScnFrame_21C *ptr_160;
-  int nLen_164;
-  char *name_168;
-  int field_16C;
-  char field_170;
-  char field_171;
-  char field_172;
-  char field_173;
-};
-
-/* 782 */
-typedef struct IDirect3DCubeTexture9 *LPDIRECT3DCUBETEXTURE9;
-
-/* 1031 */
-struct __fixed CScnSubMeshStruct_18
-{
-  int field_0;
-  int field_4;
-  int field_8;
-  int field_C;
-  int field_10;
-  char byte_14;
-};
-
-/* 767 */
-struct __fixed CScnSubMesh_11C
-{
-  char field_0;
-  char nIdx_3;
-  char field_4;
-  char field_5;
-  char field_8;
-  char field_9;
-  char flags_A;
-  char field_B;
-  int field_C;
-  int nMaterialIdx_10;
-  int nFacesVexCount_14;
-  CScnFace *pfacesVexIndices_18;
-  IDirect3DIndexBuffer9 *pIndexBuffer_1C;
-  CScnMaterial_134 *pMaterial_20;
-  int nVerticesCount_24;
-  IDirect3DVertexBuffer9 *pVertexBuf_28;
-  CScnVertex_54 *pVertexes_2C;
-  D3DXVECTOR2 *pVecs2_30;
-  D3DXVECTOR2 *pVecs2_34;
-  D3DXVECTOR2 *pVecs2_38;
-  float field_40[5];
-  IDirect3DVertexBuffer9 *pVertexBuf_54;
-  LPDIRECT3DTEXTURE9 pTexture_58;
-  int field_5C;
-  int field_60;
-  int field_64;
-  int field_68;
-  LPDIRECT3DTEXTURE9 pTexture_6C;
-  LPDIRECT3DTEXTURE9 pTexture_70;
-  LPDIRECT3DCUBETEXTURE9 pCubeTexture_74;
-  float flt_78;
-  CScnSubMeshStruct_18 objs_18_7C[4];
-  float floats_DC[16];
-};
-
-/* 769 */
-struct __fixed CScnBaseVertex_34
-{
-  __int16 index;
-  D3DXVECTOR3 position;
-  int weights[3];
-  char boneIndices[4];
-  D3DXVECTOR3 normal;
-  float u;
-  float v;
-};
-
-/* 768 */
-struct __fixed CScnVertex_54
-{
-  CScnBaseVertex_34 base_0;
-  float flt_34;
-  float flt_38;
-  float flt_3C;
-  float flt_40;
-  int field_44;
-  int field_48;
-};
-
-/* 770 */
-struct __fixed CScnBone_50
-{
-  int nLen_0;
-  char *name_4;
-  int index;
-  D3DXMATRIX mat4x4;
-  D3DXMATRIX *pMat4x4_4C;
 };
 
 /* 772 */
@@ -16665,97 +18172,6 @@ struct _D3DVERTEX
 };
 #pragma pack(pop)
 
-/* 783 */
-struct IDirect3DCubeTexture9
-{
-  struct IDirect3DCubeTexture9Vtbl *lpVtbl;
-};
-
-/* 786 */
-enum _D3DCUBEMAP_FACES
-{
-  D3DCUBEMAP_FACE_POSITIVE_X = 0x0,
-  D3DCUBEMAP_FACE_NEGATIVE_X = 0x1,
-  D3DCUBEMAP_FACE_POSITIVE_Y = 0x2,
-  D3DCUBEMAP_FACE_NEGATIVE_Y = 0x3,
-  D3DCUBEMAP_FACE_POSITIVE_Z = 0x4,
-  D3DCUBEMAP_FACE_NEGATIVE_Z = 0x5,
-  D3DCUBEMAP_FACE_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 785 */
-typedef enum _D3DCUBEMAP_FACES D3DCUBEMAP_FACES;
-
-/* 784 */
-struct IDirect3DCubeTexture9Vtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirect3DCubeTexture9 *This, const IID *const riid, void **ppvObj);
-  ULONG (__stdcall *AddRef)(IDirect3DCubeTexture9 *This);
-  ULONG (__stdcall *Release)(IDirect3DCubeTexture9 *This);
-  HRESULT (__stdcall *GetDevice)(IDirect3DCubeTexture9 *This, IDirect3DDevice9 **ppDevice);
-  HRESULT (__stdcall *SetPrivateData)(IDirect3DCubeTexture9 *This, const GUID *const refguid, const void *pData, DWORD SizeOfData, DWORD Flags);
-  HRESULT (__stdcall *GetPrivateData)(IDirect3DCubeTexture9 *This, const GUID *const refguid, void *pData, DWORD *pSizeOfData);
-  HRESULT (__stdcall *FreePrivateData)(IDirect3DCubeTexture9 *This, const GUID *const refguid);
-  DWORD (__stdcall *SetPriority)(IDirect3DCubeTexture9 *This, DWORD PriorityNew);
-  DWORD (__stdcall *GetPriority)(IDirect3DCubeTexture9 *This);
-  void (__stdcall *PreLoad)(IDirect3DCubeTexture9 *This);
-  D3DRESOURCETYPE (__stdcall *GetType)(IDirect3DCubeTexture9 *This);
-  DWORD (__stdcall *SetLOD)(IDirect3DCubeTexture9 *This, DWORD LODNew);
-  DWORD (__stdcall *GetLOD)(IDirect3DCubeTexture9 *This);
-  DWORD (__stdcall *GetLevelCount)(IDirect3DCubeTexture9 *This);
-  HRESULT (__stdcall *SetAutoGenFilterType)(IDirect3DCubeTexture9 *This, D3DTEXTUREFILTERTYPE FilterType);
-  D3DTEXTUREFILTERTYPE (__stdcall *GetAutoGenFilterType)(IDirect3DCubeTexture9 *This);
-  void (__stdcall *GenerateMipSubLevels)(IDirect3DCubeTexture9 *This);
-  HRESULT (__stdcall *GetLevelDesc)(IDirect3DCubeTexture9 *This, UINT Level, D3DSURFACE_DESC *pDesc);
-  HRESULT (__stdcall *GetCubeMapSurface)(IDirect3DCubeTexture9 *This, D3DCUBEMAP_FACES FaceType, UINT Level, IDirect3DSurface9 **ppCubeMapSurface);
-  HRESULT (__stdcall *LockRect)(IDirect3DCubeTexture9 *This, D3DCUBEMAP_FACES FaceType, UINT Level, D3DLOCKED_RECT *pLockedRect, const RECT *pRect, DWORD Flags);
-  HRESULT (__stdcall *UnlockRect)(IDirect3DCubeTexture9 *This, D3DCUBEMAP_FACES FaceType, UINT Level);
-  HRESULT (__stdcall *AddDirtyRect)(IDirect3DCubeTexture9 *This, D3DCUBEMAP_FACES FaceType, const RECT *pDirtyRect);
-  LPCWSTR Name;
-  UINT Width;
-  UINT Height;
-  UINT Levels;
-  DWORD Usage;
-  D3DFORMAT Format;
-  D3DPOOL Pool;
-  DWORD Priority;
-  DWORD LOD;
-  D3DTEXTUREFILTERTYPE FilterType;
-  UINT LockCount;
-};
-
-/* 788 */
-struct D3DXVECTOR2
-{
-  FLOAT x;
-  FLOAT y;
-};
-
-/* 789 */
-struct __fixed SBRoomScene
-{
-  void *lpVtbl;
-  CSB_SpriteCtrl m_sprite_ctrl;
-  int field_38;
-  KK_Font m_kk_font[2];
-  int field_54;
-  int field_58;
-  char field_5C;
-  CSBZGlobal *m_pSBZGlobal;
-  CStruct_CCD4 *m_pstruct_ccd4;
-  CStruct_5C0 *m_pstruct_5c0_1;
-  CStruct_5C0 *m_pstruct_5c0_2;
-  CGlobal_A618 *m_pglobal_d618;
-  CMouseState *m_pmouse_state0;
-  CSB_CameraBase *m_pcamera_base;
-  CSB_Key *m_pkey;
-  CSB_Path *m_ppath;
-  CSB_GameInfo *m_pgame_info;
-  CSB_Sound *m_psound;
-  CSB_CursorCtrl *m_pcursor_ctrl;
-  char field_90;
-};
-
 /* 791 */
 struct __fixed CInteger
 {
@@ -16767,417 +18183,6 @@ union CValue
 {
   CString str;
   CInteger num;
-};
-
-/* 793 */
-struct __fixed SBSpecialScene
-{
-  int lpVtbl;
-  int field_4;
-  int field_8;
-  int field_C;
-  int field_10;
-  int field_14;
-  char obj_530_18[1328];
-  char obj_530_548[1328];
-  int cys_select_A78;
-  int cys_sp_move_A9C;
-  int vec_AE8;
-  int field_AF8;
-  int field_E1C;
-  int field_1140;
-  int field_1144;
-  int field_1148;
-  char field_114C;
-  int field_1150;
-  int field_1154;
-  int field_1158;
-  int field_115C;
-  int field_1160;
-  int field_1164;
-  int field_1168;
-  int field_116C;
-  int field_1170;
-  char field_1174;
-  int field_1178;
-  int field_117C;
-  char field_1180;
-  int field_1184;
-  int field_1188;
-  int field_118C;
-  int field_1190;
-  int field_1194;
-  int field_1198;
-  int field_119C;
-  int field_11A0;
-  int field_11A4;
-  int field_11A8;
-  int field_11AC;
-  int field_11B0;
-  int field_11B4;
-  char field_11B8;
-  char field_11B9;
-  int field_11BC;
-  int field_11C0;
-  int field_11C4;
-  int field_11C8;
-  int field_11CC;
-  int field_11D0;
-  int field_11D4;
-  int field_11D8;
-  int field_11DC;
-  int field_11E0;
-  int field_11E4;
-  int field_11E8;
-  int field_11EC;
-  int field_11F0;
-  int field_11F4;
-  int field_11F8;
-  int field_11FC;
-  int field_1200;
-  int field_1204;
-  int field_1208;
-  int field_120C;
-  int field_1210;
-  int field_1214;
-  int field_1218;
-  int field_121C;
-  int field_1220;
-  int field_1224;
-  int field_1228;
-  int field_122C;
-  int field_1230;
-  int field_1234;
-  int field_1238;
-  int field_123C;
-  int field_1240;
-  int field_1244;
-  int field_1248;
-  int field_124C;
-  int field_1250;
-  int field_1254;
-  int field_1258;
-  int field_125C;
-  int field_1260;
-  int field_1264;
-  int field_1268;
-  int field_126C;
-  int field_1270;
-  int field_1274;
-  int field_1278;
-  int field_127C;
-  char field_1280;
-  char field_1281;
-  char field_1282;
-  char field_1283;
-  int field_1284;
-  int field_1288;
-  char field_128C;
-  char field_128D;
-  char field_128E;
-  char field_128F;
-  int field_1290;
-  int field_1294;
-  char field_1298[3];
-  int field_129C;
-  int field_12A0;
-  int field_12A4;
-  int field_12A8;
-  int field_12AC;
-  int field_12B0;
-  int field_12B4;
-  char field_12B8;
-  int field_12BC;
-  CSBZGlobal *pSBZGlobal;
-  CStruct_CCD4 *struct_ccd4;
-  CStruct_5C0 *struct_5c0_0;
-  CStruct_5C0 *struct_5c0_1;
-  CGlobal_A618 *global_D618;
-  CMouseState *pMouseState0;
-  CSB_CameraBase *field_12D8;
-  CSB_Key *pKey;
-  CSB_Path *pPath;
-  CSB_GameInfo *pGameInfo;
-  CSB_Sound *pSound;
-  CSB_CursorCtrl *pCursorCtrl;
-};
-
-/* 795 */
-struct IDirectSoundBuffer8
-{
-  struct IDirectSoundBuffer8Vtbl *lpVtbl;
-};
-
-/* 797 */
-typedef struct _DSEFFECTDESC *LPDSEFFECTDESC;
-
-/* 796 */
-struct IDirectSoundBuffer8Vtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSoundBuffer8 *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSoundBuffer8 *This);
-  ULONG (__stdcall *Release)(IDirectSoundBuffer8 *This);
-  HRESULT (__stdcall *GetCaps)(IDirectSoundBuffer8 *This, LPDSBCAPS pDSBufferCaps);
-  HRESULT (__stdcall *GetCurrentPosition)(IDirectSoundBuffer8 *This, LPDWORD pdwCurrentPlayCursor, LPDWORD pdwCurrentWriteCursor);
-  HRESULT (__stdcall *GetFormat)(IDirectSoundBuffer8 *This, LPWAVEFORMATEX pwfxFormat, DWORD dwSizeAllocated, LPDWORD pdwSizeWritten);
-  HRESULT (__stdcall *GetVolume)(IDirectSoundBuffer8 *This, LPLONG plVolume);
-  HRESULT (__stdcall *GetPan)(IDirectSoundBuffer8 *This, LPLONG plPan);
-  HRESULT (__stdcall *GetFrequency)(IDirectSoundBuffer8 *This, LPDWORD pdwFrequency);
-  HRESULT (__stdcall *GetStatus)(IDirectSoundBuffer8 *This, LPDWORD pdwStatus);
-  HRESULT (__stdcall *Initialize)(IDirectSoundBuffer8 *This, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc);
-  HRESULT (__stdcall *Lock)(IDirectSoundBuffer8 *This, DWORD dwOffset, DWORD dwBytes, LPVOID *ppvAudioPtr1, LPDWORD pdwAudioBytes1, LPVOID *ppvAudioPtr2, LPDWORD pdwAudioBytes2, DWORD dwFlags);
-  HRESULT (__stdcall *Play)(IDirectSoundBuffer8 *This, DWORD dwReserved1, DWORD dwPriority, DWORD dwFlags);
-  HRESULT (__stdcall *SetCurrentPosition)(IDirectSoundBuffer8 *This, DWORD dwNewPosition);
-  HRESULT (__stdcall *SetFormat)(IDirectSoundBuffer8 *This, LPCWAVEFORMATEX pcfxFormat);
-  HRESULT (__stdcall *SetVolume)(IDirectSoundBuffer8 *This, LONG lVolume);
-  HRESULT (__stdcall *SetPan)(IDirectSoundBuffer8 *This, LONG lPan);
-  HRESULT (__stdcall *SetFrequency)(IDirectSoundBuffer8 *This, DWORD dwFrequency);
-  HRESULT (__stdcall *Stop)(IDirectSoundBuffer8 *This);
-  HRESULT (__stdcall *Unlock)(IDirectSoundBuffer8 *This, LPVOID pvAudioPtr1, DWORD dwAudioBytes1, LPVOID pvAudioPtr2, DWORD dwAudioBytes2);
-  HRESULT (__stdcall *Restore)(IDirectSoundBuffer8 *This);
-  HRESULT (__stdcall *SetFX)(IDirectSoundBuffer8 *This, DWORD dwEffectsCount, LPDSEFFECTDESC pDSFXDesc, LPDWORD pdwResultCodes);
-  HRESULT (__stdcall *AcquireResources)(IDirectSoundBuffer8 *This, DWORD dwFlags, DWORD dwEffectsCount, LPDWORD pdwResultCodes);
-  HRESULT (__stdcall *GetObjectInPath)(IDirectSoundBuffer8 *This, const GUID *const rguidObject, DWORD dwIndex, const GUID *const rguidInterface, LPVOID *ppObject);
-};
-
-/* 800 */
-struct IDirectSound3DBuffer
-{
-  struct IDirectSound3DBufferVtbl *lpVtbl;
-};
-
-/* 802 */
-typedef struct _DS3DBUFFER *LPDS3DBUFFER;
-
-/* 804 */
-typedef const DS3DBUFFER *LPCDS3DBUFFER;
-
-/* 801 */
-struct IDirectSound3DBufferVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSound3DBuffer *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSound3DBuffer *This);
-  ULONG (__stdcall *Release)(IDirectSound3DBuffer *This);
-  HRESULT (__stdcall *GetAllParameters)(IDirectSound3DBuffer *This, LPDS3DBUFFER pDs3dBuffer);
-  HRESULT (__stdcall *GetConeAngles)(IDirectSound3DBuffer *This, LPDWORD pdwInsideConeAngle, LPDWORD pdwOutsideConeAngle);
-  HRESULT (__stdcall *GetConeOrientation)(IDirectSound3DBuffer *This, D3DVECTOR *pvOrientation);
-  HRESULT (__stdcall *GetConeOutsideVolume)(IDirectSound3DBuffer *This, LPLONG plConeOutsideVolume);
-  HRESULT (__stdcall *GetMaxDistance)(IDirectSound3DBuffer *This, D3DVALUE *pflMaxDistance);
-  HRESULT (__stdcall *GetMinDistance)(IDirectSound3DBuffer *This, D3DVALUE *pflMinDistance);
-  HRESULT (__stdcall *GetMode)(IDirectSound3DBuffer *This, LPDWORD pdwMode);
-  HRESULT (__stdcall *GetPosition)(IDirectSound3DBuffer *This, D3DVECTOR *pvPosition);
-  HRESULT (__stdcall *GetVelocity)(IDirectSound3DBuffer *This, D3DVECTOR *pvVelocity);
-  HRESULT (__stdcall *SetAllParameters)(IDirectSound3DBuffer *This, LPCDS3DBUFFER pcDs3dBuffer, DWORD dwApply);
-  HRESULT (__stdcall *SetConeAngles)(IDirectSound3DBuffer *This, DWORD dwInsideConeAngle, DWORD dwOutsideConeAngle, DWORD dwApply);
-  HRESULT (__stdcall *SetConeOrientation)(IDirectSound3DBuffer *This, D3DVALUE x, D3DVALUE y, D3DVALUE z, DWORD dwApply);
-  HRESULT (__stdcall *SetConeOutsideVolume)(IDirectSound3DBuffer *This, LONG lConeOutsideVolume, DWORD dwApply);
-  HRESULT (__stdcall *SetMaxDistance)(IDirectSound3DBuffer *This, D3DVALUE flMaxDistance, DWORD dwApply);
-  HRESULT (__stdcall *SetMinDistance)(IDirectSound3DBuffer *This, D3DVALUE flMinDistance, DWORD dwApply);
-  HRESULT (__stdcall *SetMode)(IDirectSound3DBuffer *This, DWORD dwMode, DWORD dwApply);
-  HRESULT (__stdcall *SetPosition)(IDirectSound3DBuffer *This, D3DVALUE x, D3DVALUE y, D3DVALUE z, DWORD dwApply);
-  HRESULT (__stdcall *SetVelocity)(IDirectSound3DBuffer *This, D3DVALUE x, D3DVALUE y, D3DVALUE z, DWORD dwApply);
-};
-
-/* 807 */
-struct IDirectSoundFXGargle
-{
-  struct IDirectSoundFXGargleVtbl *lpVtbl;
-};
-
-/* 809 */
-typedef const DSFXGargle *LPCDSFXGargle;
-
-/* 812 */
-typedef struct _DSFXGargle *LPDSFXGargle;
-
-/* 808 */
-struct IDirectSoundFXGargleVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXGargle *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSoundFXGargle *This);
-  ULONG (__stdcall *Release)(IDirectSoundFXGargle *This);
-  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXGargle *This, LPCDSFXGargle pcDsFxGargle);
-  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXGargle *This, LPDSFXGargle pDsFxGargle);
-};
-
-/* 816 */
-struct IDirectSoundFXChorus
-{
-  struct IDirectSoundFXChorusVtbl *lpVtbl;
-};
-
-/* 818 */
-typedef const DSFXChorus *LPCDSFXChorus;
-
-/* 821 */
-typedef struct _DSFXChorus *LPDSFXChorus;
-
-/* 817 */
-struct IDirectSoundFXChorusVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXChorus *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSoundFXChorus *This);
-  ULONG (__stdcall *Release)(IDirectSoundFXChorus *This);
-  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXChorus *This, LPCDSFXChorus pcDsFxChorus);
-  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXChorus *This, LPDSFXChorus pDsFxChorus);
-};
-
-/* 823 */
-struct IDirectSoundFXCompressor
-{
-  struct IDirectSoundFXCompressorVtbl *lpVtbl;
-};
-
-/* 825 */
-typedef const DSFXCompressor *LPCDSFXCompressor;
-
-/* 828 */
-typedef struct _DSFXCompressor *LPDSFXCompressor;
-
-/* 824 */
-struct IDirectSoundFXCompressorVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXCompressor *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSoundFXCompressor *This);
-  ULONG (__stdcall *Release)(IDirectSoundFXCompressor *This);
-  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXCompressor *This, LPCDSFXCompressor pcDsFxCompressor);
-  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXCompressor *This, LPDSFXCompressor pDsFxCompressor);
-};
-
-/* 830 */
-struct IDirectSoundFXDistortion
-{
-  struct IDirectSoundFXDistortionVtbl *lpVtbl;
-};
-
-/* 832 */
-typedef const DSFXDistortion *LPCDSFXDistortion;
-
-/* 835 */
-typedef struct _DSFXDistortion *LPDSFXDistortion;
-
-/* 831 */
-struct IDirectSoundFXDistortionVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXDistortion *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSoundFXDistortion *This);
-  ULONG (__stdcall *Release)(IDirectSoundFXDistortion *This);
-  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXDistortion *This, LPCDSFXDistortion pcDsFxDistortion);
-  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXDistortion *This, LPDSFXDistortion pDsFxDistortion);
-};
-
-/* 837 */
-struct IDirectSoundFXEcho
-{
-  struct IDirectSoundFXEchoVtbl *lpVtbl;
-};
-
-/* 839 */
-typedef const DSFXEcho *LPCDSFXEcho;
-
-/* 842 */
-typedef struct _DSFXEcho *LPDSFXEcho;
-
-/* 838 */
-struct IDirectSoundFXEchoVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXEcho *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSoundFXEcho *This);
-  ULONG (__stdcall *Release)(IDirectSoundFXEcho *This);
-  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXEcho *This, LPCDSFXEcho pcDsFxEcho);
-  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXEcho *This, LPDSFXEcho pDsFxEcho);
-};
-
-/* 844 */
-struct IDirectSoundFXFlanger
-{
-  struct IDirectSoundFXFlangerVtbl *lpVtbl;
-};
-
-/* 846 */
-typedef const DSFXFlanger *LPCDSFXFlanger;
-
-/* 849 */
-typedef struct _DSFXFlanger *LPDSFXFlanger;
-
-/* 845 */
-struct IDirectSoundFXFlangerVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXFlanger *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSoundFXFlanger *This);
-  ULONG (__stdcall *Release)(IDirectSoundFXFlanger *This);
-  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXFlanger *This, LPCDSFXFlanger pcDsFxFlanger);
-  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXFlanger *This, LPDSFXFlanger pDsFxFlanger);
-};
-
-/* 851 */
-struct IDirectSoundFXParamEq
-{
-  struct IDirectSoundFXParamEqVtbl *lpVtbl;
-};
-
-/* 853 */
-typedef const DSFXParamEq *LPCDSFXParamEq;
-
-/* 856 */
-typedef struct _DSFXParamEq *LPDSFXParamEq;
-
-/* 852 */
-struct IDirectSoundFXParamEqVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXParamEq *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSoundFXParamEq *This);
-  ULONG (__stdcall *Release)(IDirectSoundFXParamEq *This);
-  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXParamEq *This, LPCDSFXParamEq pcDsFxParamEq);
-  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXParamEq *This, LPDSFXParamEq pDsFxParamEq);
-};
-
-/* 858 */
-struct IDirectSoundFXWavesReverb
-{
-  struct IDirectSoundFXWavesReverbVtbl *lpVtbl;
-};
-
-/* 860 */
-typedef const DSFXWavesReverb *LPCDSFXWavesReverb;
-
-/* 863 */
-typedef struct _DSFXWavesReverb *LPDSFXWavesReverb;
-
-/* 859 */
-struct IDirectSoundFXWavesReverbVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXWavesReverb *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSoundFXWavesReverb *This);
-  ULONG (__stdcall *Release)(IDirectSoundFXWavesReverb *This);
-  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXWavesReverb *This, LPCDSFXWavesReverb pcDsFxWavesReverb);
-  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXWavesReverb *This, LPDSFXWavesReverb pDsFxWavesReverb);
-};
-
-/* 865 */
-struct IDirectSoundFXI3DL2Reverb
-{
-  struct IDirectSoundFXI3DL2ReverbVtbl *lpVtbl;
-};
-
-/* 867 */
-typedef const DSFXI3DL2Reverb *LPCDSFXI3DL2Reverb;
-
-/* 870 */
-typedef struct _DSFXI3DL2Reverb *LPDSFXI3DL2Reverb;
-
-/* 866 */
-struct IDirectSoundFXI3DL2ReverbVtbl
-{
-  HRESULT (__stdcall *QueryInterface)(IDirectSoundFXI3DL2Reverb *This, const IID *const, LPVOID *);
-  ULONG (__stdcall *AddRef)(IDirectSoundFXI3DL2Reverb *This);
-  ULONG (__stdcall *Release)(IDirectSoundFXI3DL2Reverb *This);
-  HRESULT (__stdcall *SetAllParameters)(IDirectSoundFXI3DL2Reverb *This, LPCDSFXI3DL2Reverb pcDsFxI3DL2Reverb);
-  HRESULT (__stdcall *GetAllParameters)(IDirectSoundFXI3DL2Reverb *This, LPDSFXI3DL2Reverb pDsFxI3DL2Reverb);
-  HRESULT (__stdcall *SetPreset)(IDirectSoundFXI3DL2Reverb *This, DWORD dwPreset);
-  HRESULT (__stdcall *GetPreset)(IDirectSoundFXI3DL2Reverb *This, LPDWORD pdwPreset);
-  HRESULT (__stdcall *SetQuality)(IDirectSoundFXI3DL2Reverb *This, LONG lQuality);
-  HRESULT (__stdcall *GetQuality)(IDirectSoundFXI3DL2Reverb *This, LONG *plQuality);
 };
 
 /* 871 */
@@ -17218,30 +18223,6 @@ struct _D3DLOCKED_BOX
 /* 876 */
 typedef struct ID3DXBuffer *LPD3DXBUFFER;
 
-/* 877 */
-typedef struct ID3DXInclude *LPD3DXINCLUDE;
-
-/* 878 */
-enum D3DXINCLUDE_TYPE
-{
-  D3DXINC_LOCAL = 0x0,
-  D3DXINC_SYSTEM = 0x1,
-  D3DXINC_FORCE_DWORD = 0x7FFFFFFF,
-};
-
-/* 879 */
-struct ID3DXInclude
-{
-  struct ID3DXIncludeVtbl *lpVtbl;
-};
-
-/* 880 */
-struct ID3DXIncludeVtbl
-{
-  HRESULT (__stdcall *Open)(ID3DXInclude *This, D3DXINCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes);
-  HRESULT (__stdcall *Close)(ID3DXInclude *This, LPCVOID pData);
-};
-
 /* 881 */
 struct ID3DXBuffer
 {
@@ -17258,164 +18239,28 @@ struct ID3DXBufferVtbl
   DWORD (__stdcall *GetBufferSize)(ID3DXBuffer *This);
 };
 
-/* 883 */
-struct __fixed SBScriptScene
+/* 877 */
+typedef struct ID3DXInclude *LPD3DXINCLUDE;
+
+/* 879 */
+struct ID3DXInclude
 {
-  void *lpVtbl;
-  CIS_ScrPlayer *pCIS_ScrPlayer_4;
-  CString strScriptName;
-  _DWORD pSBZGlobal;
-  CStruct_CCD4 *Sturct_CCD4;
-  CStruct_5C0 *Struct_5C0_1;
-  CStruct_5C0 *Struct_5C0_2;
-  CGlobal_A618 *Sturct_D618;
-  CMouseState *MouseState0;
-  CSB_CameraBase *SBCameraBase;
-  CSB_Key *Key;
-  CSB_Path *Path;
-  CSB_GameInfo *GameInfo;
+  struct ID3DXIncludeVtbl *lpVtbl;
 };
 
-/* 889 */
-struct __fixed CScrSubObject_8
+/* 878 */
+enum D3DXINCLUDE_TYPE
 {
-  char nPackType_0;
-  CString str_4;
+  D3DXINC_LOCAL = 0x0,
+  D3DXINC_SYSTEM = 0x1,
+  D3DXINC_FORCE_DWORD = 0x7FFFFFFF,
 };
 
-/* 894 */
-struct __fixed CScrSubObject_3
+/* 880 */
+struct ID3DXIncludeVtbl
 {
-  CString str_0;
-  CString str_4;
-};
-
-/* 888 */
-struct __fixed CScrSubObject_54
-{
-  CPackFormatSecret *pPackFmtSec_0;
-  CScrSubObject_8 ScrSubObj_8_1;
-  CScrSubObject_3 ScrSubObj_3_sb00_00_pp_C;
-  CScrSubObject_3 ScrSubObj_3_sb00_00_pp_14;
-  CScrSubObject_3 ScrSubObj_3_sb03_00_pp_1C;
-  CScrSubObject_3 ScrSubObj_sb03_01_pp_24;
-  CScrSubObject_3 ScrSubObj_3_sb07_00_pp_2C;
-  CScrSubObject_3 ScrSubObj_3_34;
-  CScrSubObject_3 ScrSubObj_3_sb01_00_pp_3C;
-  CScrSubObject_3 ScrSubObj_3_sb01_00_pp_44;
-  CScrSubObject_3 ScrSubObj_3_sb02_99_pp_4C;
-};
-
-/* 946 */
-struct __fixed CISE_SDTIndex
-{
-  int nPageID_0;
-  int nBlockID_4;
-  char bPassThruBlock_8;
-  char bNextBlock_9;
-  char bDoneBlock_A;
-  char field_B;
-};
-
-/* 890 */
-struct __fixed CScrSubObject_7
-{
-  int field_0;
-  char field_4;
-  char field_5;
-  char field_6;
-  char field_7;
-};
-
-/* 892 */
-struct __fixed CScrSubObject_6B
-{
-  float fVolume_0;
-  char bMute_4;
-};
-
-/* 893 */
-struct __fixed CScrSubObject_6C
-{
-  CScrSubObject_6B ScrSubObj_6B_0;
-  CScrSubObject_6B ScrSubObj_6B_8;
-  CScrSubObject_6B ScrSubObj_6B_10;
-  CScrSubObject_6B ScrSubObj_6B_18;
-};
-
-/* 891 */
-struct __fixed CScrSubObject_6A
-{
-  char byte_0;
-  float flt_4;
-  CScrSubObject_6C ScrSubObj_6C_8;
-};
-
-/* 895 */
-struct CISE_ScriptPlayerMembers
-{
-  _DWORD dword4;
-  _DWORD dword8;
-  CScrSubObject_54 ScrSubObj_54_C;
-  CISE_SDTIndex sdtIndexes_60;
-  CSDT_Struct *pSDTStruct_6C;
-  CScrSubObject_7 ScrSubObj_7_70;
-  CScrSubObject_6A CScrSubObj_6A_78;
-  void *ptr_A0;
-  CISE_ScriptPlayer_SubMode_BackLog *pSubModeBackLog_A4;
-  CIS_InputCtrl *pCIS_InputCtrl_A8;
-  CScriptPlayer_MerahCtrl *pMerahCtrl_A8;
-  void *ptr_AC;
-  void *pTextBox_B0;
-  void *ptr_B4;
-  void *ptr_B8;
-  void *ptr_BC;
-  void *ptr_C0;
-  void *ptr_C4;
-  void *pMovieCtrl_C8;
-  void *pCIS_DefSpCtrl_CC;
-  CSP_Adv_Struct_2480 *AdvCharactr_Struct_2480;
-  void *pCursorCtrl_D4;
-  void *ptr_D8;
-  void *ptr_E0;
-  void *ptr_E4;
-  void *ptr_E8;
-  void *pCISE_ScriptPlayer_SceneShiftCtrl_EC;
-  void *ptr_F0;
-  void *pFunctionCall_F4;
-};
-
-/* 896 */
-struct __fixed CScrSubObject_3A
-{
-  char field_0;
-  CScrSubObject_3B ScrSubObj_3B_4;
-  char field_10;
-  CScrSubObject_3B ScrSubObjCDRGB_3B_14;
-};
-
-/* 884 */
-struct __fixed CIS_ScrPlayer
-{
-  ICIS_ScrPlayerVtbl *lpVtbl;
-  CISE_ScriptPlayerMembers base_;
-  CScrSubObject_3A ScrSubObj_3A_F8;
-};
-
-/* 885 */
-struct ICIS_ScrPlayerVtbl
-{
-  _DWORD *(__thiscall *CIS_ScrPlayer__sub_62EDF0)(_DWORD *this, char);
-  char *(__thiscall *CIS_ScrPlayer__sub_62DE40)(_DWORD *this);
-  void (__thiscall *CISE_ScriptPlayer__sub_444A30)(int this);
-  CSBZGlobal *(__thiscall *CIS_ScrPlayer__sub_62EA50)(int this);
-  void (__thiscall *CISE_ScriptPlayer__sub_446290)(int *this);
-  void (*field_14)();
-  void (*field_18)();
-  void (*field_1C)();
-  void (*field_20)();
-  void (*field_24)();
-  char (*CIS_ScrPlayer__unknown_libname_176)();
+  HRESULT (__stdcall *Open)(ID3DXInclude *This, D3DXINCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes);
+  HRESULT (__stdcall *Close)(ID3DXInclude *This, LPCVOID pData);
 };
 
 /* 886 */
@@ -17433,26 +18278,12 @@ struct ICISE_ScriptPlayerVtbl
   void (__thiscall *CISE_ScriptPlayer__sub_444A30)(CISE_ScriptPlayer *this);
   void (*field_C)();
   void (__thiscall *CISE_ScriptPlayer__sub_446290)(CISE_ScriptPlayer *this);
-  void (__noreturn *field_0)();
-  void (__noreturn *field_1)();
-  void (__noreturn *field_2)();
-  void (__noreturn *field_3)();
-  void (__noreturn *field_4)();
-  void (__noreturn *field_5)();
-};
-
-/* 899 */
-struct __fixed CISE_ScriptPlayer_SubMode_Common_Members
-{
-  CIS_ScrPlayer *pCIS_ScrPlayer;
-};
-
-/* 898 */
-struct __fixed CISE_ScriptPlayer_SubMode_BackLog
-{
-  ICISE_ScriptPlayer_SubMode_BackLogVtbl *lpVtbl;
-  CISE_ScriptPlayer_SubMode_Common_Members base_;
-  CStructImage2D_80 *pImage_8;
+  void (__noreturn *field_14)();
+  void (__noreturn *field_18)();
+  void (__noreturn *field_1C)();
+  void (__noreturn *field_20)();
+  void (__noreturn *field_24)();
+  void (__noreturn *field_28)();
 };
 
 /* 900 */
@@ -17466,29 +18297,11 @@ struct __fixed CISE_ScriptPlayer_SubMode_Common
 struct ICISE_ScriptPlayer_SubMode_CommonVtbl
 {
   CISE_ScriptPlayer_SubMode_Common *(__thiscall *CISE_ScriptPlayer_SubMode_Common__Destroy_465C40)(CISE_ScriptPlayer_SubMode_Common *this, char bFree);
-  void (__noreturn *__purecall)();
-  void (__noreturn *field_0)();
-  void (__noreturn *field_1)();
-  void (__noreturn *field_2)();
-  void (__noreturn *field_3)();
-};
-
-/* 902 */
-struct ICISE_ScriptPlayer_SubMode_BackLogVtbl
-{
-  CISE_ScriptPlayer_SubMode_BackLog *(__thiscall *CISE_ScriptPlayer_SubMode_BackLog__Destroy_465D20)(CISE_ScriptPlayer_SubMode_BackLog *this, char bFree);
-  void (*field_4)();
-  char (__thiscall *CISE_ScriptPlayer_SubMode_BackLog__sub_465770)(int this, int);
-  char (__thiscall *CISE_ScriptPlayer_SubMode_BackLog__sub_465940)(char **this);
-  void (__thiscall *CISE_ScriptPlayer_SubMode_BackLog__sub_465B20)(int this);
-  void (*CISE_ScriptPlayer_SubMode_BackLog__unknown_libname_32)();
-};
-
-/* 908 */
-struct __fixed CTextLogCtrlVecSubItem_8
-{
-  int len_0;
-  char *pszName_4;
+  void (__noreturn *tod_4)();
+  void (__noreturn *tod_8)();
+  void (__noreturn *tod_C)();
+  void (__noreturn *tod_10)();
+  void (__noreturn *tod_14)();
 };
 
 /* 907 */
@@ -17549,6 +18362,17 @@ struct __fixed CISE_ScriptPlayer_TextLogCtrl_Common
   CISE_ScriptPlayer_TextLogCtrl_CommonMembers m_;
 };
 
+/* 912 */
+struct ICISE_ScriptPlayer_TextLogCtrl_CommonVtbl
+{
+  CISE_ScriptPlayer_TextLogCtrl_Common *(__thiscall *CISE_ScriptPlayer_TextLogCtrl_Common__Destroy_46FD40)(CISE_ScriptPlayer_TextLogCtrl_Common *this, char bFree);
+  void (__noreturn *__purecall)();
+  void (__noreturn *field_0)();
+  void (__noreturn *field_1)();
+  void (__noreturn *field_2)();
+  void (__noreturn *field_3)();
+};
+
 /* 914 */
 struct __fixed CTextLogCtrlAllWinSubObj_10
 {
@@ -17577,17 +18401,6 @@ struct __fixed CISE_ScriptPlayer_TextLogCtrl_AllWindow
   CISE_ScriptPlayer_TextLogCtrl_AllWindow_Members m_;
 };
 
-/* 912 */
-struct ICISE_ScriptPlayer_TextLogCtrl_CommonVtbl
-{
-  CISE_ScriptPlayer_TextLogCtrl_Common *(__thiscall *CISE_ScriptPlayer_TextLogCtrl_Common__Destroy_46FD40)(CISE_ScriptPlayer_TextLogCtrl_Common *this, char bFree);
-  void (__noreturn *__purecall)();
-  void (__noreturn *field_0)();
-  void (__noreturn *field_1)();
-  void (__noreturn *field_2)();
-  void (__noreturn *field_3)();
-};
-
 /* 913 */
 struct ICISE_ScriptPlayer_TextLogCtrl_AllWindowVtbl
 {
@@ -17597,69 +18410,6 @@ struct ICISE_ScriptPlayer_TextLogCtrl_AllWindowVtbl
   CString *(__thiscall *CISE_ScriptPlayer_TextLogCtrl_AllWindow__sub_46FED0)(CISE_ScriptPlayer_TextLogCtrl_AllWindow *this);
   bool (__thiscall *CISE_ScriptPlayer_TextLogCtrl_AllWindow__sub_46FEB0)(CISE_ScriptPlayer_TextLogCtrl_AllWindow *this);
   CISE_ScriptPlayer_TextLogCtrl_AllWindow *(__thiscall *CISE_ScriptPlayer_TextLogCtrl_AllWindow__sub_46B080)(CISE_ScriptPlayer_TextLogCtrl_AllWindow *this);
-};
-
-/* 918 */
-struct __fixed SBLoadSceneSubObj_14
-{
-  int spriteNum_0;
-  int spriteNum_1;
-  int spriteNum_2;
-  int spriteNum_3;
-  int spriteNum_4;
-};
-
-/* 917 */
-struct __fixed SBLoadSceneSubObj_10
-{
-  WORD field_0;
-  WORD field_2;
-  __int16 field_4;
-  WORD field_6;
-  WORD field_8;
-  WORD field_A;
-  WORD field_C;
-  WORD field_E;
-};
-
-/* 916 */
-struct __fixed SBLoadSceneSubObj_38
-{
-  int field_0;
-  int field_4;
-  int field_8;
-  SBLoadSceneSubObj_14 obj_14_C;
-  char obj_5_20[5];
-  SBLoadSceneSubObj_10 obj_10_26;
-  char field_36;
-};
-
-/* 915 */
-struct __fixed SBLoadScene
-{
-  int lpVtbl;
-  CSB_SpriteCtrl sprite_ctrl_4;
-  int nActionNum_38;
-  SBLoadSceneSubObj_38 ArrSaveFiles_E_3C[99];
-  int field_15E4;
-  int nSaveSlot_15E8;
-  KK_Font kk_fonts_15EC[3];
-  CSB_SliderCtrl slider_ctrl_1610;
-  int field_1630;
-  int field_1634;
-  CSBZGlobal *pSBZGlobal_1638;
-  CStruct_CCD4 *struct_ccd4_163C;
-  CStruct_5C0 *struct_5c0_1640;
-  CStruct_5C0 *struct_5c0_1644;
-  CGlobal_A618 *struct_d618_1648;
-  CMouseState *pMouseState_0_164C;
-  CSB_CameraBase *pCameraBase_1650;
-  CSB_Key *pKey_1654;
-  CSB_Path *pPath_1658;
-  CSB_GameInfo *pGameInfo_165C;
-  CSB_Sound *pSound_1660;
-  CSB_CursorCtrl *pCursorCtrl_1664;
-  char nActionState_1668;
 };
 
 /* 919 */
@@ -17684,116 +18434,11 @@ struct __fixed CVectorItem_T8
   char field_7;
 };
 
-/* 921 */
-struct __fixed CVectorItem_T4
-{
-  char field_0;
-  char field_1;
-  char field_2;
-  char field_3;
-};
-
-/* 922 */
-struct __fixed CVectorItem_T18
-{
-  char field_0;
-  char field_1;
-  char field_2;
-  char field_3;
-  char field_4;
-  char field_5;
-  char field_6;
-  char field_7;
-  char field_8;
-  char field_9;
-  char field_A;
-  char field_B;
-  char field_C;
-  char field_D;
-  char field_E;
-  char field_F;
-  char field_10;
-  char field_11;
-  char field_12;
-  char field_13;
-  char field_14;
-  char field_15;
-  char field_16;
-  char field_17;
-};
-
-/* 925 */
-struct __fixed CScriptPlayer_MerahCtrlSubObj_14
-{
-  int field_0;
-  int field_4;
-  int field_8;
-  int field_C;
-  CStructImage2D_80 *pImage_10;
-};
-
-/* 924 */
-struct __fixed CScriptPlayer_MerahCtrlSubObj_18
-{
-  CScriptPlayer_MerahCtrlSubObj_14 subObj_10_0;
-  int field_14;
-};
-
-/* 923 */
-struct __fixed CScriptPlayer_MerahCtrl
-{
-  CScriptPlayer_MerahCtrlSubObj_18 arrSubObj_18_0[2];
-  CScriptPlayer_MerahCtrlSubObj_10 *pSubObj_10_30;
-};
-
-/* 926 */
-struct __fixed CScriptPlayer_MerahCtrlSubObj_10
-{
-  CStructImage2D_80 *pImage_0;
-  int field_4;
-  int field_8;
-  int field_C;
-};
-
-/* 927 */
-struct __fixed CSDT_Struct
-{
-  int nFormat_0;
-  CTextLogCtrlVecSubItem_8 txtItem_4;
-  int nCount_C;
-  CSDT_SubMember_18 *subMember18_10;
-};
-
-/* 928 */
-struct __fixed CSDT_SubMember_18
-{
-  int nPageID_0;
-  int nCount_4;
-  CSDT_SubMember_8 *subMember8_8;
-  int nCount_C;
-  CSDT_SubMember_C *subMemberC_10;
-  int field_14;
-};
-
-/* 929 */
-struct __fixed CSDT_SubMember_C
-{
-  CTextLogCtrlVecSubItem_8 vecSubItem_0;
-  int field_8;
-};
-
 /* 930 */
 struct __fixed CSDT_SubVector_C
 {
   int Count;
   CSDT_SubMember_C data[1];
-};
-
-/* 931 */
-struct __fixed CSDT_SubMember_8
-{
-  int nType_0;
-  void *data_4;
 };
 
 /* 932 */
@@ -17803,6 +18448,7 @@ struct __fixed CSDT_Case_06
   CTextLogCtrlVecSubItem_8 txtMusic_4;
   char byte_C;
   char byte_D;
+  char _gapE[2];
 };
 
 /* 933 */
@@ -17810,6 +18456,7 @@ struct __fixed CSDT_Case_17
 {
   int field_0;
   BYTE byte_4;
+  char _gap5[3];
 };
 
 /* 934 */
@@ -17835,6 +18482,7 @@ struct __fixed CSDT_Case_04
 struct __fixed CSDT_Case_02
 {
   char blend_mode_0;
+  char _gap1[3];
   int color_4;
   int duration_8;
 };
@@ -17863,16 +18511,10 @@ struct __fixed CSDT_Case_01_Struct_14
   char byte_0;
   char byte_1;
   char byte_2;
+  char _gap3;
   int field_4;
   int field_8;
   CTextLogCtrlVecSubItem_8 vecSubItem_C;
-};
-
-/* 939 */
-struct __fixed CSDT_Case_01_VectorContainer_14
-{
-  int nCount;
-  CSDT_Case_01_Struct_14 data[1];
 };
 
 /* 941 */
@@ -17881,6 +18523,13 @@ struct __fixed CSDT_Case_01_Struct_C
   int type_0;
   int field_4;
   void *ptr_8;
+};
+
+/* 939 */
+struct __fixed CSDT_Case_01_VectorContainer_14
+{
+  int nCount;
+  CSDT_Case_01_Struct_14 data[1];
 };
 
 /* 942 */
@@ -17892,6 +18541,7 @@ struct __fixed CSDT_Case_01_Struct_10A
   char byte_C;
   char byte_D;
   char byte_E;
+  char _gapF;
 };
 
 /* 943 */
@@ -17899,6 +18549,7 @@ struct __fixed CSDT_Case_01_Struct_10B
 {
   int field_0;
   BYTE byte_4;
+  char _gap5[3];
   int field_8;
   int field_C;
 };
@@ -17918,6 +18569,7 @@ struct __fixed CSDT_Case_01_Struct_10D
   int field_4;
   int field_8;
   char byte_C;
+  char _gapD[3];
 };
 
 /* 947 */
@@ -17934,6 +18586,7 @@ struct __fixed CSDT_Case_18_Struct_10
   int field_0;
   char byte_4;
   char byte_5;
+  char _gap6[2];
   int nCount_8;
   CSDT_SubMember_8 *ptr_C;
 };
@@ -17946,247 +18599,11 @@ struct __fixed CSDT_Case_15
   int field_8;
 };
 
-/* 954 */
-struct __fixed CSP_InputCtrl_Struct_14A
-{
-  char bOnKey0;
-  char bOnKey2;
-  char bOnKey1;
-  char bOnKey1E;
-  char bOnKey1F;
-  char field_5;
-  char bOnKey20_ZPos_6;
-  char bOnKey21_ZNeg_7;
-  int field_8;
-  int field_C;
-  char field_10;
-  char field_11;
-  char field_12;
-  char bOnKey14;
-};
-
-/* 957 */
-struct __fixed CSP_InputCtrl_Struct_14B
-{
-  D2D_POINT_2F cursorRawX;
-  int lZ;
-  D2D_POINT_2F MouseCursor;
-};
-
-/* 953 */
-struct __fixed CSP_InputCtrl_Field8
-{
-  CSP_InputCtrl_Struct_14A obj_14A_0;
-  char field_14;
-  char bOnKey23;
-  CSP_InputCtrl_Struct_14B obj_14B_18;
-};
-
-/* 955 */
-struct __fixed __declspec(align(4)) CISE_ScriptPlayer_InputCtrlMembers
-{
-  CIS_ScrPlayer *pScrPlayer_4;
-  CSP_InputCtrl_Field8 obj_8;
-  char field_34;
-};
-
-/* 951 */
-struct __fixed CIS_InputCtrl
-{
-  ICIS_InputCtrlVtbl *lpVtbl;
-  CISE_ScriptPlayer_InputCtrlMembers base_;
-};
-
 /* 952 */
 struct __fixed CISE_ScriptPlayer_InputCtrl
 {
   void *lpVtbl;
   CISE_ScriptPlayer_InputCtrlMembers pScrPlayer_4;
-};
-
-/* 956 */
-struct ICIS_InputCtrlVtbl
-{
-  _DWORD *(__thiscall *CIS_InputCtrl__sub_62D980)(CIS_InputCtrl *this);
-};
-
-/* 959 */
-struct __fixed CSP_Adv_Struct_124
-{
-  char field_0;
-  char name_1[260];
-  char field_108;
-  char field_109;
-  char field_10A;
-  char field_10B;
-  char field_10C;
-  char field_10D;
-  char field_10E;
-  char field_10F;
-  char field_110;
-  char field_111;
-  char field_112;
-  char field_113;
-  char field_114;
-  char field_115;
-  char field_116;
-  char field_117;
-  char field_118;
-  char field_119;
-  char field_11A;
-  char field_11B;
-  float field_11C;
-  char field_120;
-};
-
-/* 958 */
-struct __fixed CSP_Adv_Struct_2480
-{
-  CSP_Adv_Struct_124 data_0[32];
-};
-
-/* 961 */
-struct __fixed CHSubObject_4C
-{
-  int field_0;
-  int field_4;
-  int field_8;
-  int field_C;
-  int field_10[5];
-  int field_24;
-  char field_28;
-  _BYTE gap29[3];
-  int field_2C;
-  int field_30;
-  int field_34;
-  char field_38;
-  char field_39[3];
-  char field_3C;
-  int field_40;
-  int field_44;
-  CString str_48;
-};
-
-/* 960 */
-struct __fixed CHSubObject_138
-{
-  SBHScene *pSBHScene_0;
-  int obj_10_4[4];
-  int field_14;
-  void *ptr_18;
-  int field_1C;
-  int field_20;
-  int field_24;
-  int pEcstasyBarCtrl_28;
-  int field_2C;
-  int field_30;
-  int ptr_obj_8c_34;
-  int field_38;
-  int field_3C;
-  int pLiquidGaugeTank_40;
-  int field_44;
-  int field_48;
-  int field_4C;
-  int field_50;
-  CHSubObject_4C obj_4C_54;
-  int obj_18_A0[6];
-  int field_B8;
-  int field_BC;
-  int obj_2C_C0[11];
-  int obj_1C_EC[7];
-  int field_108;
-  int field_10C;
-  int obj_10_110[4];
-  char field_121;
-  char field_122;
-  int field_124;
-  int field_128;
-  int field_12C;
-  int ptr_obj_18_130;
-  int field_134;
-};
-
-/* 964 */
-struct CYS_SelectSub_14
-{
-  int field_0;
-  int field_4;
-  int field_8;
-  int field_C;
-  int field_18;
-};
-
-/* 963 */
-struct __fixed CYS_Select
-{
-  void *lpVtbl;
-  float flt_4;
-  CYS_SelectSub_14 subobj_8;
-  int field_1C;
-  int field_20;
-};
-
-/* 966 */
-struct __fixed CVector_T4C
-{
-  int field_0;
-  void *_Myfirst;
-  void *_Mylast;
-  void *_Myend;
-};
-
-/* 965 */
-struct __fixed CYS_Slider
-{
-  void *lpVtbl;
-  float flt_4;
-  int field_8;
-  CVector_T4C vec_4C_C;
-  int field_1C;
-  int field_20;
-  int field_24;
-  int field_28;
-  int field_2C;
-};
-
-/* 962 */
-struct __fixed SBEditBodyScene
-{
-  void *lpVtbl;
-  CSB_CharFemale *pSBCharFemale_4;
-  int field_8;
-  int obj_530_C[332];
-  CStructImage2D_80 *pImage_53C;
-  CYS_Select cys_select_540;
-  int field_564;
-  int field_568;
-  int field_56C;
-  int field_570;
-  char field_574;
-  int nGirldIndex_578;
-  char field_57C;
-  int vec_8_6_580[6][2];
-  int field_5B0;
-  int obj_14_5B4[5];
-  int obj_14_5C8[5];
-  char field_5DC;
-  CYS_Slider cys_slider_5E0;
-  CCameraCalc camera_calc_610;
-  CCameraCalc camera_calc_678;
-  CSB_CameraInfo csb_camerainfo_6E0;
-  char setting_field_34;
-  CSBZGlobal *pSBZGlobal;
-  CStruct_CCD4 *Struct_ccd4;
-  CStruct_5C0 *Struct_5C0_734;
-  CStruct_5C0 *Struct_5C0_738;
-  CGlobal_A618 *Global_A618;
-  CMouseState *MouseState_0;
-  CSB_CameraBase *pCameraBase;
-  CSB_Key *pKey;
-  CSB_Path *pPath;
-  CSB_GameInfo *pGameInfo;
-  CSB_Sound *pSound;
-  CSB_CursorCtrl *pCursorCtrl;
 };
 
 /* 967 */
@@ -18201,17 +18618,6 @@ struct __fixed CSwLineOut
   CString strs_18[4];
   int field_28;
   int field_2C;
-};
-
-/* 968 */
-struct __fixed CMuneStruct_9B50
-{
-  float formatVersion_0;
-  WORD count_4;
-  CMuneStruct_26C muneObj26C_8[64];
-  int field_9B08;
-  int field_9B24;
-  int field_9B48;
 };
 
 /* 987 */
@@ -18235,109 +18641,12 @@ struct __fixed CMuneStruct_780C
   CMuneStruct_3C06 field_3C06;
 };
 
-/* 972 */
-struct __fixed CTCTestTTY
-{
-  void *lpVtbl;
-  CSceneObjectTemp *pScnObj_4;
-  CMuneCtrl *pMuneCtrl_8;
-  int field_C;
-  D3DMATRIX mat4x4_10;
-  int field_50[9];
-  int field_74[4];
-  int field_84[5];
-  int field_98;
-  CSBZGlobal *pSBZGlobal;
-  CStruct_CCD4 *StructCCD4;
-  CStruct_5C0 *Stturct5C0_A4;
-  CStruct_5C0 *Struct5C0_A8;
-  CGlobal_A618 *GlobalA618;
-  CMouseState *pMouseState;
-  CSB_CameraBase *pCameraBase;
-  CSB_Path *pPath;
-};
-
-/* 976 */
-struct __fixed CSpringCtrl
-{
-  ICSpringCtrlVtbl *lpVtbl;
-  int field_4;
-  int field_8;
-  int field_C;
-  int field_10;
-  int field_14;
-  int field_18;
-  WORD field_1C;
-  WORD field_1E;
-  __int16 nCount_20;
-  CSpringStruct_3C *pSpringStruct3C_24;
-  __int16 nCount_28;
-  CSpringStruct_14 *pSprintStruct14_2C;
-  int field_30;
-  int field_34;
-  int field_38;
-  int field_3C;
-  int field_40;
-  int field_44;
-};
-
-/* 982 */
-struct CHistoryBaseMembers
-{
-  int nCount_4;
-  D3DXVECTOR3 d3dvectors_x5[5];
-  D3DXVECTOR3 *pd3dvector3_x5[5];
-};
-
-/* 983 */
-struct __fixed CTimeHistoryData
-{
-  void *lpVtbl;
-  int field_4;
-  int field_8;
-  int field_C;
-  D3DXVECTOR3 d3dvector3_10;
-};
-
-/* 984 */
-struct CTimeHistoryBaseMembers
-{
-  int nCount_58;
-  CTimeHistoryData timeHistoryData_x5[5];
-  CTimeHistoryData *ptrTimeHistoryDatas_x5[5];
-};
-
-/* 977 */
-struct __fixed CBoneSwayHistory
-{
-  ICBoneSwayHistoryVtbl *lpVtbl;
-  CHistoryBaseMembers historybase_;
-  CTimeHistoryBaseMembers timehistorybase_58;
-};
-
 /* 978 */
 struct __fixed CTimeHistoryBase
 {
   ICTimeHistoryBaseVtbl *lpVtbl;
   CHistoryBaseMembers base_;
   CTimeHistoryBaseMembers m_;
-};
-
-/* 979 */
-struct __fixed CHistoryBase
-{
-  ICHistoryBaseVtbl *lpVtbl;
-  CHistoryBaseMembers m_;
-};
-
-/* 981 */
-struct ICHistoryBaseVtbl
-{
-  CHistoryBase *(__thiscall *CHistoryBase__Destroy_646F20)(CHistoryBase *this, char bFree);
-  char (__thiscall *CHistoryBase__sub_646FF0)(CHistoryBase *this, int a2);
-  int (__thiscall *CHistoryBase__sub_646E70)(CHistoryBase *this, int a2, int a3);
-  int (__thiscall *CHistoryBase__sub_646EA0)(CHistoryBase *this, int a2, int a3);
-  void (__noreturn *__purecall)();
 };
 
 /* 985 */
@@ -18349,88 +18658,6 @@ struct ICTimeHistoryBaseVtbl
   int (__thiscall *CHistoryBase__sub_646EA0)(CHistoryBase *this, int a2, int a3);
   void (__noreturn *__purecall_10)();
   void (__noreturn *__purecall_14)();
-};
-
-/* 986 */
-struct ICBoneSwayHistoryVtbl
-{
-  _DWORD *(__thiscall *CBoneSwayHistory__Destroy_646710)(CBoneSwayHistory *this, char a2);
-  char (__thiscall *CHistoryBase__sub_646FF0)(CHistoryBase *this, int a2);
-  int (__thiscall *CHistoryBase__sub_646E70)(CHistoryBase *this, int a2, int a3);
-  int (__thiscall *CHistoryBase__sub_646EA0)(CHistoryBase *this, int a2, int a3);
-  _DWORD *(__stdcall *CVectorHistory__sub_6466E0)(_DWORD *, _DWORD *);
-  float *(__stdcall *CVectorHistory__sub_654E80)(float *, float *, float *, float);
-};
-
-/* 990 */
-struct ICSpringCtrlVtbl
-{
-  _DWORD *(__thiscall *CSpringCtrl__Destroy_646670)(CSpringCtrl *this, char a2);
-  int (__stdcall *CSpringCtrl__sub_646620)(int, int, int, float, float, float);
-};
-
-/* 991 */
-struct __fixed CSpringStruct_3C
-{
-  char flt_0;
-  float flt_4;
-  float flt_8;
-  int field_C;
-  int field_10;
-  int field_14;
-  int field_18;
-  int field_1C;
-  int field_20;
-  int field_24;
-  int field_28;
-  int field_2C;
-  int field_30;
-  int field_34;
-  int field_38;
-};
-
-/* 992 */
-struct __fixed CSpringStruct_14
-{
-  __int16 field_0;
-  __int16 field_2;
-  float flt_4;
-  int field_8;
-  int field_C;
-  char field_10;
-};
-
-/* 993 */
-struct CNeckSturct_70
-{
-  char field_0[64];
-  int field_40;
-  int field_44;
-  int field_48;
-  int field_4C;
-  int field_50;
-  int field_54;
-  int field_58;
-  int field_5C;
-  int field_60;
-  int field_64;
-  int field_68;
-  int field_6C;
-};
-
-/* 995 */
-struct __fixed CNeckStruct_E14
-{
-  CNeckSturct_70 data[32];
-  int gapE00[5];
-};
-
-/* 996 */
-struct __fixed CNeckStruct_18
-{
-  CScnFrame_21C *pScnSubObj21C_0;
-  CSceneObjectTemp *pScnObj_4;
-  CVector_T18 vecT18_8;
 };
 
 /* 997 */
@@ -18450,6 +18677,13 @@ struct __unaligned __declspec(align(4)) CNeckTreeNode_C
   CNeckTreePair_C _Myval;
   char _Color;
   char _Isnil;
+};
+
+/* 1002 */
+struct __fixed CNeckTreePair_C
+{
+  int k;
+  int v;
 };
 
 /* 999 */
@@ -18472,13 +18706,6 @@ struct std__Tree_iterator_pair
   int second;
 };
 
-/* 1002 */
-struct __fixed CNeckTreePair_C
-{
-  int k;
-  int v;
-};
-
 /* 1003 */
 struct CEyesSturct_70
 {
@@ -18497,24 +18724,6 @@ struct CEyesSturct_70
   int field_6C;
 };
 
-/* 1006 */
-struct __fixed CVector_T10
-{
-  int _Alval;
-  int _Myfirst;
-  int _Mylast;
-  int _Myend;
-};
-
-/* 1005 */
-struct __fixed CSB_VertexScaleCtrl
-{
-  void *lpVtbl;
-  CVector_T10 ArrayVertexScaleData_4;   ///< T = CVertexScaleData
-  CSBZGlobal *pSBZGlobal;
-  CStruct_CCD4 *structCCD4;
-};
-
 /* 1007 */
 struct __fixed CVertexScale
 {
@@ -18523,35 +18732,6 @@ struct __fixed CVertexScale
   int nCol1_8;
   CVcsInfo *pVcsInfo_C;
   int nLineCount_10;
-};
-
-/* 1008 */
-struct __fixed __declspec(align(4)) CVertexScaleData
-{
-  CVertexScale *pVertexScale;
-  float fCol5;
-  float fCol6;
-  char nCol7;
-  bool bCol8;
-};
-
-/* 1009 */
-struct CVertexColorInfo
-{
-  void *lpVtbl;
-  int nCount_4;
-  CVertexColorStruct_18 *objs18_8;
-};
-
-/* 1010 */
-struct __fixed CVertexColorStruct_18
-{
-  int nIdx_0;
-  int field_4;
-  float flt_8;
-  float flt_C;
-  float flt_10;
-  float flt_14;
 };
 
 /* 1011 */
@@ -18583,49 +18763,40 @@ struct __fixed CVertexInfo
   WORD *pword_18;
 };
 
+/* 1008 */
+struct __fixed __declspec(align(4)) CVertexScaleData
+{
+  CVertexScale *pVertexScale;
+  float fCol5;
+  float fCol6;
+  char nCol7;
+  bool bCol8;
+};
+
+/* 1009 */
+struct CVertexColorInfo
+{
+  void *lpVtbl;
+  int nCount_4;
+  CVertexColorStruct_18 *objs18_8;
+};
+
+/* 1010 */
+struct __fixed CVertexColorStruct_18
+{
+  int nIdx_0;
+  int field_4;
+  float flt_8;
+  float flt_C;
+  float flt_10;
+  float flt_14;
+};
+
 /* 1013 */
 struct __fixed CVertexInfoContainer
 {
   int nCount;
   CVertexInfo arrayVertexInfo_4[1];
-};
-
-/* 1029 */
-struct CVector_CosCtrlStructC
-{
-  int _Alval;
-  CCosCtrlStruct_C *_Myfirst;
-  CCosCtrlStruct_C *_Mylast;
-  CCosCtrlStruct_C *_Myend;
-};
-
-/* 1015 */
-struct __fixed CSB_CosCtrl
-{
-  void *lpVtbl;
-  int field_4;
-  int field_8;
-  CVector_CosCtrlStructC cosCtrlstructcs;
-  int field_1C[5][2];
-  int field_44;
-  CSBZGlobal *pSBZGlobal;
-  CStruct_CCD4 *pStructCCD4;
-  CGlobal_A618 *pGlobalD618;
-  CSceneObjectTemp *pScnObjCwBody;
-};
-
-/* 1016 */
-struct __fixed CClothHairCol
-{
-  void *lpVtbl;
-  CGlobal_A618 *pGlobalD618;
-  float version_8;
-  int nCount_C;
-  int obj_C_10;
-  CClothHairStruct_2B4 *pobjs2B4_1C;
-  CString strPPFile_20;
-  CPackFormatSecret *pPackFmtSec_24;
-  char nPackType_28;
 };
 
 /* 1019 */
@@ -18675,14 +18846,6 @@ struct ICIS_OilDataCheckSceneCtrlVtbl
   CSBZGlobal *(*CIS_OilDataCheckSceneCtrl__sub_6055E0)();
 };
 
-/* 1022 */
-struct __fixed CStruct_C
-{
-  int field_0;
-  int field_4;
-  int field_8;
-};
-
 /* 1023 */
 struct __fixed COilCheckStruct_20
 {
@@ -18696,85 +18859,18 @@ struct __fixed COilCheckStruct_20
   float flt_1C;
 };
 
+/* 1022 */
+struct __fixed CStruct_C
+{
+  int field_0;
+  int field_4;
+  int field_8;
+};
+
 /* 1024 */
 struct __fixed COilCheckContainer_24
 {
   int nCount_0;
   COilCheckStruct_20 arrayOilStruct20_4[1];
-};
-
-/* 1025 */
-struct __fixed CCosCtrlStruct_C
-{
-  CSceneObjectTemp *pXX_0;
-  CClothHairCol *pClothHairCol_4;
-  CClothHair *pClothHair_8;
-};
-
-/* 1027 */
-struct __fixed CClothHairMem_134
-{
-  char name_0[256];
-  BYTE byte_100;
-  int field_104;
-  int field_108;
-  int field_10C;
-  int field_110;
-  int field_114;
-  int field_118;
-  int field_11C;
-  int field_120;
-  int field_124;
-  int field_128;
-  __int16 field_12C;
-  __int16 field_12E;
-  __int16 field_130;
-};
-
-/* 1026 */
-struct __fixed CClothHairStruct_2B4
-{
-  char field_0;
-  char field_1;
-  char name[256];
-  CSceneObjectTemp *pScnObj_104;
-  float flt_108;
-  float flt_10C;
-  float flt_110;
-  float flt_114;
-  float flt_118;
-  int field_11C;
-  int field_120;
-  float flt_124;
-  float flt_128;
-  float flt_12C;
-  float *pfloats_130;
-  __int16 field_134;
-  __int16 field_136;
-  __int16 field_138;
-  CClothHairMem_134 clothHairMem_134_13C;
-  float floats_270[6];
-  D3DXVECTOR3 vec3_288;
-  CSceneObjectTemp *pScnObj_294;
-  CScnFrame_21C *pScnSubObj_N_Zentai_298;
-  CScnFrame_21C *pScnSubObj_pPoint_29C;
-  CScnFrame_21C *pScnSubObj_N_Left_2A0;
-  CScnFrame_21C *pScnSubObj_N_Right_2A4;
-  CScnFrame_21C *pScnSubObj_O_Entyu_2A8;
-  CScnFrame_21C *pScnSubObj_O_Left_Sphere_2AC;
-  CScnFrame_21C *pScnSubObj_O_Right_Sphere_2B0;
-};
-
-/* 1028 */
-struct __fixed CClothHair
-{
-};
-
-/* 1030 */
-struct __fixed CScnFace
-{
-  WORD idx_0;
-  WORD idx_2;
-  WORD idx_4;
 };
 

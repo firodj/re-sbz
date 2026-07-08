@@ -8,5 +8,6 @@ struct Cebol {
 
 
 struct __fixed Cabal {
-    int cabal;
+    int cabal[20];
+    Cebol cebol;
 };

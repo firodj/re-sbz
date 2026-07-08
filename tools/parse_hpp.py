@@ -13,6 +13,7 @@ CxxParser._pqname_start_tokens |= msvc_keywords
 from cxxheaderparser.simple import parse_file
 from cxxheaderparser.options import ParserOptions
 from cxxheaderparser.preprocessor import PreprocessorError, make_pcpp_preprocessor
+from cxxheaderparser.types import Type, Pointer, Array, AnonymousName, FundamentalSpecifier, NameSpecifier
 
 import os, sys, io
 import re
@@ -218,60 +219,179 @@ def my_make_pcpp_preprocessor(
     
     return _preprocess_file
 
-data = None
-classes = dict()
 
-def parse(fname):
-    global data, classes
-    
-    opt = ParserOptions(
-        verbose=False,
-        preprocessor=my_make_pcpp_preprocessor(
-            defines=[
-                "_MSC_EXTENSIONS",
-                "_INTEGRAL_MAX_BITS 64",
-                "_MSC_VER 1400",
-                "_MSC_FULL_VER 140050727",
-                "_WIN32",
-                "_M_IX86 600",
-                "_M_IX86_FP 0",
-                "_MT",
-                "_UNICODE",
-                "UNICODE",
-                "_cdecl __cdecl",
-                #'__w64',
-                #'__int64 int64_t',
-                #"_WCHAR_T_DEFINED",
-            ],
-            include_paths=[
-                "./VC/PlatformSDK/Include",
-                "./VC/include",
-            ],
-            retain_all_content = False,
-        ),
-    )
-    data = parse_file(fname, options=opt)
-    for f in data.namespace.functions:
-        print("- name:", f.name.format()),
-        print("  return_type:", f.return_type.format())
-        print("  msvc_convention:", f.msvc_convention)
-        print("  parameters:")
-        for p in f.parameters:
-            print("  - type:", p.type.format())
-            if p.name != None:
-                print("    name:", p.name)
+class HxxParser:
+    def __init__(self):
+        self.data = None
+        self.classes = dict()
+        self.typedefs = dict()
+        self.fundamental = {
+            '_BYTE': 1,
+            'int': 4,
+            'unsigned int': 4,
+            'char': 1,
+            'float': 4,
+            'short': 2,
+        }
 
-    for c in data.namespace.classes:
-        k = "::".join([k.name for k in c.class_decl.typename.segments])
-        classes[k] = c
-        print("- name:", c.class_decl.typename.format())
-        print("  fields:")
-        for f in c.fields:
-            print("  - name:", f.name)
-            print("    type:", f.type.format())
+        self.ptr_size = 4 # 32-bit
+
+        self.depth = 0
+        self.unions = 0
+
+    def _populate_classes(self, classes):
+        for c in classes:
+            k = "::".join([k.format() for k in c.class_decl.typename.segments])
+            self.classes[k] = c
+            self._populate_classes(c.classes)
+
+            # print("- name:", c.class_decl.typename.format())
+            # print("  fields:")
+            # for f in c.fields:
+            #     print("  - name:", f.name)
+            #     print("    type:", f.type.format())
+
+    def parse(self, fname):
+        opt = ParserOptions(
+            verbose=False,
+            preprocessor=my_make_pcpp_preprocessor(
+                defines=[
+                    "_MSC_EXTENSIONS",
+                    "_INTEGRAL_MAX_BITS 64",
+                    "_MSC_VER 1400",
+                    "_MSC_FULL_VER 140050727",
+                    "_WIN32",
+                    "_M_IX86 600",
+                    "_M_IX86_FP 0",
+                    "_MT",
+                    "_UNICODE",
+                    "UNICODE",
+                    "_cdecl __cdecl",
+                    #'__w64',
+                    #'__int64 int64_t',
+                    #"_WCHAR_T_DEFINED",
+                ],
+                include_paths=[
+                    "./VC/PlatformSDK/Include",
+                    "./VC/include",
+                ],
+                retain_all_content = False,
+            ),
+        )
+
+        data = parse_file(fname, options=opt)
+        self.data = data
+
+        for f in data.namespace.functions:
+            print("- name:", f.name.format()),
+            print("  return_type:", f.return_type.format())
+            print("  msvc_convention:", f.msvc_convention)
+            print("  parameters:")
+            for p in f.parameters:
+                print("  - type:", p.type.format())
+                if p.name != None:
+                    print("    name:", p.name)
+
+
+        self._populate_classes(data.namespace.classes)
+
+        for t in data.namespace.typedefs:
+            k = t.name
+            self.typedefs[k] = t
+        
+    def calc_type(self, name, classkey=None):
+        try:
+            self.depth += 1
+
+            if name in self.typedefs:
+                return self.calc_typedef(name)
+                
+            elif name in self.classes:
+                return self.calc_class(name, classkey)
+
+            elif name in self.fundamental:
+                return self.fundamental[name]
+
+            else:
+                raise NotImplementedError(f"Unknown how to calc {name}")
+        finally:
+            self.depth -= 1
+
+    def calc_field(self, field_type):
+        if isinstance(field_type, Pointer):
+            # field_type.pointer_of
+            return self.ptr_size
+
+        elif isinstance(field_type, Type):
+            if len(field_type.typename.segments) != 1:
+                raise NotImplementedError("expected segments should be 1")
+            classkey = field_type.typename.classkey
+            typename = field_type.typename.segments[0]
+
+            # if isinstance(typename, NameSpecifier):
+            #     pass
+            # elif isinstance(typename, FundamentalSpecifier):
+            #     pass
+            # else:
+            #     print(field_type)
+
+            return self.calc_type(typename.format(), classkey)
+   
+        elif isinstance(field_type, Array):
+            size = self.calc_field(field_type.array_of)
+            
+            count = int(field_type.size.format(), 0)
+            return count * size
+
+        else:
+            raise NotImplementedError(f"unknown how to calc type {type(field_type)}")
+
+    def calc_typedef(self, name):
+        return self.calc_field(self.typedefs[name].type)
+
+    def calc_class(self, name, classkey = None):
+        fields = self.classes[name].fields
+        sizes = []
+        is_union = classkey == 'union'
+        offs = 0
+        for i,field in enumerate(fields):
+
+            print("  "*self.depth, hex(offs), i, field.name, type(field.type))
+            
+            field_size = self.calc_field(field.type)
+            sizes.append(field_size)
+
+            if not is_union:
+                offs += field_size
+        
+        if len(sizes) == 0:
+            return 0
+
+        if is_union:
+            # Todo check
+            return sizes[0]
+        
+        return sum(sizes)
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
         print("missing argument")
         sys.exit(-1)
-    parse(sys.argv[1])
+
+    hxxparser = HxxParser()
+    hxxparser.parse(sys.argv[1])
+
+    size = hxxparser.calc_type('D3DMATRIX')
+    print('D3DMATRIX', size, hex(size))
+
+    size = hxxparser.calc_type('SBSpecialScene')
+    print('SBSpecialScene', size, hex(size))
+
+    size = hxxparser.calc_type('CSBZGlobal')
+    print('CSBZGlobal', size, hex(size))
+
+    # size = hxxparser.calc_type('Cebol')
+    # print('Cebol', size)
+
+    
+            
