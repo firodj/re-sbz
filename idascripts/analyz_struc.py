@@ -152,13 +152,24 @@ def analyze_struct_offsets(start_ea, target_reg_name="ecx", this_type: ida_typei
         if insn.get_canon_mnem() == "mov" and insn.Op1.type == ida_ua.o_reg:
             operand_size = ida_ua.get_dtype_size(insn.Op1.dtype)
             reg_dst = ida_idp.get_reg_name(insn.Op1.reg, operand_size).lower()
+            reg_src = None
+            
             if operand_size != 4:
                 reg_dst = regs_base.get(reg_dst, reg_dst)
 
-            if reg_dst in tracked_regs:
+            if insn.Op2.type == ida_ua.o_reg:
+                reg_src = ida_idp.get_reg_name(insn.Op2.reg, operand_size).lower()
+                if operand_size != 4:
+                    reg_src = regs_base.get(reg_src, reg_src)
+    
+            if reg_dst in tracked_regs and reg_dst != reg_src:
                 tracked_regs.remove(reg_dst)
                 print(f"[{current_ea:X}] remove tracked regs: {reg_dst}")
 
+            if reg_src is not None and reg_src in tracked_regs:
+                tracked_regs.add(reg_dst)
+                print(f"[{current_ea:X}] add tracked regs: {reg_dst}")
+                    
         # 2.b. Track register assigments from the stack variable
         # e.g., mov eax, [ebp+var_4]
         if insn.get_canon_mnem() == "mov" and insn.Op2.type == ida_ua.o_displ:
