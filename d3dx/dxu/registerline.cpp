@@ -341,7 +341,7 @@ unsigned int* __cdecl GetSrcSpan_R8G8B8(BLT_DATA* dstWidth, unsigned int* argbsr
   return argbsrc;
 }
 
-#if 0
+// type: FnPutDstSpan
 void __cdecl PutDstSpan_R8G8B8(int dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
 {
   int v3; // edi
@@ -363,20 +363,21 @@ void __cdecl PutDstSpan_R8G8B8(int dstWidth, unsigned int* argbdst, BLT_DATA* bl
   }
 }
 
-void __cdecl GetnPixels_R8G8B8(void** p, unsigned int* argbsrc, BLT_DATA* bltData)
+// type: FnGetnPixels
+void __cdecl GetnPixels_R8G8B8(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
 {
-  void** v3; // ecx
+  DWORD* v3; // ecx
   unsigned int i; // edx
   unsigned int bit; // [esp+0h] [ebp-4h]
 
-  v3 = p;
+  v3 = (DWORD*)p;
   bit = 1;
   for (i = bltData->OutCode; *v3; ++v3)
   {
     if ((i & bit) == 0)
-      *(void**)((char*)v3 + (char*)argbsrc - (char*)p) = (void*)(*(unsigned __int8*)*v3
-        | ((*((unsigned __int8*)*v3 + 1)
-          | ((*((unsigned __int8*)*v3 + 2) | 0xFFFFFF00) << 8)) << 8));
+      *(DWORD*)((char*)v3 + ((BYTE*)argbsrc - (_BYTE*)p)) = *(unsigned __int8*)*v3
+      | ((*(unsigned __int8*)(*v3 + 1)
+        | ((*(unsigned __int8*)(*v3 + 2) | 0xFFFFFF00) << 8)) << 8);
     bit *= 2;
   }
   bltData->OutCode = i;
@@ -386,7 +387,7 @@ unsigned int* __cdecl GetSrcSpan_A8R8G8B8(int dstWidth, unsigned int* argbsrc, B
 {
   int dudx; // esi
   int uSample; // eax
-  DWORD* pSrcRow; // ecx
+  _DWORD* pSrcRow; // ecx
   unsigned int* result; // eax
   unsigned int* v7; // esi
   int v8; // edi
@@ -395,11 +396,11 @@ unsigned int* __cdecl GetSrcSpan_A8R8G8B8(int dstWidth, unsigned int* argbsrc, B
 
   dudx = bltData->dudx;
   uSample = bltData->uSample;
-  pSrcRow = bltData->pSrcRow;
+  pSrcRow = (_DWORD*)bltData->pSrcRow;
   if (dudx == 0x10000)
   {
     result = &pSrcRow[uSample >> 16];
-    if (((unsigned __int8)result & 7) != 0)
+    if ((((unsigned int)result) & 7) != 0)
     {
       v7 = result;
       result = argbsrc;
@@ -430,22 +431,23 @@ void __cdecl PutDstSpan_A8R8G8B8(int dstWidth, unsigned int* argbdst, BLT_DATA* 
   qmemcpy(bltData->pDest, argbdst, 4 * dstWidth);
 }
 
-void __cdecl GetnPixels_A8R8G8B8(void** p, unsigned int* argbsrc, BLT_DATA* bltData)
+// type: FnGetnPixels
+void __cdecl GetnPixels_A8R8G8B8(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
 {
-  void** v3; // eax
+  _DWORD* v3; // eax
   unsigned int OutCode; // edx
   int i; // ebx
-  void* v6; // ecx
+  DWORD v6; // ecx
 
-  v3 = p;
+  v3 = (_DWORD*)p;
   OutCode = bltData->OutCode;
   for (i = 1; *v3; i *= 2)
   {
     if ((i & OutCode) == 0)
     {
-      v6 = *(void**)*v3;
+      v6 = *(_DWORD*)*v3;
       if (v6)
-        *(void**)((char*)v3 + (char*)argbsrc - (char*)p) = v6;
+        *(_DWORD*)((char*)v3 + ((BYTE*)argbsrc - (_BYTE*)p)) = v6;
       else
         OutCode |= i;
     }
@@ -454,11 +456,12 @@ void __cdecl GetnPixels_A8R8G8B8(void** p, unsigned int* argbsrc, BLT_DATA* bltD
   bltData->OutCode = OutCode;
 }
 
+// type: FnGetSrcSpan
 unsigned int* __cdecl GetSrcSpan_X8R8G8B8(int dstWidth, unsigned int* argbsrc, BLT_DATA* bltData)
 {
   int uSample; // edx
   int dudx; // esi
-  DWORD* pSrcRow; // eax
+  _DWORD* pSrcRow; // eax
   unsigned int v6; // edi
   unsigned int* v7; // ebx
   int v8; // ecx
@@ -466,7 +469,7 @@ unsigned int* __cdecl GetSrcSpan_X8R8G8B8(int dstWidth, unsigned int* argbsrc, B
 
   uSample = bltData->uSample;
   dudx = bltData->dudx;
-  pSrcRow = bltData->pSrcRow;
+  pSrcRow = (_DWORD*)bltData->pSrcRow;
   v6 = -1;
   prevpixel = -1;
   if (dstWidth > 0)
@@ -488,23 +491,25 @@ unsigned int* __cdecl GetSrcSpan_X8R8G8B8(int dstWidth, unsigned int* argbsrc, B
   return argbsrc;
 }
 
+// type: FnPutDstSpan
 void __cdecl PutDstSpan_X8R8G8B8(int dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
 {
   qmemcpy(bltData->pDest, argbdst, 4 * dstWidth);
 }
 
-void __cdecl GetnPixels_X8R8G8B8(void** p, unsigned int* argbsrc, BLT_DATA* bltData)
+// type: FnGetnPixels
+void __cdecl GetnPixels_X8R8G8B8(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
 {
-  void** v3; // ecx
+  _DWORD* v3; // ecx
   unsigned int OutCode; // edx
   int i; // ebx
 
-  v3 = p;
+  v3 = (_DWORD*)p;
   OutCode = bltData->OutCode;
   for (i = 1; *v3; i *= 2)
   {
     if ((i & OutCode) == 0)
-      *(void**)((char*)v3 + (char*)argbsrc - (char*)p) = (void*)(*(DWORD*)*v3 | 0xFF000000);
+      *(_DWORD*)((char*)v3 + ((BYTE*)argbsrc - (_BYTE*)p)) = *(_DWORD*)*v3 | 0xFF000000;
     ++v3;
   }
   bltData->OutCode = OutCode;
@@ -550,17 +555,18 @@ BLT_DATA* __cdecl GetSrcSpan_R5G6B5(int dstWidth, BLT_DATA* argbsrc, BLT_DATA* b
   return argbsrc;
 }
 
+// type: FnPutDstSpan
 void __cdecl PutDstSpan_R5G6B5(int dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
 {
   int v3; // edi
-  WORD* pDest; // ecx
-  unsigned int v5; // eax
-  WORD* v7; // esi
+  _WORD* pDest; // ecx
+  _DWORD v5; // ax
+  _WORD* v7; // esi
   unsigned int prevval; // [esp+14h] [ebp+10h]
 
   v3 = dstWidth;
-  pDest = bltData->pDest;
-  LOWORD(v5) = 0;
+  pDest = (_WORD *)bltData->pDest;
+  v5 = 0;
   prevval = 0;
   if (dstWidth > 0)
   {
@@ -570,7 +576,7 @@ void __cdecl PutDstSpan_R5G6B5(int dstWidth, unsigned int* argbdst, BLT_DATA* bl
       if (*argbdst != prevval)
       {
         prevval = *argbdst;
-        v5 = (*argbdst & 0xF8 | ((*argbdst & 0xFC00 | (*argbdst >> 3) & 0x1F0000) >> 2)) >> 3;
+        *(_DWORD*)&v5 = (*argbdst & 0xF8 | ((*argbdst & 0xFC00 | (*argbdst >> 3) & 0x1F0000) >> 2)) >> 3;
       }
       *v7 = v5;
       ++argbdst;
@@ -580,9 +586,10 @@ void __cdecl PutDstSpan_R5G6B5(int dstWidth, unsigned int* argbdst, BLT_DATA* bl
   }
 }
 
-void __cdecl GetnPixels_R5G6B5(void** p, unsigned int* argbsrc, BLT_DATA* bltData)
+// type: FnGetnPixels
+void __cdecl GetnPixels_R5G6B5(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
 {
-  void** v3; // edx
+  _DWORD* v3; // edx
   unsigned int v4; // eax
   __int16 v5; // ax
   unsigned int v6; // ecx
@@ -590,24 +597,25 @@ void __cdecl GetnPixels_R5G6B5(void** p, unsigned int* argbsrc, BLT_DATA* bltDat
   unsigned int outcode; // [esp+0h] [ebp-8h]
   unsigned int bit; // [esp+4h] [ebp-4h]
 
-  v3 = p;
+  v3 = (_DWORD*)p;
   bit = 1;
   v4 = bltData->OutCode;
   for (outcode = v4; *v3; ++v3)
   {
     if ((v4 & bit) == 0)
     {
-      v5 = *(WORD*)*v3;
+      v5 = *(_WORD*)*v3;
       v6 = 8 * ((32 * (v5 & 0xF800)) | v5 & 0x1F);
       v7 = (32 * (v5 & 0x7E0 | 0xFFF80000)) | (((v6 >> 4) & 0xE000E | v5 & 0x600) >> 1);
       v4 = outcode;
-      *(void**)((char*)v3 + (char*)argbsrc - (char*)p) = (void*)(v6 | v7);
+      *(_DWORD*)((char*)v3 + ((BYTE*)argbsrc - (_BYTE*)p)) = v6 | v7;
     }
     bit *= 2;
   }
   bltData->OutCode = v4;
 }
 
+// type: FnGetSrcSpan
 BLT_DATA* __cdecl GetSrcSpan_R5G5B5(int dstWidth, BLT_DATA* argbsrc, BLT_DATA* bltData)
 {
   int uSample; // esi
@@ -649,6 +657,7 @@ BLT_DATA* __cdecl GetSrcSpan_R5G5B5(int dstWidth, BLT_DATA* argbsrc, BLT_DATA* b
   return argbsrc;
 }
 
+// type: FnPutDstSpan
 void __cdecl PutDstSpan_R5G5B5(int dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
 {
   int v3; // edi
@@ -658,8 +667,8 @@ void __cdecl PutDstSpan_R5G5B5(int dstWidth, unsigned int* argbdst, BLT_DATA* bl
   unsigned int prevval; // [esp+14h] [ebp+10h]
 
   v3 = dstWidth;
-  pDest = bltData->pDest;
-  LOWORD(v5) = 0;
+  pDest = (WORD *)bltData->pDest;
+  v5 = 0;
   prevval = 0;
   if (dstWidth > 0)
   {
@@ -679,30 +688,35 @@ void __cdecl PutDstSpan_R5G5B5(int dstWidth, unsigned int* argbdst, BLT_DATA* bl
   }
 }
 
-void __cdecl GetnPixels_R5G5B5(void** p, unsigned int* argbsrc, BLT_DATA* bltData)
+// type: FnGetnPixels
+void __cdecl GetnPixels_R5G5B5(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
 {
-  void** v3; // edx
+  _DWORD* v3; // edx
   unsigned int i; // edi
-  __int16 v5; // ax
+  _WORD v5; // ax
   unsigned int v6; // ecx
   unsigned int bit; // [esp+4h] [ebp-4h]
 
-  v3 = p;
+  v3 = (_DWORD*)p;
   bit = 1;
   for (i = bltData->OutCode; *v3; ++v3)
   {
     if ((i & bit) == 0)
     {
-      v5 = *(WORD*)*v3;
-      HIBYTE(v5) |= 0x80u;
+      v5 = *(_WORD*)*v3;
+      
+      // HIBYTE(v5) |= 0x80u;
+      v5 = MAKEWORD(LOBYTE(v5), HIBYTE(v5) | 0x80u);
+
       v6 = 8 * (v5 & 0x1F | (8 * (v5 & 0x3E0 | (8 * (v5 & 0x7C00)))));
-      *(void**)((char*)v3 + (char*)argbsrc - (char*)p) = (void*)(v6 | (v6 >> 5) & 0x70707 | 0xFF000000);
+      *(_DWORD*)((char*)v3 + ((BYTE*)argbsrc - (_BYTE*)p)) = v6 | (v6 >> 5) & 0x70707 | 0xFF000000;
     }
     bit *= 2;
   }
   bltData->OutCode = i;
 }
 
+// type: FnGetSrcSpan
 BLT_DATA* __cdecl GetSrcSpan_PALETTE4(int dstWidth, BLT_DATA* argbsrc, BLT_DATA* bltData)
 {
   unsigned __int8* pSrcRow; // edi
@@ -713,32 +727,67 @@ BLT_DATA* __cdecl GetSrcSpan_PALETTE4(int dstWidth, BLT_DATA* argbsrc, BLT_DATA*
   BLT_DATA* v9; // ecx
   bool v10; // zf
   int dudx; // [esp+8h] [ebp-8h]
-  unsigned int val; // [esp+Ch] [ebp-4h]
-  BLT_DATA* bltDataa; // [esp+20h] [ebp+10h]
+  tagPALETTEENTRY val; // [esp+Ch] [ebp-4h]
+  BLT_DATA** bltDataa; // [esp+20h] [ebp+10h]
 
   pSrcRow = (unsigned __int8*)bltData->pSrcRow;
   uSample = bltData->uSample;
   dudx = bltData->dudx;
   if (dstWidth > 0)
   {
-    bltDataa = argbsrc;
+    bltDataa = (BLT_DATA**)argbsrc;
     do
     {
       v6 = pSrcRow[uSample >> 17];
       v7 = uSample;
       uSample += dudx;
-      val = (unsigned int)bltData->SrcData.ColorTable[(v6 >> ((~v7 >> 14) & 4)) & 0xF];
-      LOBYTE(v8) = BYTE2(val);
-      HIBYTE(v8) = BYTE1(val);
-      v9 = bltDataa;
-      bltDataa = (BLT_DATA*)((char*)bltDataa + 4);
+      val = bltData->SrcData.ColorTable[(v6 >> ((~v7 >> 14) & 4)) & 0xF];
+      // LOBYTE(v8) = val.peBlue;
+      // HIBYTE(v8) = val.peGreen;
+      v8 = MAKEWORD(val.peBlue, val.peGreen);
+      v9 = (BLT_DATA*)bltDataa++;
       v10 = dstWidth-- == 1;
-      v9->Stretch = v8 | ((val | 0xFFFFFF00) << 16);
+      v9->Stretch = v8 | ((val.peRed | 0xFFFFFF00) << 16);
     } while (!v10);
   }
   return argbsrc;
 }
 
+char __cdecl FindClosest_PALETTE4(unsigned int val, tagPALETTEENTRY* colorTable)
+{
+  unsigned __int8* p_peBlue; // ecx
+  __int64 v3; // rax
+  int v4; // esi
+  __int64 v5; // rax
+  int v6; // esi
+  char bestVal; // [esp+Ch] [ebp-Ch]
+  int bestDiff; // [esp+10h] [ebp-8h]
+  int i; // [esp+14h] [ebp-4h]
+
+  bestVal = 0;
+  i = 0;
+  bestDiff = 1020;
+  p_peBlue = &colorTable->peBlue;
+  do
+  {
+    v3 = *(p_peBlue - 2) - BYTE2(val);
+    v4 = (HIDWORD(v3) ^ v3) - HIDWORD(v3) + abs32(*p_peBlue - (unsigned __int8)val);
+    v5 = *(p_peBlue - 1) - BYTE1(val);
+    v6 = (HIDWORD(v5) ^ v5) - HIDWORD(v5) + v4;
+    if (v6 < bestDiff)
+    {
+      bestVal = i;
+      if (!v6)
+        return bestVal;
+      bestDiff = v6;
+    }
+    p_peBlue += 4;
+    ++i;
+  } while (i < 15);
+  return bestVal;
+}
+
+// type: FnPutDstSpan
 void __cdecl PutDstSpan_PALETTE4(int dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
 {
   char v3; // bl
@@ -770,16 +819,17 @@ void __cdecl PutDstSpan_PALETTE4(int dstWidth, unsigned int* argbdst, BLT_DATA* 
   }
 }
 
-void __cdecl GetnPixels_PALETTE4(void** p, unsigned int* argbsrc, BLT_DATA* bltData)
+// type: FnGetnPixels
+void __cdecl GetnPixels_PALETTE4(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
 {
-  void** v3; // edx
+  _DWORD* v3; // edx
   unsigned int v5; // eax
   unsigned __int16 v6; // bx
   unsigned int outcode; // [esp+4h] [ebp-8h]
   unsigned int bit; // [esp+8h] [ebp-4h]
   char i; // [esp+1Ch] [ebp+10h]
 
-  v3 = p;
+  v3 = (_DWORD*)p;
   i = 0;
   bit = 1;
   v5 = bltData->OutCode;
@@ -787,18 +837,21 @@ void __cdecl GetnPixels_PALETTE4(void** p, unsigned int* argbsrc, BLT_DATA* bltD
   {
     if ((v5 & bit) == 0)
     {
-      LOBYTE(v6) = BYTE2(*(DWORD*)&bltData->SrcData.ColorTable[(*((unsigned __int8*)*v3
+      BYTE LOBYTE_v6 = BYTE2(*(_DWORD*)&bltData->SrcData.ColorTable[(*(unsigned __int8*)(*v3
         + ((bltData->uSample - 0x7FFF) >> 17)
-        + (i & 1)) >> ((~(bltData->uSample - 0x7FFF) >> 14) & 4))
+        + (i & 1)) >> ((~(bltData->uSample - 0x7FFF) >> 14)
+          & 4))
         & 0xF]);
-      HIBYTE(v6) = BYTE1(*(DWORD*)&bltData->SrcData.ColorTable[(*((unsigned __int8*)*v3
+      BYTE HIBYTE_v6 = BYTE1(*(_DWORD*)&bltData->SrcData.ColorTable[(*(unsigned __int8*)(*v3
         + ((bltData->uSample - 0x7FFF) >> 17)
-        + (i & 1)) >> ((~(bltData->uSample - 0x7FFF) >> 14) & 4))
+        + (i & 1)) >> ((~(bltData->uSample - 0x7FFF) >> 14)
+          & 4))
         & 0xF]);
+      v6 = MAKEWORD(LOBYTE_v6, HIBYTE_v6);
       v5 = outcode;
-      *(void**)((char*)v3 + (char*)argbsrc - (char*)p) = (void*)(v6
-        | ((*(DWORD*)&bltData->SrcData.ColorTable[(*((unsigned __int8*)*v3 + ((bltData->uSample - 0x7FFF) >> 17) + (i & 1)) >> ((~(bltData->uSample - 0x7FFF) >> 14) & 4)) & 0xF]
-          | 0xFFFFFF00) << 16));
+      *(_DWORD*)((char*)v3 + ((_BYTE*)argbsrc - (_BYTE*)p)) = v6
+        | ((*(_DWORD*)&bltData->SrcData.ColorTable[(*(unsigned __int8*)(*v3 + ((bltData->uSample - 0x7FFF) >> 17) + (i & 1)) >> ((~(bltData->uSample - 0x7FFF) >> 14) & 4)) & 0xF]
+          | 0xFFFFFF00) << 16);
     }
     ++i;
     ++v3;
@@ -806,6 +859,7 @@ void __cdecl GetnPixels_PALETTE4(void** p, unsigned int* argbsrc, BLT_DATA* bltD
   bltData->OutCode = v5;
 }
 
+// type: FnGetSrcSpan
 unsigned int* __cdecl GetSrcSpan_PALETTE8(int dstWidth, unsigned int* argbsrc, BLT_DATA* bltData)
 {
   int uSample; // ecx
@@ -814,7 +868,7 @@ unsigned int* __cdecl GetSrcSpan_PALETTE8(int dstWidth, unsigned int* argbsrc, B
   unsigned __int16 v7; // bx
   bool v8; // zf
   int dudx; // [esp+4h] [ebp-8h]
-  unsigned int val; // [esp+8h] [ebp-4h]
+  tagPALETTEENTRY val; // [esp+8h] [ebp-4h]
   int u; // [esp+1Ch] [ebp+10h]
 
   uSample = bltData->uSample;
@@ -826,11 +880,12 @@ unsigned int* __cdecl GetSrcSpan_PALETTE8(int dstWidth, unsigned int* argbsrc, B
     v6 = argbsrc;
     do
     {
-      val = (unsigned int)bltData->SrcData.ColorTable[pSrcRow[uSample >> 16]];
-      LOBYTE(v7) = BYTE2(val);
-      HIBYTE(v7) = BYTE1(val);
+      val = bltData->SrcData.ColorTable[pSrcRow[uSample >> 16]];
+      // LOBYTE(v7) = val.peBlue;
+      // HIBYTE(v7) = val.peGreen;
+      v7 = MAKEWORD(val.peBlue, val.peGreen);
       uSample = dudx + u;
-      *v6++ = v7 | ((val | 0xFFFFFF00) << 16);
+      *v6++ = v7 | ((val.peRed | 0xFFFFFF00) << 16);
       v8 = dstWidth-- == 1;
       u += dudx;
     } while (!v8);
@@ -838,6 +893,8 @@ unsigned int* __cdecl GetSrcSpan_PALETTE8(int dstWidth, unsigned int* argbsrc, B
   return argbsrc;
 }
 
+#if 0
+// type: FnPutDstSpan
 void __cdecl PutDstSpan_PALETTE8(int dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
 {
   BYTE* pDest; // esi
