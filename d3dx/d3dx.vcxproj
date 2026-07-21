@@ -124,9 +124,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-  </ItemGroup>  
+  </ItemGroup>
   <ItemGroup>
-	<ClCompile Include="dxu\**\*.cpp" />
+    <ClCompile Include="dxu\**\*.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dxu\d3dx.hpp" />
+    <ClInclude Include="ida_defs.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

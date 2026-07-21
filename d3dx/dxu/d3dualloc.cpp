@@ -36,8 +36,8 @@ void *__cdecl CD3duAlloc::operator new(unsigned int size)
   _ALLOC_STUB **v4; // eax
   _ALLOC_STUB *v5; // ecx
 
-  v1 = new _ALLOC_STUB(); //(_ALLOC_STUB *)operator new(0x10u);
-  v2 = operator new(size);
+  v1 = (_ALLOC_STUB*)::operator new (sizeof(_ALLOC_STUB)); //(_ALLOC_STUB *)operator new(0x10u);
+  v2 = ::operator new(size);
   v3 = v2;
   if ( v1 )
   {
@@ -53,10 +53,10 @@ void *__cdecl CD3duAlloc::operator new(unsigned int size)
       *v4 = v1;
       return v1->pvMem;
     }
-    operator delete(v1);
+    ::operator delete(v1);
   }
   if ( v3 )
-    operator delete(v3);
+    ::operator delete(v3);
   D3DXDprintf(0, "CD3duAlloc::new - Memory allocation failed!");
   return 0;
 }
@@ -78,14 +78,14 @@ void __cdecl CD3duAlloc::operator delete(void *pv)
     {
       if ( pv == v3->pvMem )
       {
-        operator delete(pv);
+        ::operator delete(pv);
         if ( v1 )
           v1->pNext = v3->pNext;
         if ( *v4 == v3 )
           *v4 = v3->pNext;
         g_dwTotalUnfreedMemory -= v3->dwSize;
         ++g_dwNumFrees;
-        operator delete(v3);
+        ::operator delete(v3);
         return;
       }
       v1 = v3;
@@ -113,4 +113,14 @@ void __cdecl D3DXDprintf(unsigned int lvl, const char *szFormat)
     lstrcatA(str, (LPCSTR)"\r\n");
     OutputDebugStringA(str);
   }
+}
+
+
+void __cdecl D3DXAssert(const char* szFile, int nLine, const char* szCondition)
+{
+  char buffer[512]; // [esp+0h] [ebp-200h] BYREF
+
+  wsprintfA(buffer, (LPCSTR)"ASSERTION FAILED! File %s Line %d: %s", szFile, nLine, szCondition);
+  D3DXDprintf(0, buffer);
+  DebugBreak();
 }
