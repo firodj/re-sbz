@@ -893,7 +893,40 @@ unsigned int* __cdecl GetSrcSpan_PALETTE8(int dstWidth, unsigned int* argbsrc, B
   return argbsrc;
 }
 
-#if 0
+char __cdecl FindClosest_PALETTE8(unsigned int val, tagPALETTEENTRY* colorTable)
+{
+  unsigned __int8* p_peBlue; // ecx
+  __int64 v3; // rax
+  int v4; // esi
+  __int64 v5; // rax
+  int v6; // esi
+  char bestVal; // [esp+Ch] [ebp-Ch]
+  int bestDiff; // [esp+10h] [ebp-8h]
+  int i; // [esp+14h] [ebp-4h]
+
+  bestVal = 0;
+  i = 0;
+  bestDiff = 1020;
+  p_peBlue = &colorTable->peBlue;
+  do
+  {
+    v3 = *(p_peBlue - 2) - BYTE2(val);
+    v4 = (HIDWORD(v3) ^ v3) - HIDWORD(v3) + abs32(*p_peBlue - (unsigned __int8)val);
+    v5 = *(p_peBlue - 1) - BYTE1(val);
+    v6 = (HIDWORD(v5) ^ v5) - HIDWORD(v5) + v4;
+    if (v6 < bestDiff)
+    {
+      bestVal = i;
+      if (!v6)
+        return bestVal;
+      bestDiff = v6;
+    }
+    p_peBlue += 4;
+    ++i;
+  } while (i < 255);
+  return bestVal;
+}
+
 // type: FnPutDstSpan
 void __cdecl PutDstSpan_PALETTE8(int dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
 {
@@ -902,7 +935,7 @@ void __cdecl PutDstSpan_PALETTE8(int dstWidth, unsigned int* argbdst, BLT_DATA* 
   int v6; // edi
   unsigned int prevval; // [esp+Ch] [ebp-4h]
 
-  pDest = bltData->pDest;
+  pDest = (BYTE*)bltData->pDest;
   Closest_PALETTE8 = 0;
   v6 = 0;
   for (prevval = 0; v6 < dstWidth; ++v6)
@@ -917,29 +950,30 @@ void __cdecl PutDstSpan_PALETTE8(int dstWidth, unsigned int* argbdst, BLT_DATA* 
   }
 }
 
-void __cdecl GetnPixels_PALETTE8(void** p, unsigned int* argbsrc, BLT_DATA* bltData)
+// type: FnGetnPixels
+void __cdecl GetnPixels_PALETTE8(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
 {
-  void** v3; // ecx
+  _DWORD* v3; // ecx
   unsigned int v5; // eax
   int v6; // edi
   unsigned int outcode; // [esp+4h] [ebp-4h]
-  unsigned int val; // [esp+10h] [ebp+8h]
+  tagPALETTEENTRY val; // [esp+10h] [ebp+8h]
   unsigned int bit; // [esp+18h] [ebp+10h]
 
-  v3 = p;
+  v3 = (_DWORD*)p;
   bit = 1;
   v5 = bltData->OutCode;
   outcode = v5;
-  if (*p)
+  if (*(_DWORD*)p)
   {
-    v6 = (char*)argbsrc - (char*)p;
+    v6 = (_BYTE*)argbsrc - (_BYTE*)p;
     do
     {
       if ((v5 & bit) == 0)
       {
-        val = (unsigned int)bltData->SrcData.ColorTable[*(unsigned __int8*)*v3];
+        val = bltData->SrcData.ColorTable[*(unsigned __int8*)*v3];
         v5 = outcode;
-        *(void**)((char*)v3 + v6) = (void*)(val & 0xFF00 | ((val | 0xFFFFFF00) << 16) | BYTE2(val));
+        *(_DWORD*)((char*)v3 + v6) = *(_WORD*)&val.peRed & 0xFF00 | ((val.peRed | 0xFFFFFF00) << 16) | val.peBlue;
       }
       bit *= 2;
       ++v3;
@@ -948,6 +982,8 @@ void __cdecl GetnPixels_PALETTE8(void** p, unsigned int* argbsrc, BLT_DATA* bltD
   bltData->OutCode = v5;
 }
 
+
+// type: FnGetSrcSpan
 BLT_DATA* __cdecl GetSrcSpan_A1R5G5B5(int dstWidth, BLT_DATA* argbsrc, BLT_DATA* bltData)
 {
   unsigned int v3; // ecx
@@ -988,6 +1024,7 @@ BLT_DATA* __cdecl GetSrcSpan_A1R5G5B5(int dstWidth, BLT_DATA* argbsrc, BLT_DATA*
   return argbsrc;
 }
 
+// type: FnPutDstSpan
 void __cdecl PutDstSpan_A1R5G5B5(BLT_DATA* dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
 {
   int v3; // edi
@@ -996,16 +1033,16 @@ void __cdecl PutDstSpan_A1R5G5B5(BLT_DATA* dstWidth, unsigned int* argbdst, BLT_
   BLT_DATA* bltDataa; // [esp+18h] [ebp+10h]
 
   v3 = 0;
-  LOWORD(v4) = 0;
+  v4 = 0;
   if ((int)dstWidth > 0)
   {
-    pDest = bltData->pDest;
+    pDest = (WORD*)bltData->pDest;
     bltDataa = dstWidth;
     do
     {
       if (*argbdst != v3)
       {
-        LOWORD(v4) = 0;
+        v4 = 0;
         v3 = *argbdst;
         if (*argbdst)
           v4 = (*argbdst & 0xF8 | ((*argbdst & 0xF800 | (((*argbdst >> 7) & 0x1000000 | *argbdst & 0xF80000) >> 3)) >> 3)) >> 3;
@@ -1018,39 +1055,41 @@ void __cdecl PutDstSpan_A1R5G5B5(BLT_DATA* dstWidth, unsigned int* argbdst, BLT_
   }
 }
 
-void __cdecl GetnPixels_A1R5G5B5(void** p, unsigned int* argbsrc, BLT_DATA* bltData)
+// type: FnGetnPixels
+void __cdecl GetnPixels_A1R5G5B5(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
 {
-  void** v3; // edx
-  unsigned int i; // esi
-  int v5; // ecx
+  _DWORD* ppPixel; // edx
+  unsigned int outCode; // esi
+  int pixel; // ecx
   int v6; // eax
   unsigned int bit; // [esp+4h] [ebp-4h]
 
-  v3 = p;
+  ppPixel = (_DWORD *)p;
   bit = 1;
-  for (i = bltData->OutCode; *v3; ++v3)
+  for (outCode = bltData->OutCode; *ppPixel; ++ppPixel)
   {
-    if ((i & bit) == 0)
+    if ((outCode & bit) == 0)
     {
-      v5 = *(__int16*)*v3;
-      if (*(WORD*)*v3)
+      pixel = *(__int16*)*ppPixel;
+      if (*(_WORD*)*ppPixel)
       {
-        v6 = 8 * (v5 & 0x3E0 | (8 * (v5 & 0x7C00)));
-        *(void**)((char*)v3 + (char*)argbsrc - (char*)p) = (void*)((8 * (v5 & 0x1F | v6))
-          | v5 & 0xFF000000
-          | ((8 * (v5 & 0x1F | (unsigned int)v6)) >> 5)
-          & 0x70707);
+        v6 = 8 * (pixel & 0x3E0 | (8 * (pixel & 0x7C00)));
+        *(_DWORD*)((char*)ppPixel + ((char*)argbsrc - (char*)p)) = (8 * (pixel & 0x1F | v6))
+          | pixel & 0xFF000000
+          | ((8 * (pixel & 0x1F | (unsigned int)v6)) >> 5)
+          & 0x70707;
       }
       else
       {
-        i |= bit;
+        outCode |= bit;
       }
     }
     bit *= 2;
   }
-  bltData->OutCode = i;
+  bltData->OutCode = outCode;
 }
 
+// type: FnGetSrcSpan
 BLT_DATA* __cdecl GetSrcSpan_X4R4G4B4(int dstWidth, BLT_DATA* argbsrc, BLT_DATA* bltData)
 {
   int uSample; // esi
@@ -1092,6 +1131,7 @@ BLT_DATA* __cdecl GetSrcSpan_X4R4G4B4(int dstWidth, BLT_DATA* argbsrc, BLT_DATA*
   return argbsrc;
 }
 
+// type: FnPutDstSpan
 void __cdecl PutDstSpan_X4R4G4B4(int dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
 {
   int v3; // edi
@@ -1101,8 +1141,8 @@ void __cdecl PutDstSpan_X4R4G4B4(int dstWidth, unsigned int* argbdst, BLT_DATA* 
   unsigned int prevval; // [esp+14h] [ebp+10h]
 
   v3 = dstWidth;
-  pDest = bltData->pDest;
-  LOWORD(v5) = 0;
+  pDest = (WORD*)bltData->pDest;
+  v5 = 0;
   prevval = 0;
   if (dstWidth > 0)
   {
@@ -1122,30 +1162,33 @@ void __cdecl PutDstSpan_X4R4G4B4(int dstWidth, unsigned int* argbdst, BLT_DATA* 
   }
 }
 
+// type: FnGetnPixels
 void __cdecl GetnPixels_X4R4G4B4(void** p, unsigned int* argbsrc, BLT_DATA* bltData)
 {
-  void** v3; // edx
+  _DWORD* v3; // edx
   unsigned int i; // edi
   __int16 v5; // ax
   int v6; // ecx
   unsigned int bit; // [esp+4h] [ebp-4h]
 
-  v3 = p;
+  v3 = (_DWORD *)p;
   bit = 1;
   for (i = bltData->OutCode; *v3; ++v3)
   {
     if ((i & bit) == 0)
     {
-      v5 = *(WORD*)*v3;
-      HIBYTE(v5) |= 0xF0u;
-      v6 = v5 & 0xF | (16 * ((16 * (v5 & 0xF00)) | *(WORD*)*v3 & 0xF0));
-      *(void**)((char*)v3 + (char*)argbsrc - (char*)p) = (void*)(v6 | (16 * (v6 | 0xFFF00000)));
+      v5 = *(_WORD*)*v3;
+      // HIBYTE(v5) |= 0xF0u
+      v5 = MAKEWORD(LOBYTE(v5), HIBYTE(v5) | 0xF0u);
+      v6 = v5 & 0xF | (16 * ((16 * (v5 & 0xF00)) | *(_WORD*)*v3 & 0xF0));
+      *(_DWORD*)((char*)v3 + ((char*)argbsrc - (char*)p)) = v6 | (16 * (v6 | 0xFFF00000));
     }
     bit *= 2;
   }
   bltData->OutCode = i;
 }
 
+// type: FnGetSrcSpan
 BLT_DATA* __cdecl GetSrcSpan_A4R4G4B4(int dstWidth, BLT_DATA* argbsrc, BLT_DATA* bltData)
 {
   int v3; // ecx
@@ -1186,6 +1229,7 @@ BLT_DATA* __cdecl GetSrcSpan_A4R4G4B4(int dstWidth, BLT_DATA* argbsrc, BLT_DATA*
   return argbsrc;
 }
 
+// type: FnPutDstSpan
 void __cdecl PutDstSpan_A4R4G4B4(int dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
 {
   int v3; // edi
@@ -1195,8 +1239,8 @@ void __cdecl PutDstSpan_A4R4G4B4(int dstWidth, unsigned int* argbdst, BLT_DATA* 
   unsigned int prevval; // [esp+14h] [ebp+10h]
 
   v3 = dstWidth;
-  pDest = bltData->pDest;
-  LOWORD(v5) = 0;
+  pDest = (WORD*)bltData->pDest;
+  v5 = 0;
   prevval = 0;
   if (dstWidth > 0)
   {
@@ -1216,37 +1260,38 @@ void __cdecl PutDstSpan_A4R4G4B4(int dstWidth, unsigned int* argbdst, BLT_DATA* 
   }
 }
 
-
-
-void __cdecl GetnPixels_A4R4G4B4(void** p, unsigned int* argbsrc, BLT_DATA* bltData)
+// type: FnGetnPixels
+void __cdecl GetnPixels_A4R4G4B4(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
 {
-  void** v3; // edx
-  unsigned int i; // esi
+  _DWORD* ppPixel; // edx
+  unsigned int outCode; // esi
   int v5; // eax
   unsigned int bit; // [esp+4h] [ebp-4h]
 
-  v3 = p;
+  ppPixel = (_DWORD*)p;
   bit = 1;
-  for (i = bltData->OutCode; *v3; ++v3)
+  for (outCode = bltData->OutCode; *ppPixel; ++ppPixel)
   {
-    if ((i & bit) == 0)
+    if ((outCode & bit) == 0)
     {
-      if (*(WORD*)*v3)
+      if (*(_WORD*)*ppPixel)
       {
-        v5 = *(WORD*)*v3 & 0xF
-          | (16 * (*(WORD*)*v3 & 0xF0 | (16 * ((16 * (*(WORD*)*v3 & 0xF000)) | *(WORD*)*v3 & 0xF00))));
-        *(void**)((char*)v3 + (char*)argbsrc - (char*)p) = (void*)(v5 | (16 * v5));
+        v5 = *(_WORD*)*ppPixel & 0xF
+          | (16
+            * (*(_WORD*)*ppPixel & 0xF0 | (16 * ((16 * (*(_WORD*)*ppPixel & 0xF000)) | *(_WORD*)*ppPixel & 0xF00))));
+        *(_DWORD*)((char*)ppPixel + ((char*)argbsrc - (char*)p)) = v5 | (16 * v5);
       }
       else
       {
-        i |= bit;
+        outCode |= bit;
       }
     }
     bit *= 2;
   }
-  bltData->OutCode = i;
+  bltData->OutCode = outCode;
 }
 
+// type: FnGetSrcSpan
 unsigned int* __cdecl GetSrcSpan_L8(int dstWidth, unsigned int* argbsrc, BLT_DATA* bltData)
 {
   int uSample; // edx
@@ -1280,8 +1325,6 @@ unsigned int* __cdecl GetSrcSpan_L8(int dstWidth, unsigned int* argbsrc, BLT_DAT
   }
   return argbsrc;
 }
-
-#endif
 
 void __cdecl RegisterLine(
   TArray<LINEENTRY>** array,
@@ -1327,8 +1370,6 @@ void __cdecl RegisterLine(
   v4->Add(&l);
 }
 
-
-
 int __cdecl RegisterLines()
 {
     int v1; // [esp-Ch] [ebp-A4h] BYREF
@@ -1340,11 +1381,10 @@ int __cdecl RegisterLines()
     RegisterLine(&ArrayFilterSpan, 2u, GetBiLinearSrcSpan);
     RegisterLine(&ArrayCopySpan, 4u, BltSpan_4BPP);
     RegisterLine(&ArrayCopySpan, 8u, BltSpan_8BPP);
-
-#if SKIP_ME != 1
     RegisterLine(&ArrayCopySpan, 0x10u, BltSpan_16BPP);
     RegisterLine(&ArrayCopySpan, 0x18u, BltSpan_24BPP);
     RegisterLine(&ArrayCopySpan, 0x20u, BltSpan_32BPP);
+#if SKIP_ME != 1
     RegisterLine(&array, 0, GetSrcSpan_R8G8B8);
     RegisterLine(&dword_5195A8, 0, PutDstSpan_R8G8B8);
     RegisterLine(&dword_5195A0, 0, GetnPixels_R8G8B8);
