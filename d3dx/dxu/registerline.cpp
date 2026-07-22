@@ -1326,6 +1326,210 @@ unsigned int* __cdecl GetSrcSpan_L8(int dstWidth, unsigned int* argbsrc, BLT_DAT
   return argbsrc;
 }
 
+// type: FnPutDstSpan
+void __cdecl PutDstSpan_L8(int dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
+{
+  unsigned int v3; // ecx
+  _BYTE* pDest; // esi
+  int v5; // edi
+  unsigned int v7; // eax
+  unsigned int prevval; // [esp+18h] [ebp+10h]
+
+  v3 = 0;
+  pDest = (_BYTE *)bltData->pDest;
+  v5 = 0;
+  for (prevval = 0; v5 < dstWidth; ++argbdst)
+  {
+    if (*argbdst != prevval)
+    {
+      prevval = *argbdst;
+      v7 = 76 * (unsigned __int8)BYTE2(*argbdst)
+        + 28 * (unsigned __int8)*argbdst
+        + 151 * (unsigned __int8)BYTE1(*argbdst);
+      v3 = (v7 + (v7 >> 8)) >> 8;
+    }
+    pDest[v5++] = v3;
+  }
+}
+
+void __cdecl GetnPixels_L8(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
+{
+  _DWORD* ppPixel; // eax
+  unsigned int outCode; // edx
+  unsigned int bit; // [esp+14h] [ebp+10h]
+
+  ppPixel = (_DWORD*)p;
+  bit = 1;
+  for (outCode = bltData->OutCode; *ppPixel; ++ppPixel)
+  {
+    if ((outCode & bit) == 0)
+      *(_DWORD*)((char*)ppPixel + ((char*)argbsrc - (char*)p)) = *(unsigned __int8*)*ppPixel
+      | ((*(unsigned __int8*)*ppPixel
+        | ((*(unsigned __int8*)*ppPixel | 0xFFFFFF00) << 8)) << 8);
+    bit *= 2;
+  }
+  bltData->OutCode = outCode;
+}
+
+unsigned int* __cdecl GetSrcSpan_A8(int dstWidth, unsigned int* argbsrc, BLT_DATA* bltData)
+{
+  int uSample; // edx
+  int dudx; // esi
+  unsigned __int8* pSrcRow; // eax
+  unsigned int v7; // edi
+  unsigned int* v8; // ebx
+  int v9; // ecx
+  unsigned int prevpixel; // [esp+18h] [ebp+10h]
+
+  prevpixel = -1;
+  uSample = bltData->uSample;
+  dudx = bltData->dudx;
+  pSrcRow = (unsigned __int8*)bltData->pSrcRow;
+  v7 = 0;
+  if (dstWidth > 0)
+  {
+    v8 = argbsrc;
+    do
+    {
+      v9 = pSrcRow[uSample >> 16];
+      if (v9 != prevpixel)
+      {
+        prevpixel = pSrcRow[uSample >> 16];
+        v7 = v9 << 24;
+      }
+      *v8++ = v7;
+      uSample += dudx;
+      --dstWidth;
+    } while (dstWidth);
+  }
+  return argbsrc;
+}
+
+void __cdecl PutDstSpan_A8(int dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
+{
+  int v3; // ebx
+  int v4; // edx
+  _BYTE* pDest; // ecx
+  unsigned int v6; // eax
+
+  v3 = 0;
+  v4 = 0;
+  pDest = (_BYTE*)bltData->pDest;
+  for (v6 = 0; v4 < dstWidth; ++argbdst)
+  {
+    if (*argbdst != v3)
+    {
+      v3 = *argbdst;
+      v6 = HIBYTE(*argbdst);
+    }
+    pDest[v4++] = v6;
+  }
+}
+
+void __cdecl GetnPixels_A8(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
+{
+  _DWORD* ppPixel; // ecx
+  unsigned int OutCode; // edx
+  int outCode; // ebx
+
+  ppPixel = (_DWORD*)p;
+  OutCode = bltData->OutCode;
+  for (outCode = 1; *ppPixel; outCode *= 2)
+  {
+    if ((outCode & OutCode) == 0)
+      *(_DWORD*)((char*)ppPixel + ((char*)argbsrc - (char*)p)) = *(unsigned __int8*)*ppPixel << 24;
+    ++ppPixel;
+  }
+  bltData->OutCode = OutCode;
+}
+
+unsigned int* __cdecl GetSrcSpan_A8L8(int dstWidth, unsigned int* argbsrc, BLT_DATA* bltData)
+{
+  int uSample; // edx
+  int dudx; // edi
+  unsigned __int16* pSrcRow; // eax
+  int v7; // esi
+  unsigned int* v8; // ebx
+  int v9; // ecx
+  unsigned int prevpixel; // [esp+18h] [ebp+10h]
+
+  prevpixel = -1;
+  uSample = bltData->uSample;
+  dudx = bltData->dudx;
+  pSrcRow = (unsigned __int16*)bltData->pSrcRow;
+  v7 = 0;
+  if (dstWidth > 0)
+  {
+    v8 = argbsrc;
+    do
+    {
+      v9 = pSrcRow[uSample >> 16];
+      if (v9 != prevpixel)
+      {
+        prevpixel = pSrcRow[uSample >> 16];
+        v7 = (unsigned __int8)v9 | (((unsigned __int8)v9 | (v9 << 8)) << 8);
+      }
+      *v8++ = v7;
+      uSample += dudx;
+      --dstWidth;
+    } while (dstWidth);
+  }
+  return argbsrc;
+}
+
+void __cdecl PutDstSpan_A8L8(BLT_DATA* dstWidth, unsigned int* argbdst, BLT_DATA* bltData)
+{
+  int v3; // ebx
+  unsigned int v4; // ecx
+  _WORD* pDest; // edi
+  int v7; // edx
+  BLT_DATA* bltDataa; // [esp+14h] [ebp+10h]
+
+  v3 = 0;
+  v4 = 0;
+  if ((int)dstWidth > 0)
+  {
+    pDest = (_WORD*)bltData->pDest;
+    bltDataa = dstWidth;
+    do
+    {
+      if (*argbdst != v3)
+      {
+        v3 = *argbdst;
+        v7 = *argbdst;
+        v4 = (28 * (unsigned __int8)v7
+          + 76 * BYTE2(v7)
+          + 151 * BYTE1(v7)
+          + ((28 * (unsigned __int8)v7 + 76 * BYTE2(v7) + 151 * (unsigned int)BYTE1(v7)) >> 8)) >> 8;
+      }
+      *pDest = v4;
+      ++argbdst;
+      ++pDest;
+      bltDataa = (BLT_DATA*)((char*)bltDataa - 1);
+    } while (bltDataa);
+  }
+}
+
+void __cdecl GetnPixels_A8L8(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
+{
+  _DWORD* v3; // ecx
+  unsigned int outCode; // esi
+  unsigned int bit; // [esp+18h] [ebp+10h]
+
+  v3 = (_DWORD*)p;
+  bit = 1;
+  for (outCode = bltData->OutCode; *v3; ++v3)
+  {
+    if ((outCode & bit) == 0)
+      *(_DWORD*)((char*)v3 + ((char*)argbsrc - (char*)p)) = *(unsigned __int8*)*v3
+      | ((*(unsigned __int8*)*v3 | (*(unsigned __int8*)*v3 << 8)) << 8);
+    bit *= 2;
+  }
+  bltData->OutCode = outCode;
+}
+
+/////
+
 void __cdecl RegisterLine(
   TArray<LINEENTRY>** array,
   unsigned int desc,
