@@ -1,0 +1,3 @@
+[submodule "SB3ImGuiHook"]
+	path = SB3ImGuiHook
+	url = git@github.com:firodj/SB3ImGuiHook.git
