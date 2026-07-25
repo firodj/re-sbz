@@ -177,6 +177,6 @@ def unpack(path, s_dir):
         i.save_as_file(s_path)
 
 if __name__ == '__main__':
-    appdir = os.getenv('APPDIR')
-    print(f"APPDIR={appdir}")
+    appdir = os.getenv('SBZ_APPDIR')
+    print(f"SBZ_APPDIR={appdir}")
     unpack(os.path.join(appdir, 'data', 'sb07_00.pp'), os.path.join(appdir, 'out'))

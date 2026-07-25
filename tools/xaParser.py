@@ -660,7 +660,7 @@ if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv()
 
-    appdir = os.getenv('APPDIR')
+    appdir = os.getenv('SBZ_APPDIR')
     xafilename = 'out/sb03_00/hand_body_L_00.xa'
     print("File:", xafilename)
     # Example of how to use the parser

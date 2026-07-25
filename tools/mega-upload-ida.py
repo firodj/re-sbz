@@ -1,16 +1,11 @@
 import asyncio
-import os
+import os, sys
 from mega.client import MegaNzClient  # async-mega-py uses the same import name but functions are async
 from dotenv import load_dotenv
 load_dotenv()
 
-appdir = os.getenv('APPDIR')
-p7zpath = os.getenv('7ZPATH')
-
 # --- CONFIGURATION ---
-FILE_TO_COMPRESS = os.path.join(appdir, "Sexy Beach Zero English.exe.i64")
-OUTPUT_7Z_FILE = "Sexy Beach Zero English (IDA 9.1).7z"
-
+p7zpath = os.getenv('7ZPATH')
 MEGA_EMAIL = os.getenv('MEGAUSER')
 MEGA_PASSWORD = os.getenv('MEGAPASS')
 # ---------------------
@@ -83,21 +78,48 @@ async def upload_to_mega_async(file_path, email, password):
         print(f"An error occurred during MEGA upload: {e}")
         return False
 
-async def main():
+async def run(idafile, out7zfile):
     # Step 1: Compress the file asynchronously
-    compression_success = await compress_to_7z_async(FILE_TO_COMPRESS, OUTPUT_7Z_FILE)
+    compression_success = await compress_to_7z_async(idafile, out7zfile)
     
     if compression_success:
         # Step 2: Upload asynchronously
-        await upload_to_mega_async(OUTPUT_7Z_FILE, MEGA_EMAIL, MEGA_PASSWORD)
+        await upload_to_mega_async(out7zfile, MEGA_EMAIL, MEGA_PASSWORD)
         
         # Optional Step 3: Clean up local file
-        if os.path.exists(OUTPUT_7Z_FILE):
-            os.remove(OUTPUT_7Z_FILE)
+        if os.path.exists(out7zfile):
+            os.remove(out7zfile)
+
+def main() -> int:
+    argc = len(sys.argv)
+
+    if argc > 1:
+        first_arg = sys.argv[1]
+    else:
+        print("please provide the app-id")
+        return 1
+    
+    match first_arg:
+        case "sbz":
+            appdir = os.getenv('SBZ_APPDIR')
+            idafile = os.path.join(appdir, "Sexy Beach Zero English.exe.i64")
+            out7zfile = "Sexy Beach Zero English (IDA 9.1).7z"
+        case "hnh":
+            appdir = os.getenv('HNH_APPDIR')
+            idafile = os.path.join(appdir, "HaNaHiMe.exe.i64")
+            out7zfile = "HaNaHiMe (IDA 9.1).7z"
+        case _:
+            print(f"unknown {first_arg}, allowed: sbz, hnh")
+            return 1
+    
+    if os.path.exists(idafile):
+        # Start the asyncio event loop
+        asyncio.run(run(idafile, out7zfile))
+    else:
+        print(f"Error: The file '{idafile}' does not exist.")
+
+    return 0
 
 if __name__ == "__main__":
-    if os.path.exists(FILE_TO_COMPRESS):
-        # Start the asyncio event loop
-        asyncio.run(main())
-    else:
-        print(f"Error: The file '{FILE_TO_COMPRESS}' does not exist.")
+    exit_code = main()
+    sys.exit(exit_code)

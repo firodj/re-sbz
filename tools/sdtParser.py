@@ -611,7 +611,7 @@ def main():
 
     islinux = sys.platform.startswith("linux")
 
-    appdir = os.getenv('APPDIR_LINUX') if islinux else os.getenv('APPDIR')
+    appdir = os.getenv('SBZ_APPDIR_LINUX') if islinux else os.getenv('SBZ_APPDIR')
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default='action_00_99_01.sdt', help="sdt file")

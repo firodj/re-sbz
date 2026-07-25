@@ -18,6 +18,6 @@ def read_anyl(fname):
             print(hex(value))
 
 if __name__ == '__main__':
-    appdir = os.getenv('APPDIR')
+    appdir = os.getenv('SBZ_APPDIR')
     read_anyl(os.path.join(appdir, "out/sb00_00/date_none_village_d.sl"))
     read_anyl(os.path.join(appdir, "out/sb00_00/date_none_village_d.vl"))

@@ -134,6 +134,6 @@ def pack_pp_files(path: str, s_path: str):
         pack(os.path.join(path, pp_dir), s_path)
 
 if __name__ == '__main__':
-    appdir = os.getenv('APPDIR')
-    print(f"APPDIR={appdir}")
+    appdir = os.getenv('SBZ_APPDIR')
+    print(f"SBZ_APPDIR={appdir}")
     unpack(os.path.join(appdir, 'data', 'base.pp'), os.path.join(appdir, 'out'))

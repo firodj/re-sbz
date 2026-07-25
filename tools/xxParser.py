@@ -839,7 +839,7 @@ if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv()
 
-    appdir = os.getenv('APPDIR')
+    appdir = os.getenv('SBZ_APPDIR')
     xxfilename = 'out/sb03_00/mannequin_00.xx'
     print("File:", xxfilename)
     # Example of how to use the parser 
