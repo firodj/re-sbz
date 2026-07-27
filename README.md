@@ -34,3 +34,7 @@ Done! Renamed sub_695F00 → EnsureTrailingSlash.
 * https://github.com/herosi/PyClassInformer (better than his IDA_ClassInformer)
 * https://github.com/mrexodia/ida-pro-mcp (IDA MCP Server)
 * https://github.com/oopsmishap/HexRaysPyTools (Structure Builder)
+
+# Formats
+* https://github.com/Techokami/noesis-plugins-official
+* https://www.richwhitehouse.com/index.php?content=inc_projects.php&filemirror=noesisv4474.zip
