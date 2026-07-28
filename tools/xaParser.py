@@ -2,6 +2,8 @@ import struct
 from io import BytesIO
 from dataclasses import dataclass, field
 from typing import List, Optional
+# from binaryhelper import BinaryReader, BinaryWriter, red_print
+
 
 try:
     import codecs
