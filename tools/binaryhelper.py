@@ -60,24 +60,40 @@ def _encrypt_name_fixed(name: str, length: int) -> bytes:
 class BinaryReader:
     def __init__(self, stream):
         self._stream = stream
+        self._cached = bytes()
+    
+    def read_bytes(self, *arg) -> bytes:
+        if len(arg) == 0:
+            res = self._cached + self._stream.read()
+            self._cached = bytes()
+            return res
+        else:
+            size = arg[0]
+            res = self._cached[:size]
+            self._cached = self._cached[size:]
+            if len(res) < size:
+                res += self._stream.read(size-len(res))
+            return res
+    
+    def peek_bytes(self, size) -> bytes:
+        if len(self._cached) < size:
+            self._cached += self._stream.read(size-len(self._cached))
+        return self._cached
 
     def read_byte(self) -> int:
-        return struct.unpack('<B', self._stream.read(1))[0]
-
-    def read_bytes(self, count: int) -> bytes:
-        return self._stream.read(count)
+        return struct.unpack('<B', self.read_bytes(1))[0]
 
     def read_int32(self) -> int:
-        return struct.unpack('<i', self._stream.read(4))[0]
+        return struct.unpack('<i', self.read_bytes(4))[0]
 
     def read_uint32(self) -> int:
-        return struct.unpack('<I', self._stream.read(4))[0]
+        return struct.unpack('<I', self.read_bytes(4))[0]
 
     def read_uint16(self) -> int:
-        return struct.unpack('<H', self._stream.read(2))[0]
+        return struct.unpack('<H', self.read_bytes(2))[0]
 
     def read_single(self) -> float:
-        return struct.unpack('<f', self._stream.read(4))[0]
+        return struct.unpack('<f', self.read_bytes(4))[0]
 
     def read_uint16_array(self, length: int) -> list:
         return [self.read_uint16() for _ in range(length)]
@@ -89,7 +105,18 @@ class BinaryReader:
         name_len = self.read_int32()
         buf = self.read_bytes(name_len)
         return _decrypt_name(buf)
-    
+
+    def read_string(self):
+        r = bytes()
+        while True:
+            b = self.read_bytes(1)
+            if not b:
+                break
+            r += b
+            if b == b'\0':
+                break
+        return r
+
     def read_name_skip_1(self) -> str:
         name_len = self.read_int32()
         if name_len == 1:
@@ -119,8 +146,15 @@ class BinaryReader:
         w = self.read_single()
         return (x, y, z, w)
 
+    def read_matrix(self):
+        m0 = self.read_quaternion()
+        m1 = self.read_quaternion()
+        m2 = self.read_quaternion()
+        m3 = self.read_quaternion()
+        return (m0, m1, m2, m3)
+
     def read_to_end(self) -> bytes:
-        return self._stream.read()
+        return self.read_bytes()
 
 
 class BinaryWriter:
