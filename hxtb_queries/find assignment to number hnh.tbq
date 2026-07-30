@@ -1,0 +1,1 @@
+{"version": 1.0, "query": "(i.op is idaapi.cit_expr and\ni.cexpr.op is idaapi.cot_asg and\ni.cexpr.y.op is idaapi.cot_num and\ni.cexpr.y.numval() == 1008\n)", "query_type": 1, "ast_type": 1, "help": "assignment to number", "scope": 0}
