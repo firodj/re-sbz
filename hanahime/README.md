@@ -32,3 +32,11 @@
 
 0x481637 | ThreadProc
 0x4817B1 | ThreadProc2
+
+---
+
+```cpp
+CHanaFrameRootT3EC_S2D4 *g_pSceneFrame = (CHanaFrameRootT3EC_S2D4*)0x4D6CA8;
+CHanaFrameT3EC_S354 *g_pCameraFrame    = (CHanaFrameT3EC_S354*)0x4D6CAC;
+CHanaFrameT3EC_S354 *g_pLightFrame     = (CHanaFrameT3EC_S354*)0x4D6CB0;
+```
