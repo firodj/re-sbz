@@ -1,0 +1,5 @@
+D3DX Sprite: GetSurfaceDesc failed for texture
+D3DXTransformSprite: Failed to set texture
+D3DXDrawSprite3D: DrawPrim failed for rendering sprite
+D3DXDrawSpriteSimple: Failed to set texture
+LoadTextureFromSurface: GetSurfaceDesc failed for texture

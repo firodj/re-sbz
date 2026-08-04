@@ -1530,6 +1530,607 @@ void __cdecl GetnPixels_A8L8(void* p, unsigned int* argbsrc, BLT_DATA* bltData)
 
 /////
 
+void __cdecl ColorToRGB(S3TC_COLOR* pcolor, unsigned __int16* prgb)
+{
+  *prgb = (pcolor->rgba[0] >> 3) | (32 * ((pcolor->rgba[1] >> 2) | (pcolor->rgba[2] >> 3 << 6)));
+}
+
+void __cdecl RGBToColor(unsigned __int16* prgb, S3TC_COLOR* pcolor)
+{
+  unsigned __int16 v2; // ax
+  char v3; // dl
+
+  v2 = *prgb;
+  v3 = *prgb >> 5;
+  S3TC_COLOR out = { 0 };
+  out.rgba[0] = ((unsigned __int8)(8 * v2) >> 5) | (8 * v2);
+  out.rgba[1] = ((unsigned __int8)(4 * v3) >> 6) | (4 * v3);
+  out.rgba[2] = ((unsigned __int8)(8 * (v2 >> 11)) >> 5) | (8 * (v2 >> 11));
+  *pcolor = out;
+}
+
+void __cdecl AllSame(S3TC_COLOR** pcolor, S3TCBlockRGB* pblock, unsigned __int16 wAlpha)
+{
+  S3TCBlockRGB* v3; // esi
+  S3TC_COLOR** v4; // edi
+  unsigned __int16 rgb0; // ax
+  bool v6; // zf
+  __int16 v7; // cx
+  int v8; // eax
+  int v9; // edx
+  S3TC_COLOR* v10; // [esp-8h] [ebp-10h]
+
+  v3 = pblock;
+  v4 = pcolor;
+  v10 = (S3TC_COLOR*)pcolor;
+  pcolor = (S3TC_COLOR**)*pcolor;
+  ColorToRGB(v10, &pblock->rgb0);
+  rgb0 = v3->rgb0;
+  v3->pixbm = 0;
+  v6 = wAlpha == 0xFFFF;
+  v3->rgb1 = rgb0;
+  if (!v6)
+  {
+    v7 = 1;
+    v8 = 3;
+    v9 = 16;
+    do
+    {
+      if ((wAlpha & (unsigned __int16)v7) != 0)
+        pcolor = (S3TC_COLOR**)*v4;
+      else
+        v3->pixbm |= v8;
+      ++v4;
+      v7 *= 2;
+      v8 *= 4;
+      --v9;
+    } while (v9);
+    ColorToRGB((S3TC_COLOR*)&pcolor, &v3->rgb0);
+    v3->rgb1 = v3->rgb0;
+  }
+}
+
+float wtPrimary[3] = { 0.082000002, 0.60939997, 0.30860001 };
+
+void __cdecl ColorToFcolor(S3TC_COLOR* pcolor, FCOLOR* pfcolor)
+{
+  FCOLOR* v2; // eax
+  int v3; // ecx
+  int v4; // edx
+  FCOLOR* pfcolora; // [esp+10h] [ebp+Ch]
+
+  v2 = pfcolor;
+  v3 = 0;
+  v4 = (char*)wtPrimary - (char*)pfcolor;
+  do
+  {
+    pfcolora = (FCOLOR*)pcolor->rgba[v3++];
+    v2->rgba[0] = (double)(int)pfcolora * *(float*)((char*)v2->rgba + v4) * 0.0039215689;
+    v2 = (FCOLOR*)((char*)v2 + 4);
+  } while (v3 < 3);
+}
+
+void __cdecl Square3x3(float (*m)[3][3], float (*m2)[3][3])
+{
+  (*m2)[0][0] = (*m)[0][1] * (*m)[0][1] + (*m)[0][2] * (*m)[0][2] + (*m)[0][0] * (*m)[0][0];
+  (*m2)[0][1] = ((*m)[0][0] + (*m)[1][1]) * (*m)[0][1] + (*m)[1][2] * (*m)[0][2];
+  (*m2)[0][2] = ((*m)[0][0] + (*m)[2][2]) * (*m)[0][2] + (*m)[1][2] * (*m)[0][1];
+  (*m2)[1][1] = (*m)[0][1] * (*m)[0][1] + (*m)[1][1] * (*m)[1][1] + (*m)[1][2] * (*m)[1][2];
+  (*m2)[1][2] = ((*m)[2][2] + (*m)[1][1]) * (*m)[1][2] + (*m)[0][2] * (*m)[0][1];
+  (*m2)[2][2] = (*m)[0][2] * (*m)[0][2] + (*m)[1][2] * (*m)[1][2] + (*m)[2][2] * (*m)[2][2];
+}
+
+void __cdecl Quantize(FCOLOR* pfcolor0, FCOLOR* pfcolor1, S3TCBlockRGB* pblock, int cOpaque)
+{
+  unsigned __int16 rgb0; // ax
+  S3TC_COLOR color; // [esp+Ch] [ebp-4h] BYREF
+
+  FcolorToColor(pfcolor0, &color);
+  ColorToRGB(&color, &pblock->rgb0);
+  FcolorToColor(pfcolor1, &color);
+  ColorToRGB(&color, &pblock->rgb1);
+  rgb0 = pblock->rgb0;
+  if ((cOpaque == 16) != pblock->rgb1 < pblock->rgb0)
+  {
+    pblock->rgb0 = pblock->rgb1;
+    pblock->rgb1 = rgb0;
+  }
+  RGBToColor(&pblock->rgb0, &color);
+  ColorToFcolor(&color, pfcolor0);
+  RGBToColor(&pblock->rgb1, &color);
+  ColorToFcolor(&color, pfcolor1);
+}
+
+void __cdecl ClipExtrema(FCOLOR* plower, FCOLOR* pupper)
+{
+  FCOLOR* v3; // ecx
+  int v4; // ebx
+  double v5; // st5
+  FCOLOR* v6; // eax
+  float* v7; // esi
+  double v8; // st5
+  FCOLOR* v9; // eax
+  int v10; // [esp+Ch] [ebp-8h]
+  char* v11; // [esp+10h] [ebp-4h]
+  FCOLOR* plowera; // [esp+1Ch] [ebp+8h]
+
+  v3 = plower;
+  v4 = (char*)pupper - (char*)plower;
+  plowera = (FCOLOR*)((char*)wtPrimary - (char*)plower);
+  v11 = (char*)((char*)pupper - (char*)v3);
+  v10 = 3;
+  do
+  {
+    if (v3->rgba[0] < 0.0 != *(float*)((char*)v3->rgba + v4) < 0.0)
+    {
+      v5 = -(v3->rgba[0] / (*(float*)((char*)v3->rgba + v4) - v3->rgba[0]));
+      if (v3->rgba[0] >= 0.0)
+      {
+        v6 = pupper;
+        v5 = v5 - 1.0;
+      }
+      else
+      {
+        v6 = plower;
+      }
+      v6->rgba[2] = (pupper->rgba[2] - plower->rgba[2]) * v5 + v6->rgba[2];
+      v6->rgba[1] = (pupper->rgba[1] - plower->rgba[1]) * v5 + v6->rgba[1];
+      v6->rgba[0] = (pupper->rgba[0] - plower->rgba[0]) * v5 + v6->rgba[0];
+    }
+    v7 = (float*)((int)v3->rgba + (_DWORD)plowera);
+    if (v3->rgba[0] > (double)*(float*)((char*)v3->rgba + (_DWORD)plowera) != *(float*)((char*)v3->rgba + v4) > (double)*(float*)((char*)v3->rgba + (_DWORD)plowera))
+    {
+      v4 = (int)v11;
+      v8 = (*v7 - v3->rgba[0]) / (*(float*)((char*)v3->rgba + (_DWORD)v11) - v3->rgba[0]);
+      if (v3->rgba[0] <= (double)*v7)
+      {
+        v9 = pupper;
+        v8 = v8 - 1.0;
+      }
+      else
+      {
+        v9 = plower;
+      }
+      v9->rgba[2] = (pupper->rgba[2] - plower->rgba[2]) * v8 + v9->rgba[2];
+      v9->rgba[1] = (pupper->rgba[1] - plower->rgba[1]) * v8 + v9->rgba[1];
+      v9->rgba[0] = (pupper->rgba[0] - plower->rgba[0]) * v8 + v9->rgba[0];
+    }
+    else
+    {
+      v4 = (int)v11;
+    }
+    v3 = (FCOLOR*)((char*)v3 + 4);
+    --v10;
+  } while (v10);
+}
+
+void __cdecl FcolorToColor(FCOLOR* pfcolor, S3TC_COLOR* pcolor)
+{
+  float* v2; // esi
+  int v3; // ebx
+  __int64 v4; // rax
+
+  v2 = wtPrimary;
+  v3 = 0;
+  do
+  {
+    v4 = (__int64)(*(float*)((char*)v2 + ((char*)pfcolor - (char*)wtPrimary)) * 255.0 / *v2);
+    ++v2;
+    pcolor->rgba[v3++] = v4;
+  } while (v2 < &wtPrimary[ARRAY_LENGTH(wtPrimary)]);
+}
+
+void __cdecl EncodeBlockRGBColorKey(S3TC_COLOR* colorSrc, S3TCBlockRGB* pblockDst, S3TC_COLOR colorLo, int colorHi)
+{
+  int v4; // edx
+  unsigned __int8* v5; // eax
+  int v6; // esi
+  unsigned __int8 v7; // cl
+  unsigned __int8 v8; // cl
+  int v9; // ecx
+  S3TC_COLOR* v10; // eax
+  S3TC_COLOR* v11; // edi
+  FCOLOR* v12; // esi
+  int v13; // ebx
+  int i; // ecx
+  float* v15; // eax
+  __int16 v16; // si
+  float* v17; // edx
+  int v18; // edi
+  int j; // ecx
+  float* v20; // eax
+  int v21; // edx
+  FCOLOR* v22; // edi
+  float* v23; // eax
+  int v24; // ecx
+  float* v25; // edx
+  float* v26; // esi
+  int k; // edi
+  double v28; // st7
+  double v29; // st7
+  int v30; // edx
+  float* v31; // esi
+  float* v32; // ecx
+  int v33; // eax
+  int v34; // edx
+  int v35; // esi
+  long double v36; // st7
+  float* v37; // ecx
+  float* v38; // eax
+  FCOLOR* p_axis; // ecx
+  int v40; // edx
+  long double v41; // st7
+  long double v42; // st6
+  double v43; // st7
+  FCOLOR* v44; // eax
+  int v45; // ecx
+  double v46; // st6
+  double v47; // st5
+  __int16 v48; // di
+  FCOLOR* v49; // edx
+  double v50; // st6
+  FCOLOR* v51; // eax
+  float* v52; // ecx
+  int v53; // esi
+  double v54; // st5
+  double v55; // st6
+  int m; // eax
+  double v57; // st7
+  float* v58; // ecx
+  float* v59; // edx
+  int v60; // eax
+  double v61; // st7
+  double v62; // st6
+  __int16 v63; // ax
+  FCOLOR* v64; // ebx
+  double v65; // st3
+  float* v66; // edx
+  int n; // eax
+  double v68; // st2
+  float* v69; // ecx
+  double v70; // st3
+  double v71; // st3
+  unsigned int pixbm; // edi
+  int v73; // eax
+  double v74; // st3
+  unsigned int v75; // eax
+  bool v76; // zf
+  S3TCBlockRGB* v77; // [esp-8h] [ebp-1B0h]
+  unsigned __int16 v78; // [esp-4h] [ebp-1ACh]
+  FCOLOR c[16]; // [esp+Ch] [ebp-19Ch] BYREF
+  float tt[3][3]; // [esp+10Ch] [ebp-9Ch] BYREF
+  FCOLOR mean; // [esp+130h] [ebp-78h] BYREF
+  FCOLOR axis; // [esp+140h] [ebp-68h] BYREF
+  FCOLOR fcolor1; // [esp+150h] [ebp-58h] BYREF
+  FCOLOR fcolor0; // [esp+160h] [ebp-48h] BYREF
+  float t[3][3]; // [esp+170h] [ebp-38h] BYREF
+  float* v86; // [esp+194h] [ebp-14h]
+  FCOLOR* v87; // [esp+198h] [ebp-10h]
+  int v88; // [esp+19Ch] [ebp-Ch]
+  int cOpaque; // [esp+1A0h] [ebp-8h]
+  int wAlpha; // [esp+1A4h] [ebp-4h]
+  int colorSrca; // [esp+1B0h] [ebp+8h]
+  int wMin; // [esp+1B8h] [ebp+10h]
+  float wMina; // [esp+1B8h] [ebp+10h]
+  unsigned __int16 wMinb; // [esp+1B8h] [ebp+10h]
+  int primary; // [esp+1BCh] [ebp+14h]
+  float primarya; // [esp+1BCh] [ebp+14h]
+
+  wAlpha = 0;
+  if (pblockDst)
+  {
+    v4 = 16;
+    cOpaque = 0;
+    v5 = (unsigned __int8*)&colorSrc[15] + 1;
+    v6 = 1;
+    do
+    {
+      v7 = v5[1];
+      wAlpha *= 2;
+      if (colorLo.rgba[2] > v7
+        || v7 > BYTE2(colorHi)
+        || colorLo.rgba[1] > *v5
+        || *v5 > BYTE1(colorHi)
+        || (v8 = *(v5 - 1), colorLo.rgba[0] > v8)
+        || v8 > (unsigned __int8)colorHi)
+      {
+        wAlpha |= 1u;
+        ++cOpaque;
+      }
+      else
+      {
+        wAlpha &= 0xFFFEu;
+      }
+      v5 -= 4;
+      --v4;
+    } while (v4);
+    if (!cOpaque)
+    {
+      pblockDst->rgb0 = 0;
+      pblockDst->rgb1 = -1;
+      pblockDst->pixbm = -1;
+      return;
+    }
+    v9 = 0;
+    v10 = colorSrc;
+    do
+    {
+      if (v6
+        && v9 > 0
+        && (v10->rgba[2] != v10[-1].rgba[2] || v10->rgba[1] != v10[-1].rgba[1] || v10->rgba[0] != v10[-1].rgba[0]))
+      {
+        v6 = 0;
+      }
+      ++v9;
+      ++v10;
+    } while (v9 < 16);
+    if (v6)
+    {
+      AllSame(colorSrc, pblockDst, wAlpha);
+      return;
+    }
+    v11 = colorSrc;
+    v12 = c;
+    v13 = 16;
+    do
+    {
+      ColorToFcolor(v11++, v12++);
+      --v13;
+    } while (v13);
+    for (i = 0; i < 3; ++i)
+    {
+      v15 = &mean.rgba[i];
+      v16 = 1;
+      v17 = &c[0].rgba[i];
+      mean.rgba[i] = 0.0;
+      v18 = 16;
+      do
+      {
+        if (((unsigned __int16)wAlpha & (unsigned __int16)v16) != 0)
+          *v15 = *v15 + *v17;
+        v16 *= 2;
+        v17 += 4;
+        --v18;
+      } while (v18);
+      *v15 = *v15 / (double)cOpaque;
+    }
+    for (j = 0; j < 3; ++j)
+    {
+      v20 = &c[0].rgba[j];
+      v21 = 16;
+      do
+      {
+        *v20 = *v20 - mean.rgba[j];
+        v20 += 4;
+        --v21;
+      } while (v21);
+    }
+    primary = 0;
+    v22 = c;
+    v86 = t[0];
+    do
+    {
+      v23 = v86;
+      v24 = 3 - primary;
+      v87 = v22;
+      do
+      {
+        v25 = (float*)v87;
+        wMin = 1;
+        v26 = (float*)v22;
+        v88 = 16;
+        *v23 = 0.0;
+        do
+        {
+          if (((unsigned __int16)wAlpha & (unsigned __int16)wMin) != 0)
+            *v23 = *v26 * *v25 + *v23;
+          wMin *= 2;
+          v25 += 4;
+          v26 += 4;
+          --v88;
+        } while (v88);
+        v87 = (FCOLOR*)((char*)v87 + 4);
+        ++v23;
+        --v24;
+      } while (v24);
+      ++primary;
+      v86 += 4;
+      v22 = (FCOLOR*)((char*)v22 + 4);
+    } while (primary < 3);
+    for (k = 0; k < 9; ++k)
+    {
+      Square3x3(t, tt);
+      Square3x3(tt, t);
+      v28 = t[0][0] + t[1][1] + t[2][2];
+      if (v28 == 0.0)
+        goto LABEL_60;
+      v29 = 3.0 / v28;
+      v30 = 0;
+      v31 = t[0];
+      do
+      {
+        v32 = v31;
+        v33 = 3 - v30;
+        do
+        {
+          *v32 = v29 * *v32;
+          ++v32;
+          --v33;
+        } while (v33);
+        ++v30;
+        v31 += 4;
+      } while (v30 < 3);
+    }
+    v34 = (int)pblockDst;
+    *(_QWORD*)&t[2][0] = __PAIR64__(LODWORD(t[1][2]), LODWORD(t[0][2]));
+    t[1][0] = t[0][1];
+    v35 = 0;
+    v36 = 0.0;
+    v37 = t[0];
+    do
+    {
+      if (v36 < *v37)
+      {
+        v36 = *v37;
+        v34 = v35;
+      }
+      ++v35;
+      v37 += 4;
+    } while (v35 < 3);
+    v38 = &t[0][v34];
+    p_axis = &axis;
+    v40 = 3;
+    v41 = 1.0 / sqrt(v36);
+    do
+    {
+      v42 = v41 * *v38;
+      v38 += 3;
+      p_axis->rgba[0] = v42;
+      p_axis = (FCOLOR*)((char*)p_axis + 4);
+      --v40;
+    } while (v40);
+    v43 = 0.0;
+    v44 = &axis;
+    v45 = 3;
+    do
+    {
+      v46 = v44->rgba[0];
+      v44 = (FCOLOR*)((char*)v44 + 4);
+      --v45;
+      v47 = v46 * v46 + v43;
+      v43 = v47;
+    } while (v45);
+    if (v47 == 0.0)
+    {
+    LABEL_60:
+      v78 = wAlpha;
+      v77 = pblockDst;
+    LABEL_77:
+      AllSame(colorSrc, v77, v78);
+      return;
+    }
+    primarya = -99999.0;
+    v48 = 1;
+    wMina = 99999.0;
+    v49 = c;
+    v88 = 16;
+    do
+    {
+      if (((unsigned __int16)wAlpha & (unsigned __int16)v48) != 0)
+      {
+        v50 = 0.0;
+        v51 = &axis;
+        v52 = (float*)v49;
+        v53 = 3;
+        do
+        {
+          v54 = *v52++ * v51->rgba[0];
+          v51 = (FCOLOR*)((char*)v51 + 4);
+          --v53;
+          v50 = v50 + v54;
+        } while (v53);
+        v55 = v50 / v43;
+        if (v55 < wMina)
+          wMina = v55;
+        if (v55 > primarya)
+          primarya = v55;
+      }
+      v48 *= 2;
+      ++v49;
+      --v88;
+    } while (v88);
+    for (m = 0; m < 3; axis.rgba[m + 3] = primarya * *v58 + *v59)
+    {
+      v57 = wMina * axis.rgba[m];
+      v58 = &axis.rgba[m];
+      v59 = &mean.rgba[m++];
+      fcolor1.rgba[m + 3] = v57 + *v59;
+    }
+    ClipExtrema(&fcolor0, &fcolor1);
+    Quantize(&fcolor0, &fcolor1, pblockDst, cOpaque);
+    v60 = 0;
+    v61 = 0.0;
+    do
+    {
+      v62 = fcolor1.rgba[v60] - fcolor0.rgba[v60];
+      ++v60;
+      v61 = v62 * v62 + v61;
+    } while (v60 < 3);
+    if (v61 == 0.0 && cOpaque == 16)
+    {
+      v78 = wAlpha;
+      v77 = pblockDst;
+      goto LABEL_77;
+    }
+    v63 = 0x8000;
+    wMinb = 0x8000;
+    v64 = &c[15];
+    colorSrca = 16;
+    while (1)
+    {
+      if (((unsigned __int16)wAlpha & (unsigned __int16)v63) != 0)
+      {
+        v65 = 0.0;
+        v66 = (float*)v64;
+        for (n = 0; n < 3; v65 = (axis.rgba[n + 3] - *v69) * (v68 - *v69) + v65)
+        {
+          v68 = mean.rgba[n] + *v66;
+          v69 = &fcolor0.rgba[n++];
+          *v66++ = v68;
+        }
+        v70 = v65 / v61;
+        if (cOpaque == 16)
+        {
+          v71 = v70 * 4.0;
+          if (v71 >= 0.0)
+          {
+            if (v71 >= 4.0)
+              v71 = 3.0;
+          }
+          else
+          {
+            v71 = 0.0;
+          }
+          pblockDst->pixbm *= 4;
+          pixbm = pblockDst->pixbm;
+          v73 = mapRGB4[(unsigned int)(__int64)v71];
+        }
+        else
+        {
+          v74 = v70 * 3.0;
+          if (v74 >= 0.0)
+          {
+            if (v74 >= 3.0)
+              v74 = 2.0;
+          }
+          else
+          {
+            v74 = 0.0;
+          }
+          pblockDst->pixbm *= 4;
+          pixbm = pblockDst->pixbm;
+          v73 = mapRGB3[(unsigned int)(__int64)v74];
+        }
+        v75 = pixbm | v73;
+      }
+      else
+      {
+        v75 = 4 * pblockDst->pixbm;
+        LOBYTE(v75) = v75 | 3;
+      }
+      wMinb >>= 1;
+      --v64;
+      v76 = colorSrca-- == 1;
+      pblockDst->pixbm = v75;
+      if (v76)
+        break;
+      v63 = wMinb;
+    }
+  }
+}
+
+/////
+
 void __cdecl RegisterLine(
   TArray<LINEENTRY>** array,
   unsigned int desc,

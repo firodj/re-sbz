@@ -19,7 +19,7 @@ CD3duGlobals::~CD3duGlobals()
   // CDDrawDeviceList *m_pDDrawDeviceList; // edi
   // CD3duDeviceList *m_pD3duDeviceList; // edi
   // CCapsFile *m_pCapsFile; // esi
-
+#if !SKIP_ME
   // m_pD3duContextList = this->m_pD3duContextList;
   if ( m_pD3duContextList )
   {
@@ -47,4 +47,5 @@ CD3duGlobals::~CD3duGlobals()
     // CCapsFile::~CCapsFile(m_pCapsFile);
     delete m_pCapsFile;
   }
+#endif
 }

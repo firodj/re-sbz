@@ -8,6 +8,7 @@
 
 #define SKIP_ME 1
 
+#define ARRAY_LENGTH(x) (sizeof(x) / sizeof((x)[0]))
 
 template <typename T>
 class __cppobj TArray // sizeof=0xC
@@ -116,6 +117,23 @@ struct _ALLOC_STUB // sizeof=0x10
   _ALLOC_STUB* pNext;
 };
 
+struct S3TC_COLOR
+{
+  unsigned __int8 rgba[4];
+};
+
+struct S3TCBlockRGB
+{
+  unsigned __int16 rgb0;
+  unsigned __int16 rgb1;
+  unsigned int pixbm;
+};
+
+struct FCOLOR
+{
+  float rgba[4];
+};
+
 class __cppobj CD3duAlloc // sizeof=0x0
 {
 public:
@@ -165,11 +183,21 @@ void __cdecl D3DXAssert(const char* szFile, int nLine, const char* szCondition);
 int __cdecl _d3dxCopyRelease();
 int __cdecl _d3dxCopyAddRef();
 
+void __cdecl ColorToRGB(S3TC_COLOR* pcolor, unsigned __int16* prgb);
+void __cdecl RGBToColor(unsigned __int16* prgb, S3TC_COLOR* pcolor);
+void __cdecl AllSame(S3TC_COLOR** pcolor, S3TCBlockRGB* pblock, unsigned __int16 wAlpha);
+void __cdecl ColorToFcolor(S3TC_COLOR* pcolor, FCOLOR* pfcolor);
+void __cdecl Square3x3(float (*m)[3][3], float (*m2)[3][3]);
+void __cdecl ClipExtrema(FCOLOR* plower, FCOLOR* pupper);
+void __cdecl FcolorToColor(FCOLOR* pfcolor, S3TC_COLOR* pcolor);
+void __cdecl Quantize(FCOLOR* pfcolor0, FCOLOR* pfcolor1, S3TCBlockRGB* pblock, int cOpaque);
+
 extern int g_bInit;
 extern _ALLOC_STUB* g_pHead[];
 extern unsigned int g_dwNumAllocations;
 extern unsigned int g_dwNumFrees;
 extern unsigned int g_dwTotalUnfreedMemory;
+extern float wtPrimary[3];
 
 extern TArray<LINEENTRY>* ArrayCopySpan;
 extern TArray<LINEENTRY>* ArrayFilterSpan;
