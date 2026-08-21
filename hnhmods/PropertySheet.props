@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <APPDIR>D:\HaNaHiMe</APPDIR>
+    <APPEXE>HaNaHiMe.exe</APPEXE>
+    <PYTHON_INCLUDES>C:\Python311-32\Include;C:\Python311-32\Lib\site-packages\pybind11\include</PYTHON_INCLUDES>
+    <PYTHON_LIBS>C:\Python311-32\libs</PYTHON_LIBS>
+    <PYTHON_PATH>C:\Python311-32</PYTHON_PATH>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="APPDIR">
+      <Value>$(APPDIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="APPEXE">
+      <Value>$(APPEXE)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PYTHON_INCLUDES">
+      <Value>$(PYTHON_INCLUDES)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PYTHON_LIBS">
+      <Value>$(PYTHON_LIBS)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PYTHON_PATH">
+      <Value>$(PYTHON_PATH)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
