@@ -24,10 +24,10 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\sbz\cpp\sbz_header.hpp">
+    <ClInclude Include="sbz_header.hpp">
       <Filter>Source Files\sbz</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\sbz\cpp\sbz_intern.hpp">
+    <ClInclude Include="sbz_intern.hpp">
       <Filter>Source Files\sbz</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,10 +38,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\sbz\cpp\python_repl.cpp">
+    <ClCompile Include="python_repl.cpp">
       <Filter>Source Files\sbz</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\sbz\cpp\sbz_main.cpp">
+    <ClCompile Include="sbz_main.cpp">
       <Filter>Source Files\sbz</Filter>
     </ClCompile>
   </ItemGroup>
