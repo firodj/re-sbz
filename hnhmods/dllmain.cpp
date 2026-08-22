@@ -29,6 +29,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     {
     case DLL_PROCESS_ATTACH:
         globals::inputHookDisabled = true;
+        globals::disableConsoleAutoHide = false;
         globals::SetCustomInit(HNHCustomInit);
         globals::SetCustomRender(HNHCustomRender);
         univhook::Attach(hModule);

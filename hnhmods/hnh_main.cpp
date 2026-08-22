@@ -9,11 +9,14 @@ namespace py = pybind11;
 
 #include "console.hpp"
 #include "globals.hpp"
+#include "menu.hpp"
 #include "hnh_header.hpp"
 #include "hnh_intern.hpp"
 #include "util.hpp"
 
 HWND g_hwndDesktop = 0;
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace user32hook {
 	// GetDesktopWindow
@@ -120,10 +123,95 @@ namespace user32hook {
 		return hwnd;
 	}
 
+	// PeekMessageA
+	typedef std::add_pointer_t<
+		BOOL
+		WINAPI
+		(
+			LPMSG lpMsg,
+			HWND  hWnd,
+			UINT  wMsgFilterMin,
+			UINT  wMsgFilterMax,
+			UINT  wRemoveMsg
+		)> PeekMessageAFn;
+	PeekMessageAFn oPeekMessageA = nullptr;
+	BOOL WINAPI hookPeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg) {
+		BOOL ret = oPeekMessageA(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
+		if (ret && lpMsg) {
+			const char* msgName = "";
+			bool wm_input = true;
+			bool logging = false;
+			bool translate = false;
+			switch (lpMsg->message) {
+			case WM_CREATE:			msgName = "WM_CREATE";	break;
+			case WM_DESTROY:		msgName = "WM_DESTROY";	break;
+			case WM_MOUSEMOVE:		msgName = "WM_MOUSEMOVE";		break;
+			case WM_NCMOUSEMOVE:	msgName = "WM_NCMOUSEMOVE";		break;
+			case WM_MOUSELEAVE:		msgName = "WM_MOUSELEAVE";		break;
+			case WM_NCMOUSELEAVE:	msgName = "WM_NCMOUSELEAVE";	break;
+			case WM_LBUTTONDOWN:	msgName = "WM_LBUTTONDOWN";		break;
+			case WM_LBUTTONUP:		msgName = "WM_LBUTTONUP";		break;
+			case WM_LBUTTONDBLCLK:	msgName = "WM_LBUTTONDBLCLK";	break;
+			case WM_RBUTTONDOWN:	msgName = "WM_RBUTTONDOWN";		break;
+			case WM_RBUTTONUP:		msgName = "WM_RBUTTONUP";		break;
+			case WM_RBUTTONDBLCLK:	msgName = "WM_RBUTTONDBLCLK";	break;
+			case WM_MBUTTONDOWN:	msgName = "WM_MBUTTONDOWN";		break;
+			case WM_MBUTTONUP:		msgName = "WM_MBUTTONUP";		break;
+			case WM_MBUTTONDBLCLK:	msgName = "WM_MBUTTONDBLCLK";	break;
+			case WM_MOUSEWHEEL: msgName = "WM_MOUSEWHEEL"; break;
+			case WM_MOUSEHWHEEL: msgName = "WM_MOUSEHWHEEL"; break;
+			case WM_XBUTTONDOWN:	msgName = "WM_XBUTTONDOWN";		break;
+			case WM_XBUTTONUP:		msgName = "WM_XBUTTONUP";		break;
+			case WM_XBUTTONDBLCLK:	msgName = "WM_XBUTTONDBLCLK";	break;
+			case WM_KEYDOWN: msgName = "WM_KEYDOWN"; logging = true; translate = true; break;
+			case WM_KEYUP: msgName = "WM_KEYUP"; logging = true; translate = true; break;
+			case WM_CHAR: msgName = "WM_CHAR"; logging = true; break;
+			case WM_SYSKEYDOWN: msgName = "WM_SYSKEYDOWN"; break;
+			case WM_SYSKEYUP: msgName = "WM_SYSKEYUP"; break;
+			case WM_SYSCHAR: msgName = "WM_SYSCHAR"; break;
+			case WM_SETFOCUS: msgName = "WM_SETFOCUS"; break;
+			case WM_KILLFOCUS: msgName = "WM_KILLFOCUS"; break;
+			case WM_INPUTLANGCHANGE: msgName = "WM_INPUTLANGCHANGE"; break;
+
+			default:
+				wm_input = false;
+				switch (lpMsg->message) {
+				
+				case WM_MOVE:			msgName = "WM_MOVE";		break;
+				case WM_SIZE:			msgName = "WM_SIZE";		break;
+				case WM_ACTIVATE:		msgName = "WM_ACTIVATE"; 	break;
+				case WM_PAINT:			msgName = "WM_PAINT";		break;
+				case WM_TIMER:			msgName = "WM_TIMER";	break;
+				default:
+					logging = true;
+				}
+			}
+			if (wm_input && translate) {
+				TranslateMessage(lpMsg);
+			}
+			if (wm_input && ImGui::GetCurrentContext() != nullptr) {
+				ImGui_ImplWin32_WndProcHandler(lpMsg->hwnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
+				ImGuiIO& io = ImGui::GetIO();
+			}
+
+			if (logging) {
+				DebugLog("[user32] PeekMessage req.hWnd=0x%x hWnd=0x%x message=0x%x(%s) wParam=0x%x lParam=0x%x time=%d pt=(%d,%d)\n",
+					hWnd, lpMsg->hwnd,
+					lpMsg->message, msgName, lpMsg->wParam, lpMsg->lParam,
+					lpMsg->time, lpMsg->pt.x, lpMsg->pt.y
+				);
+			}
+		}
+		return ret;
+	}
 
 
-
-	// TODO: update minhook
+	SHORT WINAPI hookGetAsyncKeyState(int vKey) {
+		if (menu::isOpen) {
+			return 0;
+		}
+		return globals::oGetAsyncKeyState(vKey);
+	}
 }
 
 // WinMain
@@ -208,6 +296,13 @@ void InitHNH() {
 	//if (res == MH_OK) res = MH_EnableHook(pfnWndProc);
 	//DebugLog("[HNH] Hooked WndProc; %s\n", MH_StatusToString(res));
 
+	res = MH_CreateHook(PeekMessageA, reinterpret_cast<LPVOID>(user32hook::hookPeekMessageA), reinterpret_cast<LPVOID*>(&user32hook::oPeekMessageA));
+	if (res == MH_OK) res = MH_EnableHook(PeekMessageA);
+	DebugLog("[HNH] Hooked PeekMessageA; %s\n", MH_StatusToString(res));
+
+	res = MH_CreateHook(GetAsyncKeyState, reinterpret_cast<LPVOID>(user32hook::hookGetAsyncKeyState), reinterpret_cast<LPVOID*>(&globals::oGetAsyncKeyState));
+	if (res == MH_OK) res = MH_EnableHook(GetAsyncKeyState);
+	DebugLog("[HNH] Hooked GetAsyncKeyState; %s\n", MH_StatusToString(res));
 }
 
 void FinishHNH() {
