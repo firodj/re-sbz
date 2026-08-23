@@ -57,8 +57,6 @@ class OdfParser:
         self.parse_tail(reader)
         
     def parse_content(self, reader):
-        
-
         chunk = reader.read_bytes(4)
         fram_index = 0
         while True:
@@ -190,6 +188,18 @@ class OdfParser:
             peek_pos += 1
             i += 1
 
+    def parse_d3dmaterial7_argb(self, reader):
+        ca,cr,cg,cb = reader.read_color4()
+        print("ambient (%0.2f, %0.2f, %0.2f, %0.2f)" % (cr,cg,cb,ca))
+        ca,cr,cg,cb = reader.read_color4()
+        print("diffuse (%0.2f, %0.2f, %0.2f, %0.2f)" % (cr,cg,cb,ca))   
+        ca,cr,cg,cb = reader.read_color4()
+        print("emissive (%0.2f, %0.2f, %0.2f, %0.2f)" % (cr,cg,cb,ca))
+        ca,cr,cg,cb = reader.read_color4()
+        print("specular (%0.2f, %0.2f, %0.2f, %0.2f)" % (cr,cg,cb,ca))
+        cp = reader.read_single()
+        print("power (%0.2f)" % (cp,))
+
     def parse_mesh(self, reader):
         hdr_size = reader.read_uint32()
         vert_count = reader.read_uint32()
@@ -209,18 +219,79 @@ class OdfParser:
                    
                     len = reader.read_uint32()
                     name = _shift_jis.decode(reader.read_bytes(len))[0]
-                    print(chunk, vert_index, name)
+                    print("chunk=%s vert_index=%d name=%s" % (chunk, vert_index, name))
 
+                    count_32 = reader.read_uint32()
+                    k = reader.read_bytes(32 * count_32)
+
+                    count_2 = reader.read_uint32()
+                    kk = reader.read_bytes(2 * count_2)
+
+                    print(f"count_32=%d count2=%d" % (count_32, count_2))
+                    continue
+                case b'MATE':
+                    chunk = reader.read_bytes(4)
+                    n = reader.read_uint32()
+                    name = _shift_jis.decode(reader.read_string())[0]
+                    print("chunk=VERT:%s n=%d name=%s" % (chunk, n, name))
+
+                    self.parse_d3dmaterial7_argb(reader)
+                    continue
+                case b'MANM':
+                    print("TODO: parse VERT:MATE:MANM")
+                    chunk = reader.read_bytes(4)
                     count = reader.read_uint32()
-                    k = reader.read_bytes(32 * count)
 
-                    count2 = reader.read_uint32()
-                    kk = reader.read_bytes(2 * count2)
+                    for i in range(count):
+                        fnum = reader.read_single()
 
-                    chunk = reader.peek_bytes(4)
+                        self.parse_d3dmaterial7_argb(reader)
+                    continue
+                case b'TEXT':
+                    chunk = reader.read_bytes(4)
+                    n = reader.read_uint32()
 
-                    print(count, count2, chunk)
+                    image_bmp =  _shift_jis.decode(reader.read_string())[0]
+                    print("chunk=VERT:%s n=%d image_bmp=%s" % (chunk, n, image_bmp))
+                    continue
+                case b'VFLG':
+                    chunk = reader.read_bytes(4)
+                    size = reader.read_uint32()
+                    flag = reader.read_uint16()
 
+                    reader.read_bytes(size - 2)
+
+                    subchunk = reader.peek_bytes(4)
+                    if subchunk == b'BIAS':
+                        subchunk = reader.read_bytes(4)
+                        bias = reader.read_uint16()
+                    else:
+                        bias = 0
+
+                    subchunk = reader.peek_bytes(4)
+                    if subchunk == b'ADRS':
+                        subchunk = reader.read_bytes(4)
+                        adrs1 = reader.read_byte()
+                        adrs2 = reader.read_byte()
+                    else:
+                        adrs1 = 0
+                        adrs2 = 0
+
+                    subchunk = reader.peek_bytes(4)
+                    if subchunk == b'ALPR':
+                        subchunk = reader.read_bytes(4)
+                        alpr = reader.read_uint32()
+                    else:
+                        alpr = 0
+
+                    print("chunk=VERT:VFLG:%s flag=%s" % (chunk, flag))
+                    print("bias=%d adrs=%d,%d alpr=%d" % (bias, adrs1, adrs2, alpr))
+                    continue
+                case b'Mkey':
+                    break
+                case b'MPPL':
+                    break
+                
                 case b'ANIM':
                     break
                 case b'FRAM':
@@ -235,11 +306,8 @@ class OdfParser:
                         print(_shift_jis.decode(chunk))
                         break
             discard = reader.read_byte()
+        
                     
-
-
-
-
     def parse_tail(self, reader):
         tail = reader.read_to_end()
         tail = tail[-25:]
