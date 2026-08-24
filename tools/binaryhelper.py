@@ -98,6 +98,9 @@ class BinaryReader:
     def read_uint16_array(self, length: int) -> list:
         return [self.read_uint16() for _ in range(length)]
 
+    def read_uint32_array(self, length: int) -> list:
+        return [self.read_uint32() for _ in range(length)]
+
     def read_name(self, length: Optional[int] = None) -> str:
         if length is not None:
             buf = self.read_bytes(length)
@@ -133,6 +136,11 @@ class BinaryReader:
         a = abs(self.read_single())
         return (r, g, b, a)
 
+    def read_vector2(self):
+        x = self.read_single()
+        y = self.read_single()
+        return (x, y)
+        
     def read_vector3(self):
         x = self.read_single()
         y = self.read_single()

@@ -76,13 +76,14 @@ class OdfParser:
                     self.parse_mesh(reader)
                 case b'MORP':
                     chunk = b''
-                    print("MORP")
+                    raise NotImplementedError("MORP feature is not implemented yet.")
+                   
                 case b'ANIM':
                     chunk = b''
-                    print("ANIM")
+                    self.parse_anim(reader)
                 case b'3DON':
                     chunk = b''
-                    print('3DON')
+                    self.parse_3don(reader)
                 case ChunkID.CHUNK_END:
                     chunk += reader.read_bytes(len(sjis_end)-len(chunk))
                     if chunk == sjis_end:
@@ -204,8 +205,8 @@ class OdfParser:
         hdr_size = reader.read_uint32()
         vert_count = reader.read_uint32()
         
-        name, _ = _shift_jis.decode(reader.read_bytes(hdr_size-8))
-        print('MESH', vert_count, name)
+        mesh_name, _ = _shift_jis.decode(reader.read_bytes(hdr_size-8))
+        print('MESH', vert_count, mesh_name)
 
         vert_index = 0
         while vert_index < vert_count:
@@ -218,16 +219,27 @@ class OdfParser:
                     chunk = reader.read_bytes(4)
                    
                     len = reader.read_uint32()
-                    name = _shift_jis.decode(reader.read_bytes(len))[0]
-                    print("chunk=%s vert_index=%d name=%s" % (chunk, vert_index, name))
+                    vert_name = _shift_jis.decode(reader.read_bytes(len))[0]
+                    print("chunk=%s vert_index=%d name=%s" % (chunk, vert_index, vert_name))
 
+                    sizeof_d3dvertex = 32
                     count_32 = reader.read_uint32()
-                    k = reader.read_bytes(32 * count_32)
+                    #k = reader.read_bytes(32 * count_32)
+                    for k in range(count_32):
+                        x,y,z = reader.read_vector3()
+                        nx,ny,nz = reader.read_vector3()
+                        tu, tv = reader.read_vector2()
+                        print("%d (%.2f, %.2f, %2f) n(%.2f, %.2f, %.2f) t(%.2f, %.2f)" % (k, x,y,z,
+                            nx,ny,nz, tu,tv))
 
                     count_2 = reader.read_uint32()
-                    kk = reader.read_bytes(2 * count_2)
+                    #kk = reader.read_bytes(2 * count_2)
+                    for kk in range(count_2):
+                        w = reader.read_uint16()
+                        print("%d %d" % (kk, w))
 
                     print(f"count_32=%d count2=%d" % (count_32, count_2))
+                    print(f"name=%d_%s_???" % (vert_index, mesh_name))
                     continue
                 case b'MATE':
                     chunk = reader.read_bytes(4)
@@ -307,7 +319,35 @@ class OdfParser:
                         break
             discard = reader.read_byte()
         
-                    
+    def parse_anim(self, reader):
+        n = reader.read_uint32()
+        count = n // 56
+        print('ANIM count=%d' % (count,))
+        for i in range(count):
+            t = reader.read_single()
+            pos_x, pos_y, pos_z = reader.read_vector3()
+            scale_x, scale_y, scale_z = reader.read_vector3()
+            quart_x, quart_y, quart_z, quart_w = reader.read_quaternion()
+            gap = reader.read_uint32_array(3)
+            print("%d t=%.2f pos=(%.2f, %.2f, %.2f) scale=(%.2f, %.2f, %.2f) quart=(%.2f, %.2f, %.2f, %.2f) %s" % (
+                i, t, 
+                pos_x, pos_y, pos_z, scale_x, scale_y, scale_z,
+                quart_x, quart_y, quart_z, quart_w, gap)
+                )
+    
+    def parse_3don(self, reader):
+        count = reader.read_uint32()
+
+        print("3DON count=%d" % (count,))
+        for i in range(count):
+            a = reader.read_single()
+            b = reader.read_single()
+            c = reader.read_uint32()
+            name1 = _shift_jis.decode(reader.read_string())[0]
+            name2 = _shift_jis.decode(reader.read_string())[0]
+
+            print("%d %.2f %.2f %d %s %s" % ( i, a,b,c, name1, name2))
+
     def parse_tail(self, reader):
         tail = reader.read_to_end()
         tail = tail[-25:]

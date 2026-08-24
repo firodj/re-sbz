@@ -151,6 +151,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="hnh_header.hpp" />
     <ClInclude Include="hnh_intern.hpp" />
+    <ClInclude Include="user32hook.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -162,6 +163,7 @@
     </ClCompile>
     <ClCompile Include="python_repl.cpp" />
     <ClCompile Include="hnh_main.cpp" />
+    <ClCompile Include="user32hook.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SB3ImGuiHook\Universal-ImGui-Hook.vcxproj">
