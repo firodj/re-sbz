@@ -236,7 +236,7 @@ class OdfParser:
                 
     def parse_fram(self, reader, index):
         size = reader.read_uint32()
-        name, _ = _shift_jis.decode(reader.read_bytes(size))
+        name = reader.read_jpbytes(size) # _shift_jis.decode(reader.read_bytes(size))
         print('FRAM', name)
 
         #if name == 'CameraFrame':
@@ -253,8 +253,8 @@ class OdfParser:
             if chunk == ChunkID.CHUNK_PARN.value:
                 skipped = reader.read_bytes(peek_pos+4)
                 size = reader.read_uint32()
-                name = _shift_jis.decode(reader.read_bytes(size))[0]
-                print('PARN', index, name)
+                name = reader.read_jpbytes(size) # _shift_jis.decode(reader.read_bytes(size))[0]
+                print('PAReNt index=%d name=%s' % (index, name))
                 break  
             
             peek_pos += 1
@@ -287,7 +287,7 @@ class OdfParser:
                     data_reader = BinaryReader(BytesIO(data))
                     d3dLight = D3DLight()
                     d3dLight.parse(data_reader)
-                    print(chunk, size, d3dLight)
+                    print(chunk.decode(), size, d3dLight)
 
                     peeks = reader.peek_bytes(25 + 3)
                     peek_pos = 0
@@ -297,7 +297,7 @@ class OdfParser:
                     flags = reader.read_uint16()
                     flag_bits = [int(bit) for bit in f"{flags:08b}"]
 
-                    print(chunk, size, flag_bits)
+                    print(chunk.decode(), size, flag_bits)
                     
                     peeks = reader.peek_bytes(25 + 3)
                     peek_pos = 0
@@ -306,7 +306,7 @@ class OdfParser:
                         peeks = reader.peek_bytes(25 + 3 + (13 - (len(peeks) - peek_pos)))
                     chunk = peeks[peek_pos:peek_pos+13]
                     if chunk == asc_endobjection:
-                        print(chunk)
+                        print(chunk.decode())
                         skipped = reader.read_bytes(peek_pos+13)
                         break
                 case _:
@@ -324,7 +324,7 @@ class OdfParser:
                 size = reader.read_uint32()
                 matrix = reader.read_matrix()
 
-                print(chunk, size, matrix)
+                print(chunk.decode(), size, matrix)
                 break  
             
             peek_pos += 1
@@ -334,8 +334,9 @@ class OdfParser:
         hdr_size = reader.read_uint32()
         vert_count = reader.read_uint32()
         
-        mesh_name, _ = _shift_jis.decode(reader.read_bytes(hdr_size-8))
-        print('MESH', vert_count, mesh_name)
+        size = hdr_size-8
+        mesh_name = reader.read_jpbytes(size) #_shift_jis.decode(reader.read_bytes(hdr_size-8))
+        print('MESH vert_count=%d name=%s' % (vert_count, mesh_name))
 
         vert_index = 0
         while vert_index < vert_count:
@@ -348,24 +349,31 @@ class OdfParser:
                     chunk = reader.read_bytes(4)
                    
                     len = reader.read_uint32()
-                    vert_name = _shift_jis.decode(reader.read_bytes(len))[0]
-                    print("chunk=%s vert_index=%d name=%s" % (chunk, vert_index, vert_name))
+                    vert_name = reader.read_jpbytes(len) # _shift_jis.decode(reader.read_bytes(len))[0]
+                    print("chunk=%s vert_index=%d name=%s" % (chunk.decode(), vert_index, vert_name))
 
                     sizeof_d3dvertex = 32
                     count_32 = reader.read_uint32()
                     #k = reader.read_bytes(32 * count_32)
+                    print("vertex_count =", count_32)
                     for k in range(count_32):
                         vertex = D3DVertex()
                         vertex.parse(reader)
-                        print(vertex)
+                        print(k, vertex)
 
                     count_2 = reader.read_uint32()
                     #kk = reader.read_bytes(2 * count_2)
+                    print("indices_count =", count_2)
+                    faces = None
                     for kk in range(count_2):
+                        if kk % 3 == 0:
+                            if faces is not None:
+                                print(kk // 3, faces)
+                            faces = [0, 0, 0]
                         w = reader.read_uint16()
-                        print("%d %d" % (kk, w))
+                        faces[kk % 3] = w
+                    print(count_2 // 3, faces)
 
-                    print(f"count_32=%d count2=%d" % (count_32, count_2))
                     print(f"name=%d_%s_???" % (vert_index, mesh_name))
                     continue
                 case ChunkID.CHUNK_MATE.value:
@@ -544,12 +552,10 @@ class OdsFile():
                         chunk = reader.read_bytes(len(chunk))
                         continue
                 case ChunkID.CHUNK_ENDOFFILE.value:
-                    
                     chunk = reader.peek_bytes(len(sjis_endoffile))
                     if chunk == sjis_endoffile:
                         chunk = reader.read_bytes(len(chunk))
                         print(_shift_jis.decode(chunk))
-                       
                         break
                 case ChunkID.CHUNK_EYES.value:
                     chunk = reader.peek_bytes(8)

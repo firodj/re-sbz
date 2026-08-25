@@ -75,6 +75,9 @@ class BinaryReader:
                 res += self._stream.read(size-len(res))
             return res
     
+    def read_jpbytes(self, size):
+        return _shift_jis.decode(self.read_bytes(size).strip(b'\0'))[0]
+    
     def peek_bytes(self, size) -> bytes:
         if len(self._cached) < size:
             self._cached += self._stream.read(size-len(self._cached))
