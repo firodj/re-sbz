@@ -606,29 +606,27 @@ class SekParser:
         gap_20C = reader.read_uint32()
         gap_210 = reader.read_uint32_array(4)
         sekheader_220 = reader.read_uint32()
-        gap_224 = reader.read_uint32_array(4)
-        gap_234 = reader.read_uint32_array(4)
-        gap_244 = reader.read_uint32_array(4)
-        gap_254 = reader.read_bytes(16).strip(b'\0')
-        gap_264 = reader.read_uint32_array(4)
-        gap_274 = reader.read_uint32_array(4)
-        gap_284 = reader.read_uint32_array(4)
+        gap_224 = reader.read_uint32_array(3)
+        gap_230 = reader.read_uint32_array(4)
+        gap_240 = reader.read_uint32_array(4)
+        # gap_254 = reader.read_bytes(16).strip(b'\0')
+        # gap_264 = reader.read_uint32_array(4)
+        # gap_274 = reader.read_uint32_array(4)
+        # gap_284 = reader.read_uint32_array(4)
         
         print(szname_100, field_200, field_208, hex(sekheader_220))
-        print(gap_244)
-        print(gap_254)
+        # print(gap_244)
+        # print(gap_254)
     
-        for i in range(127):
-            items = reader.read_uint32_array(4)
-            items2 = [reader.read_single(),reader.read_single(),reader.read_single(),reader.read_single()]
-            items3 = reader.read_uint32_array(15)
-            name = reader.read_bytes(64).split(b'\0')[0]
-
-            print(i, items,items2, items3, name)
+        for i in range(128):
+            item_0 = reader.read_uint32()
+            name_4 = reader.read_bytes(64).split(b'\0')[0]
+            items_44 = reader.read_uint32_array(3)
+            item_50 = reader.read_uint32()
+            floats_54 = [reader.read_single(),reader.read_single(),reader.read_single(),reader.read_single()]
+            fields_64 = reader.read_uint32_array(14)
+            print(i, item_0, name_4, items_44,item_50, floats_54, fields_64)
         
-        gap_4ff8 = reader.read_uint32_array(22)
-        print(gap_4ff8)
-
 def main() -> int:
     import os
     from dotenv import load_dotenv
