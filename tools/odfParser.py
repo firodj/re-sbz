@@ -587,6 +587,48 @@ class OdsFile():
             print(chunk)
             discard = reader.read_byte()
 
+class SekParser:
+    def __init__(self, stream):
+        reader = BinaryReader(stream)
+
+        path1 = reader.read_bytes(256).strip(b'\0')
+        name1 = reader.read_bytes(256).strip(b'\0')
+
+        print(path1, name1)
+        self.parse_body(reader)
+
+    def parse_body(self, reader):
+        szname_0 = reader.read_bytes(256).strip(b'\0')
+        szname_100 = reader.read_bytes(256).strip(b'\0')
+        field_200 = reader.read_uint32()
+        gap_204 = reader.read_uint32()
+        field_208 = reader.read_uint32()
+        gap_20C = reader.read_uint32()
+        gap_210 = reader.read_uint32_array(4)
+        sekheader_220 = reader.read_uint32()
+        gap_224 = reader.read_uint32_array(4)
+        gap_234 = reader.read_uint32_array(4)
+        gap_244 = reader.read_uint32_array(4)
+        gap_254 = reader.read_bytes(16).strip(b'\0')
+        gap_264 = reader.read_uint32_array(4)
+        gap_274 = reader.read_uint32_array(4)
+        gap_284 = reader.read_uint32_array(4)
+        
+        print(szname_100, field_200, field_208, hex(sekheader_220))
+        print(gap_244)
+        print(gap_254)
+    
+        for i in range(127):
+            items = reader.read_uint32_array(4)
+            items2 = [reader.read_single(),reader.read_single(),reader.read_single(),reader.read_single()]
+            items3 = reader.read_uint32_array(15)
+            name = reader.read_bytes(64).split(b'\0')[0]
+
+            print(i, items,items2, items3, name)
+        
+        gap_4ff8 = reader.read_uint32_array(22)
+        print(gap_4ff8)
+
 def main() -> int:
     import os
     from dotenv import load_dotenv
@@ -595,8 +637,13 @@ def main() -> int:
     appdir = os.getenv('HNH_APPDIR')
 
     match sys.argv[1]:
-        case 'odf':
+        case 'sek':
             otoko_sek = os.path.join(appdir, 'ODF/OTOKO/OTOKO.SEK')
+            otoko_sek = os.path.join(appdir, 'ODF/H/H01/H01_02.SEK')
+            with open(otoko_sek, "rb") as f:
+                parser = SekParser(f)
+        case 'odf':
+            
             otoko_odf = os.path.join(appdir, 'ODF/OTOKO/OTOKO.ODF')
 
             with open(otoko_odf, "rb") as f:
