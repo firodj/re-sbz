@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 from binaryhelper import BinaryReader, BinaryWriter, red_print
 import sys
+from enum import Enum
 
 try:
     import codecs
@@ -34,13 +35,152 @@ class D3DLight():
         self.add_field('dvTheta', reader.read_single())
         self.add_field('dvPhi', reader.read_single())
 
-from enum import Enum
+    def __str__(self):
+        return "D3DLight(%s)" % (self.fields)
 
-ENDER = "ファイルは終了"
-sjis_end, _ = _shift_jis.encode(ENDER)
+def argb_to_rgba(v):
+    a,r,g,b = v
+    return (r,g,b,a)
+
+class D3DMaterial7():
+    def __init__(self):
+        self.fields = []
+
+    def add_field(self, name, value):
+        self.fields.append([name, value])
+
+    def parse_argb(self, reader):
+        self.add_field('dcvDiffuse',  argb_to_rgba(reader.read_color4()))
+        self.add_field('dcvAmbient',  argb_to_rgba(reader.read_color4()))
+        self.add_field('dcvSpecular', argb_to_rgba(reader.read_color4()))
+        self.add_field('dcvEmissive', argb_to_rgba(reader.read_color4()))
+        self.add_field('dvPower', reader.read_single())
+    
+    def __str__(self):
+        return "D3DMaterial7(%s)" % self.fields
+
+class D3DVertex():
+    def __init__(self):
+        self.fields = []
+
+    def add_field(self, name, value):
+        self.fields.append([name, value])
+        
+    def __str__(self):
+        return "D3DVertex(%s)" % self.fields
+
+    def parse(self, reader):
+        self.add_field("dv", reader.read_vector3())
+        self.add_field("dvN", reader.read_vector3())
+        self.add_field("dvT", reader.read_vector2())
+
+class HanaAnimKey():
+    def __init__(self):
+        self.fields = []
+
+    def add_field(self, name, value):
+        self.fields.append([name, value])
+
+    def __str__(self):
+        return "HanaAnimKey(%s)" % self.fields
+
+    def parse(self, reader):
+        self.add_field("t", reader.read_single())
+        self.add_field("pos", reader.read_vector3())
+        self.add_field("scale", reader.read_vector3())
+        self.add_field("quart", reader.read_quaternion())
+        self.add_field("gap", reader.read_uint32_array(3))
+
+class HanaAnim():
+    def __init__(self):
+        self.count = 0
+        self.keys = []
+
+    def parse(self, reader):
+        n = reader.read_uint32()
+        self.count = n // 56
+        print('ANIM count=%d' % (self.count,))
+        for i in range(self.count):
+            key = HanaAnimKey()
+            key.parse(reader)
+            self.keys.append(key)
+
+class Hana3DonItem():
+    def __init__(self):
+        self.fields = []
+
+    def add_field(self, name, value):
+        self.fields.append([name, value])
+
+    def __str__(self):
+        return "Hana3DonItem(%s)" % self.fields
+        
+    def parse(self, reader):
+        self.add_field('a', reader.read_single())
+        self.add_field('b', reader.read_single())
+        self.add_field('c', reader.read_uint32())
+        self.add_field('name1', reader.read_jpstring())
+        self.add_field('name2', reader.read_jpstring())
+
+class Hana3Don():
+    def __init__(self):
+        self.count = 0
+        self.items = []
+
+    def parse(self, reader):
+        self.count = reader.read_uint32()
+
+        print("3DON count=%d" % (self.count,))
+        for i in range(self.count):
+            item = Hana3DonItem()
+            item.parse(reader)
+            self.items.append(item)
+
+            print(i, item)
+
+JP_SOUND = "サウンド"
+sjis_sound, _ = _shift_jis.encode(JP_SOUND)
+
+JP_ENDOFFILE = "ファイルは終了"
+sjis_endoffile, _ = _shift_jis.encode(JP_ENDOFFILE)
+
+asc_endobjection = b'End-Objection'
+asc_light = b'Light'
 
 class ChunkID(Enum):
-    CHUNK_END = sjis_end[0:4]
+    CHUNK_ENDOFFILE = sjis_endoffile[0:4]
+    CHUNK_SOUND = sjis_sound[0:4]
+    CHUNK_FRAM = b'FRAM'
+    CHUNK_MESH = b'MESH'
+    CHUNK_MORP = b'MORP'
+    CHUNK_ANIM = b'ANIM'
+    CHUNK_3DON = b'3DON'
+    CHUNK_PARN = b'PARN'
+    CHUNK_VX_N = b'VX-N'
+    CHUNK_MH_N = b'MH-N'
+    CHUNK_MP_N = b'MP-N'
+    CHUNK_LIGH = b'LIGH'
+    CHUNK_FFLG = b'FFLG'
+    CHUNK_ENDOBJECTION = b'End-'
+    CHUNK_FMRX = b'FMRX'
+    CHUNK_VERT = b'VERT'
+    CHUNK_MATE = b'MATE'
+    CHUNK_MANM = b'MANM'
+    CHUNK_TEXT = b'TEXT'
+    CHUNK_VFLG = b'VFLG'
+    CHUNK_MKEY = b'Mkey'
+    CHUNK_MPPL = b'MPPL'
+    CHUNK_BIAS = b'BIAS'
+    CHUNK_ADRS = b'ADRS'
+    CHUNK_ALPR = b'ALPR'
+    CHUNK_AMBI = b'AMBI'
+    CHUNK_FOGG = b'FOGG'
+    CHUNK_SIZE = b'SIZE'
+    CHUNK_NAME = b'NAME'
+    CHUNK_SEKN = b'SEKN'
+    CHUNK_EYES = b'EYES'
+    CHUNK_EYE2 = b'EYE2'
+    CHUNK_LIGHT = b'Ligh'
 
 class OdfParser:
     def __init__(self, stream):
@@ -49,7 +189,7 @@ class OdfParser:
         header = "オリジナル☆フォーマット%c%c%c" % (13, 10, 0)
         sjis, _ = _shift_jis.encode(header)
         hdr = reader.read_bytes(len(sjis))
-        
+
         if hdr == sjis:
             print(_shift_jis.decode(hdr))
             self.parse_content(reader)
@@ -67,26 +207,27 @@ class OdfParser:
                 chunk += rest_chunk
                 
             match chunk[0:4]:
-                case b'FRAM':
+                case ChunkID.CHUNK_FRAM.value:
                     chunk = b''
                     fram_index += 1
                     self.parse_fram(reader, fram_index)
-                case b'MESH':
+                case ChunkID.CHUNK_MESH.value:
                     chunk = b''
                     self.parse_mesh(reader)
-                case b'MORP':
+                case ChunkID.CHUNK_MORP.value:
                     chunk = b''
                     raise NotImplementedError("MORP feature is not implemented yet.")
-                   
-                case b'ANIM':
+                case ChunkID.CHUNK_ANIM.value:
                     chunk = b''
-                    self.parse_anim(reader)
-                case b'3DON':
+                    anim = HanaAnim()
+                    anim.parse(reader)
+                case ChunkID.CHUNK_3DON.value:
                     chunk = b''
-                    self.parse_3don(reader)
-                case ChunkID.CHUNK_END:
-                    chunk += reader.read_bytes(len(sjis_end)-len(chunk))
-                    if chunk == sjis_end:
+                    hana3don = Hana3Don()
+                    hana3don.parse(reader)
+                case ChunkID.CHUNK_ENDOFFILE.value:
+                    chunk += reader.read_bytes(len(sjis_endoffile)-len(chunk))
+                    if chunk == sjis_endoffile:
                         print(_shift_jis.decode(chunk))
                         break
                     chunk = chunk[1:]
@@ -109,7 +250,7 @@ class OdfParser:
         peek_pos = 0
         while i < 25:
             chunk = peeks[peek_pos:peek_pos+4]
-            if chunk == b'PARN':
+            if chunk == ChunkID.CHUNK_PARN.value:
                 skipped = reader.read_bytes(peek_pos+4)
                 size = reader.read_uint32()
                 name = _shift_jis.decode(reader.read_bytes(size))[0]
@@ -127,30 +268,30 @@ class OdfParser:
             fram_type = 0
             chunk = peeks[peek_pos:peek_pos+4]
             match chunk:
-                case b'VX-N':
+                case ChunkID.CHUNK_VX_N.value:
                     print(chunk)
                     fram_type = 1002
                     skipped = reader.read_bytes(peek_pos+4)
-                case b'MH-N':
+                case ChunkID.CHUNK_MH_N.value:
                     print(chunk)
                     fram_type = 1013
                     skipped = reader.read_bytes(peek_pos+4)
-                case b'MP-N':
+                case ChunkID.CHUNK_MP_N.value:
                     print(chunk)
                     fram_type = 1111
                     skipped = reader.read_bytes(peek_pos+4)
-                case b'LIGH':
+                case ChunkID.CHUNK_LIGH.value:
                     skipped = reader.read_bytes(peek_pos+4)
                     size = reader.read_uint32()
                     data = reader.read_bytes(104)
                     data_reader = BinaryReader(BytesIO(data))
                     d3dLight = D3DLight()
                     d3dLight.parse(data_reader)
-                    print(chunk, size, d3dLight.fields)
+                    print(chunk, size, d3dLight)
 
                     peeks = reader.peek_bytes(25 + 3)
                     peek_pos = 0
-                case b'FFLG':
+                case ChunkID.CHUNK_FFLG.value:
                     skipped = reader.read_bytes(peek_pos+4)
                     size = reader.read_uint32()
                     flags = reader.read_uint16()
@@ -160,11 +301,11 @@ class OdfParser:
                     
                     peeks = reader.peek_bytes(25 + 3)
                     peek_pos = 0
-                case b'End-':
+                case ChunkID.CHUNK_ENDOBJECTION.value:
                     if len(peeks)-peek_pos < 13:
                         peeks = reader.peek_bytes(25 + 3 + (13 - (len(peeks) - peek_pos)))
                     chunk = peeks[peek_pos:peek_pos+13]
-                    if chunk == b'End-Objection':
+                    if chunk == asc_endobjection:
                         print(chunk)
                         skipped = reader.read_bytes(peek_pos+13)
                         break
@@ -178,7 +319,7 @@ class OdfParser:
         peek_pos = 0
         while i < 25:
             chunk = peeks[peek_pos:peek_pos+4]
-            if chunk == b'FMRX':
+            if chunk == ChunkID.CHUNK_FMRX.value:
                 skipped = reader.read_bytes(peek_pos+4)
                 size = reader.read_uint32()
                 matrix = reader.read_matrix()
@@ -188,18 +329,6 @@ class OdfParser:
             
             peek_pos += 1
             i += 1
-
-    def parse_d3dmaterial7_argb(self, reader):
-        ca,cr,cg,cb = reader.read_color4()
-        print("ambient (%0.2f, %0.2f, %0.2f, %0.2f)" % (cr,cg,cb,ca))
-        ca,cr,cg,cb = reader.read_color4()
-        print("diffuse (%0.2f, %0.2f, %0.2f, %0.2f)" % (cr,cg,cb,ca))   
-        ca,cr,cg,cb = reader.read_color4()
-        print("emissive (%0.2f, %0.2f, %0.2f, %0.2f)" % (cr,cg,cb,ca))
-        ca,cr,cg,cb = reader.read_color4()
-        print("specular (%0.2f, %0.2f, %0.2f, %0.2f)" % (cr,cg,cb,ca))
-        cp = reader.read_single()
-        print("power (%0.2f)" % (cp,))
 
     def parse_mesh(self, reader):
         hdr_size = reader.read_uint32()
@@ -214,7 +343,7 @@ class OdfParser:
             if not chunk:
                 break
             match chunk:
-                case b'VERT':
+                case ChunkID.CHUNK_VERT.value:
                     vert_index += 1
                     chunk = reader.read_bytes(4)
                    
@@ -226,11 +355,9 @@ class OdfParser:
                     count_32 = reader.read_uint32()
                     #k = reader.read_bytes(32 * count_32)
                     for k in range(count_32):
-                        x,y,z = reader.read_vector3()
-                        nx,ny,nz = reader.read_vector3()
-                        tu, tv = reader.read_vector2()
-                        print("%d (%.2f, %.2f, %2f) n(%.2f, %.2f, %.2f) t(%.2f, %.2f)" % (k, x,y,z,
-                            nx,ny,nz, tu,tv))
+                        vertex = D3DVertex()
+                        vertex.parse(reader)
+                        print(vertex)
 
                     count_2 = reader.read_uint32()
                     #kk = reader.read_bytes(2 * count_2)
@@ -241,15 +368,18 @@ class OdfParser:
                     print(f"count_32=%d count2=%d" % (count_32, count_2))
                     print(f"name=%d_%s_???" % (vert_index, mesh_name))
                     continue
-                case b'MATE':
+                case ChunkID.CHUNK_MATE.value:
                     chunk = reader.read_bytes(4)
                     n = reader.read_uint32()
-                    name = _shift_jis.decode(reader.read_string())[0]
+                    name = reader.read_jpstring()
                     print("chunk=VERT:%s n=%d name=%s" % (chunk, n, name))
 
-                    self.parse_d3dmaterial7_argb(reader)
+                    material = D3DMaterial7()
+                    material.parse_argb(reader)
+                    print(material)
+             
                     continue
-                case b'MANM':
+                case ChunkID.CHUNK_MANM.value:
                     print("TODO: parse VERT:MATE:MANM")
                     chunk = reader.read_bytes(4)
                     count = reader.read_uint32()
@@ -257,16 +387,18 @@ class OdfParser:
                     for i in range(count):
                         fnum = reader.read_single()
 
-                        self.parse_d3dmaterial7_argb(reader)
+                        material = D3DMaterial7()
+                        material.parse_argb(reader)
+                        print(material)
                     continue
-                case b'TEXT':
+                case ChunkID.CHUNK_TEXT.value:
                     chunk = reader.read_bytes(4)
                     n = reader.read_uint32()
 
-                    image_bmp =  _shift_jis.decode(reader.read_string())[0]
+                    image_bmp =  reader.read_jpstring()
                     print("chunk=VERT:%s n=%d image_bmp=%s" % (chunk, n, image_bmp))
                     continue
-                case b'VFLG':
+                case ChunkID.CHUNK_VFLG.value:
                     chunk = reader.read_bytes(4)
                     size = reader.read_uint32()
                     flag = reader.read_uint16()
@@ -274,14 +406,14 @@ class OdfParser:
                     reader.read_bytes(size - 2)
 
                     subchunk = reader.peek_bytes(4)
-                    if subchunk == b'BIAS':
+                    if subchunk == ChunkID.CHUNK_BIAS.value:
                         subchunk = reader.read_bytes(4)
                         bias = reader.read_uint16()
                     else:
                         bias = 0
 
                     subchunk = reader.peek_bytes(4)
-                    if subchunk == b'ADRS':
+                    if subchunk == ChunkID.CHUNK_ADRS.value:
                         subchunk = reader.read_bytes(4)
                         adrs1 = reader.read_byte()
                         adrs2 = reader.read_byte()
@@ -290,7 +422,7 @@ class OdfParser:
                         adrs2 = 0
 
                     subchunk = reader.peek_bytes(4)
-                    if subchunk == b'ALPR':
+                    if subchunk == ChunkID.CHUNK_ALPR.value:
                         subchunk = reader.read_bytes(4)
                         alpr = reader.read_uint32()
                     else:
@@ -299,55 +431,26 @@ class OdfParser:
                     print("chunk=VERT:VFLG:%s flag=%s" % (chunk, flag))
                     print("bias=%d adrs=%d,%d alpr=%d" % (bias, adrs1, adrs2, alpr))
                     continue
-                case b'Mkey':
+                case ChunkID.CHUNK_MKEY.value:
                     break
-                case b'MPPL':
+                case ChunkID.CHUNK_MPPL.value:
                     break
-                
-                case b'ANIM':
+                case ChunkID.CHUNK_ANIM.value:
                     break
-                case b'FRAM':
+                case ChunkID.CHUNK_FRAM.value:
                     break
-                case b'MESH':
+                case ChunkID.CHUNK_MESH.value:
                     break
-                case b'MORP':
+                case ChunkID.CHUNK_MORP.value:
                     break
-                case ChunkID.CHUNK_END:
-                    chunk = reader.peek_bytes(len(sjis_end))
-                    if chunk == sjis_end:
+                case ChunkID.CHUNK_ENDOFFILE.value:
+                    chunk = reader.peek_bytes(len(sjis_endoffile))
+                    if chunk == sjis_endoffile:
+                        chunk = reader.read_bytes(len(chunk))
                         print(_shift_jis.decode(chunk))
                         break
             discard = reader.read_byte()
-        
-    def parse_anim(self, reader):
-        n = reader.read_uint32()
-        count = n // 56
-        print('ANIM count=%d' % (count,))
-        for i in range(count):
-            t = reader.read_single()
-            pos_x, pos_y, pos_z = reader.read_vector3()
-            scale_x, scale_y, scale_z = reader.read_vector3()
-            quart_x, quart_y, quart_z, quart_w = reader.read_quaternion()
-            gap = reader.read_uint32_array(3)
-            print("%d t=%.2f pos=(%.2f, %.2f, %.2f) scale=(%.2f, %.2f, %.2f) quart=(%.2f, %.2f, %.2f, %.2f) %s" % (
-                i, t, 
-                pos_x, pos_y, pos_z, scale_x, scale_y, scale_z,
-                quart_x, quart_y, quart_z, quart_w, gap)
-                )
-    
-    def parse_3don(self, reader):
-        count = reader.read_uint32()
-
-        print("3DON count=%d" % (count,))
-        for i in range(count):
-            a = reader.read_single()
-            b = reader.read_single()
-            c = reader.read_uint32()
-            name1 = _shift_jis.decode(reader.read_string())[0]
-            name2 = _shift_jis.decode(reader.read_string())[0]
-
-            print("%d %.2f %.2f %d %s %s" % ( i, a,b,c, name1, name2))
-
+  
     def parse_tail(self, reader):
         tail = reader.read_to_end()
         tail = tail[-25:]
@@ -355,8 +458,8 @@ class OdfParser:
         while i < len(tail):
             chunk = tail[i:i+4]
             match chunk:
-                case b'AMBI':
-                    print("AMBI", i)
+                case ChunkID.CHUNK_AMBI.value:
+                    print(chunk.decode(), i)
                     i += 4
                     data = tail[i:i+4]
                     diffuse = dict(
@@ -366,8 +469,8 @@ class OdfParser:
                     )
                     print(diffuse)
                     i += 4
-                case b'FOGG':
-                    print("FOGG", i)
+                case ChunkID.CHUNK_FOGG.value:
+                    print(chunk.decode(), i)
                     i += 4
                     fog = dict(
                         color = struct.unpack('<I', tail[i:i+4])[0],
@@ -379,6 +482,104 @@ class OdfParser:
                 case _:
                     i += 1
 
+class OdsFile():
+    def __init__(self, stream):
+        reader = BinaryReader(stream)
+        self.parse(reader)
+
+    def parse(self, reader):
+        header = "新フォーマットＯＤＳ%c%c%c" % (13, 10, 0)
+        sjis, _ = _shift_jis.encode(header)
+        hdr = reader.read_bytes(len(sjis))
+        
+        if hdr == sjis:
+            print(_shift_jis.decode(hdr))
+            self.parse_content(reader)
+
+    def parse_content(self, reader):
+        
+        while True:
+            chunk = reader.peek_bytes(4)
+            if not chunk:
+                break
+           
+            match chunk:
+                case ChunkID.CHUNK_TEXT.value:
+                    chunk = reader.read_bytes(4)
+                    n = reader.read_uint32()
+
+                    filename = reader.read_jpstring()
+                    print("chunk=%s n=%d filename=%s" % (chunk.decode(), n, filename))
+                    continue
+                case ChunkID.CHUNK_SIZE.value:
+                    chunk = reader.read_bytes(4)
+                    count = reader.read_uint32()
+                    print("chunk=%s count=%d" % (chunk.decode(), count))
+                    continue
+                case ChunkID.CHUNK_NAME.value:
+                    chunk = reader.read_bytes(4)
+                    name = reader.read_jpstring()
+                    print("chunk=%s name=%s" % (chunk.decode(), name))
+                    continue
+                case ChunkID.CHUNK_ANIM.value:
+                    chunk = reader.read_bytes(4)
+                    anim = HanaAnim()
+                    anim.parse(reader)
+
+                    continue
+                case ChunkID.CHUNK_SEKN.value:
+                    chunk = reader.read_bytes(4)
+                    name = reader.read_jpstring()
+                    print("chunk=%s name=%s" % (chunk.decode(), name))
+
+                    count = reader.read_uint32()
+                    for i in range(count):
+                        a = reader.read_single()
+                        b = reader.read_int32()
+                        print("%d (%.2f,%d)" % (i, a, b))
+                    continue
+                case ChunkID.CHUNK_SOUND.value:
+                    chunk = reader.peek_bytes(len(sjis_sound))
+                    if chunk == sjis_sound:
+                        chunk = reader.read_bytes(len(chunk))
+                        continue
+                case ChunkID.CHUNK_ENDOFFILE.value:
+                    
+                    chunk = reader.peek_bytes(len(sjis_endoffile))
+                    if chunk == sjis_endoffile:
+                        chunk = reader.read_bytes(len(chunk))
+                        print(_shift_jis.decode(chunk))
+                       
+                        break
+                case ChunkID.CHUNK_EYES.value:
+                    chunk = reader.peek_bytes(8)
+                    if chunk == b'EYESANIM':
+                        chunk = reader.read_bytes(len(chunk))
+                        anim = HanaAnim()
+                        anim.parse(reader)
+                        continue
+                case ChunkID.CHUNK_EYE2.value:
+                    chunk = reader.read_bytes(len(chunk))
+                    print("perform eye scene")
+                    continue
+                case ChunkID.CHUNK_LIGHT.value:
+                    chunk = reader.peek_bytes(5)
+                    if chunk == asc_light:
+                        data = reader.read_bytes(104)
+                        data_reader = BinaryReader(BytesIO(data))
+                        d3dLight = D3DLight()
+                        d3dLight.parse(data_reader)
+                        print(chunk.decode(), d3dLight)
+                        continue
+                case ChunkID.CHUNK_3DON.value:
+                    chunk = reader.read_bytes(len(chunk))
+                    hana3don = Hana3Don()
+                    hana3don.parse(reader)
+                    
+                    continue
+
+            print(chunk)
+            discard = reader.read_byte()
 
 def main() -> int:
     import os
@@ -386,11 +587,22 @@ def main() -> int:
     load_dotenv()
 
     appdir = os.getenv('HNH_APPDIR')
-    otoko_sek = os.path.join(appdir, 'ODF/OTOKO/OTOKO.SEK')
-    otoko_odf = os.path.join(appdir, 'ODF/OTOKO/OTOKO.ODF')
 
-    with open(otoko_odf, "rb") as f:
-        parser = OdfParser(f)
+    match sys.argv[1]:
+        case 'odf':
+            otoko_sek = os.path.join(appdir, 'ODF/OTOKO/OTOKO.SEK')
+            otoko_odf = os.path.join(appdir, 'ODF/OTOKO/OTOKO.ODF')
+
+            with open(otoko_odf, "rb") as f:
+                parser = OdfParser(f)
+        case 'ods':
+            p01_ods = os.path.join(appdir, 'ODS/P01.ODS')
+
+            with open(p01_ods, "rb") as f:
+                parser = OdsFile(f)
+        
+        case _:
+            print("incorrect argument (odf, ods)")
 
     return 0
 

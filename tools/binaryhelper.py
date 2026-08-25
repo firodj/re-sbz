@@ -119,6 +119,9 @@ class BinaryReader:
             if b == b'\0':
                 break
         return r
+    
+    def read_jpstring(self):
+        return _shift_jis.decode(self.read_string().strip(b'\0'))[0]
 
     def read_name_skip_1(self) -> str:
         name_len = self.read_int32()
@@ -140,7 +143,7 @@ class BinaryReader:
         x = self.read_single()
         y = self.read_single()
         return (x, y)
-        
+
     def read_vector3(self):
         x = self.read_single()
         y = self.read_single()
