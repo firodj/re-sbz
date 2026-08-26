@@ -95,15 +95,19 @@ class HanaAnim():
     def __init__(self):
         self.count = 0
         self.keys = []
+        self.name = ''
 
     def parse(self, reader):
         n = reader.read_uint32()
         self.count = n // 56
-        print('ANIM count=%d' % (self.count,))
+        print('ANIM count=%d name=%s' % (self.count, self.name), ":")
         for i in range(self.count):
             key = HanaAnimKey()
             key.parse(reader)
             self.keys.append(key)
+            print(" -", i, key)
+
+        print('=== END-ANIM (%s)' % (self.name))
 
 class Hana3DonItem():
     def __init__(self):
@@ -199,6 +203,8 @@ class OdfParser:
     def parse_content(self, reader):
         chunk = reader.read_bytes(4)
         fram_index = 0
+        current_fram_name = None
+        current_fram_index = None
         while True:
             if len(chunk) < 4:
                 rest_chunk = reader.read_bytes(4-len(chunk))
@@ -210,7 +216,7 @@ class OdfParser:
                 case ChunkID.CHUNK_FRAM.value:
                     chunk = b''
                     fram_index += 1
-                    self.parse_fram(reader, fram_index)
+                    current_fram_index, current_fram_name = self.parse_fram(reader, fram_index)
                 case ChunkID.CHUNK_MESH.value:
                     chunk = b''
                     self.parse_mesh(reader)
@@ -220,7 +226,10 @@ class OdfParser:
                 case ChunkID.CHUNK_ANIM.value:
                     chunk = b''
                     anim = HanaAnim()
+                    if current_fram_name is not None:
+                        anim.name = "%s_Animation" % (current_fram_name,)
                     anim.parse(reader)
+                    
                 case ChunkID.CHUNK_3DON.value:
                     chunk = b''
                     hana3don = Hana3Don()
@@ -237,7 +246,7 @@ class OdfParser:
     def parse_fram(self, reader, index):
         size = reader.read_uint32()
         name = reader.read_jpbytes(size) # _shift_jis.decode(reader.read_bytes(size))
-        print('FRAM', name)
+        print('FRAM', index, name)
 
         #if name == 'CameraFrame':
             # Attach CamreFrame to this BaseFrame
@@ -253,8 +262,8 @@ class OdfParser:
             if chunk == ChunkID.CHUNK_PARN.value:
                 skipped = reader.read_bytes(peek_pos+4)
                 size = reader.read_uint32()
-                name = reader.read_jpbytes(size) # _shift_jis.decode(reader.read_bytes(size))[0]
-                print('PAReNt index=%d name=%s' % (index, name))
+                parent_name = reader.read_jpbytes(size) # _shift_jis.decode(reader.read_bytes(size))[0]
+                print('PAReNt name=%s' % (parent_name,))
                 break  
             
             peek_pos += 1
@@ -329,6 +338,8 @@ class OdfParser:
             
             peek_pos += 1
             i += 1
+        print('=== END-FRAM', index, name)
+        return (index, name)
 
     def parse_mesh(self, reader):
         hdr_size = reader.read_uint32()
@@ -339,7 +350,7 @@ class OdfParser:
         print('MESH vert_count=%d name=%s' % (vert_count, mesh_name))
 
         vert_index = 0
-        while vert_index < vert_count:
+        while True:
             chunk = reader.peek_bytes(4)
             if not chunk:
                 break
@@ -350,37 +361,37 @@ class OdfParser:
                    
                     len = reader.read_uint32()
                     vert_name = reader.read_jpbytes(len) # _shift_jis.decode(reader.read_bytes(len))[0]
-                    print("chunk=%s vert_index=%d name=%s" % (chunk.decode(), vert_index, vert_name))
+                    print("-- %d -- VERT name=%s" % (vert_index, vert_name))
 
                     sizeof_d3dvertex = 32
                     count_32 = reader.read_uint32()
                     #k = reader.read_bytes(32 * count_32)
-                    print("vertex_count =", count_32)
+                    print("vertex_count =", count_32, ":")
                     for k in range(count_32):
                         vertex = D3DVertex()
                         vertex.parse(reader)
-                        print(k, vertex)
+                        print(" -", k, vertex)
 
                     count_2 = reader.read_uint32()
                     #kk = reader.read_bytes(2 * count_2)
-                    print("indices_count =", count_2)
+                    print("indices_count =", count_2, ":")
                     faces = None
                     for kk in range(count_2):
                         if kk % 3 == 0:
                             if faces is not None:
-                                print(kk // 3, faces)
+                                print(" -", kk // 3, faces)
                             faces = [0, 0, 0]
                         w = reader.read_uint16()
                         faces[kk % 3] = w
-                    print(count_2 // 3, faces)
+                    print(" -", count_2 // 3, faces)
 
-                    print(f"name=%d_%s_???" % (vert_index, mesh_name))
+                    print(f"name2=%d_%s_???" % (vert_index, mesh_name))
                     continue
                 case ChunkID.CHUNK_MATE.value:
                     chunk = reader.read_bytes(4)
                     n = reader.read_uint32()
                     name = reader.read_jpstring()
-                    print("chunk=VERT:%s n=%d name=%s" % (chunk, n, name))
+                    print("chunk=VERT:MATE n=%d name=%s" % (n, name))
 
                     material = D3DMaterial7()
                     material.parse_argb(reader)
@@ -404,7 +415,7 @@ class OdfParser:
                     n = reader.read_uint32()
 
                     image_bmp =  reader.read_jpstring()
-                    print("chunk=VERT:%s n=%d image_bmp=%s" % (chunk, n, image_bmp))
+                    print("chunk=VERT:TEXTure n=%d image_bmp=%s" % (n, image_bmp))
                     continue
                 case ChunkID.CHUNK_VFLG.value:
                     chunk = reader.read_bytes(4)
@@ -436,8 +447,8 @@ class OdfParser:
                     else:
                         alpr = 0
 
-                    print("chunk=VERT:VFLG:%s flag=%s" % (chunk, flag))
-                    print("bias=%d adrs=%d,%d alpr=%d" % (bias, adrs1, adrs2, alpr))
+                    print("chunk=VERT:VFLG flag=%s bias=%d adrs=%d,%d alpr=%d" % (flag, bias, adrs1, adrs2, alpr))
+
                     continue
                 case ChunkID.CHUNK_MKEY.value:
                     break
@@ -457,7 +468,10 @@ class OdfParser:
                         chunk = reader.read_bytes(len(chunk))
                         print(_shift_jis.decode(chunk))
                         break
+           
             discard = reader.read_byte()
+       
+        print('=== END-MESH (%s)' % (mesh_name,))
   
     def parse_tail(self, reader):
         tail = reader.read_to_end()
