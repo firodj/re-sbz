@@ -30,3 +30,5 @@ build/
 # --- Visual C++ Cache / Intellisense Files ---
 .vs/
 ipch/
+
+/output

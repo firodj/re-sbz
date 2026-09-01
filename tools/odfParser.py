@@ -5,6 +5,7 @@ from typing import List, Optional
 from binaryhelper import BinaryReader, BinaryWriter, red_print
 import sys
 from enum import Enum
+from collections.abc import Callable
 
 try:
     import codecs
@@ -244,9 +245,9 @@ class HanaMesh():
     def append_submesh(self, submesh):
         self.submeshes.append(submesh)
 
-    def to_obj(self, index):
+    def to_obj(self, index, name):
         submesh = self.submeshes[index]
-        lines = []
+        lines = ["# mesh:" + self.name, "# submesh: " + submesh.name, "# count: " + str(len(submesh.vertices))]
         for v in submesh.vertices:
             dv = v.keys["dv"]          
             lines.append("v %.6f %.6f %.6f" % (dv[0], dv[1], dv[2]))
@@ -257,10 +258,17 @@ class HanaMesh():
 
         for v in submesh.vertices:
             dvT = v.keys["dvT"]
-            lines.append("vt %.6f %.6f" % (dvT[0], dvT[1]))
+            flippedX = 1.0 - dvT[0]
+            flippedY = 1.0 - dvT[1]
+            lines.append("vt %.6f %.6f" % (flippedX, flippedY))
         
+        lines.append("mtllib %s.mtl" % (name))
+        lines.append("usemtl Textured")
+        
+        index_base=1
         for f in submesh.faces:
-            lines.append("f %d %d %d" % (f[0], f[1], f[2]))
+            triple: Callable[[int], str] = lambda d: "%d/%d/%d" % (d,d,d)
+            lines.append("f %s %s %s" % (triple(f[0]+index_base), triple(f[1]+index_base), triple(f[2]+index_base)))
 
         return lines
 
@@ -803,6 +811,8 @@ class SekParser:
         
 def main() -> int:
     import os
+    import shutil
+
     from dotenv import load_dotenv
     load_dotenv()
 
@@ -815,25 +825,39 @@ def main() -> int:
             with open(otoko_sek, "rb") as f:
                 parser = SekParser(f)
         case 'odf':
-            
+            text_path = os.path.join(appdir, 'ODF/OTOKO')
             otoko_odf = os.path.join(appdir, 'ODF/OTOKO/OTOKO.ODF')
 
             with open(otoko_odf, "rb") as f:
                 parser = OdfParser(f)
 
                 print(len(parser.meshes))
-                
-                lines = parser.meshes[0].to_obj(0)
-                with open("_tesobyek.obj", "w") as fw:
-                   
-                    for line in lines:
-                        fw.write(line + "\n")
+                for mesh_id in range(len(parser.meshes)):
 
-                lines = parser.meshes[0].to_mtl(0)
-                with open("_tesobyek.mtl", "w") as fw:
-                   
-                    for line in lines:
-                        fw.write(line + "\n")
+                    for submesh_id in range(len(parser.meshes[mesh_id].submeshes)):
+                        submesh = parser.meshes[mesh_id].submeshes[submesh_id]
+                        name = "otoko_%d_%d" % (mesh_id, submesh_id)
+
+                        lines = parser.meshes[mesh_id].to_obj(submesh_id, name)
+                        with open("output/"+name+".obj", "w") as fw:
+                        
+                            for line in lines:
+                                fw.write(line + "\n")
+
+                        lines = parser.meshes[mesh_id].to_mtl(submesh_id)
+                        with open("output/"+name+".mtl", "w") as fw:
+                        
+                            for line in lines:
+                                fw.write(line + "\n")
+                        
+                        if submesh.texture is not None:
+                            src = os.path.join(text_path, submesh.texture)
+                            print("copy", src)
+                            shutil.copy(src, 'output/')
+                        
+                    # if mesh_id == 3:
+                    #     break
+            
 
         case 'ods':
             p01_ods = os.path.join(appdir, 'ODS/P01.ODS')
