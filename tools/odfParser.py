@@ -7,6 +7,9 @@ import sys
 from enum import Enum
 from collections.abc import Callable
 
+import os
+import shutil
+
 try:
     import codecs
     _shift_jis = codecs.lookup('shift_jis')
@@ -310,6 +313,9 @@ class OdfParser:
         reader = BinaryReader(stream)
         self.frames = []
         self.meshes = []
+        self.fog = None
+        self.diffuse = None
+        self.snd3don = None
 
         header = "オリジナル☆フォーマット%c%c%c" % (13, 10, 0)
         sjis, _ = _shift_jis.encode(header)
@@ -363,6 +369,7 @@ class OdfParser:
 
                     hana3don = Hana3Don()
                     hana3don.parse(ctx, reader)
+                    self.snd3don = hana3don
                 case ChunkID.CHUNK_ENDOFFILE.value:
                     chunk += reader.read_bytes(len(sjis_endoffile)-len(chunk))
                     if chunk == sjis_endoffile:
@@ -654,6 +661,8 @@ class OdfParser:
                         g = data[1] / 255.0,
                         r = data[2] / 255.0,
                     )
+                    self.diffuse = diffuse
+
                     ctx.print(diffuse)
                     ctx.end()
                     i += 4
@@ -665,14 +674,56 @@ class OdfParser:
                         start = struct.unpack('<f', tail[i+4:i+8])[0],
                         end = struct.unpack('<f', tail[i+8:i+12])[0],
                     )
+                    self.fog = fog
+
                     ctx.print(fog)
                     ctx.end()
                     i += 4 * 3
                 case _:
                     i += 1
 
-class OdsFile():
+    def save_json(self, name):
+        pass
+
+    def save_3d(self, name, texture_path):       
+        path = os.path.join("output", name)
+        output_path = os.makedirs(path, exist_ok=True)
+    
+        print(len(self.meshes))
+        for mesh_id in range(len(self.meshes)):
+            mesh = self.meshes[mesh_id]
+            for submesh_id in range(len(mesh.submeshes)):
+                submesh = mesh.submeshes[submesh_id]
+                name = "%d;%d_%s;%s" % (mesh_id, submesh_id, mesh.name, submesh.name)
+
+                lines = mesh.to_obj(submesh_id, name)
+                with open(os.path.join(path, name+".obj"), "w") as fw:
+                
+                    for line in lines:
+                        fw.write(line + "\n")
+
+                lines = mesh.to_mtl(submesh_id)
+                with open(os.path.join(path, name+".mtl"), "w") as fw:
+                
+                    for line in lines:
+                        fw.write(line + "\n")
+                
+                if submesh.texture is not None:
+                    src = os.path.join(texture_path, submesh.texture)
+                    print("copy", src)
+                    shutil.copy(src, path)
+                        
+
+class OdsParser():
     def __init__(self, stream):
+        self.text = None
+        self.size = None
+        self.anims = []
+        self.odfs = []
+        self.sekns = []
+        self.sekn_pairs = []
+        self.snd3don = None
+
         reader = BinaryReader(stream)
         ctx = Ctx()
         self.parse(ctx, reader)
@@ -697,18 +748,22 @@ class OdsFile():
                 case ChunkID.CHUNK_TEXT.value:
                     chunk = reader.read_bytes(4)
                     n = reader.read_uint32()
-
                     filename = reader.read_jpstring()
+                    self.text = filename
                     print("chunk=%s n=%d filename=%s" % (chunk.decode(), n, filename))
+                   
                     continue
                 case ChunkID.CHUNK_SIZE.value:
                     chunk = reader.read_bytes(4)
                     count = reader.read_uint32()
+                    self.size = count
                     print("chunk=%s count=%d" % (chunk.decode(), count))
+
                     continue
                 case ChunkID.CHUNK_NAME.value:
                     chunk = reader.read_bytes(4)
                     name = reader.read_jpstring()
+                    self.odfs.append(name)
                     print("chunk=%s name=%s" % (chunk.decode(), name))
                     continue
                 case ChunkID.CHUNK_ANIM.value:
@@ -716,38 +771,50 @@ class OdsFile():
                     anim = HanaAnim()
                     anim.parse(ctx, reader)
 
+                    print("chunk=%s" % (chunk.decode()))
                     continue
                 case ChunkID.CHUNK_SEKN.value:
                     chunk = reader.read_bytes(4)
                     name = reader.read_jpstring()
-                    print("chunk=%s name=%s" % (chunk.decode(), name))
-
                     count = reader.read_uint32()
+
+                    print("chunk=%s name=%s count=%d" % (chunk.decode(), name, count))
+                    self.sekns.append(name)
+                   
+                    pairs = []
                     for i in range(count):
                         a = reader.read_single()
                         b = reader.read_int32()
                         print("%d (%.2f,%d)" % (i, a, b))
+                        pairs.append((a, b))
+                    self.sekn_pairs.append(pairs)
+
                     continue
                 case ChunkID.CHUNK_SOUND.value:
                     chunk = reader.peek_bytes(len(sjis_sound))
                     if chunk == sjis_sound:
                         chunk = reader.read_bytes(len(chunk))
+                        print("sound", _shift_jis.decode(chunk))
                         continue
                 case ChunkID.CHUNK_ENDOFFILE.value:
                     chunk = reader.peek_bytes(len(sjis_endoffile))
                     if chunk == sjis_endoffile:
                         chunk = reader.read_bytes(len(chunk))
-                        print(_shift_jis.decode(chunk))
+                        print("endoffile", _shift_jis.decode(chunk))
                         break
                 case ChunkID.CHUNK_EYES.value:
                     chunk = reader.peek_bytes(8)
                     if chunk == b'EYESANIM':
                         chunk = reader.read_bytes(len(chunk))
-                        anim = HanaAnim()
-                        anim.parse(ctx, reader)
+                        camera_anim = HanaAnim()
+                        camera_anim.parse(ctx, reader)
+                        self.anims.append(camera_anim)
+
+                        print("chunk=%s" % (chunk.decode()))
                         continue
                 case ChunkID.CHUNK_EYE2.value:
                     chunk = reader.read_bytes(len(chunk))
+                    print("chunk=%s" % (chunk.decode()))
                     print("perform eye scene")
                     continue
                 case ChunkID.CHUNK_LIGHT.value:
@@ -757,16 +824,27 @@ class OdsFile():
                         data_reader = BinaryReader(BytesIO(data))
                         d3dLight = D3DLight()
                         d3dLight.parse(ctx, data_reader)
-                        print(chunk.decode(), d3dLight)
+                        print("chunk=%s" % (chunk.decode()), d3dLight)
+
+                        chunk = reader.peek_bytes(4)
+                        if chunk == ChunkID.CHUNK_ANIM.value:
+                            chunk = reader.read_bytes(len(chunk))
+                            light_anim = HanaAnim()
+                            light_anim.parse(ctx, reader)
+                            self.anims.append(light_anim)
+
+                            print("chunk=%s" % (chunk.decode()))
                         continue
                 case ChunkID.CHUNK_3DON.value:
                     chunk = reader.read_bytes(len(chunk))
                     hana3don = Hana3Don()
                     hana3don.parse(ctx, reader)
-                    
+                    self.snd3don = hana3don
+
+                    print("chunk=%s" % (chunk.decode()))
                     continue
 
-            print(chunk)
+            # print(chunk)
             discard = reader.read_byte()
 
 class SekParser:
@@ -810,9 +888,7 @@ class SekParser:
             print(i, item_0, name_4, items_44,item_50, floats_54, fields_64)
         
 def main() -> int:
-    import os
-    import shutil
-
+    import sys
     from dotenv import load_dotenv
     load_dotenv()
 
@@ -825,45 +901,19 @@ def main() -> int:
             with open(otoko_sek, "rb") as f:
                 parser = SekParser(f)
         case 'odf':
-            text_path = os.path.join(appdir, 'ODF/OTOKO')
+            texture_path = os.path.join(appdir, 'ODF/OTOKO')
             otoko_odf = os.path.join(appdir, 'ODF/OTOKO/OTOKO.ODF')
 
             with open(otoko_odf, "rb") as f:
                 parser = OdfParser(f)
-
-                print(len(parser.meshes))
-                for mesh_id in range(len(parser.meshes)):
-
-                    for submesh_id in range(len(parser.meshes[mesh_id].submeshes)):
-                        submesh = parser.meshes[mesh_id].submeshes[submesh_id]
-                        name = "otoko_%d_%d" % (mesh_id, submesh_id)
-
-                        lines = parser.meshes[mesh_id].to_obj(submesh_id, name)
-                        with open("output/"+name+".obj", "w") as fw:
-                        
-                            for line in lines:
-                                fw.write(line + "\n")
-
-                        lines = parser.meshes[mesh_id].to_mtl(submesh_id)
-                        with open("output/"+name+".mtl", "w") as fw:
-                        
-                            for line in lines:
-                                fw.write(line + "\n")
-                        
-                        if submesh.texture is not None:
-                            src = os.path.join(text_path, submesh.texture)
-                            print("copy", src)
-                            shutil.copy(src, 'output/')
-                        
-                    # if mesh_id == 3:
-                    #     break
             
+            parser.save_3d('otoko', texture_path)
 
         case 'ods':
             p01_ods = os.path.join(appdir, 'ODS/P01.ODS')
 
             with open(p01_ods, "rb") as f:
-                parser = OdsFile(f)
+                parser = OdsParser(f)
         
         case _:
             print("incorrect argument (odf, ods)")
