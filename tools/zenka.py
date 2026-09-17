@@ -5,8 +5,13 @@ def to_shift_jis_fullwidth(text: str) -> str:
     result = []
     for char in text:
         code = ord(char)
+        # Handle period and comma specially - convert to ideographic period/comma
+        if code == 46:  # '.'
+            result.append('。')  # ideographic period (U+3002)
+        elif code == 44:  # ','
+            result.append('、')  # ideographic comma (U+3001)
         # Check if the character is a standard ASCII alphanumeric/punctuation (33 to 126)
-        if 33 <= code <= 126:
+        elif 33 <= code <= 126:
             result.append(chr(code + 65248))
         # Handle standard space (32) separately, as its fullwidth equivalent is ideographic space (12288)
         elif code == 32:
@@ -30,8 +35,8 @@ def main():
     fullwidth_str = to_shift_jis_fullwidth(text)
 
     if output_file:
-        with open(output_file, 'w', encoding='shift_jis') as f:
-            f.write(fullwidth_str)
+        with open(output_file, 'wb') as f:
+            f.write(fullwidth_str.encode('shift-jis'))
         print(f"Converted and saved to {output_file} (encoded as Shift_JIS)")
     else:
         print(fullwidth_str)
