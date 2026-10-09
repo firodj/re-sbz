@@ -29,31 +29,58 @@ def get_callees(func_ea):
 
     return list(callees)
 
-def list_sub_functions(start_ea, visited=None, depth=0):
-    """Recursively traverse callees from start_ea, printing functions with 'sub_' prefix."""
+def list_sub_functions(start_ea, visited=None, depth=0, path_last=[], is_last=True):
+    """Recursively traverse callees from start_ea, returning functions with 'sub_' prefix as lines."""
     if visited is None:
         visited = set()
     if start_ea in visited:
-        return 0
+        return []
     visited.add(start_ea)
     func = idaapi.get_func(start_ea)
     if not func:
-        return 0
+        return []
     name = idaapi.get_func_name(start_ea)
-    indent = "    " * depth
-   
-    if name.startswith("sub_"):
-        print(f"{indent}0x{start_ea:x} {name}")
+    
+    lines = []
+    # If the function name starts with "sub_", we add it to our lines
+    # ok = name.startswith("sub_")
+    ok = True
+    if ok:
+        if depth == 0:
+            line = f"0x{start_ea:x} {name}"
+        else:
+            # Build the prefix for the levels 0 to depth-1
+            prefix = ""
+            for i in range(depth):
+                if i < len(path_last):
+                    if path_last[i]:
+                        prefix += "    "
+                    else:
+                        prefix += "│   "
+                else:
+                    # This should not happen if we are consistent
+                    prefix += "    "
+            # Now add the connector for the current depth
+            if is_last:
+                prefix += "└──"
+            else:
+                prefix += "├──"
+            line = prefix + f"0x{start_ea:x} {name}"
+        lines.append(line)
+    
     # Recurse into callees
-    n = 0
     callees = get_callees(start_ea)
-    for callee in callees:
-        n += list_sub_functions(callee, visited, depth + 1)
-    return n+1
+    for i, callee in enumerate(callees):
+        # Determine if this callee is the last child
+        child_is_last = (i == len(callees) - 1)
+        lines.extend(list_sub_functions(callee, visited, depth+1, path_last + [is_last], child_is_last))
+    return lines
 
 if __name__ == "__main__":
     # Start from the current screen address, or you can specify an address here.
     start_ea = idc.here()  # Current cursor address in IDA view
     print(f"Starting from 0x{start_ea:x}")
-    n = list_sub_functions(start_ea)
-    print(f"Done {n}")
+    lines = list_sub_functions(start_ea)
+    for line in lines:
+        print(line)
+    print(f"Done {len(lines)}")
