@@ -76,6 +76,9 @@ void __cdecl hookPlayVideoWith3DAudio(const char* szFileName, int flagsLoop) {
 	DebugLog("[HNH] PlayVideoWith3DAudio %s %d\n", szFileName, flagsLoop);
 }
 
+void register_WinMain_485CE0();
+void register_GAlloc80_40DEF7();
+
 void InitHNH() {
 	LPVOID pfnWinMain = (LPVOID)0x485CE0;
 
@@ -95,20 +98,22 @@ void InitHNH() {
 	if (res == MH_OK) res = MH_EnableHook(pfnPlayVideoWith3DAudio);
 	DebugLog("[HNH] Hooked PlayVideoWith3DAudio; %s\n", MH_StatusToString(res));
 
+	// register_WinMain_485CE0();
+	register_GAlloc80_40DEF7();
 }
 
 void FinishHNH() {
 	
 }
 
-void DrawHNH() {
+void DrawHNH(const char *window_name) {
 	static bool isOpen = true;
 	// Window flags
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
 	ImGui::SetNextWindowSize(ImVec2(450, 600), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowPos(ImVec2(25, 25), ImGuiCond_FirstUseEver);
 
-	if (ImGui::Begin("HNH Menu", &isOpen, flags)) {
+	if (ImGui::Begin(window_name, &isOpen, flags)) {
 
 		ImGui::Text("Press <INSERT> to toggle menu.");
 	}
@@ -129,6 +134,8 @@ std::string getModuleDir() {
 	return std::string(buffer).substr(0, pos);
 }
 
+int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
+
 int WINAPI hookWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 	DebugLog("[HNH] WinMain !\n");
 
@@ -136,7 +143,7 @@ int WINAPI hookWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmd
 
 	InitializePythonInterpreter();
 
-	int ret = origWinMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
+	int ret = WinMain_485CE0(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
 
 	FinishHNH();
 

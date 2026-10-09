@@ -83,7 +83,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;EXAMPLE1_EXPORTS;_WINDOWS;_USRDLL;ENABLE_BACKEND_DX9;ENABLE_BACKEND_DX10;ENABLE_BACKEND_DX11;ENABLE_BACKEND_DX12;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;EXAMPLE1_EXPORTS;_WINDOWS;_USRDLL;ENABLE_BACKEND_DX9;ENABLE_BACKEND_DX10;ENABLE_BACKEND_DX11;ENABLE_BACKEND_DX12;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -163,6 +163,8 @@
     </ClCompile>
     <ClCompile Include="python_repl.cpp" />
     <ClCompile Include="hnh_main.cpp" />
+    <ClCompile Include="src\GAlloc80_40DEF7.cpp" />
+    <ClCompile Include="src\WinMain.cpp" />
     <ClCompile Include="user32hook.cpp" />
   </ItemGroup>
   <ItemGroup>

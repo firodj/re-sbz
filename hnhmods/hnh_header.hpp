@@ -3,7 +3,7 @@
 bool CheckIsHNH();
 void InitHNH();
 void FinishHNH();
-void DrawHNH();
+void DrawHNH(const char *window_name);
 
 LPVOID GetTargetEntryPoint();
 

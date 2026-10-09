@@ -14,10 +14,10 @@ void HNHCustomInit() {
     }
 }
 
-void HNHCustomRender() {
+void HNHCustomRender(const char *window_name) {
     //DrawPythonREPL();
     DrawJupyterNotebookREPL();
-    DrawHNH();
+    DrawHNH(window_name);
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,
