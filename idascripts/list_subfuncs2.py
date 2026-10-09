@@ -26,8 +26,25 @@ def get_callees(func_ea):
                 callee = idaapi.get_func(target)
                 if callee:
                     callees.add(callee.start_ea)
+        else:
+            for op in insn.ops:
+                if _is_func_ref(op):
+                    target = op.value
+                    if target != idc.BADADDR:
+                        callee = idaapi.get_func(target)
+                        if callee:
+                            callees.add(callee.start_ea)
 
     return list(callees)
+
+def _is_func_ref(op):
+    """Return True if operand references a function address (immediate value to func)."""
+    # We consider immediate values that are function starts
+    if op.type == idaapi.o_imm:
+        if idaapi.get_func(op.value):
+            return True
+    # We could also consider memory operands that point to function addresses, but less common for args
+    return False
 
 def list_sub_functions(start_ea, visited=None, depth=0, path_last=[], is_last=True):
     """Recursively traverse callees from start_ea, returning functions with 'sub_' prefix as lines."""
