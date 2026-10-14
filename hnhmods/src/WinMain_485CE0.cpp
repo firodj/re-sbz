@@ -6,24 +6,14 @@
 
 #include "pch.h"
 #include "console.hpp"
-
-#if 0
-#define vv(v) v##_
-#else
-#define vv(v) (v##_ADDR)
-#endif
+#include "shared.hpp"
 
 // Global variables
-HINSTANCE g_hInstance_ = NULL;
-HINSTANCE& g_hInstance_ADDR = *(HINSTANCE*)0x52F5C8;
-HWND g_hwndParent_ = NULL;
-HWND& g_hwndParent_ADDR = *(HWND*)0x52F5CC;
+const HINSTANCE& g_hInstance = *(HINSTANCE*)0x52F5C8;
+const HWND& g_hwndParent = *(HWND*)0x52F5CC;
 
-WNDPROC WndProcCheckSystem_485FC2 = (WNDPROC)0x485FC2;
-
-typedef std::add_pointer_t<int __cdecl(HINSTANCE hinst, HWND hWnd)> DInputInit_43AD67_Fn;
+const WNDPROC WndProcCheckSystem_485FC2 = (WNDPROC)0x485FC2;
 const DInputInit_43AD67_Fn DInputInit_43AD67 = (DInputInit_43AD67_Fn)0x43AD67;
-typedef std::add_pointer_t<void __cdecl(void)> GameMainLoop_47F013_Fn;
 const GameMainLoop_47F013_Fn  GameMainLoop_47F013 = (GameMainLoop_47F013_Fn)0x47F013;
 
 int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
@@ -43,7 +33,7 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
     exitCode = 0;
     
     // Store global instance handle
-    vv(g_hInstance) = hInstance;
+    g_hInstance = hInstance;
     
     // Clear string buffer
     memset(windowText, 0, 0xFFu);
@@ -60,7 +50,7 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
         }
         else
         {
-            vv(g_hInstance) = hInstance;
+            g_hInstance = hInstance;
             
             // Register window class only if no previous instance
             if ( !hPrevInstance )
@@ -70,8 +60,8 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
                 windowClass.lpfnWndProc = WndProcCheckSystem_485FC2;
                 windowClass.cbClsExtra = 0;
                 windowClass.cbWndExtra = 0;
-                windowClass.hInstance = vv(g_hInstance);
-                windowClass.hIcon = LoadIconA(vv(g_hInstance), MAKEINTRESOURCEA(0x69));
+                windowClass.hInstance = g_hInstance;
+                windowClass.hIcon = LoadIconA(g_hInstance, MAKEINTRESOURCEA(0x69));
                 windowClass.hCursor = LoadCursorA(0, MAKEINTRESOURCEA(0x7F00));
                 windowClass.hbrBackground = (HBRUSH)GetStockObject(4);
                 windowClass.lpszMenuName = 0;
@@ -94,7 +84,7 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
             GetWindowRect(desktopWnd, &desktopRect);
             
             // Create main application window
-            vv(g_hwndParent) = CreateWindowExA(
+            g_hwndParent = CreateWindowExA(
                              0,
                             "‰Ø‚Ì”ß–Â",
                             "‰Ø‚Ì”ß–Â",
@@ -105,19 +95,19 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
                              desktopRect.bottom - desktopRect.top,
                              0,
                              0,
-                             vv(g_hInstance),
+                             g_hInstance,
                              0);
             
-            if ( vv(g_hwndParent) )
+            if ( g_hwndParent )
             {
                 // Show and update window
-                ShowWindow(vv(g_hwndParent), 5);
-                UpdateWindow(vv(g_hwndParent));
+                ShowWindow(g_hwndParent, 5);
+                UpdateWindow(g_hwndParent);
                 
                 // Initialize subsystems
                 directInputInitResult = 0;
                 soundInitResult = 0;
-                DInputInit_43AD67(vv(g_hInstance), vv(g_hwndParent));
+                DInputInit_43AD67(g_hInstance, g_hwndParent);
                 directInputInitResult = 1;
                 soundInitResult = 1;
                 
@@ -128,7 +118,7 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
                     1;
                 
                 // Invalidate window to trigger repaint
-                InvalidateRect(vv(g_hwndParent), 0, 1);
+                InvalidateRect(g_hwndParent, 0, 1);
                 
                 // Message loop
                 while ( PeekMessageA(&msg, 0, 0, 0, 1u) )
@@ -140,9 +130,9 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
                 }
                 
                 // Cleanup
-                InvalidateRect(vv(g_hwndParent), 0, 1);
+                InvalidateRect(g_hwndParent, 0, 1);
                 GameMainLoop_47F013();
-                DestroyWindow(vv(g_hwndParent));
+                DestroyWindow(g_hwndParent);
                 
                 // Final cleanup checks
                 if ( !soundInitResult )

@@ -151,6 +151,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="hnh_header.hpp" />
     <ClInclude Include="hnh_intern.hpp" />
+    <ClInclude Include="src\shared.hpp" />
     <ClInclude Include="user32hook.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,7 +165,8 @@
     <ClCompile Include="python_repl.cpp" />
     <ClCompile Include="hnh_main.cpp" />
     <ClCompile Include="src\GAlloc80_40DEF7.cpp" />
-    <ClCompile Include="src\WinMain.cpp" />
+    <ClCompile Include="src\WinMain_485CE0.cpp" />
+    <ClCompile Include="src\WndProcCheckSystem_485FC2.cpp" />
     <ClCompile Include="user32hook.cpp" />
   </ItemGroup>
   <ItemGroup>

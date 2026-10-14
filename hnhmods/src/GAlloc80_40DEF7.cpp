@@ -1,24 +1,15 @@
 
 #include "pch.h"
 #include "console.hpp"
+#include "shared.hpp"
 
-#if 0
-#define vv(v) v##_
-#else
-#define vv(v) (v##_ADDR)
-#endif
+const int &g_nMemCnt_4D6CF0 = *(int*)0x4D6CF0;
 
-int g_nMemCnt_4D6CF0;
-int &g_nMemCnt_4D6CF0_ADDR = *(int*)0x4D6CF0;
-
-char aDbgPrefix_[104] = {0};
-char* aDbgPrefix_ADDR = (char*)0x4D4718;
+// char aDbgPrefix_[104] = {0};
+const char* aDbgPrefix = (char*)0x4D4718;
 
 typedef std::add_pointer_t<void __stdcall(int hr, size_t strLength, char* str)> D3DXGetErrorStringFn;
 const  D3DXGetErrorStringFn D3DXGetErrorString = (D3DXGetErrorStringFn)0x48c80e;
-
-const char* aD3dxlStart = "---- D3DXL start ------------------------------------------\n";
-const char* aD3dxlEnd = "----D3DXL end------------------------------------------\n";
 
 void __cdecl PrintDebugError(int hr)
 {
@@ -26,11 +17,11 @@ void __cdecl PrintDebugError(int hr)
 
     D3DXGetErrorString(hr, 0x100u, str);
     strcat_s(str, " ");
-    strcat_s(str, vv(aDbgPrefix));
+    strcat_s(str, aDbgPrefix);
     strcat_s(str, "\n");
-    OutputDebugStringA(aD3dxlStart);
+    OutputDebugStringA("---- D3DXL start ------------------------------------------\n");
     OutputDebugStringA(str);
-    OutputDebugStringA(aD3dxlEnd);
+    OutputDebugStringA("----D3DXL end------------------------------------------\n");
 }
 
 /**
@@ -47,13 +38,13 @@ LPVOID __cdecl GAlloc80_40DEF7(SIZE_T dwBytes)
     if (ptr)
     {
         // Increment global allocation counter
-        ++vv(g_nMemCnt_4D6CF0);
+        ++g_nMemCnt_4D6CF0;
         return ptr;
     }
     else
     {
         // Format error message into Buffer
-        sprintf(vv(aDbgPrefix), "MemAlloc");
+        sprintf(aDbgPrefix, "MemAlloc");
         // Print debug error code (out of memory)
         PrintDebugError(0x8007000E);
         return NULL;
