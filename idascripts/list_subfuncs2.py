@@ -50,7 +50,7 @@ def get_callees(func_ea):
                     max_count = 20
                     if is_vtable(addr, pointer_size, max_count):
                         seen_vtables.add(addr)
-                        print(f"Possible vtable {addr}")
+                        
                         vcallees = print_vtable(addr, pointer_size, max_count)
                         callees.update(vcallees)
     return list(callees)
@@ -135,7 +135,6 @@ def _is_func_ref(op):
 def list_sub_functions(start_ea, visited=None, depth=0, path_last=[], is_last=True):
     global skip_func
 
-    
     """Recursively traverse callees from start_ea, returning functions with 'sub_' prefix as lines."""
     if visited is None:
         visited = set()
@@ -147,8 +146,8 @@ def list_sub_functions(start_ea, visited=None, depth=0, path_last=[], is_last=Tr
         return []
     name = idaapi.get_func_name(start_ea)
     
-    if name in skip_func:
-        return []
+    if name.startswith("_"): return []
+    if name in skip_func: return []
     
     lines = []
     # If the function name starts with "sub_", we add it to our lines

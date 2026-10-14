@@ -12,3 +12,6 @@ extern const DInputInit_43AD67_Fn DInputInit_43AD67;
 
 typedef std::add_pointer_t<void __cdecl(void)> GameMainLoop_47F013_Fn;
 extern const GameMainLoop_47F013_Fn GameMainLoop_47F013;
+
+
+char *__cdecl DDErrToString_423CE7(DWORD hr);

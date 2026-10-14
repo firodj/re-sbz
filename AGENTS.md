@@ -33,7 +33,7 @@ At the top of file should have:
 
 ## Create IDA Python Script
 
-The script file should be written into `./idascripts` sub folder. The script should compatible with IDA Pro 9.1
-
+The script file should be written into `./idascripts` sub folder. The script should compatible with IDA Pro 9.1.
+To iterate over function use `idautils.FuncItems(func_ea)` instead.
 ## Others
 
