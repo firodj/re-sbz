@@ -12,6 +12,18 @@ HGDIOBJ &g_hFont = *(HGDIOBJ*)0x518378;
 int &g_dwCharWidth = *(int*)0x4B01B4;
 int &g_dwFontHeight = *(int*)0x4B01B8;
 
+
+float (&g_CosineTable)[360] = *reinterpret_cast<float (*)[360]>(0x517D68);
+float (&g_SineTable)[360]   = *reinterpret_cast<float (*)[360]>(0x5177B4);
+DDBLTFX &g_ddBltFx          = *reinterpret_cast<DDBLTFX*>(0x518308);
+int &g_dwBitDepth           = *reinterpret_cast<int*>(0x517790);
+LPDIRECTDRAWSURFACE7 &g_pPrimaryBuffer_4D6C88 = *reinterpret_cast<LPDIRECTDRAWSURFACE7*>(0x4D6C88);
+int &g_dwPixelFormat        = *reinterpret_cast<int*>(0x518370);
+ 
+int Renderer_InitializeTrigTablesAndPixelFormat() {
+
+}
+
 char *__cdecl DDErrToString_423CE7(DWORD hr)
 {
   if ( hr > 0x88780046 )

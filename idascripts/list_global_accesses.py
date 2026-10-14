@@ -9,6 +9,10 @@ import ida_name
 import ida_lines
 import ida_xref
 import ida_ua
+import importlib
+
+import get_tif
+importlib.reload(get_tif)
 
 def is_operand_memory_write(insn, op):
     """
@@ -72,6 +76,8 @@ def is_segment_writable(seg):
     return bool(seg.perm & ida_segment.SEGPERM_WRITE)
 
 def list_global_accesses_in_func():
+    accesses = set()
+
     # Get current address (where cursor is)
     here = idaapi.get_screen_ea()
     if here == idaapi.BADADDR:
@@ -141,10 +147,19 @@ def list_global_accesses_in_func():
                         name = "<no name>"
                     disasm = ida_lines.generate_disasm_line(ea, 0)
                     access_type = "WRITE" if is_write_operation(ea) else "READ"
+
+                    if (ref_ea, access_type) in accesses: continue
+                    accesses.add( (ref_ea, access_type) )
                     # Check if the segment is writable to determine if variable is const (read-only) or not
                     seg_writable = is_segment_writable(seg)
                     const_volatile = "READ-ONLY" if not seg_writable else "WRITABLE"
-                    print(f"0x{ea:X}: {access_type} global variable 0x{ref_ea:X} ({name}) [{const_volatile}]")
+
+                    
+
+                    type_str = "?" if name == "<no name>" else get_tif.get_c_type(ref_ea)
+
+                    print(f"0x{ea:X}: {access_type} global variable 0x{ref_ea:X} ({name}) [{const_volatile}] => {type_str}")
+                    
 
     if count == 0:
         print("No accesses to global variables found in the current function.")
