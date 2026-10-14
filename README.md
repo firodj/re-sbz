@@ -20,10 +20,26 @@ Renames functions in IDA based on patterns.
 
 Miscellaneous functions that dont depend on IDA API.
 
-# create_class_struct.py
+## list_subfuncs2.py
+
+Draw Tree of Functions Callees Recursively from current function at cursor.
+
+## list_global_accesses.py
+
+List Global variables in current function at cursor.
+
+## create_class_struct.py
 
 Generic IDA Pro Python script to create a C struct for a class by analyzing
 its constructor.
+
+## analyz_struc.py
+
+Used in class constructor with thiscall (ecx) to auto create instnace struct type.
+
+## analyz_vtabl.py
+
+Auto rename the func name `tod_` prefix instead `sub_` for vmethods, in vtable data.
 
 # Notes
 
