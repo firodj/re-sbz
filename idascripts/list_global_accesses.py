@@ -77,7 +77,7 @@ def is_segment_writable(seg):
 
 def list_global_accesses_in_func():
     accesses = set()
-
+    defineds = set()
     # Get current address (where cursor is)
     here = idaapi.get_screen_ea()
     if here == idaapi.BADADDR:
@@ -150,17 +150,29 @@ def list_global_accesses_in_func():
 
                     if (ref_ea, access_type) in accesses: continue
                     accesses.add( (ref_ea, access_type) )
+                    if ref_ea in defineds: continue
+                    defineds.add( ref_ea )
+
                     # Check if the segment is writable to determine if variable is const (read-only) or not
                     seg_writable = is_segment_writable(seg)
                     const_volatile = "READ-ONLY" if not seg_writable else "WRITABLE"
 
-                    
+                    type_result = None if name == "<no name>" else get_tif.get_c_type(ref_ea)
+                   
+                    if type_result is None: continue
 
-                    type_str = "?" if name == "<no name>" else get_tif.get_c_type(ref_ea)
-
-                    print(f"0x{ea:X}: {access_type} global variable 0x{ref_ea:X} ({name}) [{const_volatile}] => {type_str}")
-                    
-
+                    type_str = type_result['type_str']
+                    type_str_ref = f"{type_str} &{name}"
+                    type_str_ptr = f"{type_str} *"
+                    if type_result['is_funcptr']:
+                        type_str = f"{name}Fn"
+                        print(f"typedef std::add_pointer_t<{type_str}> {name}Fn;")
+                    if type_result['is_array']:
+                        type_str_ref = f"{type_result['element_type']} (&{name})[{type_result['element_count']}]"
+                        type_str_ptr = f"{type_result['element_type']} (*)[{type_result['element_count']}]"
+                   
+                    #print(f"0x{ea:X}: {access_type} global variable 0x{ref_ea:X} ({name}) [{const_volatile}] => {type_str}")
+                    print(f"{type_str_ref} = *({type_str_ptr})0x{ref_ea:X}; // {const_volatile}")
     if count == 0:
         print("No accesses to global variables found in the current function.")
 

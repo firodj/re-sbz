@@ -13,15 +13,80 @@ int &g_dwCharWidth = *(int*)0x4B01B4;
 int &g_dwFontHeight = *(int*)0x4B01B8;
 
 
-float (&g_CosineTable)[360] = *reinterpret_cast<float (*)[360]>(0x517D68);
-float (&g_SineTable)[360]   = *reinterpret_cast<float (*)[360]>(0x5177B4);
-DDBLTFX &g_ddBltFx          = *reinterpret_cast<DDBLTFX*>(0x518308);
-int &g_dwBitDepth           = *reinterpret_cast<int*>(0x517790);
-LPDIRECTDRAWSURFACE7 &g_pPrimaryBuffer_4D6C88 = *reinterpret_cast<LPDIRECTDRAWSURFACE7*>(0x4D6C88);
-int &g_dwPixelFormat        = *reinterpret_cast<int*>(0x518370);
- 
-int Renderer_InitializeTrigTablesAndPixelFormat() {
+float (&g_CosineTable)[360] = *(float (*)[360])0x517D68; // WRITABLE
+float (&g_SineTable)[360]   = *(float (*)[360])0x5177B4; // WRITABLE
+DDBLTFX &g_ddBltFx          = *(DDBLTFX *)0x518308; // WRITABLE
+uint32_t &g_dwBitDepth      = *(uint32_t *)0x517790; // WRITABLE
+LPDIRECTDRAWSURFACE7 &g_pPrimaryBuffer_4D6C88 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C88; // WRITABLE
+uint32_t &dword_51779C      = *(uint32_t *)0x51779C; // WRITABLE
+uint32_t &g_dwPixelFormat   = *(uint32_t *)0x518370; // WRITABLE
+uint32_t &g_dwBytesPerPixel = *(uint32_t *)0x518374; // WRITABLE
+uint32_t &dword_5177A0      = *(uint32_t *)0x5177A0; // WRITABLE
+uint32_t &g_dwRGBBitMask    = *(uint32_t *)0x517788; // WRITABLE
+uint32_t &dword_5177A4      = *(uint32_t *)0x5177A4; // WRITABLE
+uint32_t &g_dwRBitMask      = *(uint32_t *)0x517D58; // WRITABLE
+uint32_t &dword_5177A8      = *(uint32_t *)0x5177A8; // WRITABLE
+uint32_t &g_dwGBitMask      = *(uint32_t *)0x517D5C; // WRITABLE
+uint32_t &g_dwBBitMask      = *(uint32_t *)0x517D60; // WRITABLE
+uint32_t &g_nBBitCount      = *(uint32_t *)0x4B01C4; // WRITABLE
+uint32_t &g_nRBitCount      = *(uint32_t *)0x4B01C0; // WRITABLE
+uint32_t &g_nRGBBitCount    = *(uint32_t *)0x4B01BC; // WRITABLE
+uint32_t &g_dwLowestBBit    = *(uint32_t *)0x518384; // WRITABLE
+uint32_t &g_dwLowestRBit    = *(uint32_t *)0x518380; // WRITABLE
+uint32_t &g_dwLowestRGBBit  = *(uint32_t *)0x51837C; // WRITABLE
+CHAR &g_szFontFaceName      = *(CHAR *)0x4B01C8; // WRITABLE
 
+int Renderer_InitializeTrigTablesAndPixelFormat()
+{
+  int i; // [esp+8h] [ebp-8h]
+  int j; // [esp+8h] [ebp-8h]
+  int k; // [esp+8h] [ebp-8h]
+  int bitMask; // [esp+Ch] [ebp-4h]
+
+  for ( i = 0; i < 360; ++i )
+  {
+    g_CosineTable[i] = cos(i / 360.0 * 6.2831855);
+    g_SineTable[i] = sin(i / 360.0 * 6.2831855);
+  }
+  memset(&g_ddBltFx, 0, sizeof(g_ddBltFx));
+  g_ddBltFx.dwSize = 100;
+  g_ddBltFx.dwROP = 13369376;
+  g_dwBitDepth = 32;
+  g_pPrimaryBuffer_4D6C88->lpVtbl->GetPixelFormat(g_pPrimaryBuffer_4D6C88, &g_dwBitDepth);
+  g_dwPixelFormat = dword_51779C;
+  g_dwBytesPerPixel = dword_51779C / 8;
+  g_dwRGBBitMask = dword_5177A0;
+  g_dwRBitMask = dword_5177A4;
+  g_dwGBitMask = dword_5177A8;
+  g_dwBBitMask = dword_5177A8 | dword_5177A4 | dword_5177A0;
+  g_nBBitCount = 0;
+  g_nRBitCount = 0;
+  g_nRGBBitCount = 0;
+  for ( j = 0; j < 32; ++j )
+  {
+    if ( ((1 << j) & g_dwRGBBitMask) != 0 )
+      ++g_nRGBBitCount;
+    if ( ((1 << j) & g_dwRBitMask) != 0 )
+      ++g_nRBitCount;
+    if ( ((1 << j) & g_dwGBitMask) != 0 )
+      ++g_nBBitCount;
+  }
+  g_dwLowestBBit = 0;
+  g_dwLowestRBit = 0;
+  g_dwLowestRGBBit = 0;
+  bitMask = 1;
+  for ( k = 0; k < 32; ++k )
+  {
+    if ( !g_dwLowestRGBBit && (bitMask & g_dwRGBBitMask) != 0 )
+      g_dwLowestRGBBit = bitMask;
+    if ( !g_dwLowestRBit && (bitMask & g_dwRBitMask) != 0 )
+      g_dwLowestRBit = bitMask;
+    if ( !g_dwLowestBBit && (bitMask & g_dwGBitMask) != 0 )
+      g_dwLowestBBit = bitMask;
+    bitMask *= 2;
+  }
+  SetUiFont_419BCD(26, 26, &g_szFontFaceName);
+  return 0;
 }
 
 char *__cdecl DDErrToString_423CE7(DWORD hr)
