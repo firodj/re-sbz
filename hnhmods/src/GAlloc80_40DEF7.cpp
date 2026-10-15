@@ -3,10 +3,10 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-const int &g_nMemCnt_4D6CF0 = *(int*)0x4D6CF0;
+int &g_nMemCnt_4D6CF0 = *(int*)0x4D6CF0;
 
 // char aDbgPrefix_[104] = {0};
-const char* aDbgPrefix = (char*)0x4D4718;
+LPSTR &aDbgPrefix = *(LPSTR*)0x4D4718;
 
 typedef std::add_pointer_t<void __stdcall(int hr, size_t strLength, char* str)> D3DXGetErrorStringFn;
 const  D3DXGetErrorStringFn D3DXGetErrorString = (D3DXGetErrorStringFn)0x48c80e;

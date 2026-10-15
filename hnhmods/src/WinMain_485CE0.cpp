@@ -9,8 +9,8 @@
 #include "shared.hpp"
 
 // Global variables
-const HINSTANCE& g_hInstance = *(HINSTANCE*)0x52F5C8;
-const HWND& g_hwndParent = *(HWND*)0x52F5CC;
+HINSTANCE &g_hInstance  = *(HINSTANCE*)0x52F5C8;
+HWND      &g_hwndParent = *(HWND*)0x52F5CC;
 
 const WNDPROC WndProcCheckSystem_485FC2 = (WNDPROC)0x485FC2;
 const DInputInit_43AD67_Fn DInputInit_43AD67 = (DInputInit_43AD67_Fn)0x43AD67;

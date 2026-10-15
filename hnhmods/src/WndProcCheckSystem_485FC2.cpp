@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "console.hpp"
 #include "shared.hpp"
+#include <mmreg.h>  // Declares WAVEFORMATEX
+#include <dsound.h>
+#include <ddraw.h>
 
 HANDLE &g_hHeapHandle = *(HANDLE*)0x5187F0;
 int &g_nHeapRefCount = *(int*)0x5187F4;
@@ -16,7 +19,7 @@ int &g_dwFontHeight = *(int*)0x4B01B8;
 float (&g_CosineTable)[360] = *(float (*)[360])0x517D68; // WRITABLE
 float (&g_SineTable)[360]   = *(float (*)[360])0x5177B4; // WRITABLE
 DDBLTFX &g_ddBltFx          = *(DDBLTFX *)0x518308; // WRITABLE
-uint32_t &g_dwBitDepth      = *(uint32_t *)0x517790; // WRITABLE
+DDPIXELFORMAT &g_ddPixFormat = *(DDPIXELFORMAT *)0x517790; // WRITABLE
 LPDIRECTDRAWSURFACE7 &g_pPrimaryBuffer_4D6C88 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C88; // WRITABLE
 uint32_t &dword_51779C      = *(uint32_t *)0x51779C; // WRITABLE
 uint32_t &g_dwPixelFormat   = *(uint32_t *)0x518370; // WRITABLE
@@ -35,6 +38,9 @@ uint32_t &g_dwLowestBBit    = *(uint32_t *)0x518384; // WRITABLE
 uint32_t &g_dwLowestRBit    = *(uint32_t *)0x518380; // WRITABLE
 uint32_t &g_dwLowestRGBBit  = *(uint32_t *)0x51837C; // WRITABLE
 CHAR &g_szFontFaceName      = *(CHAR *)0x4B01C8; // WRITABLE
+LPSTR &g_pDDErrStr = *(LPSTR*)0x5185CC;
+
+int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName);
 
 int Renderer_InitializeTrigTablesAndPixelFormat()
 {
@@ -50,15 +56,15 @@ int Renderer_InitializeTrigTablesAndPixelFormat()
   }
   memset(&g_ddBltFx, 0, sizeof(g_ddBltFx));
   g_ddBltFx.dwSize = 100;
-  g_ddBltFx.dwROP = 13369376;
-  g_dwBitDepth = 32;
-  g_pPrimaryBuffer_4D6C88->lpVtbl->GetPixelFormat(g_pPrimaryBuffer_4D6C88, &g_dwBitDepth);
-  g_dwPixelFormat = dword_51779C;
-  g_dwBytesPerPixel = dword_51779C / 8;
-  g_dwRGBBitMask = dword_5177A0;
-  g_dwRBitMask = dword_5177A4;
-  g_dwGBitMask = dword_5177A8;
-  g_dwBBitMask = dword_5177A8 | dword_5177A4 | dword_5177A0;
+  g_ddBltFx.dwROP = 0xCC0020;
+  g_ddPixFormat.dwSize = 32;
+  g_pPrimaryBuffer_4D6C88->GetPixelFormat(&g_ddPixFormat);
+  g_dwPixelFormat = g_ddPixFormat.dwRGBBitCount;
+  g_dwBytesPerPixel = g_ddPixFormat.dwRGBBitCount / 8;
+  g_dwRGBBitMask = g_ddPixFormat.dwRBitMask;
+  g_dwRBitMask = g_ddPixFormat.dwGBitMask;
+  g_dwGBitMask = g_ddPixFormat.dwBBitMask;
+  g_dwBBitMask = g_ddPixFormat.dwBBitMask | g_ddPixFormat.dwGBitMask | g_ddPixFormat.dwRBitMask;
   g_nBBitCount = 0;
   g_nRBitCount = 0;
   g_nRGBBitCount = 0;
@@ -89,7 +95,7 @@ int Renderer_InitializeTrigTablesAndPixelFormat()
   return 0;
 }
 
-char *__cdecl DDErrToString_423CE7(DWORD hr)
+const char *__cdecl DDErrToString_423CE7(DWORD hr)
 {
   if ( hr > 0x88780046 )
   {
@@ -163,9 +169,9 @@ char *__cdecl DDErrToString_423CE7(DWORD hr)
 }
 
 // // HanaDS_SetErrStr - convert a DirectSound error code (DSERR_*/HRESULT) to a human-readable message via DDErrToString_423CE7, cache the resulting message pointer in g_pDDErrStr, and return it. The message points into read-only data (the 'DirectSound ...' strings); DDErrToString_423CE7 returns 0 (NULL) for code 0 (no error). Called by HanaDS_Init on the failure path to record the last error.
-char *__cdecl HanaDS_SetErrStr(DWORD hr)
+const char *__cdecl HanaDS_SetErrStr(DWORD hr)
 {
-  g_pDDErrStr = DDErrToString_423CE7(hr);
+  g_pDDErrStr = (LPSTR)DDErrToString_423CE7(hr);
   return g_pDDErrStr;
 }
 
@@ -193,17 +199,17 @@ int __cdecl HanaDS_Init(HWND hwnd)
   if ( !HanaDS_InitHeap() )
     return 0;
   hr = DirectSoundCreate(0, &g_ppDS, 0);
-  if ( hr || (hr = g_ppDS->lpVtbl->SetCooperativeLevel(g_ppDS, hwnd, 3)) != 0 )
+  if ( hr || (hr = g_ppDS->SetCooperativeLevel(hwnd, 3)) != 0 )
   {
     HanaDS_SetErrStr(hr);
     return 0;
   }
   else
   {
-    g_ppDS->lpVtbl->Compact(g_ppDS);
+    g_ppDS->Compact();
     memset(&g_dsCaps_518560, 0, sizeof(g_dsCaps_518560));
     g_dsCaps_518560.dwSize = 96;
-    g_ppDS->lpVtbl->GetCaps(g_ppDS, &g_dsCaps_518560);
+    g_ppDS->GetCaps(&g_dsCaps_518560);
     g_bDSInited_5185C4 = 1;
     return 1;
   }
@@ -222,20 +228,20 @@ IDirectSound3DListener *HanaDS_Create3DListener()
     || (memset(&dsbDesc, 0, sizeof(dsbDesc)),
         dsbDesc.dwSize = 36,
         dsbDesc.dwFlags = 17,
-        (hr = g_ppDS->lpVtbl->CreateSoundBuffer(g_ppDS, &dsbDesc, &g_pdsBuffer, 0)) == 0) )
+        (hr = g_ppDS->CreateSoundBuffer(&dsbDesc, &g_pdsBuffer, 0)) == 0) )
   {
-    hr = g_pdsBuffer->lpVtbl->QueryInterface(g_pdsBuffer, &IID_IDirectSound3DListener, &pListener);
+    hr = g_pdsBuffer->QueryInterface(IID_IDirectSound3DListener, reinterpret_cast<void**>(&pListener));
     if ( hr )
     {
       HanaDS_SetErrStr(hr);
-      g_pdsBuffer->lpVtbl->Release(g_pdsBuffer);
+      g_pdsBuffer->Release();
       g_pdsBuffer = 0;
       return 0;
     }
     else
     {
-      pListener->lpVtbl->SetDistanceFactor(pListener, 1.0, 1u);
-      pListener->lpVtbl->SetRolloffFactor(pListener, 0.001, 1u);
+      pListener->SetDistanceFactor(1.0, 1u);
+      pListener->SetRolloffFactor(0.001, 1u);
       return pListener;
     }
   }
@@ -278,6 +284,10 @@ LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, 
   CHAR String[256];
 
   g_hwndParent = hWnd; /*0x485fce*/
+
+#if 1
+  return DefWindowProcA(hWnd, Msg, wParam, lParam);
+#else
   if ( Msg > 0x10 ) /*0x485fe3*/
   {
     if ( Msg != 0xBD0 ) /*0x486017*/
@@ -397,6 +407,7 @@ LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, 
     default:
       return DefWindowProcA(hWnd, Msg, wParam, lParam); /*0x486002*/
   }
+#endif
 }
 
 void register_WndProcCheckSystem_485FC2() {
