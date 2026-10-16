@@ -449,7 +449,7 @@ static LRESULT OnEngineInit(HWND hWnd)
     }                                                 // IDNO: continue silently
 
     Renderer_InitializeTrigTablesAndPixelFormat();
-    if (!SetFogEnable_40DFB0(g_bFogIsActive_4B3480, g_bFogIsActive_4B3480))
+    if (SetFogEnable_40DFB0(g_bFogIsActive_4B3480, g_bFogIsActive_4B3480) == S_OK)
     {
         SetFogMode_40E02D(TRUE, D3DFOG_LINEAR);       // table fog, linear
         SetFogColor_40E0B4(0);                        // black
@@ -462,14 +462,20 @@ static LRESULT OnEngineInit(HWND hWnd)
 
 LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-    DebugLog("[HNH:SUB] WndProcCheckSystem_485FC2\n");
+    static bool notyet = true;
+    if (notyet) {
+        DebugLog("[HNH:SUB] WndProcCheckSystem_485FC2\n"); notyet = false;
+    }
 
     g_hwndParent = hWnd;
+    LCID lcid;
 
     switch (Msg)
     {
     case WM_CREATE:
-        if (GetSystemDefaultLCID() == 0x11)           // Japanese system
+        lcid = GetSystemDefaultLCID();
+        DebugLog("[HNH:LCID] lcid = 0x%X\n", (DWORD)lcid);
+        if ((lcid & 0xFF) == 0x11)           // Japanese system
         {
             srand(timeGetTime());
             PostMessageA(hWnd, WMU_CHECK_SYSTEM, 0, 0);
