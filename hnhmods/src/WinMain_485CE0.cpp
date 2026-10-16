@@ -29,6 +29,8 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
     int soundInitResult; // Return value from sound initialization
     HWND desktopWnd; // Handle to desktop window
 
+    DebugLog("[HNH:SUB] WinMain_485CE0\n");
+
     // Initialize return value
     exitCode = 0;
     

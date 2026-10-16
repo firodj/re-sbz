@@ -5,16 +5,15 @@
 #include <dsound.h>
 #include <ddraw.h>
 
-HANDLE &g_hHeapHandle = *(HANDLE*)0x5187F0;
-int &g_nHeapRefCount = *(int*)0x5187F4;
-LPDIRECTSOUND &g_ppDS = *(LPDIRECTSOUND*)0x5185C0;
+HANDLE &g_hHeapHandle   = *(HANDLE*)0x5187F0;
+int &g_nHeapRefCount    = *(int*)0x5187F4;
+LPDIRECTSOUND &g_ppDS   = *(LPDIRECTSOUND*)0x5185C0;
 DSCAPS &g_dsCaps_518560 = *(DSCAPS*)0x518560;
 int &g_bDSInited_5185C4 = *(int*)0x5185C4;
 LPDIRECTSOUNDBUFFER &g_pdsBuffer = *(LPDIRECTSOUNDBUFFER*)0x5185D0;
-HGDIOBJ &g_hFont = *(HGDIOBJ*)0x518378;
-int &g_dwCharWidth = *(int*)0x4B01B4;
+HGDIOBJ &g_hFont    = *(HGDIOBJ*)0x518378;
+int &g_dwCharWidth  = *(int*)0x4B01B4;
 int &g_dwFontHeight = *(int*)0x4B01B8;
-
 
 float (&g_CosineTable)[360] = *(float (*)[360])0x517D68; // WRITABLE
 float (&g_SineTable)[360]   = *(float (*)[360])0x5177B4; // WRITABLE
@@ -48,6 +47,8 @@ int Renderer_InitializeTrigTablesAndPixelFormat()
   int j; // [esp+8h] [ebp-8h]
   int k; // [esp+8h] [ebp-8h]
   int bitMask; // [esp+Ch] [ebp-4h]
+
+  DebugLog("[HNH:SUB] Renderer_InitializeTrigTablesAndPixelFormat_418620\n");
 
   for ( i = 0; i < 360; ++i )
   {
@@ -97,6 +98,8 @@ int Renderer_InitializeTrigTablesAndPixelFormat()
 
 const char *__cdecl DDErrToString_423CE7(DWORD hr)
 {
+  DebugLog("[HNH:SUB] DDErrToString_423CE7\n");
+  
   if ( hr > 0x88780046 )
   {
     if ( hr > 0x88780096 )
@@ -171,6 +174,8 @@ const char *__cdecl DDErrToString_423CE7(DWORD hr)
 // // HanaDS_SetErrStr - convert a DirectSound error code (DSERR_*/HRESULT) to a human-readable message via DDErrToString_423CE7, cache the resulting message pointer in g_pDDErrStr, and return it. The message points into read-only data (the 'DirectSound ...' strings); DDErrToString_423CE7 returns 0 (NULL) for code 0 (no error). Called by HanaDS_Init on the failure path to record the last error.
 const char *__cdecl HanaDS_SetErrStr(DWORD hr)
 {
+  DebugLog("[HNH:SUB] HanaHeap_Create_423CCC\n");
+
   g_pDDErrStr = (LPSTR)DDErrToString_423CE7(hr);
   return g_pDDErrStr;
 }
@@ -178,6 +183,8 @@ const char *__cdecl HanaDS_SetErrStr(DWORD hr)
 // HanaHeap_Create - lazily create the module's private Win32 heap on first use. If g_hHeap is already set, returns 0 (not re-created); otherwise g_hHeap = HeapCreate(HEAP_NO_SERIALIZE=1, dwInitialSize, 0) and returns g_hHeap != 0. dwInitialSize is the initial commit size in bytes.
 BOOL __cdecl HanaHeap_Create(SIZE_T dwInitialSize)
 {
+  DebugLog("[HNH:SUB] HanaHeap_Create_427520\n");
+  
   if ( g_hHeapHandle )
     return 0;
   g_hHeapHandle = HeapCreate(1u, dwInitialSize, 0);
@@ -187,6 +194,8 @@ BOOL __cdecl HanaHeap_Create(SIZE_T dwInitialSize)
 // HanaDS_InitHeap - initialize the DirectSound/audio subsystem heap to a fixed 40000-byte (0x9C40) initial size via HanaHeap_Create(40000). Returns 1 unconditionally (the heap-create result is not propagated to the caller).
 int HanaDS_InitHeap()
 {
+  DebugLog("[HNH:SUB] HanaDS_InitHeap_424886\n");
+  
   HanaHeap_Create(40000u);
   return 1;
 }
@@ -195,6 +204,8 @@ int HanaDS_InitHeap()
 int __cdecl HanaDS_Init(HWND hwnd)
 {
   HRESULT hr; // [esp+0h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] HanaDS_Init_422D50\n");
 
   if ( !HanaDS_InitHeap() )
     return 0;
@@ -221,6 +232,8 @@ IDirectSound3DListener *HanaDS_Create3DListener()
   DSBUFFERDESC dsbDesc; // [esp+0h] [ebp-2Ch] BYREF
   DWORD hr; // [esp+24h] [ebp-8h]
   IDirectSound3DListener *pListener; // [esp+28h] [ebp-4h] BYREF
+
+  DebugLog("[HNH:SUB] HanaDS_Create3DListener_422690\n");
 
   if ( !g_bDSInited_5185C4 )
     return 0;
@@ -262,6 +275,8 @@ int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName)
 {
   int result; // eax
 
+  DebugLog("[HNH:SUB] SetUiFont_419BCD\n");
+
   if ( g_hFont )
   {
     DeleteObject(g_hFont);
@@ -283,6 +298,8 @@ LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, 
   CHAR Text[256];
   CHAR String[256];
 
+  DebugLog("[HNH:SUB] WndProcCheckSystem_485FC2\n");
+
   g_hwndParent = hWnd; /*0x485fce*/
 
 #if 1
@@ -297,7 +314,7 @@ LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, 
       if ( HanaDS_Init(hWnd) == 1 ) /*0x486275*/
       {
         g_pds3DListener = HanaDS_Create3DListener(); /*0x4862ad*/
-        g_pdsBuffer->lpVtbl->Play(g_pdsBuffer, 0, 0, 1); /*0x4862c6*/
+        g_pdsBuffer->Play(0, 0, 1); /*0x4862c6*/
       }
       else if ( MessageBoxA(hWnd, aDirectSoundError, aSoundError, 0x1004u) == 6 ) /*0x486293*/
       {

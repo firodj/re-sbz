@@ -5,8 +5,6 @@
 extern HINSTANCE& g_hInstance;
 extern HWND& g_hwndParent;
 
-
-
 typedef std::add_pointer_t<int __cdecl(HINSTANCE hinst, HWND hWnd)> DInputInit_43AD67_Fn;
 extern const DInputInit_43AD67_Fn DInputInit_43AD67;
 

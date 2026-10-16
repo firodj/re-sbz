@@ -78,6 +78,7 @@ void __cdecl hookPlayVideoWith3DAudio(const char* szFileName, int flagsLoop) {
 
 void register_WinMain_485CE0();
 void register_GAlloc80_40DEF7();
+void register_SetFogEnable_40DFB0();
 
 void InitHNH() {
 	LPVOID pfnWinMain = (LPVOID)0x485CE0;
@@ -100,6 +101,7 @@ void InitHNH() {
 
 	// register_WinMain_485CE0();
 	register_GAlloc80_40DEF7();
+	register_SetFogEnable_40DFB0();
 }
 
 void FinishHNH() {

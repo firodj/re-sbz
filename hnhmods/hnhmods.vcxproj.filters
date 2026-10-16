@@ -15,6 +15,9 @@
     <ClCompile Include="src\WndProcCheckSystem_485FC2.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\SetFogEnable_40DFB0.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
@@ -23,6 +26,9 @@
     <ClInclude Include="hnh_intern.hpp" />
     <ClInclude Include="user32hook.hpp" />
     <ClInclude Include="src\shared.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dx7.hpp">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

@@ -13,6 +13,8 @@ const  D3DXGetErrorStringFn D3DXGetErrorString = (D3DXGetErrorStringFn)0x48c80e;
 
 void __cdecl PrintDebugError(int hr)
 {
+    DebugLog("[HNH:SUB] PrintDebugError_40A813\n");
+
     CHAR str[512]; // [esp+0h] [ebp-200h] BYREF
 
     D3DXGetErrorString(hr, 0x100u, str);
@@ -31,6 +33,8 @@ void __cdecl PrintDebugError(int hr)
  */
 LPVOID __cdecl GAlloc80_40DEF7(SIZE_T dwBytes)
 {
+    DebugLog("[HNH:SUB] GAlloc80_40DEF7\n");
+
     LPVOID ptr; // Allocated memory pointer
 
     // Allocate memory with zero initialization, adding 128 bytes overhead

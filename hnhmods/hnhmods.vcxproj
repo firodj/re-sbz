@@ -151,6 +151,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="hnh_header.hpp" />
     <ClInclude Include="hnh_intern.hpp" />
+    <ClInclude Include="src\dx7.hpp" />
     <ClInclude Include="src\shared.hpp" />
     <ClInclude Include="user32hook.hpp" />
   </ItemGroup>
@@ -167,6 +168,9 @@
     <ClCompile Include="src\GAlloc80_40DEF7.cpp" />
     <ClCompile Include="src\WinMain_485CE0.cpp" />
     <ClCompile Include="src\WndProcCheckSystem_485FC2.cpp" />
+    <ClCompile Include="src\SetFogEnable_40DFB0.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="user32hook.cpp" />
   </ItemGroup>
   <ItemGroup>
