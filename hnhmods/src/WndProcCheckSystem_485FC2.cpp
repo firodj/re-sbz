@@ -1,4 +1,5 @@
-#include "pch.h"
+#include "dx7.hpp"
+
 #include "console.hpp"
 #include "shared.hpp"
 #include <mmreg.h>  // Declares WAVEFORMATEX
@@ -287,6 +288,12 @@ int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName)
   g_dwCharWidth = nCharW;
   g_dwFontHeight = nFontH;
   return result;
+}
+
+HRESULT __cdecl SetFogColor_40E0B4(DWORD dwFogColor)
+{
+    g_dwFogColor_4B00CC = dwFogColor;
+    return g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGCOLOR, dwFogColor);
 }
 
 LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)

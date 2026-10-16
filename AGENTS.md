@@ -1,15 +1,21 @@
 # AGENTS.md
 
-
 ## Python
 Python using `py` intead.
-
 
 ## Extracting Decompiled C/C++
 
 When extract a c/c++ function from IDA Pro MCP, put output into `./hnhmods/src`.
-The extracted function should have clean control flow, remove GOTO if possible,
-and explain the steps with comments. Remove the original location address comments per line. 
+The extracted function should have clean control 
+remove GOTO if possible, flow, better function arguments name,
+and explain the steps with comments. Remove the original location address comments per line.
+
+Add reference to global variables by direct access to its addres, for example:
+
+```c
+DWORD &g_dwFogEnable_4D6CF4      = *(DWORD *)0x4D6CF4; // WRITABLE
+DWORD &g_dwFogRangeEnable_4D6CFC = *(DWORD *)0x4D6CFC; // WRITABLE
+```
 
 The source should contain register_{functionNameAddr}. For example when `functionNameAddr` is `WinMain_485CE0` then: 
 
@@ -23,10 +29,10 @@ void register_WinMain_485CE0() {
 }
 ```
 
-At the top of file should have:
+At the top of file should have and not using precompiled header (.pch):
 
 ```c
-#include "pch.h"
+#include "dx7.hpp"
 #include "console.hpp"
 
 ```
@@ -35,5 +41,6 @@ At the top of file should have:
 
 The script file should be written into `./idascripts` sub folder. The script should compatible with IDA Pro 9.1.
 To iterate over function use `idautils.FuncItems(func_ea)` instead.
+
 ## Others
 

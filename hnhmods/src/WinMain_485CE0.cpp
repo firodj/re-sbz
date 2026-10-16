@@ -4,9 +4,11 @@
  * Decompiled from address 0x485ce0
  */
 
-#include "pch.h"
+#include "dx7.hpp"
+
 #include "console.hpp"
 #include "shared.hpp"
+
 
 // Global variables
 HINSTANCE &g_hInstance  = *(HINSTANCE*)0x52F5C8;

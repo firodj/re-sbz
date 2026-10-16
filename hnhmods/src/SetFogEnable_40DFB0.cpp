@@ -3,26 +3,15 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-
-#include <d3d.h>
-
-//enum
-//{
-//    D3DRENDERSTATE_FOGENABLE      = 28, // 0x1C (d3dtypes.h)
-//    D3DRENDERSTATE_RANGEFOGENABLE = 48, // 0x30 (d3dtypes.h)
-//};
-
-//static const DWORD D3DPRASTERCAPS_FOGRANGE = 0x00010000; // (d3dcaps.h)
-
-IDirect3DDevice7 *&g_pD3DDevice_4D6C78 = *(IDirect3DDevice7 **)0x4D6C78;
-// d3dDevDesc_4D6980 (D3DDEVICEDESC7) .dpcTriCaps.dwRasterCaps -> 0x4D6980 + 0x44
-
+// Global variables
+LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78 = *(LPDIRECT3DDEVICE7*)0x4D6C78;
 D3DDEVICEDESC7 g_d3dDevDesc_4D6980 = *(D3DDEVICEDESC7 *)0x4D6980;
 
-// NOTE: the IDA name is misleading -- 4D6CF4 actually mirrors the FOGENABLE state,
-// while 4D6CFC (unnamed in IDA) mirrors the RANGEFOGENABLE request.
-DWORD &g_dwFogEnable_4D6CF4      = *(DWORD *)0x4D6CF4; // WRITABLE
-DWORD &g_dwFogRangeEnable_4D6CFC = *(DWORD *)0x4D6CFC; // WRITABLE
+DWORD &g_dwFogEnable_4D6CF4      = *(DWORD *)0x4D6CF4; 
+DWORD &g_dwFogRangeEnable_4D6CFC = *(DWORD *)0x4D6CFC;
+DWORD &g_dwFogMode_4B00C8        = *(DWORD *)0x4B00C8;
+DWORD &g_dwFogTableEnable_4D6CF8 = *(DWORD *)0x4D6CF8;
+DWORD& g_dwFogColor_4B00CC = *(DWORD*)0x4B00CC;
 
 /**
  * Enables or disables fog (and optionally range-based fog) on the D3D7 device.
@@ -45,7 +34,7 @@ HRESULT __cdecl SetFogEnable_40DFB0(DWORD bFogEnable, int bFogRangeEnable)
         if (bFogRangeEnable) /*0x40dffd*/
         {
             if (g_dwFogEnable_4D6CF4) /*0x40e006*/
-                return  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_RANGEFOGENABLE, g_dwFogEnable_4D6CF4); /*0x40e023*/
+                return g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_RANGEFOGENABLE, g_dwFogEnable_4D6CF4); /*0x40e023*/
         }
     }
     return hr; /*0x40e029*/
