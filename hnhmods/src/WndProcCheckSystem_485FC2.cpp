@@ -296,6 +296,22 @@ HRESULT __cdecl SetFogColor_40E0B4(DWORD dwFogColor)
     return g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGCOLOR, dwFogColor);
 }
 
+HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
+{
+    HRESULT hr; // [esp+0h] [ebp-4h]
+
+    hr = 0;
+    if ( g_dwFogMode_4B00C8 == 3 )
+    {
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGSTART, dwFogStart);
+        return g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGEND, dwFogEnd);
+    }
+    return hr;
+}
+
+bool (__cdecl *CheckInstalledDirRoot_4869A7)(HWND hWnd) = reinterpret_cast<bool (__cdecl *)(HWND)>(0x4869A7);
+int (__cdecl *CHanaObj__GetRealPath_486D9A)(LPSTR szPath, int nPathCode) = reinterpret_cast<int(__cdecl*)(LPSTR, int)>(0x486D9A);
+
 LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
   DWORD Time;

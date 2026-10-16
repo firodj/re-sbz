@@ -80,6 +80,7 @@ void register_WinMain_485CE0();
 void register_GAlloc80_40DEF7();
 void register_SetFogEnable_40DFB0();
 void register_SetFogMode_40E02D();
+void register_IsFileExists_47E8EE();
 
 void InitHNH() {
 	LPVOID pfnWinMain = (LPVOID)0x485CE0;
@@ -104,6 +105,7 @@ void InitHNH() {
 	register_GAlloc80_40DEF7();
 	register_SetFogEnable_40DFB0();
 	register_SetFogMode_40E02D();
+	register_IsFileExists_47E8EE();
 }
 
 void FinishHNH() {
