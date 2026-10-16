@@ -20,7 +20,7 @@ DWORD& g_dwFogColor_4B00CC = *(DWORD*)0x4B00CC;
  *                        when the device advertises D3DPRASTERCAPS_FOGRANGE.
  * @return HRESULT of the last SetRenderState call performed.
  */
-HRESULT __cdecl SetFogEnable_40DFB0(DWORD bFogEnable, int bFogRangeEnable)
+HRESULT __cdecl SetFogEnable_40DFB0(BOOL bFogEnable, BOOL bFogRangeEnable)
 {
     DebugLog("[HNH:SUB] SetFogEnable_40DFB0\n");
 
