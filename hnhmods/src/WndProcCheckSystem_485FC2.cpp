@@ -1,11 +1,10 @@
 #include "dx7.hpp"
 
+#include <cmath>
+#include <corecrt_math_defines.h>
+
 #include "console.hpp"
 #include "shared.hpp"
-#include <mmreg.h>  // Declares WAVEFORMATEX
-#include <dsound.h>
-#include <ddraw.h>
-#include <timeapi.h>
 
 HANDLE &g_hHeapHandle   = *(HANDLE*)0x5187F0;
 int &g_nHeapRefCount    = *(int*)0x5187F4;
@@ -16,6 +15,8 @@ LPDIRECTSOUNDBUFFER &g_pdsBuffer = *(LPDIRECTSOUNDBUFFER*)0x5185D0;
 HGDIOBJ &g_hFont    = *(HGDIOBJ*)0x518378;
 int &g_dwCharWidth  = *(int*)0x4B01B4;
 int &g_dwFontHeight = *(int*)0x4B01B8;
+
+LPDIRECTSOUND3DLISTENER &g_pds3DListener = *(LPDIRECTSOUND3DLISTENER*)0x52F3C4;
 
 float (&g_CosineTable)[360] = *(float (*)[360])0x517D68; // WRITABLE
 float (&g_SineTable)[360]   = *(float (*)[360])0x5177B4; // WRITABLE
@@ -52,10 +53,12 @@ int Renderer_InitializeTrigTablesAndPixelFormat()
 
   DebugLog("[HNH:SUB] Renderer_InitializeTrigTablesAndPixelFormat_418620\n");
 
+  float two_pi_a = 2.0f * static_cast<float>(M_PI);
+
   for ( i = 0; i < 360; ++i )
   {
-    g_CosineTable[i] = cos(i / 360.0 * 6.2831855);
-    g_SineTable[i] = sin(i / 360.0 * 6.2831855);
+    g_CosineTable[i] = ::cos(i / 360.0f * two_pi_a);
+    g_SineTable[i] = ::sin(i / 360.0f * two_pi_a);
   }
   memset(&g_ddBltFx, 0, sizeof(g_ddBltFx));
   g_ddBltFx.dwSize = 100;
@@ -249,8 +252,6 @@ int HanaDS_DestroyHeap()
 // HanaDS_Shutdown - tear down the DirectSound subsystem if initialized: release g_pdsBuffer and g_ppDS, null both, clear g_bDSInited_5185C4, then call sub_42489D() (further 3D/audio cleanup) and return its result. Returns 0 when not initialized.
 void HanaDS_Shutdown()
 {
-    int result; // eax
-
     if ( g_bDSInited_5185C4 )
     {
         if ( g_pdsBuffer )
@@ -291,8 +292,8 @@ IDirectSound3DListener *HanaDS_Create3DListener()
     }
     else
     {
-      pListener->SetDistanceFactor(1.0, 1u);
-      pListener->SetRolloffFactor(0.001, 1u);
+      pListener->SetDistanceFactor(1.0f, 1u);
+      pListener->SetRolloffFactor(0.001f, 1u);
       return pListener;
     }
   }
@@ -363,12 +364,8 @@ HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
 }
 
 void (*D3DDeinit)() = reinterpret_cast<void (*)()>(0x40AC7C);
-
-int (__cdecl *CHanaObj__GetRealPath_486D9A)(LPSTR szPath, int nPathCode) = reinterpret_cast<int(__cdecl*)(LPSTR, int)>(0x486D9A);
 BOOL (__cdecl* CheckRunGame_4863C8)(HWND hWnd, int bFullScreen) = reinterpret_cast<BOOL (__cdecl *)(HWND, int)>(0x4863C8);
 
-LPDIRECTSOUND3DLISTENER &g_pds3DListener = *(LPDIRECTSOUND3DLISTENER*)0x52F3C4;
-    
 // ---
 #define WMU_CHECK_SYSTEM 0x0BD0   // posted by WM_CREATE: install/disc/config gate
 #define WMU_ENGINE_INIT  0x2B10   // posted on success: sound + renderer init

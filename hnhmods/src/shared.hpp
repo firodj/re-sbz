@@ -5,8 +5,6 @@
 extern HINSTANCE& g_hInstance;
 extern HWND& g_hwndParent;
 
-extern LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78;
-extern D3DDEVICEDESC7 g_d3dDevDesc_4D6980;
 extern DWORD &g_dwFogEnable_4D6CF4;
 extern DWORD &g_dwFogRangeEnable_4D6CFC;
 extern DWORD& g_dwFogMode_4B00C8;
@@ -25,9 +23,10 @@ extern CHAR (&g_szGRP800Path)[256];
 extern CHAR (&g_szSEPath)[256];
 extern CHAR (&g_szDATAPath)[256];
 
-void SetupDirPath_486630();
+void __cdecl SetupDirPath_486630();
 bool __cdecl CheckInstalledDirRoot_4869A7(HWND hWnd);
 BOOL __cdecl CDROM_VerifyDiscSignature(int chDriveLetter, const char *szExpectedLabel, size_t nLabelSize);
+int __cdecl CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode);
 
 const char *__cdecl DDErrToString_423CE7(DWORD hr);
 BOOL __cdecl IsFileExists_47E8EE(CHAR* pszFilePath);

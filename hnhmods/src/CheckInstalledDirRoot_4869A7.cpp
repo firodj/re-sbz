@@ -16,7 +16,7 @@ CHAR (&g_szGRP800Path)[256]     = *(CHAR (*)[256])0x52FA70; // WRITABLE
 CHAR (&g_szSEPath)[256]         = *(CHAR (*)[256])0x52FD70; // WRITABLE
 CHAR (&g_szDATAPath)[256]       = *(CHAR (*)[256])0x52FE70; // WRITABLE
 
-void SetupDirPath_486630()
+void __cdecl SetupDirPath_486630()
 {
     CHAR Src[256]; // [esp+0h] [ebp-100h] BYREF
 
@@ -68,6 +68,52 @@ void SetupDirPath_486630()
     }
     wsprintfA(g_szDATAPath, "%s\\DATA\\", g_szHnhPath_530270);
 }
+
+int __cdecl CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode)
+{
+    CHAR szPathTemp[256]; // [esp+4h] [ebp-100h] BYREF
+
+    switch ( nPathCode )
+    {
+    case 1000:
+        wsprintfA(szPathTemp, "%s\\%s", g_szDriveLetr_52FC70, szPathOut);
+        break;
+    case 1001:
+        wsprintfA(szPathTemp, "%s\\%s", g_szHnhPath_530270, szPathOut);
+        break;
+    case 1002:
+        wsprintfA(szPathTemp, "%s%s", g_szODSPath, szPathOut);
+        break;
+    case 1003:
+        wsprintfA(szPathTemp, "%s%s", g_szSPRPath, szPathOut);
+        break;
+    case 1004:
+        wsprintfA(szPathTemp, "%s%s", g_szStrPath, szPathOut);
+        break;
+    case 1005:
+        wsprintfA(szPathTemp, "%s%s", g_szODFPath, szPathOut);
+        break;
+    case 1006:
+        wsprintfA(szPathTemp, "%s%s", g_szWAVPath, szPathOut);
+        break;
+    case 1007:
+        wsprintfA(szPathTemp, "%s%s", g_szGRPPath, szPathOut);
+        break;
+    case 1008:
+        wsprintfA(szPathTemp, "%s%s", g_szGRP800Path, szPathOut);
+        break;
+    case 1009:
+        wsprintfA(szPathTemp, "%s%s", g_szSEPath, szPathOut);
+        break;
+    case 1010:
+        wsprintfA(szPathTemp, "%s%s", g_szDATAPath, szPathOut);
+        break;
+    default:
+        return wsprintfA(szPathOut, "%s", szPathTemp);
+    }
+    return wsprintfA(szPathOut, "%s", szPathTemp);
+}
+
 
 // CheckInstalledDirRoot_4869A7(HWND hWnd) -> bool
 //

@@ -173,10 +173,9 @@ BOOL __cdecl CDROM_VerifyWin9x(int chDriveLetter, const char *szExpectedLabel, s
 // drive letter, NT a 0-based drive index ('A' = 0). Unknown platform -> "verified".
 BOOL __cdecl CDROM_VerifyDiscSignature(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize)
 {
-    OSVERSIONINFOA osvi;
-
     DebugLog("[HNH:SUB] CDROM_VerifyDiscSignature_0x485C50\n");
 #if 0
+    OSVERSIONINFOA osvi;
     ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
     osvi.dwOSVersionInfoSize = sizeof(osvi);
 
