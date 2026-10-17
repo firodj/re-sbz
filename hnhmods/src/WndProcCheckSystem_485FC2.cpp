@@ -365,9 +365,6 @@ HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
 void (*D3DDeinit)() = reinterpret_cast<void (*)()>(0x40AC7C);
 
 int (__cdecl *CHanaObj__GetRealPath_486D9A)(LPSTR szPath, int nPathCode) = reinterpret_cast<int(__cdecl*)(LPSTR, int)>(0x486D9A);
-BOOL (__cdecl* CDROM_VerifyDiscSignature)(int nDriveLetterOffset, char* szGM, size_t Size) =
-    reinterpret_cast<BOOL (__cdecl*)(int, char* , size_t)>(0x485C50);
-
 BOOL (__cdecl* CheckRunGame_4863C8)(HWND hWnd, int bFullScreen) = reinterpret_cast<BOOL (__cdecl *)(HWND, int)>(0x4863C8);
 
 LPDIRECTSOUND3DLISTENER &g_pds3DListener = *(LPDIRECTSOUND3DLISTENER*)0x52F3C4;

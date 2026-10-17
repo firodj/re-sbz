@@ -165,6 +165,9 @@
     </ClCompile>
     <ClCompile Include="python_repl.cpp" />
     <ClCompile Include="hnh_main.cpp" />
+    <ClCompile Include="src\CDROM_VerifyDiscSignature_485C50.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\GAlloc80_40DEF7.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>

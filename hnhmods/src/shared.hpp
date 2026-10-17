@@ -27,6 +27,7 @@ extern CHAR (&g_szDATAPath)[256];
 
 void SetupDirPath_486630();
 bool __cdecl CheckInstalledDirRoot_4869A7(HWND hWnd);
+BOOL __cdecl CDROM_VerifyDiscSignature(int chDriveLetter, const char *szExpectedLabel, size_t nLabelSize);
 
 const char *__cdecl DDErrToString_423CE7(DWORD hr);
 BOOL __cdecl IsFileExists_47E8EE(CHAR* pszFilePath);
