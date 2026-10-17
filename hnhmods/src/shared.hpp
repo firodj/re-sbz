@@ -13,13 +13,20 @@ extern DWORD& g_dwFogMode_4B00C8;
 extern DWORD& g_dwFogTableEnable_4D6CF8;
 extern DWORD& g_dwFogColor_4B00CC;
 
+extern CHAR (&g_szHnhPath_530270)[256];
+extern CHAR (&g_szODSPath)[256];
+extern CHAR (&g_szDriveLetr_52FC70)[256];
+extern CHAR (&g_szSPRPath)[256];
+extern CHAR (&g_szStrPath)[256];
+extern CHAR (&g_szODFPath)[256];
+extern CHAR (&g_szWAVPath)[256];
+extern CHAR (&g_szGRPPath)[256];
+extern CHAR (&g_szGRP800Path)[256];
+extern CHAR (&g_szSEPath)[256];
+extern CHAR (&g_szDATAPath)[256];
 
-
-typedef std::add_pointer_t<int __cdecl(HINSTANCE hinst, HWND hWnd)> DInputInit_43AD67_Fn;
-extern const DInputInit_43AD67_Fn DInputInit_43AD67;
-
-typedef std::add_pointer_t<void __cdecl(void)> GameMainLoop_47F013_Fn;
-extern const GameMainLoop_47F013_Fn GameMainLoop_47F013;
+void SetupDirPath_486630();
+bool __cdecl CheckInstalledDirRoot_4869A7(HWND hWnd);
 
 const char *__cdecl DDErrToString_423CE7(DWORD hr);
 BOOL __cdecl IsFileExists_47E8EE(CHAR* pszFilePath);

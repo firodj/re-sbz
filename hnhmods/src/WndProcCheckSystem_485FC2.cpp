@@ -364,7 +364,6 @@ HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
 
 void (*D3DDeinit)() = reinterpret_cast<void (*)()>(0x40AC7C);
 
-bool (__cdecl *CheckInstalledDirRoot_4869A7)(HWND hWnd) = reinterpret_cast<bool (__cdecl *)(HWND)>(0x4869A7);
 int (__cdecl *CHanaObj__GetRealPath_486D9A)(LPSTR szPath, int nPathCode) = reinterpret_cast<int(__cdecl*)(LPSTR, int)>(0x486D9A);
 BOOL (__cdecl* CDROM_VerifyDiscSignature)(int nDriveLetterOffset, char* szGM, size_t Size) =
     reinterpret_cast<BOOL (__cdecl*)(int, char* , size_t)>(0x485C50);

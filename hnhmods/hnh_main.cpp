@@ -78,6 +78,7 @@ void __cdecl hookPlayVideoWith3DAudio(const char* szFileName, int flagsLoop) {
 
 void register_WinMain_485CE0();
 void register_WndProcCheckSystem_485FC2();
+void register_CheckInstalledDirRoot_4869A7();
 void register_GAlloc80_40DEF7();
 void register_SetFogEnable_40DFB0();
 void register_SetFogMode_40E02D();
@@ -104,6 +105,7 @@ void InitHNH() {
 
 	// register_WinMain_485CE0();
 	register_WndProcCheckSystem_485FC2();
+	register_CheckInstalledDirRoot_4869A7();
 	register_GAlloc80_40DEF7();
 	register_SetFogEnable_40DFB0();
 	register_SetFogMode_40E02D();

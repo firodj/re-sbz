@@ -9,14 +9,14 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-
 // Global variables
 HINSTANCE &g_hInstance  = *(HINSTANCE*)0x52F5C8;
 HWND      &g_hwndParent = *(HWND*)0x52F5CC;
 
-const WNDPROC WndProcCheckSystem_485FC2 = (WNDPROC)0x485FC2;
-const DInputInit_43AD67_Fn DInputInit_43AD67 = (DInputInit_43AD67_Fn)0x43AD67;
-const GameMainLoop_47F013_Fn  GameMainLoop_47F013 = (GameMainLoop_47F013_Fn)0x47F013;
+LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+
+int (__cdecl *DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd) = reinterpret_cast<int(__cdecl*)(HINSTANCE, HWND)>(0x43AD67);
+void (__cdecl *GameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x47F013);
 
 int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
