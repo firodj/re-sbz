@@ -24,17 +24,18 @@ int (__cdecl *DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd) = reinterpret_cast<
 void (__cdecl *GameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x47F013);
 ```
 
-If the function have more than 1 Xrefs, add Minhook register function called register_{functionNameAddr}. For example when `functionNameAddr` is `WinMain_485CE0` then: 
+If the function have more than 1 Xrefs, add Minhook register function called register_{functionNameAddr}. For example when `functionNameAddr` is `WinMain_485CE0` then call the `hnh_Hook`: 
 
 ```c
 void register_WinMain_485CE0() {
-    LPVOID addr = (LPVOID)0x485CE0; // <- the function address
-    LPVOID* orig = NULL;
-    MH_STATUS res = MH_CreateHook(addr, reinterpret_cast<LPVOID>(WinMain_485CE0), reinterpret_cast<LPVOID*>(&orig));
-    if (res == MH_OK) res = MH_EnableHook(addr);
-    DebugLog("[HNH] Hooked WinMain_485CE0; %s\n", MH_StatusToString(res));
+    hnh_Hook(0x485CE0, WinMain_485CE0, "WinMain_485CE0");
 }
 ```
+
+where:
+- arg1: 0x485CE0 <- function address
+- arg2: WinMain_485CE0 <- the function name
+- arg3: "WinMain_485CE0" <- function name in string
 
 At the top of file should have and not using precompiled header (.pch):
 

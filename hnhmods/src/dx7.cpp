@@ -4,3 +4,6 @@
 // Global variables
 LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78 = *(LPDIRECT3DDEVICE7*)0x4D6C78;
 D3DDEVICEDESC7 g_d3dDevDesc_4D6980 = *(D3DDEVICEDESC7 *)0x4D6980;
+
+HRESULT(*D3DXUninitialize)(void) = reinterpret_cast<HRESULT(*)(void)>(0x48B8F0);
+

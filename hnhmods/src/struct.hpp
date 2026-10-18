@@ -1,7 +1,8 @@
 #pragma once
 
 #include "dx7.hpp"
-#include "..\d3dx\ida_defs.hpp";
+
+#include "..\d3dx\ida_defs.hpp"
 
 #pragma pack(push, 1)
 
@@ -57,7 +58,7 @@ struct CHanaFrameRootT3EC_S2D4: public CHanaBase_S130
     CHanaFrameT3EC_S354 *pParent;
     CHanaNode *pFirstChildNode;
     CHanaNode *pLastChildNode;
-    int nCountChild;
+    unsigned int nCountChild;
     CHanaMorpT457_S40C *pAttachedObj_20C;
     CHanaLightT3EF_S1A0 *pHanaLight_210;
     int bHasLight_214;
@@ -252,11 +253,86 @@ struct CObjItemRef_S208
 {
     char szName_0[256];
     char szName_100[256];
-    CHanaBase_S130 *ptr_200;
-    int dwType_204;
+    CHanaBase_S130 *pObj_200;
+    int dwObjType_204;
+};
+
+struct CHanaVertT3EA_S1FC: public CHanaBase_S130
+{
+    LPDIRECT3DVERTEXBUFFER7 pD3DVtxBuf_130;
+    int dwNumVertices_134;
+    int field_138;
+    WORD *pVtxIndices;
+    int dwNumIndices_140;
+    CHanaTextureT3EB_S2CC *pTexT3EB;
+    CHanaMateT3EE_S184 *pMateT3EE;
+    int dwFVF;
+    int dwVertexSize;
+    int nPrimType_154[4];
+    IUnknown *pUnk_164;
+    int gap168[25];
+    int flg_1CC;
+    int nBlendMode_1D0;
+    int flg_1D4;
+    int fFlatShade_1D8;
+    int flg_1DC;
+    int fShadowOnly_1E0;
+    int fUnlit_1E4;
+    int flg_1E8;
+    int nFogDensity_1EC;
+    int nAlphaOpSel_1F0;
+    int fNoTexPersp_1F4;
+    int alpr_1F8;
+};
+
+struct  CHanaFrameArrayT3ED_S138 : public CHanaBase_S130
+{
+    int nFrameCount;
+    CHanaFrameT3EC_S354 **arrFrames;
+};
+
+struct CHanaSubObj_S38
+{
+  float t;
+  D3DXVECTOR3 pos;
+  D3DXVECTOR3 scale;
+  D3DXQUATERNION quat;
+  int gap2C[3];
+};
+
+struct CSoundStruct_8
+{
+  LPDIRECTSOUNDBUFFER pDSBuffer_0;
+  IDirectSound3DBuffer *pDS3DBuffer_4;
+};
+
+struct CHanaObj_S118
+{
+  CSoundStruct_8 *pSnd_0;
+  char sz_name_4[256];
+  float flt_104;
+  float flt_108;
+  int field_10C;
+  int field_110;
+  CHanaFrameT3EC_S354 *pFrame_114;
+};
+
+struct CHanaAnimSetT3F1_S150: public CHanaBase_S130
+{
+  float field_130;
+  int nAnimCount_134;
+  CHanaAnimT3F0_S240 **refsAnimT3F0_138;
+  float fRes_13C;
+  unsigned int nManmCount_140;
+  CHanaMateAnimT3F7_S148 **pRefsManmT3F7;
+  unsigned int nCount_148;
+  CHanaObj_S118 *arroS118_14C;
 };
 
 
 #pragma pack(pop)
 
 void AssertHanaStructSize();
+
+//int __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj);
+extern int(__cdecl* CHanaObj__Free_40C1E4)(CHanaBase_S130* pObj);

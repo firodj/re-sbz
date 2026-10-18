@@ -45,34 +45,30 @@ LPSTR &g_pDDErrStr = *(LPSTR*)0x5185CC;
 
 int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName);
 
-
 // ---
-int (__cdecl *CHanaObj__Free_40C1E4)(CHanaBase_S130 *pObj) = reinterpret_cast<int (__cdecl*)(CHanaBase_S130*)>(0x40C1E4);
-HRESULT(*D3DXUninitialize)(void) = reinterpret_cast<HRESULT(*)(void)>(0x48B8F0);
-
-
 BOOL (__cdecl* CheckRunGame_4863C8)(HWND hWnd, int bFullScreen) = reinterpret_cast<BOOL (__cdecl *)(HWND, int)>(0x4863C8);
 void __cdecl D3DDeinit();
 
-uint32_t &g_bInited_4D6C6C = *(uint32_t *)0x4D6C6C; // WRITABLE
-CHanaLightT3EF_S1A0 * &g_pLight_4D6CE0 = *(CHanaLightT3EF_S1A0 * *)0x4D6CE0; // WRITABLE
-CHanaMateT3EE_S184 * &g_pMaterial = *(CHanaMateT3EE_S184 * *)0x4D6CDC; // WRITABLE
-HGLOBAL &g_pSekHeader = *(HGLOBAL *)0x4D6CCC; // WRITABLE
-CObjPoolMgr_S58 * &g_pObjPool = *(CObjPoolMgr_S58 * *)0x4D6CD0; // WRITABLE
-LPDIRECTDRAWSURFACE7 &g_pZBuffer_4D6C94 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C94; // WRITABLE
+uint32_t &g_bInited_4D6C6C              = *(uint32_t *)0x4D6C6C; // WRITABLE
+CHanaLightT3EF_S1A0 * &g_pLight_4D6CE0  = *(CHanaLightT3EF_S1A0 * *)0x4D6CE0; // WRITABLE
+CHanaMateT3EE_S184 * &g_pMaterial       = *(CHanaMateT3EE_S184 * *)0x4D6CDC; // WRITABLE
+HGLOBAL &g_pSekHeader                   = *(HGLOBAL *)0x4D6CCC; // WRITABLE
+CObjPoolMgr_S58 * &g_pObjPool           = *(CObjPoolMgr_S58 * *)0x4D6CD0; // WRITABLE
+LPDIRECTDRAWSURFACE7 &g_pZBuffer_4D6C94    = *(LPDIRECTDRAWSURFACE7 *)0x4D6C94; // WRITABLE
 LPDIRECTDRAWSURFACE7 &g_pBackBuffer_4D6C90 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C90; // WRITABLE
-IUnknown * &g_pUnk_4D6C8C = *(IUnknown * *)0x4D6C8C; // WRITABLE
+IUnknown * &g_pUnk_4D6C8C                  = *(IUnknown * *)0x4D6C8C; // WRITABLE
 
-CHanaFrameT3EC_S354 * &g_pLightFrame = *(CHanaFrameT3EC_S354 * *)0x4D6CB0; // WRITABLE
-CHanaFrameT3EC_S354 * &g_pCameraFrame = *(CHanaFrameT3EC_S354 * *)0x4D6CAC; // WRITABLE
+CHanaFrameT3EC_S354 * &g_pLightFrame     = *(CHanaFrameT3EC_S354 * *)0x4D6CB0; // WRITABLE
+CHanaFrameT3EC_S354 * &g_pCameraFrame    = *(CHanaFrameT3EC_S354 * *)0x4D6CAC; // WRITABLE
 CHanaFrameRootT3EC_S2D4 * &g_pSceneFrame = *(CHanaFrameRootT3EC_S2D4 * *)0x4D6CA8; // WRITABLE
-CObjItemRef_S208 * &g_pObjectTable = *(CObjItemRef_S208 * *)0x4D6C98; // WRITABLE
-LPDIRECTDRAW7 &g_pDD_4D6C7C = *(LPDIRECTDRAW7 *)0x4D6C7C; // WRITABLE
-//LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78 = *(LPDIRECT3DDEVICE7 *)0x4D6C78; // WRITABLE
-LPDIRECT3D7 &g_pD3D_4D6C84 = *(LPDIRECT3D7 *)0x4D6C84; // WRITABLE
-D3DXContext * &g_pRenderCtx = *(D3DXContext * *)0x4D6C80; // WRITABLE
-uint32_t &g_nMemCnt_4D6CF0 = *(uint32_t *)0x4D6CF0; // WRITABLE
+CObjItemRef_S208 * &g_pObjectTable       = *(CObjItemRef_S208 * *)0x4D6C98; // WRITABLE
+int& g_nObjectTableCount                 = *(int*)0x4D6C9C;
+LPDIRECTDRAW7 &g_pDD_4D6C7C              = *(LPDIRECTDRAW7 *)0x4D6C7C; // WRITABLE
+LPDIRECT3D7 &g_pD3D_4D6C84               = *(LPDIRECT3D7 *)0x4D6C84; // WRITABLE
+D3DXContext * &g_pRenderCtx              = *(D3DXContext * *)0x4D6C80; // WRITABLE
+uint32_t &g_nMemCnt_4D6CF0               = *(uint32_t *)0x4D6CF0; // WRITABLE
 
+BOOL &g_bFogIsActive_4B3480 = *(BOOL*)0x4B3480;
 
 // D3DDeinit(): full D3D/DDraw teardown, the mirror of D3DInit.
 //   Runs only if g_bInited. Frees/releases, in order:
@@ -480,8 +476,6 @@ static LRESULT OnCheckSystem(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
     return DefWindowProcA(hWnd, msg, wp, lp);
 }
 
-BOOL &g_bFogIsActive_4B3480 = *(BOOL*)0x4B3480;
-
 static LRESULT OnEngineInit(HWND hWnd)
 {
     if (HanaDS_Init(hWnd) == 1)
@@ -565,7 +559,6 @@ LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, 
 }
 
 // ---
-
 
 void register_WndProcCheckSystem_485FC2() {
     LPVOID addr = (LPVOID)0x485FC2; // <- the function address

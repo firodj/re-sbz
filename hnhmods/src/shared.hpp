@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include "struct.hpp"
 
 void hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName);
 
@@ -25,6 +26,10 @@ extern CHAR (&g_szGRP800Path)[256];
 extern CHAR (&g_szSEPath)[256];
 extern CHAR (&g_szDATAPath)[256];
 extern char(&g_szDbgPrefix)[104];
+
+extern CObjItemRef_S208* &g_pObjectTable;
+extern int &g_nObjectTableCount;
+extern int &g_bDSInited_5185C4;
 
 void __cdecl SetupDirPath_486630();
 bool __cdecl CheckInstalledDirRoot_4869A7(HWND hWnd);
