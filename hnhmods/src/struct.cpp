@@ -50,5 +50,5 @@ void AssertHanaStructSize() {
     static_assert(sizeof(CSekItem) == 0x9C, "CSekItem");
     static_assert(sizeof(CSekItemProp) == 0x8, "CSekItemProp");
 
-    DebugLog("finished AssertHanaStructSize\n");
+    DebugLog("[%s] %s\n", "INFO", "finished AssertHanaStructSize");
 }

@@ -12,17 +12,17 @@ void(__stdcall *D3DXGetErrorString)(int hr, size_t strLength, char* str) = reint
 
 void __cdecl PrintDebugError(int hr)
 {
-    DebugLog("[HNH:SUB] PrintDebugError_40A813\n");
+  DebugLog("[HNH:SUB] PrintDebugError_40A813\n");
 
-    CHAR str[512]; // [esp+0h] [ebp-200h] BYREF
+  CHAR str[512]; // [esp+0h] [ebp-200h] BYREF
 
-    D3DXGetErrorString(hr, 0x100u, str);
-    strcat_s(str, " ");
-    strcat_s(str, g_szDbgPrefix);
-    strcat_s(str, "\n");
-    OutputDebugStringA("---- D3DXL start ------------------------------------------\n");
-    OutputDebugStringA(str);
-    OutputDebugStringA("----D3DXL end------------------------------------------\n");
+  D3DXGetErrorString(hr, 0x100u, str);
+  strcat_s(str, " ");
+  strcat_s(str, g_szDbgPrefix);
+  strcat_s(str, "\n");
+  OutputDebugStringA("---- D3DXL start ------------------------------------------\n");
+  OutputDebugStringA(str);
+  OutputDebugStringA("----D3DXL end------------------------------------------\n");
 }
 
 /**
@@ -32,48 +32,48 @@ void __cdecl PrintDebugError(int hr)
  */
 LPVOID __cdecl GAlloc80_40DEF7(SIZE_T dwBytes)
 {
-    DebugLog("[HNH:SUB] GAlloc80_40DEF7\n");
+  DebugLog("[HNH:SUB] GAlloc80_40DEF7\n");
 
-    LPVOID ptr; // Allocated memory pointer
+  LPVOID ptr; // Allocated memory pointer
 
-    // Allocate memory with zero initialization, adding 128 bytes overhead
-    ptr = GlobalAlloc(GMEM_ZEROINIT, dwBytes + 128);
-    if (ptr)
-    {
-        // Increment global allocation counter
-        ++g_nMemCnt_4D6CF0;
-        return ptr;
-    }
-    else
-    {
-        // Format error message into Buffer
-        sprintf(g_szDbgPrefix, "MemAlloc");
-        // Print debug error code (out of memory)
-        PrintDebugError(0x8007000E);
-        return NULL;
-    }
+  // Allocate memory with zero initialization, adding 128 bytes overhead
+  ptr = GlobalAlloc(GMEM_ZEROINIT, dwBytes + 128);
+  if (ptr)
+  {
+    // Increment global allocation counter
+    ++g_nMemCnt_4D6CF0;
+    return ptr;
+  }
+  else
+  {
+    // Format error message into Buffer
+    sprintf(g_szDbgPrefix, "MemAlloc");
+    // Print debug error code (out of memory)
+    PrintDebugError(0x8007000E);
+    return NULL;
+  }
 }
 
 int __cdecl GlobalFree_40DF64(void *pBuf)
 {
-    DebugLog("[HNH:SUB] GlobalFree_40DF64\n");
+  DebugLog("[HNH:SUB] GlobalFree_40DF64\n");
 
-    if ( pBuf )
-    {
-        GlobalFree(pBuf);
-        --g_nMemCnt_4D6CF0;
-        return 1;
-    }
-    else
-    {
-        sprintf(g_szDbgPrefix, "MemFree Ptr=NULL");
-        PrintDebugError(0x80004005);
-        return 0;
-    }
+  if ( pBuf )
+  {
+    GlobalFree(pBuf);
+    --g_nMemCnt_4D6CF0;
+    return 1;
+  }
+  else
+  {
+    sprintf(g_szDbgPrefix, "MemFree Ptr=NULL");
+    PrintDebugError(0x80004005);
+    return 0;
+  }
 }
 
 void register_GAlloc80_40DEF7() {
-    hnh_Hook(0x40DEF7, GAlloc80_40DEF7, "GAlloc80_40DEF7");
-    hnh_Hook(0x40DF64, GlobalFree_40DF64, "GlobalFree_40DF64");
-    hnh_Hook(0x40A813, PrintDebugError, "PrintDebugError_40A813");
+  hnh_Hook(0x40DEF7, GAlloc80_40DEF7, "GAlloc80_40DEF7");
+  hnh_Hook(0x40DF64, GlobalFree_40DF64, "GlobalFree_40DF64");
+  hnh_Hook(0x40A813, PrintDebugError, "PrintDebugError_40A813");
 }
