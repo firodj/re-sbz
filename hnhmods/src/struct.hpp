@@ -116,11 +116,11 @@ struct  CHanaMorpT457_S40C : public CHanaBase_S130
 {
     float fMorpParam_130;
     CHanaMeshT3F5_S138 *pMeshT3F5_138;
-    int nCountVertT3EA_138;
+    unsigned int nCountVertT3EA_138;
     CHanaVertT3EA_S1FC **refsVertT3EA_13C;
-    void *ptr_140;
+    void **pArrObjs_140;
     CHanaSubObj_S8 arrSubObj_144[64];
-    int nCount_344;
+    unsigned int nCount_344;
     int *arrMKeyT3EASize_348;
     CHanaVector2 **arrMKeyT3EA_34C;
     int gap350[2];
@@ -228,7 +228,7 @@ struct CHanaAnimT3F0_S240: public CHanaBase_S130
 
 struct CHanaMeshT3F5_S138 : public CHanaBase_S130
 {
-    int nCountVertT3EA_130;
+    unsigned int nCountVertT3EA_130;
     CHanaVertT3EA_S1FC **refsVertT3EA;
 };
 
@@ -329,10 +329,198 @@ struct CHanaAnimSetT3F1_S150: public CHanaBase_S130
   CHanaObj_S118 *arroS118_14C;
 };
 
+struct CHanaTextureCoordsT3F2_S140: public CHanaBase_S130
+{
+  int dwNumVertices_130;
+  float *tus_134;
+  float *tvs_138;
+  CHanaVertT3EA_S1FC *pVert_13C;
+};
+
+struct CHanaTextureAnimT3F3_S16C: public CHanaBase_S130
+{
+  int field_130;
+  int field_134;
+  int field_138;
+  int field_13C;
+  unsigned int dwCount_140;
+  CHanaTextureCoordsT3F2_S140 **pTexCoords;
+  CHanaFrameT3EC_S354 *pFrame_148;
+  int field_14C;
+  int field_150;
+  int field_154;
+  int field_158;
+  int field_15C;
+  int field_160;
+  int field_164;
+  int field_168;
+};
+
+struct CHanaTextureAnimSetT3F4_S138: public CHanaBase_S130
+{
+  unsigned int nCount_130;
+  CHanaBase_S130 **pArrObjs_134;
+};
+
+struct CHanaSpriteT3F6_S1FC
+{
+  CHanaBase_S130 base_0;
+  float gap130;
+  LPDIRECTDRAWSURFACE7 pTexture_134;
+  D3DXVECTOR3 destWHZ_138;
+  float fAlpha_144;
+  float fScale_148;
+  int fRotation_14C;
+  float fHalfWidth_150;
+  float fHalfHeight_154;
+  int pCenter_158;
+  struct tagRECT rect_15C;
+  LPRECT pRect_16C;
+  DDSURFACEDESC2 ddSurfaceDesc_170;
+  int dwRGBBitCount_1EC;
+  int dwWidth_1F0;
+  int dwHeight_1F4;
+  int lPitch_1F8;
+};
+
+struct CHanaMateAnimSetT3F8_S140: public CHanaBase_S130
+{
+  int field_130;
+  unsigned int dwObjCount_134;
+  CHanaBase_S130 **pArrObjs_138;
+  int field_13C;
+};
+
+struct CHanaSubObj_S74
+{
+  float field_0;
+  D3DLIGHT7 d3dLight_4;
+  int field_6C;
+  CHanaSubObj_S74 *pNext_70;
+};
+
+struct CHanaLightAnimT3F9_S144: public CHanaBase_S130
+{
+  CHanaLightT3EF_S1A0 *pLight_130;
+  float field_134;
+  int field_138;
+  CHanaSubObj_S74 *psoS74_13C;
+  int field_140;
+};
+
+struct CHanaLightAnimSetT3FA_S13C: public CHanaBase_S130
+{
+  int field_0;
+  unsigned int nCount_4;
+  CHanaBase_S130 **pArrObjs_8;
+};
+
+struct CSekHeader
+{
+  int field_0;
+  int gap4[4];
+  CHanaFrameT3EC_S354 *pFrameT3EC;
+  int field_18;
+  char szName_1C[260];
+  CHanaAnimSetT3F1_S150 *pAnimSetT3F1;
+  int field_124;
+  int field_128;
+  CHanaBase_S130 *pObj_12C;
+  CHanaBase_S130 *pObj_130;
+  CHanaBase_S130 *pObj_134;
+  CHanaBase_S130 *pObj_138;
+};
+
+struct CSekItem
+{
+  int flag_0;
+  char szName_4[64];
+  int field_44;
+  int field_48;
+  int gap48;
+  int field_50;
+  float float_54;
+  float float_58;
+  float float_5C;
+  float float_60;
+  int field_64;
+  int gap68;
+  int field_6C;
+  int field_70;
+  int field_74;
+  int gap78;
+  int field_7C;
+  int gap80[7];
+};
+
+struct CSekBody
+{
+  char szName_0[256];
+  char szName_100[256];
+  int field_200;
+  int field_204;
+  int field_208;
+  int field_20C;
+  int angle_210;
+  int angle_214;
+  int angle_218;
+  float float_21C;
+  CSekHeader *pSekHeader_220;
+  float float_224;
+  int gap228[7];
+  int field_244;
+  int field_248;
+  int field_24C;
+  CSekItem items_250[128];
+  int count_5050;
+};
+
+struct CSekItemProp
+{
+  float flt_0;
+  int index;
+};
+
+struct CHanaSceneT458_S504: public CHanaBase_S130
+{
+  unsigned int dwCount_130;
+  CHanaFrameT3EC_S354 **refsFrames_134;
+  CHanaAnimSetT3F1_S150 **refsAnimeSets_138;
+  CSekBody **refsSekBody_13C;
+  CSekItemProp **arrSekItemProps_140;
+  DWORD *arrSizes_144;
+  CHanaAnimSetT3F1_S150 *pAnimSet_148;
+  CHanaSpriteT3F6_S1FC *pSprWindowBmp[5];
+  char szName_160[256];
+  void *ptrStrData_260;
+  CHanaSpriteT3F6_S1FC *textSprites_264[4][29];
+  int gap434[4];
+  int dwPtrPos_444;
+  int dwPtrCurrent_448;
+  int dwPtrSize_44C;
+  float flt_450;
+  float flt_454;
+  float flt_458;
+  float WCurNum;
+  char by_460;
+  char by_461;
+  char by_462;
+  char by_463;
+  float flt_464;
+  LPDIRECTDRAWSURFACE7 pSurface_468;
+  LPDIRECTSOUNDBUFFER pSndBuf_46C;
+  int field_470;
+  char by_474;
+  char gap475[3];
+  CHanaFrameT3EC_S354 *pCamFrame_478;
+  IUnknown *pUnk_47C;
+  float flt_480;
+  int gap484[9];
+  int field_4A8[23];
+};
 
 #pragma pack(pop)
 
 void AssertHanaStructSize();
 
-//int __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj);
-extern int(__cdecl* CHanaObj__Free_40C1E4)(CHanaBase_S130* pObj);
+void __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj);

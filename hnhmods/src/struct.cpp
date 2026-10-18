@@ -35,6 +35,20 @@ void AssertHanaStructSize() {
     static_assert(sizeof(CHanaSubObj_S38) == 0x38, "CHanaSubObj_S38");
     static_assert(sizeof(CHanaObj_S118) == 0x118, "CHanaObj_S118");
     static_assert(sizeof(CSoundStruct_8) == 0x8, "CSoundStruct_8");
+    static_assert(sizeof(CHanaTextureCoordsT3F2_S140) == 0x140, "CHanaTextureCoordsT3F2_S140");
+    static_assert(sizeof(CHanaTextureAnimT3F3_S16C) == 0x16C, "CHanaTextureAnimT3F3_S16C");
+    static_assert(sizeof(CHanaTextureAnimSetT3F4_S138) == 0x138, "CHanaTextureAnimSetT3F4_S138");
+    static_assert(sizeof(CHanaSpriteT3F6_S1FC) == 0x1FC, "CHanaSpriteT3F6_S1FC");
+    static_assert(sizeof(CHanaMateAnimSetT3F8_S140) == 0x140, "CHanaMateAnimSetT3F8_S140");
+    static_assert(sizeof(CHanaLightAnimT3F9_S144) == 0x144, "CHanaLightAnimT3F9_S144");
+    static_assert(sizeof(CHanaSubObj_S74) == 0x74, "CHanaSubObj_S74");
+    static_assert(sizeof(CHanaLightAnimSetT3FA_S13C) == 0x13C, "CHanaLightAnimSetT3FA_S13C");
+
+    static_assert(sizeof(CHanaSceneT458_S504) == 0x504, "CHanaSceneT458_S504");
+    static_assert(sizeof(CSekBody) == 0x5054, "CSekBody");
+    static_assert(sizeof(CSekHeader) == 0x13C, "CSekHeader");
+    static_assert(sizeof(CSekItem) == 0x9C, "CSekItem");
+    static_assert(sizeof(CSekItemProp) == 0x8, "CSekItemProp");
 
     DebugLog("finished AssertHanaStructSize\n");
 }

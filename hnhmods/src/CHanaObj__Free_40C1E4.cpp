@@ -3,8 +3,6 @@
 #include "shared.hpp"
 #include "struct.hpp"
 
-int (__cdecl *CHanaObj__Free_40C1E4)(CHanaBase_S130 *pObj) = reinterpret_cast<int (__cdecl*)(CHanaBase_S130*)>(0x40C1E4);
-
 void __cdecl CHanaObj__RemoveFromGlobalRef(CHanaBase_S130 *pObj)
 {
     DebugLog("[HNH:SUB] CHanaObj__RemoveFromGlobalRef_40BD4D\n");
@@ -358,76 +356,663 @@ void __cdecl CHanaObj__FreeAnimSetT3F1(CHanaAnimSetT3F1_S150 *pAnimSet)
   }
 }
 
-#if 0
+void __cdecl CHanaObj__FreeTexCoordT3F2(CHanaTextureCoordsT3F2_S140 *pTexCoord)
+{
+  DebugLog("[HNH:SUB] CHanaObj__FreeTexCoordT3F2_415E05\n");
+
+  if ( pTexCoord->tvs_138 )
+    GlobalFree_40DF64(pTexCoord->tvs_138);
+  if ( pTexCoord->tus_134 )
+    GlobalFree_40DF64(pTexCoord->tus_134);
+  GlobalFree_40DF64(pTexCoord);
+}
+
+void __cdecl CHanaObj__FreeTexAnimT3F3(CHanaTextureAnimT3F3_S16C *pTexAnim)
+{
+  unsigned int i; // [esp+0h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] CHanaObj__FreeTexAnimT3F3_414F62\n");
+
+  if ( pTexAnim->nCount_12C <= 1 )
+  {
+    if ( pTexAnim->pTexCoords )
+    {
+      for ( i = 0; i < pTexAnim->dwCount_140; ++i )
+        CHanaObj__Free_40C1E4(pTexAnim->pTexCoords[i]);
+      GlobalFree_40DF64(pTexAnim->pTexCoords);
+    }
+    CHanaObj__RemoveFromGlobalRef(pTexAnim);
+    GlobalFree_40DF64(pTexAnim);
+  }
+  else
+  {
+    --pTexAnim->nCount_12C;
+  }
+}
+
+void __cdecl CHanaObj__FreeTexAnimSetT3F4(CHanaTextureAnimSetT3F4_S138 *pTexAnimSet)
+{
+  unsigned int i; // [esp+0h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] CHanaObj__FreeTexAnimSetT3F4_41595B\n");
+
+  if ( pTexAnimSet->nCount_12C <= 1 )
+  {
+    if ( pTexAnimSet->pArrObjs_134 )
+    {
+      for ( i = 0; i < pTexAnimSet->nCount_130; ++i )
+        CHanaObj__Free_40C1E4(pTexAnimSet->pArrObjs_134[i]);
+      GlobalFree_40DF64(pTexAnimSet->pArrObjs_134);
+    }
+    CHanaObj__RemoveFromGlobalRef(pTexAnimSet);
+    GlobalFree_40DF64(pTexAnimSet);
+  }
+  else
+  {
+    --pTexAnimSet->nCount_12C;
+  }
+}
+
+void __cdecl CHanaObj__FreeMeshT3F5(CHanaMeshT3F5_S138 *pMesh)
+{
+  unsigned int i; // [esp+0h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] CHanaObj__FreeMeshT3F5_40FDCB\n");
+
+  if ( pMesh->nCount_12C <= 1 )
+  {
+    if ( pMesh->refsVertT3EA )
+    {
+      for ( i = 0; i < pMesh->nCountVertT3EA_130; ++i )
+      {
+        if ( pMesh->refsVertT3EA[i] )
+        {
+          CHanaObj__Free_40C1E4(pMesh->refsVertT3EA[i]);
+          pMesh->refsVertT3EA[i] = 0;
+        }
+      }
+      GlobalFree_40DF64(pMesh->refsVertT3EA);
+    }
+    CHanaObj__RemoveFromGlobalRef(pMesh);
+    GlobalFree_40DF64(pMesh);
+  }
+  else
+  {
+    --pMesh->nCount_12C;
+  }
+}
+
+void __cdecl CHanaObj__FreeSpriteT3F6(CHanaSpriteT3F6_S1FC *pSprite)
+{
+  DebugLog("[HNH:SUB] CHanaObj__FreeSpriteT3F6_413F07\n");
+
+  if ( pSprite->base_0.nCount_12C <= 1 )
+  {
+    if ( pSprite->pTexture_134 )
+      pSprite->pTexture_134->Release();
+    CHanaObj__RemoveFromGlobalRef(&pSprite->base_0);
+    GlobalFree_40DF64(pSprite);
+  }
+  else
+  {
+    --pSprite->base_0.nCount_12C;
+  }
+}
+
+void __cdecl ApplyMaterial(CHanaMateT3EE_S184 *pMate, D3DMATERIAL7 *pD3Dmaterial)
+{
+  DebugLog("[HNH:SUB] ApplyMaterial_40F891\n");
+
+  qmemcpy(&pMate->d3dMaterial_130, pD3Dmaterial, sizeof(pMate->d3dMaterial_130));
+  if ( pMate->d3dMaterial_130.diffuse.a > 1.0 )
+    pMate->d3dMaterial_130.diffuse.a = 1.0;
+  if ( pMate->d3dMaterial_130.diffuse.a < 0.0 )
+    pMate->d3dMaterial_130.diffuse.a = 0.0;
+  if ( pMate->d3dMaterial_130.diffuse.r > 1.0 )
+    pMate->d3dMaterial_130.diffuse.r = 1.0;
+  if ( pMate->d3dMaterial_130.diffuse.r < 0.0 )
+    pMate->d3dMaterial_130.diffuse.r = 0.0;
+  if ( pMate->d3dMaterial_130.diffuse.g > 1.0 )
+    pMate->d3dMaterial_130.diffuse.g = 1.0;
+  if ( pMate->d3dMaterial_130.diffuse.g < 0.0 )
+    pMate->d3dMaterial_130.diffuse.g = 0.0;
+  if ( pMate->d3dMaterial_130.diffuse.b > 1.0 )
+    pMate->d3dMaterial_130.diffuse.b = 1.0;
+  if ( pMate->d3dMaterial_130.diffuse.b < 0.0 )
+    pMate->d3dMaterial_130.diffuse.b = 0.0;
+  if ( pMate->d3dMaterial_130.ambient.a > 1.0 )
+    pMate->d3dMaterial_130.ambient.a = 1.0;
+  if ( pMate->d3dMaterial_130.ambient.a < 0.0 )
+    pMate->d3dMaterial_130.ambient.a = 0.0;
+  if ( pMate->d3dMaterial_130.ambient.r > 1.0 )
+    pMate->d3dMaterial_130.ambient.r = 1.0;
+  if ( pMate->d3dMaterial_130.ambient.r < 0.0 )
+    pMate->d3dMaterial_130.ambient.r = 0.0;
+  if ( pMate->d3dMaterial_130.ambient.g > 1.0 )
+    pMate->d3dMaterial_130.ambient.g = 1.0;
+  if ( pMate->d3dMaterial_130.ambient.g < 0.0 )
+    pMate->d3dMaterial_130.ambient.g = 0.0;
+  if ( pMate->d3dMaterial_130.ambient.b > 1.0 )
+    pMate->d3dMaterial_130.ambient.b = 1.0;
+  if ( pMate->d3dMaterial_130.ambient.b < 0.0 )
+    pMate->d3dMaterial_130.ambient.b = 0.0;
+  pMate->fMatDirty = 1;
+}
+
+void __cdecl CHanaObj__FreeMateAnimT3F7(CHanaMateAnimT3F7_S148 *pMateAnim)
+{
+  CHanaSubObj_S50 *psoS50_4C; // [esp+0h] [ebp-8h]
+  CHanaSubObj_S50 *hMem; // [esp+4h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] CHanaObj__FreeMateAnimT3F7_40E6B6\n");
+
+  if ( pMateAnim->nCount_12C <= 1 )
+  {
+    if ( pMateAnim->pObj_S50 )
+    {
+      hMem = pMateAnim->pObj_S50;
+      ApplyMaterial(pMateAnim->pMateT3EE, &hMem->d3dMat7_4);
+      CHanaObj__Free_40C1E4(pMateAnim->pMateT3EE);
+      pMateAnim->pMateT3EE = 0;
+      while ( 1 )
+      {
+        psoS50_4C = hMem->psoS50_4C;
+        GlobalFree_40DF64(hMem);
+        if ( !psoS50_4C )
+          break;
+        hMem = psoS50_4C;
+      }
+    }
+    CHanaObj__RemoveFromGlobalRef(pMateAnim);
+    GlobalFree_40DF64(pMateAnim);
+  }
+  else
+  {
+    --pMateAnim->nCount_12C;
+  }
+}
+
+void __cdecl CHanaObj__FreeMateAnimSetT3F8(CHanaMateAnimSetT3F8_S140 *pMateAnimSet)
+{
+  unsigned int i; // [esp+0h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] CHanaObj__FreeMateAnimSetT3F8_40F3E5\n");
+
+  if ( pMateAnimSet->nCount_12C <= 1 )
+  {
+    if ( pMateAnimSet->pArrObjs_138 )
+    {
+      for ( i = 0; i < pMateAnimSet->dwObjCount_134; ++i )
+        CHanaObj__Free_40C1E4(pMateAnimSet->pArrObjs_138[i]);
+      GlobalFree_40DF64(pMateAnimSet->pArrObjs_138);
+    }
+    CHanaObj__RemoveFromGlobalRef(pMateAnimSet);
+    GlobalFree_40DF64(pMateAnimSet);
+  }
+  else
+  {
+    --pMateAnimSet->nCount_12C;
+  }
+}
+
+uint32_t &g_nLightningEnabled = *(uint32_t *)0x4B00AC; // WRITABLE
+uint32_t &flt_4A8340 = *(uint32_t *)0x4A8340; // READ-ONLY
+bool &g_bSpecularEnable = *(bool *)0x4B00A0; // WRITABLE
+uint32_t &g_bForceDirectionalLights = *(uint32_t *)0x4D6D04; // WRITABLE
+
+void __cdecl ApplyLightSettings(CHanaLightT3EF_S1A0 *pLight)
+{
+  CHanaFrameT3EC_S354 *pHanaFrame; // [esp+4h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] ApplyLightSettings_40929C\n");
+
+  if ( g_nLightningEnabled )
+  {
+    if ( pLight->d3dLight_134.dltType == (D3DLIGHT_FORCE_DWORD|0x80000000) )
+    {
+      g_pD3DDevice_4D6C78->SetRenderState(
+        D3DRENDERSTATE_AMBIENT,
+           static_cast<int>(pLight->d3dLight_134.dcvDiffuse.b * 255.0)
+        | (static_cast<int>(pLight->d3dLight_134.dcvDiffuse.g * 255.0) << 8)
+        | (static_cast<int>(pLight->d3dLight_134.dcvDiffuse.r * 255.0) << 16)
+        | 0xFF000000);
+    }
+    else
+    {
+      if ( !*&g_bSpecularEnable )
+      {
+        pLight->d3dLight_134.dcvSpecular.r = 0.0;
+        pLight->d3dLight_134.dcvSpecular.g = 0.0;
+        pLight->d3dLight_134.dcvSpecular.b = 0.0;
+        pLight->d3dLight_134.dcvSpecular.a = 0.0;
+      }
+      if ( pLight->pHanaT3EC_19C )
+      {
+        pHanaFrame = pLight->pHanaT3EC_19C;
+        if ( g_bForceDirectionalLights == 1 )
+          pLight->d3dLight_134.dltType = D3DLIGHT_DIRECTIONAL;
+        g_pD3DDevice_4D6C78->SetLight(pLight->dwLightIndex_130, &pLight->d3dLight_134);
+        pHanaFrame->bHasLight_214 = 0;
+      }
+      g_pD3DDevice_4D6C78->LightEnable(pLight->dwLightIndex_130, 1);
+    }
+  }
+}
+
+void __cdecl SetupLightFromD3D(CHanaLightT3EF_S1A0 *pHanaLight, D3DLIGHT7 *pD3DLight)
+{
+  DebugLog("[HNH:SUB] SetupLightFromD3D_40922E\n");
+
+  qmemcpy(&pHanaLight->d3dLight_134, pD3DLight, sizeof(pHanaLight->d3dLight_134));
+  ApplyLightSettings(pHanaLight);
+}
+
+void __cdecl CHanaObj__FreeLightAnimT3F9(CHanaLightAnimT3F9_S144 *pLightAnim)
+{
+  CHanaSubObj_S74 *pNext_70; // [esp+0h] [ebp-8h]
+  CHanaSubObj_S74 *hMem; // [esp+4h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] CHanaObj__FreeLightAnimT3F9_409820\n");
+
+  if ( pLightAnim->nCount_12C <= 1 )
+  {
+    if ( pLightAnim->psoS74_13C )
+    {
+      hMem = pLightAnim->psoS74_13C;
+      SetupLightFromD3D(pLightAnim->pLight_130, &hMem->d3dLight_4);
+      while ( 1 )
+      {
+        pNext_70 = hMem->pNext_70;
+        if ( hMem )
+          GlobalFree_40DF64(hMem);
+        if ( !pNext_70 )
+          break;
+        hMem = pNext_70;
+      }
+    }
+    CHanaObj__RemoveFromGlobalRef(pLightAnim);
+    GlobalFree_40DF64(pLightAnim);
+  }
+  else
+  {
+    --pLightAnim->nCount_12C;
+  }
+}
+
+void __cdecl CHanaObj__FreeLightAnimSetT3FA(CHanaLightAnimSetT3FA_S13C *pLightAnimSet)
+{
+  unsigned int i; // [esp+0h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] CHanaObj__FreeLightAnimSetT3FA_40A3BB\n");
+
+  if ( pLightAnimSet->nCount_12C <= 1 )
+  {
+    if ( pLightAnimSet->pArrObjs_8 )
+    {
+      for ( i = 0; i < pLightAnimSet->nCount_4; ++i )
+        CHanaObj__Free_40C1E4(pLightAnimSet->pArrObjs_8[i]);
+      GlobalFree_40DF64(pLightAnimSet->pArrObjs_8);
+    }
+    CHanaObj__RemoveFromGlobalRef(pLightAnimSet);
+    GlobalFree_40DF64(pLightAnimSet);
+  }
+  else
+  {
+    --pLightAnimSet->nCount_12C;
+  }
+}
+
+void __cdecl CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
+{
+  unsigned int m; // [esp+0h] [ebp-8h]
+  unsigned int n; // [esp+0h] [ebp-8h]
+  unsigned int i; // [esp+4h] [ebp-4h]
+  unsigned int j; // [esp+4h] [ebp-4h]
+  unsigned int k; // [esp+4h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] CHanaObj__FreeLightAnimSetT3FA_433E8D\n");
+
+  if ( pMorp )
+  {
+    if ( pMorp->nCount_12C <= 1 )
+    {
+      if ( pMorp->pArrObjs_140 )
+      {
+        for ( i = 0; i < pMorp->pMeshT3F5_138->nCountVertT3EA_130; ++i )
+        {
+          if ( pMorp->pArrObjs_140[i] )
+          {
+            GlobalFree_40DF64(pMorp->pArrObjs_140[i]);
+            pMorp->pArrObjs_140[i] = 0;
+            pMorp->pArrObjs_140[i] = 0;
+          }
+        }
+        if ( pMorp->pArrObjs_140 )
+        {
+          GlobalFree_40DF64(pMorp->pArrObjs_140);
+          pMorp->pArrObjs_140 = 0;
+        }
+        pMorp->pArrObjs_140 = 0;
+      }
+      if ( pMorp->refsVertT3EA_13C )
+      {
+        if ( pMorp->arrMKeyT3EASize_348 )
+        {
+          GlobalFree_40DF64(pMorp->arrMKeyT3EASize_348);
+          pMorp->arrMKeyT3EASize_348 = 0;
+        }
+        if ( pMorp->arrMKeyT3EA_34C )
+        {
+          for ( j = 0; j < pMorp->pMeshT3F5_138->nCountVertT3EA_130; ++j )
+          {
+            if ( pMorp->arrMKeyT3EA_34C[j] )
+            {
+              GlobalFree_40DF64(pMorp->arrMKeyT3EA_34C[j]);
+              pMorp->arrMKeyT3EA_34C[j] = 0;
+              pMorp->arrMKeyT3EA_34C[j] = 0;
+            }
+          }
+          if ( pMorp->arrMKeyT3EA_34C )
+          {
+            GlobalFree_40DF64(pMorp->arrMKeyT3EA_34C);
+            pMorp->arrMKeyT3EA_34C = 0;
+          }
+          pMorp->arrMKeyT3EA_34C = 0;
+        }
+        for ( k = 0; k < pMorp->nCountVertT3EA_138; ++k )
+        {
+          CHanaObj__RemoveFromGlobalRef(pMorp->refsVertT3EA_13C[k]);
+          if ( pMorp->refsVertT3EA_13C[k] )
+          {
+            CHanaObj__Free_40C1E4(pMorp->refsVertT3EA_13C[k]);
+            pMorp->refsVertT3EA_13C[k] = 0;
+          }
+        }
+        if ( pMorp->refsVertT3EA_13C )
+        {
+          GlobalFree_40DF64(pMorp->refsVertT3EA_13C);
+          pMorp->refsVertT3EA_13C = 0;
+        }
+      }
+      for ( m = 0; m < pMorp->nCount_344; ++m )
+      {
+        if ( pMorp->arrSubObj_144[m].arrFun_4 )
+        {
+          GlobalFree_40DF64(pMorp->arrSubObj_144[m].arrFun_4);
+          pMorp->arrSubObj_144[m].arrFun_4 = 0;
+          pMorp->arrSubObj_144[m].arrFun_4 = 0;
+        }
+      }
+      for ( n = 0; n < pMorp->nCount_344; ++n )
+      {
+        if ( pMorp->arrSubObj_144[n].pSubObj_0 )
+        {
+          if ( pMorp->arrSubObj_144[n].pSubObj_0->parrS2C )
+          {
+            GlobalFree_40DF64(pMorp->arrSubObj_144[n].pSubObj_0->parrS2C);
+            pMorp->arrSubObj_144[n].pSubObj_0->parrS2C = 0;
+            pMorp->arrSubObj_144[n].pSubObj_0->parrS2C = 0;
+          }
+          if ( pMorp->arrSubObj_144[n].pSubObj_0 )
+          {
+            GlobalFree_40DF64(pMorp->arrSubObj_144[n].pSubObj_0);
+            pMorp->arrSubObj_144[n].pSubObj_0 = 0;
+          }
+          pMorp->arrSubObj_144[n].pSubObj_0 = 0;
+          if ( pMorp->arrSubObj_144[n].pSubObj_0 )
+          {
+            GlobalFree_40DF64(pMorp->arrSubObj_144[n].pSubObj_0);
+            pMorp->arrSubObj_144[n].pSubObj_0 = 0;
+          }
+        }
+      }
+      if ( pMorp->pMeshT3F5_138 )
+      {
+        CHanaObj__RemoveFromGlobalRef(pMorp->pMeshT3F5_138);
+        CHanaObj__Free_40C1E4(pMorp->pMeshT3F5_138);
+      }
+      CHanaObj__RemoveFromGlobalRef(pMorp);
+      GlobalFree_40DF64(pMorp);
+    }
+    else
+    {
+      --pMorp->nCount_12C;
+    }
+  }
+}
+
+void __cdecl FreeSekHeader(CSekHeader *pSekHeader)
+{
+  DebugLog("[HNH:SUB] FreeSekHeader_40D8F6\n");
+
+  if ( pSekHeader )
+  {
+    if ( pSekHeader->pObj_12C )
+      CHanaObj__Free_40C1E4(pSekHeader->pObj_12C);
+    if ( pSekHeader->pObj_134 )
+      CHanaObj__Free_40C1E4(pSekHeader->pObj_134);
+    if ( pSekHeader->pObj_138 )
+      CHanaObj__Free_40C1E4(pSekHeader->pObj_138);
+    if ( pSekHeader->pObj_130 )
+      CHanaObj__Free_40C1E4(pSekHeader->pObj_130);
+    if ( pSekHeader->pAnimSetT3F1 )
+      CHanaObj__Free_40C1E4(pSekHeader->pAnimSetT3F1);
+    if ( pSekHeader->pFrameT3EC )
+      CHanaObj__Free_40C1E4(pSekHeader->pFrameT3EC);
+    GlobalFree_40DF64(pSekHeader);
+  }
+}
+
+// CSekBody::Release - refcounted release of a CSekBody. Decrement count_5050; when it hits 0, free the header (sub_40D8F6 on pSekHeader_220) and GlobalFree the body. Returns the body pointer.
+void __cdecl CSekBody__Release_4012FE(CSekBody *pSekBody)
+{
+  DebugLog("[HNH:SUB] CSekBody__Release_4012FE\n");
+
+  if ( pSekBody )
+  {
+    if ( --pSekBody->count_5050 <= 0 )
+    {
+      FreeSekHeader(pSekBody->pSekHeader_220);
+      pSekBody->pSekHeader_220 = 0;
+      GlobalFree(pSekBody);
+    }
+  }
+}
+
+void __cdecl CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
+{
+  unsigned int i; // [esp+0h] [ebp-4h]
+  unsigned int j; // [esp+0h] [ebp-4h]
+  unsigned int k; // [esp+0h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] CHanaObj__FreeSceneT458_4821FA\n");
+
+  if ( pScene->nCount_12C <= 1 )
+  {
+    if ( pScene->pUnk_47C )
+      pScene->pUnk_47C->Release();
+    if ( pScene->pSurface_468 )
+      pScene->pSurface_468->Release();
+    if ( pScene->pSndBuf_46C )
+    {
+      pScene->pSndBuf_46C->Stop();
+      pScene->pSndBuf_46C->Release();
+      pScene->pSndBuf_46C = 0;
+    }
+    for ( i = 0; i < 5; ++i )
+    {
+      if ( pScene->pSprWindowBmp[i] )
+      {
+        CHanaObj__Free_40C1E4(&pScene->pSprWindowBmp[i]->base_0);
+        pScene->pSprWindowBmp[i] = 0;
+      }
+    }
+    for ( j = 0; j < 0x78; ++j )
+    {
+      if ( pScene->textSprites_264[0][j] )
+      {
+        CHanaObj__Free_40C1E4(&pScene->textSprites_264[0][j]->base_0);
+        pScene->textSprites_264[0][j] = 0;
+      }
+    }
+    if ( pScene->pAnimSet_148 )
+    {
+      CHanaObj__Free_40C1E4(pScene->pAnimSet_148);
+      pScene->pAnimSet_148 = 0;
+    }
+    for ( k = 0; k < pScene->dwCount_130; ++k )
+    {
+      if ( pScene->arrSekItemProps_140 && pScene->arrSekItemProps_140[k] )
+      {
+        GlobalFree_40DF64(pScene->arrSekItemProps_140[k]);
+        pScene->arrSekItemProps_140[k] = 0;
+      }
+      if ( pScene->refsAnimeSets_138 && pScene->refsAnimeSets_138[k] )
+      {
+        CHanaObj__Free_40C1E4(pScene->refsAnimeSets_138[k]);
+        pScene->refsAnimeSets_138[k] = 0;
+      }
+      if ( pScene->refsFrames_134 && pScene->refsFrames_134[k] )
+      {
+        CHanaObj__Free_40C1E4(pScene->refsFrames_134[k]);
+        pScene->refsFrames_134[k] = 0;
+      }
+      if ( pScene->refsSekBody_13C )
+        CSekBody__Release_4012FE(pScene->refsSekBody_13C[k]);
+    }
+    if ( pScene->refsFrames_134 )
+    {
+      GlobalFree_40DF64(pScene->refsFrames_134);
+      pScene->refsFrames_134 = 0;
+    }
+    if ( pScene->refsAnimeSets_138 )
+    {
+      GlobalFree_40DF64(pScene->refsAnimeSets_138);
+      pScene->refsAnimeSets_138 = 0;
+    }
+    if ( pScene->refsSekBody_13C )
+    {
+      GlobalFree_40DF64(pScene->refsSekBody_13C);
+      pScene->refsSekBody_13C = 0;
+    }
+    if ( pScene->arrSizes_144 )
+    {
+      GlobalFree_40DF64(pScene->arrSizes_144);
+      pScene->arrSizes_144 = 0;
+    }
+    if ( pScene->arrSekItemProps_140 )
+    {
+      GlobalFree_40DF64(pScene->arrSekItemProps_140);
+      pScene->arrSekItemProps_140 = 0;
+    }
+    if ( pScene->ptrStrData_260 )
+    {
+      GlobalFree_40DF64(pScene->ptrStrData_260);
+      pScene->ptrStrData_260 = 0;
+    }
+    if ( pScene )
+      GlobalFree_40DF64(pScene);
+  }
+  else
+  {
+    --pScene->nCount_12C;
+  }
+}
+
+#if 1
+
+uint32_t &g_nRefLightAnimSetT3FA = *(uint32_t *)0x4D6D4C; // WRITABLE
+uint32_t &g_nRefLightAnimT3F9 = *(uint32_t *)0x4D6D48; // WRITABLE
+uint32_t &g_nRefMateAnimSetT3F8 = *(uint32_t *)0x4D6D44; // WRITABLE
+uint32_t &g_nRefMateAnimT3F7 = *(uint32_t *)0x4D6D40; // WRITABLE
+uint32_t &g_nRefSpriteT3F6 = *(uint32_t *)0x4D6D3C; // WRITABLE
+uint32_t &g_nRefMeshT3F5 = *(uint32_t *)0x4D6D14; // WRITABLE
+uint32_t &g_nRefTexCoordT3F2 = *(uint32_t *)0x4D6D38; // WRITABLE
+uint32_t &g_nRefTextureT3EB = *(uint32_t *)0x4D6D30; // WRITABLE
+uint32_t &g_nRefVertT3EA = *(uint32_t *)0x4D6D2C; // WRITABLE
+uint32_t &g_nRefFrameT3EC = *(uint32_t *)0x4D6D24; // WRITABLE
+uint32_t &g_nRefFrameArrayT3ED = *(uint32_t *)0x4D6D34; // WRITABLE
+uint32_t &g_nRefMateT3EE = *(uint32_t *)0x4D6D28; // WRITABLE
+uint32_t &g_nRefLightT3EF = *(uint32_t *)0x4D6D18; // WRITABLE
+uint32_t &g_nRefAnimT3F0 = *(uint32_t *)0x4D6D1C; // WRITABLE
+uint32_t &g_nRefAnimSetT3F1 = *(uint32_t *)0x4D6D20; // WRITABLE
+uint32_t &g_nRefMorpT457 = *(uint32_t *)0x4D6D50; // WRITABLE
+
+void (__cdecl *CHanaObj__FreeT3FB)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x4166B5);
+void (__cdecl *CHanaObj__FreeT3FC)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x410501);
+void (__cdecl *CHanaObj__FreeT3FD)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x4114DF);
+void (__cdecl *CHanaObj__FreeT3FE)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x413075);
 
 void __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj)
 {
+    DebugLog("[HNH:SUB] CHanaObj__Free_40C1E4\n");
+
     switch ( pObj->dwType )
     {
     case 0x3EA:
-        CHanaObj__FreeVertT3EA(pObj);
+        CHanaObj__FreeVertT3EA((CHanaVertT3EA_S1FC*)pObj);
         --g_nRefVertT3EA;
         break;
     case 0x3EB:
-        CHanaObj__FreeTextureT3EB(pObj);
+        CHanaObj__FreeTextureT3EB((CHanaTextureT3EB_S2CC*)pObj);
         --g_nRefTextureT3EB;
         break;
     case 0x3EC:
-        CHanaObj__FreeFrameT3EC(pObj);
+        CHanaObj__FreeFrameT3EC((CHanaFrameT3EC_S354*)pObj);
         --g_nRefFrameT3EC;
         break;
     case 0x3ED:
-      CHanaObj__FreeFrameArrayT3ED(pObj);
-        --g_nRefT3ED;
+      CHanaObj__FreeFrameArrayT3ED((CHanaFrameArrayT3ED_S138*)pObj);
+        --g_nRefFrameArrayT3ED;
         break;
     case 0x3EE:
-        CHanaObj__FreeMateT3EE(pObj);
+        CHanaObj__FreeMateT3EE((CHanaMateT3EE_S184*)pObj);
         --g_nRefMateT3EE;
         break;
     case 0x3EF:
-        CHanaObj__FreeLightT3EF(pObj);
+        CHanaObj__FreeLightT3EF((CHanaLightT3EF_S1A0*)pObj);
         --g_nRefLightT3EF;
         break;
     case 0x3F0:
-        CHanaObj__FreeAnimT3F0(pObj);
+        CHanaObj__FreeAnimT3F0((CHanaAnimT3F0_S240*)pObj);
         --g_nRefAnimT3F0;
         break;
     case 0x3F1:
-        CHanaObj__FreeAnimSetT3F1(pObj);
+        CHanaObj__FreeAnimSetT3F1((CHanaAnimSetT3F1_S150*)pObj);
         --g_nRefAnimSetT3F1;
         break;
     case 0x3F2:
-        CHanaObj__FreeTexCoordT3F2(pObj);
+        CHanaObj__FreeTexCoordT3F2((CHanaTextureCoordsT3F2_S140*)pObj);
         --g_nRefTexCoordT3F2;
         break;
     case 0x3F3:
-        CHanaObj__FreeTexAnimT3F3(pObj);
+        CHanaObj__FreeTexAnimT3F3((CHanaTextureAnimT3F3_S16C*)pObj);
         break;
     case 0x3F4:
-        CHanaObj__FreeTexAnimSetT3F4(pObj);
+        CHanaObj__FreeTexAnimSetT3F4((CHanaTextureAnimSetT3F4_S138*)pObj);
         break;
     case 0x3F5:
-        CHanaObj__FreeMeshT3F5(pObj);
+        CHanaObj__FreeMeshT3F5((CHanaMeshT3F5_S138*)pObj);
         --g_nRefMeshT3F5;
         break;
     case 0x3F6:
-        CHanaObj__FreeSpriteT3F6(pObj);
+        CHanaObj__FreeSpriteT3F6((CHanaSpriteT3F6_S1FC*)pObj);
         --g_nRefSpriteT3F6;
         break;
     case 0x3F7:
-        CHanaObj__FreeMateAnimT3F7(pObj);
+        CHanaObj__FreeMateAnimT3F7((CHanaMateAnimT3F7_S148*)pObj);
         --g_nRefMateAnimT3F7;
         break;
     case 0x3F8:
-        CHanaObj__FreeMateAnimSetT3F8(pObj);
+        CHanaObj__FreeMateAnimSetT3F8((CHanaMateAnimSetT3F8_S140*)pObj);
         --g_nRefMateAnimSetT3F8;
         break;
     case 0x3F9:
-        CHanaObj__FreeLightAnimT3F9(pObj);
+        CHanaObj__FreeLightAnimT3F9((CHanaLightAnimT3F9_S144*)pObj);
         --g_nRefLightAnimT3F9;
         break;
     case 0x3FA:
-        CHanaObj__FreeLightAnimSetT3FA(pObj);
+        CHanaObj__FreeLightAnimSetT3FA((CHanaLightAnimSetT3FA_S13C*)pObj);
         --g_nRefLightAnimSetT3FA;
         break;
     case 0x3FB:
@@ -443,11 +1028,11 @@ void __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj)
         CHanaObj__FreeT3FE(pObj);
         break;
     case 0x457:
-        CHanaObj__FreeMorpT457(pObj);
+        CHanaObj__FreeMorpT457((CHanaMorpT457_S40C*)pObj);
         --g_nRefMorpT457;
         break;
     case 0x458:
-        CHanaObj__FreeSceneT458(pObj);
+        CHanaObj__FreeSceneT458((CHanaSceneT458_S504*)pObj);
         break;
     default:
         return;
@@ -455,3 +1040,8 @@ void __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj)
 }
 
 #endif
+
+
+void register_CHanaObj__Free_40C1E4() {
+  hnh_Hook(0x40C1E4, CHanaObj__Free_40C1E4, "CHanaObj__Free_40C1E4");
+}

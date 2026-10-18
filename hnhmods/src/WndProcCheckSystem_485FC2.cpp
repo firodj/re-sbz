@@ -561,9 +561,5 @@ LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, 
 // ---
 
 void register_WndProcCheckSystem_485FC2() {
-    LPVOID addr = (LPVOID)0x485FC2; // <- the function address
-    LPVOID* orig = NULL;
-    MH_STATUS res = MH_CreateHook(addr, reinterpret_cast<LPVOID>(WndProcCheckSystem_485FC2), reinterpret_cast<LPVOID*>(&orig));
-    if (res == MH_OK) res = MH_EnableHook(addr);
-    DebugLog("[HNH] Hooked WndProcCheckSystem_485FC2; %s\n", MH_StatusToString(res));
+  hnh_Hook(0x485FC2, WndProcCheckSystem_485FC2, "WndProcCheckSystem_485FC2");
 }
