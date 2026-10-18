@@ -36,9 +36,5 @@ BOOL __cdecl IsFileExists_47E8EE(CHAR *pszFilePath)
 }
 
 void register_IsFileExists_47E8EE() {
-    LPVOID addr = (LPVOID)0x47E8EE;
-    LPVOID* orig = NULL;
-    MH_STATUS res = MH_CreateHook(addr, reinterpret_cast<LPVOID>(IsFileExists_47E8EE), reinterpret_cast<LPVOID*>(&orig));
-    if (res == MH_OK) res = MH_EnableHook(addr);
-    DebugLog("[HNH] Hooked IsFileExists_47E8EE; %s\n", MH_StatusToString(res));
+    hnh_Hook(0x47E8EE, IsFileExists_47E8EE, "IsFileExists_47E8EE");
 }

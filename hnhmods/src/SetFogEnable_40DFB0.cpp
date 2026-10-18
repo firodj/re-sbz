@@ -3,10 +3,6 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-// Global variables
-LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78 = *(LPDIRECT3DDEVICE7*)0x4D6C78;
-D3DDEVICEDESC7 g_d3dDevDesc_4D6980 = *(D3DDEVICEDESC7 *)0x4D6980;
-
 DWORD &g_dwFogEnable_4D6CF4      = *(DWORD *)0x4D6CF4; 
 DWORD &g_dwFogRangeEnable_4D6CFC = *(DWORD *)0x4D6CFC;
 DWORD &g_dwFogMode_4B00C8        = *(DWORD *)0x4B00C8;
@@ -41,9 +37,5 @@ HRESULT __cdecl SetFogEnable_40DFB0(BOOL bFogEnable, BOOL bFogRangeEnable)
 }
 
 void register_SetFogEnable_40DFB0() {
-    LPVOID addr = (LPVOID)0x40DFB0;
-    LPVOID* orig = NULL;
-    MH_STATUS res = MH_CreateHook(addr, reinterpret_cast<LPVOID>(SetFogEnable_40DFB0), reinterpret_cast<LPVOID*>(&orig));
-    if (res == MH_OK) res = MH_EnableHook(addr);
-    DebugLog("[HNH] Hooked SetFogEnable_40DFB0; %s\n", MH_StatusToString(res));
+    hnh_Hook(0x40DFB0, SetFogEnable_40DFB0, "SetFogEnable_40DFB0");
 }

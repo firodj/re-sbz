@@ -160,10 +160,14 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
     }
 }
 
-void register_WinMain_485CE0() {
-    LPVOID addr = (LPVOID)0x485CE0;
+void hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName) {
+    LPVOID addr = (LPVOID)dwAddr;
     LPVOID* orig = NULL;
-    MH_STATUS res = MH_CreateHook(addr, reinterpret_cast<LPVOID>(WinMain_485CE0), reinterpret_cast<LPVOID*>(&orig));
+    MH_STATUS res = MH_CreateHook(addr, pDetour, reinterpret_cast<LPVOID*>(&orig));
     if (res == MH_OK) res = MH_EnableHook(addr);
-    DebugLog("[HNH] Hooked WinMain_485CE0; %s\n", MH_StatusToString(res));
+    DebugLog("[HNH] Hooked %s; %s\n", pszName, MH_StatusToString(res));
+}
+
+void register_WinMain_485CE0() {
+    hnh_Hook(0x485CE0, WinMain_485CE0, "WinMain_485CE0");
 }

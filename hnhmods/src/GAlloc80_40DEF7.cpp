@@ -5,12 +5,10 @@
 #include "shared.hpp"
 
 int &g_nMemCnt_4D6CF0 = *(int*)0x4D6CF0;
+char (&g_szDbgPrefix)[104] = *(char(*)[104])0x4D4718;
 
-// char aDbgPrefix_[104] = {0};
-LPSTR &aDbgPrefix = *(LPSTR*)0x4D4718;
-
-typedef std::add_pointer_t<void __stdcall(int hr, size_t strLength, char* str)> D3DXGetErrorStringFn;
-const  D3DXGetErrorStringFn D3DXGetErrorString = (D3DXGetErrorStringFn)0x48c80e;
+extern void(__stdcall* D3DXGetErrorString)(int hr, size_t strLength, char* str);
+void(__stdcall *D3DXGetErrorString)(int hr, size_t strLength, char* str) = reinterpret_cast<void (__stdcall*)(int hr, size_t strLength, char* str)>(0x48c80e);
 
 void __cdecl PrintDebugError(int hr)
 {
@@ -20,7 +18,7 @@ void __cdecl PrintDebugError(int hr)
 
     D3DXGetErrorString(hr, 0x100u, str);
     strcat_s(str, " ");
-    strcat_s(str, aDbgPrefix);
+    strcat_s(str, g_szDbgPrefix);
     strcat_s(str, "\n");
     OutputDebugStringA("---- D3DXL start ------------------------------------------\n");
     OutputDebugStringA(str);
@@ -49,17 +47,33 @@ LPVOID __cdecl GAlloc80_40DEF7(SIZE_T dwBytes)
     else
     {
         // Format error message into Buffer
-        sprintf(aDbgPrefix, "MemAlloc");
+        sprintf(g_szDbgPrefix, "MemAlloc");
         // Print debug error code (out of memory)
         PrintDebugError(0x8007000E);
         return NULL;
     }
 }
 
+int __cdecl GlobalFree_40DF64(void *pBuf)
+{
+    DebugLog("[HNH:SUB] GlobalFree_40DF64\n");
+
+    if ( pBuf )
+    {
+        GlobalFree(pBuf);
+        --g_nMemCnt_4D6CF0;
+        return 1;
+    }
+    else
+    {
+        sprintf(g_szDbgPrefix, "MemFree Ptr=NULL");
+        PrintDebugError(0x80004005);
+        return 0;
+    }
+}
+
 void register_GAlloc80_40DEF7() {
-    LPVOID addr = (LPVOID)0x40DEF7;
-    LPVOID* orig = NULL;
-    MH_STATUS res = MH_CreateHook(addr, reinterpret_cast<LPVOID>(GAlloc80_40DEF7), reinterpret_cast<LPVOID*>(&orig));
-    if (res == MH_OK) res = MH_EnableHook(addr);
-    DebugLog("[HNH] Hooked GAlloc80_40DEF7; %s\n", MH_StatusToString(res));
+    hnh_Hook(0x40DEF7, GAlloc80_40DEF7, "GAlloc80_40DEF7");
+    hnh_Hook(0x40DF64, GlobalFree_40DF64, "GlobalFree_40DF64");
+    hnh_Hook(0x40A813, PrintDebugError, "PrintDebugError_40A813");
 }

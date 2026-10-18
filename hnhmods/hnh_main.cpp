@@ -83,6 +83,7 @@ void register_GAlloc80_40DEF7();
 void register_SetFogEnable_40DFB0();
 void register_SetFogMode_40E02D();
 void register_IsFileExists_47E8EE();
+void AssertHanaStructSize();
 
 void InitHNH() {
 	LPVOID pfnWinMain = (LPVOID)0x485CE0;
@@ -103,6 +104,7 @@ void InitHNH() {
 	if (res == MH_OK) res = MH_EnableHook(pfnPlayVideoWith3DAudio);
 	DebugLog("[HNH] Hooked PlayVideoWith3DAudio; %s\n", MH_StatusToString(res));
 
+	AssertHanaStructSize();
 	// register_WinMain_485CE0();
 	register_WndProcCheckSystem_485FC2();
 	register_CheckInstalledDirRoot_4869A7();

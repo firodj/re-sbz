@@ -30,6 +30,15 @@
     <ClCompile Include="src\CDROM_VerifyDiscSignature_485C50.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\DDErrToString_423CE7.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dx7.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\struct.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
@@ -41,6 +50,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\dx7.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\struct.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\d3dx\ida_defs.hpp">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

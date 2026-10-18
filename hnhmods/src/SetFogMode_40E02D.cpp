@@ -27,9 +27,5 @@ HRESULT __cdecl SetFogMode_40E02D(int bFogTableEnable, DWORD dwFogMode)
 }
 
 void register_SetFogMode_40E02D() {
-    LPVOID addr = (LPVOID)0x40E02D;
-    LPVOID* orig = NULL;
-    MH_STATUS res = MH_CreateHook(addr, reinterpret_cast<LPVOID>(SetFogMode_40E02D), reinterpret_cast<LPVOID*>(&orig));
-    if (res == MH_OK) res = MH_EnableHook(addr);
-    DebugLog("[HNH] Hooked SetFogMode_40E02D; %s\n", MH_StatusToString(res));
+    hnh_Hook(0x40E02D, SetFogMode_40E02D, "SetFogMode_40E02D");
 }

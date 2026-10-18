@@ -147,12 +147,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\d3dx\ida_defs.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="hnh_header.hpp" />
     <ClInclude Include="hnh_intern.hpp" />
     <ClInclude Include="src\dx7.hpp" />
     <ClInclude Include="src\shared.hpp" />
+    <ClInclude Include="src\struct.hpp" />
     <ClInclude Include="user32hook.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -168,7 +170,16 @@
     <ClCompile Include="src\CDROM_VerifyDiscSignature_485C50.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\DDErrToString_423CE7.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\dx7.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\GAlloc80_40DEF7.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\struct.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\WinMain_485CE0.cpp">

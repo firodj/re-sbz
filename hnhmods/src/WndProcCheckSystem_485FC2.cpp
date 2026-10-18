@@ -5,6 +5,7 @@
 
 #include "console.hpp"
 #include "shared.hpp"
+#include "struct.hpp"
 
 HANDLE &g_hHeapHandle   = *(HANDLE*)0x5187F0;
 int &g_nHeapRefCount    = *(int*)0x5187F4;
@@ -43,6 +44,140 @@ CHAR &g_szFontFaceName      = *(CHAR *)0x4B01C8; // WRITABLE
 LPSTR &g_pDDErrStr = *(LPSTR*)0x5185CC;
 
 int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName);
+
+
+// ---
+int (__cdecl *CHanaObj__Free_40C1E4)(CHanaBase_S130 *pObj) = reinterpret_cast<int (__cdecl*)(CHanaBase_S130*)>(0x40C1E4);
+HRESULT(*D3DXUninitialize)(void) = reinterpret_cast<HRESULT(*)(void)>(0x48B8F0);
+
+
+BOOL (__cdecl* CheckRunGame_4863C8)(HWND hWnd, int bFullScreen) = reinterpret_cast<BOOL (__cdecl *)(HWND, int)>(0x4863C8);
+void __cdecl D3DDeinit();
+
+uint32_t &g_bInited_4D6C6C = *(uint32_t *)0x4D6C6C; // WRITABLE
+CHanaLightT3EF_S1A0 * &g_pLight_4D6CE0 = *(CHanaLightT3EF_S1A0 * *)0x4D6CE0; // WRITABLE
+CHanaMateT3EE_S184 * &g_pMaterial = *(CHanaMateT3EE_S184 * *)0x4D6CDC; // WRITABLE
+HGLOBAL &g_pSekHeader = *(HGLOBAL *)0x4D6CCC; // WRITABLE
+CObjPoolMgr_S58 * &g_pObjPool = *(CObjPoolMgr_S58 * *)0x4D6CD0; // WRITABLE
+LPDIRECTDRAWSURFACE7 &g_pZBuffer_4D6C94 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C94; // WRITABLE
+LPDIRECTDRAWSURFACE7 &g_pBackBuffer_4D6C90 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C90; // WRITABLE
+IUnknown * &g_pUnk_4D6C8C = *(IUnknown * *)0x4D6C8C; // WRITABLE
+
+CHanaFrameT3EC_S354 * &g_pLightFrame = *(CHanaFrameT3EC_S354 * *)0x4D6CB0; // WRITABLE
+CHanaFrameT3EC_S354 * &g_pCameraFrame = *(CHanaFrameT3EC_S354 * *)0x4D6CAC; // WRITABLE
+CHanaFrameRootT3EC_S2D4 * &g_pSceneFrame = *(CHanaFrameRootT3EC_S2D4 * *)0x4D6CA8; // WRITABLE
+CObjItemRef_S208 * &g_pObjectTable = *(CObjItemRef_S208 * *)0x4D6C98; // WRITABLE
+LPDIRECTDRAW7 &g_pDD_4D6C7C = *(LPDIRECTDRAW7 *)0x4D6C7C; // WRITABLE
+//LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78 = *(LPDIRECT3DDEVICE7 *)0x4D6C78; // WRITABLE
+LPDIRECT3D7 &g_pD3D_4D6C84 = *(LPDIRECT3D7 *)0x4D6C84; // WRITABLE
+D3DXContext * &g_pRenderCtx = *(D3DXContext * *)0x4D6C80; // WRITABLE
+uint32_t &g_nMemCnt_4D6CF0 = *(uint32_t *)0x4D6CF0; // WRITABLE
+
+
+// D3DDeinit(): full D3D/DDraw teardown, the mirror of D3DInit.
+//   Runs only if g_bInited. Frees/releases, in order:
+//     - CHanaObj light g_Light & default g_pMaterial (CHanaObj::Free)
+//     - pSekHeader (SEK data header, HGLOBAL) & obj16000 (0x16000 3D-object pool) via GlobalFree
+//     - D3D buffers g_pZBuffer / g_pBackBuffer / (vestigial) dword_4D6C8C / g_pPrimaryBuffer
+//     - scene-graph frames g_pLightFrame / g_pCameraFrame / g_pSceneFrame (CHanaObj::Free)
+//     - g_pObjTable (name-keyed frame table, GlobalFree)
+//     - COM: g_pDD (IDirectDraw7), g_pD3DDevice, g_pD3D, g_pRenderCtx (D3DXContext)
+//   - g_bInited=0; D3DXUninitialize(); if g_nMemCnt!=0 log "MemCnt=N" via PrintDebugError
+//   Called on init failure (D3DInit), lost-device wrong-mode (RecoverLostDevice),
+//   and app shutdown (WndProcCheckSystem).
+void __cdecl D3DDeinit()
+{
+    if ( g_bInited_4D6C6C )
+    {
+        if ( g_pLight_4D6CE0 )
+        {
+            CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pLight_4D6CE0);
+            g_pLight_4D6CE0 = 0;
+        }
+        if ( g_pMaterial )
+        {
+            CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pMaterial);
+            g_pMaterial = 0;
+        }
+        if ( g_pSekHeader )
+        {
+            GlobalFree_40DF64(g_pSekHeader);
+            g_pSekHeader = 0;
+        }
+        if ( g_pObjPool )
+        {
+            GlobalFree_40DF64(g_pObjPool);
+            g_pObjPool = 0;
+        }
+        if ( g_pZBuffer_4D6C94 )
+        {
+            g_pZBuffer_4D6C94->Release();
+            g_pZBuffer_4D6C94 = 0;
+        }
+        if ( g_pBackBuffer_4D6C90 )
+        {
+            g_pBackBuffer_4D6C90->Release();
+            g_pBackBuffer_4D6C90 = 0;
+        }
+        if ( g_pUnk_4D6C8C )
+        {
+            g_pUnk_4D6C8C->Release();
+            g_pUnk_4D6C8C = 0;
+        }
+        if ( g_pPrimaryBuffer_4D6C88 )
+        {
+            g_pPrimaryBuffer_4D6C88->Release();
+            g_pPrimaryBuffer_4D6C88 = 0;
+        }
+        if ( g_pLightFrame )
+        {
+            CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pLightFrame);
+            g_pLightFrame = 0;
+        }
+        if ( g_pCameraFrame )
+        {
+            CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pCameraFrame);
+            g_pCameraFrame = 0;
+        }
+        if ( g_pSceneFrame )
+        {
+            CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pSceneFrame);
+            g_pSceneFrame = 0;
+        }
+        if ( g_pObjectTable )
+        {
+            GlobalFree_40DF64(g_pObjectTable);
+            g_pObjectTable = 0;
+        }
+        if ( g_pDD_4D6C7C )
+        {
+            g_pDD_4D6C7C->Release();
+            g_pDD_4D6C7C = 0;
+        }
+        if ( g_pD3DDevice_4D6C78 )
+        {
+            g_pD3DDevice_4D6C78->Release();
+            g_pD3DDevice_4D6C78 = 0;
+        }
+        if ( g_pD3D_4D6C84 )
+        {
+            g_pD3D_4D6C84->Release();
+            g_pD3D_4D6C84 = 0;
+        }
+        if ( g_pRenderCtx )
+        {
+            g_pRenderCtx->Release();
+            g_pRenderCtx = 0;
+        }
+        g_bInited_4D6C6C = 0;
+        D3DXUninitialize();
+        if ( g_nMemCnt_4D6CF0 )
+        {
+            sprintf(g_szDbgPrefix, "MemCnt=%d", g_nMemCnt_4D6CF0);
+            PrintDebugError(-1);
+        }
+    }
+}
 
 int Renderer_InitializeTrigTablesAndPixelFormat()
 {
@@ -101,82 +236,7 @@ int Renderer_InitializeTrigTablesAndPixelFormat()
   return 0;
 }
 
-const char *__cdecl DDErrToString_423CE7(DWORD hr)
-{
-  DebugLog("[HNH:SUB] DDErrToString_423CE7\n");
-  
-  if ( hr > 0x88780046 )
-  {
-    if ( hr > 0x88780096 )
-    {
-      switch ( hr )
-      {
-        case 0x887800A0:
-          return "DirectSound: この値は過去のものであり使用されない";
-        case 0x887800AA:
-          return "DirectSound: 他のメソッドが呼び出される前にInitializeメソッドが呼び出されなかったかあるいは呼び出しが成功しなかった";
-        case 0u:
-          return 0;
-      }
-    }
-    else
-    {
-      switch ( hr )
-      {
-        case 0x88780096:
-          return "DirectSound: バッファメモリが失われたためリストアしなければならない";
-        case 0x88780064:
-          return "DirectSound: 指定されたWAVEはサポートされない";
-        case 0x88780078:
-          return "DirectSound: 使用するサウンドドライバが利用できない";
-        case 0x88780082:
-          return "DirectSound: オブジェクトはすでに初期化されている";
-      }
-    }
-  }
-  else
-  {
-    if ( hr == 0x88780046 )
-      return "DirectSound: 呼び出しは関数が成功するために必要とする優先レベルを持っていない";
-    if ( hr > 0x80070057 )
-    {
-      switch ( hr )
-      {
-        case 0x8878000A:
-          return "DirectSound: 要求は優先レベルのようなリソースが他の呼び出しによってすでに使用中であるため失敗した";
-        case 0x8878001E:
-          return "DirectSound: 呼び出しによって要求する制御（ボリューム、パンなど）は利用可能でない";
-        case 0x88780032:
-          return "DirectSound: この関数はこのオブジェクトの現在の状態において有効ではない";
-      }
-    }
-    else
-    {
-      if ( hr == 0x80070057 )
-        return "DirectSound: 無効なパラメータが関数に渡された";
-      if ( hr > 0x80040110 )
-      {
-        if ( hr == 0x8007000E )
-          return "DirectSound: DirectSoundサブシステムは呼び出しの要求を完了するために十分なメモリを割り当てることができなかった";
-      }
-      else
-      {
-        switch ( hr )
-        {
-          case 0x80040110:
-            return "DirectSound: オブジェクトはCOM集成化をサポートしない";
-          case 0x80004001:
-            return "DirectSound: 呼び出した関数はここではサポートされない";
-          case 0x80004005:
-            return "DirectSound: 未確定なエラーがDirectSoundサブシステムの中で起こった";
-        }
-      }
-    }
-  }
-  return "DirectSound: 不明なエラー";
-}
-
-// // HanaDS_SetErrStr - convert a DirectSound error code (DSERR_*/HRESULT) to a human-readable message via DDErrToString_423CE7, cache the resulting message pointer in g_pDDErrStr, and return it. The message points into read-only data (the 'DirectSound ...' strings); DDErrToString_423CE7 returns 0 (NULL) for code 0 (no error). Called by HanaDS_Init on the failure path to record the last error.
+// HanaDS_SetErrStr - convert a DirectSound error code (DSERR_*/HRESULT) to a human-readable message via DDErrToString_423CE7, cache the resulting message pointer in g_pDDErrStr, and return it. The message points into read-only data (the 'DirectSound ...' strings); DDErrToString_423CE7 returns 0 (NULL) for code 0 (no error). Called by HanaDS_Init on the failure path to record the last error.
 const char *__cdecl HanaDS_SetErrStr(DWORD hr)
 {
   DebugLog("[HNH:SUB] HanaHeap_Create_423CCC\n");
@@ -362,9 +422,6 @@ HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
     }
     return hr;
 }
-
-void (*D3DDeinit)() = reinterpret_cast<void (*)()>(0x40AC7C);
-BOOL (__cdecl* CheckRunGame_4863C8)(HWND hWnd, int bFullScreen) = reinterpret_cast<BOOL (__cdecl *)(HWND, int)>(0x4863C8);
 
 // ---
 #define WMU_CHECK_SYSTEM 0x0BD0   // posted by WM_CREATE: install/disc/config gate
