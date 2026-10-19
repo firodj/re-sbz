@@ -6,14 +6,28 @@
 
 int &g_nMemCnt_4D6CF0 = *(int*)0x4D6CF0;
 char (&g_szDbgPrefix)[104] = *(char(*)[104])0x4D4718;
+int &g_nMinD3DPrintfLevel_534388 = *(int*)0x534388;
 
-extern void(__stdcall* D3DXGetErrorString)(int hr, size_t strLength, char* str);
 void(__stdcall *D3DXGetErrorString)(int hr, size_t strLength, char* str) = reinterpret_cast<void (__stdcall*)(int hr, size_t strLength, char* str)>(0x48c80e);
+
+void __cdecl D3DXDprintf(int nLevel, LPCSTR szMsg)
+{
+  int v2; // eax
+  CHAR String[256]; // [esp+0h] [ebp-100h] BYREF
+
+  if ( g_nMinD3DPrintfLevel_534388 >= nLevel )
+  {
+    wsprintfA(String, "[D3DX] ");
+    v2 = lstrlenA(String);
+    wsprintfA(&String[v2], szMsg);
+
+    lstrcatA(String, "\n");
+    OutputDebugStringA(String);
+  }
+}
 
 void __cdecl PrintDebugError(int hr)
 {
-  DebugLog("[HNH:SUB] PrintDebugError_40A813\n");
-
   CHAR str[512]; // [esp+0h] [ebp-200h] BYREF
 
   D3DXGetErrorString(hr, 0x100u, str);
@@ -76,4 +90,8 @@ void register_GAlloc80_40DEF7() {
   hnh_Hook(0x40DEF7, GAlloc80_40DEF7, "GAlloc80_40DEF7");
   hnh_Hook(0x40DF64, GlobalFree_40DF64, "GlobalFree_40DF64");
   hnh_Hook(0x40A813, PrintDebugError, "PrintDebugError_40A813");
+
+  g_nMinD3DPrintfLevel_534388 = -1;
+
+  hnh_Hook(0x490AC6, D3DXDprintf, "D3DXDprintf_490AC6");
 }

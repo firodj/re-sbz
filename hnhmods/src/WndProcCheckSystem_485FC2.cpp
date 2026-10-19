@@ -45,10 +45,7 @@ LPSTR &g_pDDErrStr = *(LPSTR*)0x5185CC;
 
 int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName);
 void __cdecl D3DDeinit();
-
-// ---
-BOOL (__cdecl* CheckRunGame_4863C8)(HWND hWnd, int bFullScreen) = reinterpret_cast<BOOL (__cdecl *)(HWND, int)>(0x4863C8);
-
+BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, int bFullScreen);
 
 uint32_t &g_bInited_4D6C6C              = *(uint32_t *)0x4D6C6C; // WRITABLE
 CHanaLightT3EF_S1A0 * &g_pLight_4D6CE0  = *(CHanaLightT3EF_S1A0 * *)0x4D6CE0; // WRITABLE

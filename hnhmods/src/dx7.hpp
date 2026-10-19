@@ -59,8 +59,37 @@ typedef struct D3DXMATRIX {
 } D3DXMATRIX;
 
 
+// D3DX_VIDEOMODEDESC from d3dxcore.h size=0x10
+struct D3DX_VIDMODEDESC {
+  DWORD width;
+  DWORD height;
+  DWORD bpp;
+  DWORD refreshRate;
+};
+
+#define D3DX_DRIVERDESC_LENGTH    256
+
+// D3DX_DEVICEDESC from d3dxcore.h. sizeof=0x140
+struct D3DX_DEVICEDESC {
+  DWORD       deviceIndex;
+  DWORD       hwLevel;
+  GUID        ddGuid;
+  GUID        d3dDeviceGuid;
+  GUID        ddDeviceID;
+  char        driverDesc[D3DX_DRIVERDESC_LENGTH];
+  HMONITOR    monitor;
+  BOOL        onPrimary;
+};
+
 extern LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78;
 extern D3DDEVICEDESC7 g_d3dDevDesc_4D6980;
 extern LPDIRECTSOUND3DLISTENER& g_pds3DListener; // 0x52F3C4
 
 extern HRESULT(*D3DXUninitialize)(void);
+extern HRESULT (*D3DXInitialize)(void); 
+extern DWORD (*D3DXGetDeviceCount)(void);
+extern DWORD (*D3DXGetMaxNumVideoModes)(DWORD deviceIndex, DWORD flags);
+extern HRESULT (*D3DXGetDeviceDescription)(DWORD deviceIndex, D3DX_DEVICEDESC* pd3dxDeviceDesc); 
+extern HRESULT (*D3DXGetVideoMode)(DWORD deviceIndex, DWORD flags, DWORD modeIndex, D3DX_VIDMODEDESC* pModeList);
+extern HRESULT (*D3DXGetDeviceCaps)(DWORD deviceIndex, D3DX_VIDMODEDESC* pVidMode, D3DDEVICEDESC7* pD3DCaps, DDCAPS* pDDHALCaps, DDCAPS* pDDHELCaps); 
+extern void (__stdcall* D3DXGetErrorString)(int hr, size_t strLength, char* str);
