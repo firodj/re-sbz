@@ -30,6 +30,7 @@ extern char(&g_szDbgPrefix)[104];
 extern CObjItemRef_S208* &g_pObjectTable;
 extern int &g_nObjectTableCount;
 extern int &g_bDSInited_5185C4;
+extern BOOL& g_bFogIsActive_4B3480;
 
 void __cdecl SetupDirPath_486630();
 bool __cdecl CheckInstalledDirRoot_4869A7(HWND hWnd);
@@ -40,6 +41,8 @@ const char *__cdecl DDErrToString_423CE7(DWORD hr);
 BOOL __cdecl IsFileExists_47E8EE(CHAR* pszFilePath);
 HRESULT __cdecl SetFogEnable_40DFB0(BOOL bFogEnable, BOOL bFogRangeEnable);
 HRESULT __cdecl SetFogMode_40E02D(int bFogTableEnable, DWORD dwFogMode);
+HRESULT __cdecl SetFogColor_40E0B4(DWORD dwFogColor);
+HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd);
 
 int __cdecl GlobalFree_40DF64(void* pBuf);
 LPVOID __cdecl GAlloc80_40DEF7(SIZE_T dwBytes);

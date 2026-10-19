@@ -44,10 +44,11 @@ CHAR &g_szFontFaceName      = *(CHAR *)0x4B01C8; // WRITABLE
 LPSTR &g_pDDErrStr = *(LPSTR*)0x5185CC;
 
 int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName);
+void __cdecl D3DDeinit();
 
 // ---
 BOOL (__cdecl* CheckRunGame_4863C8)(HWND hWnd, int bFullScreen) = reinterpret_cast<BOOL (__cdecl *)(HWND, int)>(0x4863C8);
-void __cdecl D3DDeinit();
+
 
 uint32_t &g_bInited_4D6C6C              = *(uint32_t *)0x4D6C6C; // WRITABLE
 CHanaLightT3EF_S1A0 * &g_pLight_4D6CE0  = *(CHanaLightT3EF_S1A0 * *)0x4D6CE0; // WRITABLE
@@ -68,8 +69,6 @@ LPDIRECT3D7 &g_pD3D_4D6C84               = *(LPDIRECT3D7 *)0x4D6C84; // WRITABLE
 D3DXContext * &g_pRenderCtx              = *(D3DXContext * *)0x4D6C80; // WRITABLE
 uint32_t &g_nMemCnt_4D6CF0               = *(uint32_t *)0x4D6CF0; // WRITABLE
 
-BOOL &g_bFogIsActive_4B3480 = *(BOOL*)0x4B3480;
-
 // D3DDeinit(): full D3D/DDraw teardown, the mirror of D3DInit.
 //   Runs only if g_bInited. Frees/releases, in order:
 //     - CHanaObj light g_Light & default g_pMaterial (CHanaObj::Free)
@@ -83,99 +82,101 @@ BOOL &g_bFogIsActive_4B3480 = *(BOOL*)0x4B3480;
 //   and app shutdown (WndProcCheckSystem).
 void __cdecl D3DDeinit()
 {
-    if ( g_bInited_4D6C6C )
+  DebugLog("[HNH:SUB] D3DDeinit_40AC7C\n");
+
+  if ( g_bInited_4D6C6C )
+  {
+    if ( g_pLight_4D6CE0 )
     {
-        if ( g_pLight_4D6CE0 )
-        {
-            CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pLight_4D6CE0);
-            g_pLight_4D6CE0 = 0;
-        }
-        if ( g_pMaterial )
-        {
-            CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pMaterial);
-            g_pMaterial = 0;
-        }
-        if ( g_pSekHeader )
-        {
-            GlobalFree_40DF64(g_pSekHeader);
-            g_pSekHeader = 0;
-        }
-        if ( g_pObjPool )
-        {
-            GlobalFree_40DF64(g_pObjPool);
-            g_pObjPool = 0;
-        }
-        if ( g_pZBuffer_4D6C94 )
-        {
-            g_pZBuffer_4D6C94->Release();
-            g_pZBuffer_4D6C94 = 0;
-        }
-        if ( g_pBackBuffer_4D6C90 )
-        {
-            g_pBackBuffer_4D6C90->Release();
-            g_pBackBuffer_4D6C90 = 0;
-        }
-        if ( g_pUnk_4D6C8C )
-        {
-            g_pUnk_4D6C8C->Release();
-            g_pUnk_4D6C8C = 0;
-        }
-        if ( g_pPrimaryBuffer_4D6C88 )
-        {
-            g_pPrimaryBuffer_4D6C88->Release();
-            g_pPrimaryBuffer_4D6C88 = 0;
-        }
-        if ( g_pLightFrame )
-        {
-            CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pLightFrame);
-            g_pLightFrame = 0;
-        }
-        if ( g_pCameraFrame )
-        {
-            CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pCameraFrame);
-            g_pCameraFrame = 0;
-        }
-        if ( g_pSceneFrame )
-        {
-            CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pSceneFrame);
-            g_pSceneFrame = 0;
-        }
-        if ( g_pObjectTable )
-        {
-            GlobalFree_40DF64(g_pObjectTable);
-            g_pObjectTable = 0;
-        }
-        if ( g_pDD_4D6C7C )
-        {
-            g_pDD_4D6C7C->Release();
-            g_pDD_4D6C7C = 0;
-        }
-        if ( g_pD3DDevice_4D6C78 )
-        {
-            g_pD3DDevice_4D6C78->Release();
-            g_pD3DDevice_4D6C78 = 0;
-        }
-        if ( g_pD3D_4D6C84 )
-        {
-            g_pD3D_4D6C84->Release();
-            g_pD3D_4D6C84 = 0;
-        }
-        if ( g_pRenderCtx )
-        {
-            g_pRenderCtx->Release();
-            g_pRenderCtx = 0;
-        }
-        g_bInited_4D6C6C = 0;
-        D3DXUninitialize();
-        if ( g_nMemCnt_4D6CF0 )
-        {
-            sprintf(g_szDbgPrefix, "MemCnt=%d", g_nMemCnt_4D6CF0);
-            PrintDebugError(-1);
-        }
+      CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pLight_4D6CE0);
+      g_pLight_4D6CE0 = 0;
     }
+    if ( g_pMaterial )
+    {
+      CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pMaterial);
+      g_pMaterial = 0;
+    }
+    if ( g_pSekHeader )
+    {
+      GlobalFree_40DF64(g_pSekHeader);
+      g_pSekHeader = 0;
+    }
+    if ( g_pObjPool )
+    {
+      GlobalFree_40DF64(g_pObjPool);
+      g_pObjPool = 0;
+    }
+    if ( g_pZBuffer_4D6C94 )
+    {
+      g_pZBuffer_4D6C94->Release();
+      g_pZBuffer_4D6C94 = 0;
+    }
+    if ( g_pBackBuffer_4D6C90 )
+    {
+      g_pBackBuffer_4D6C90->Release();
+      g_pBackBuffer_4D6C90 = 0;
+    }
+    if ( g_pUnk_4D6C8C )
+    {
+      g_pUnk_4D6C8C->Release();
+      g_pUnk_4D6C8C = 0;
+    }
+    if ( g_pPrimaryBuffer_4D6C88 )
+    {
+      g_pPrimaryBuffer_4D6C88->Release();
+      g_pPrimaryBuffer_4D6C88 = 0;
+    }
+    if ( g_pLightFrame )
+    {
+      CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pLightFrame);
+      g_pLightFrame = 0;
+    }
+    if ( g_pCameraFrame )
+    {
+      CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pCameraFrame);
+      g_pCameraFrame = 0;
+    }
+    if ( g_pSceneFrame )
+    {
+      CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pSceneFrame);
+      g_pSceneFrame = 0;
+    }
+    if ( g_pObjectTable )
+    {
+      GlobalFree_40DF64(g_pObjectTable);
+      g_pObjectTable = 0;
+    }
+    if ( g_pDD_4D6C7C )
+    {
+      g_pDD_4D6C7C->Release();
+      g_pDD_4D6C7C = 0;
+    }
+    if ( g_pD3DDevice_4D6C78 )
+    {
+      g_pD3DDevice_4D6C78->Release();
+      g_pD3DDevice_4D6C78 = 0;
+    }
+    if ( g_pD3D_4D6C84 )
+    {
+      g_pD3D_4D6C84->Release();
+      g_pD3D_4D6C84 = 0;
+    }
+    if ( g_pRenderCtx )
+    {
+      g_pRenderCtx->Release();
+      g_pRenderCtx = 0;
+    }
+    g_bInited_4D6C6C = 0;
+    D3DXUninitialize();
+    if ( g_nMemCnt_4D6CF0 )
+    {
+      sprintf(g_szDbgPrefix, "MemCnt=%d", g_nMemCnt_4D6CF0);
+      PrintDebugError(-1);
+    }
+  }
 }
 
-int Renderer_InitializeTrigTablesAndPixelFormat()
+void Renderer_InitializeTrigTablesAndPixelFormat()
 {
   int i; // [esp+8h] [ebp-8h]
   int j; // [esp+8h] [ebp-8h]
@@ -229,13 +230,12 @@ int Renderer_InitializeTrigTablesAndPixelFormat()
     bitMask *= 2;
   }
   SetUiFont_419BCD(26, 26, &g_szFontFaceName);
-  return 0;
 }
 
 // HanaDS_SetErrStr - convert a DirectSound error code (DSERR_*/HRESULT) to a human-readable message via DDErrToString_423CE7, cache the resulting message pointer in g_pDDErrStr, and return it. The message points into read-only data (the 'DirectSound ...' strings); DDErrToString_423CE7 returns 0 (NULL) for code 0 (no error). Called by HanaDS_Init on the failure path to record the last error.
 const char *__cdecl HanaDS_SetErrStr(DWORD hr)
 {
-  DebugLog("[HNH:SUB] HanaHeap_Create_423CCC\n");
+  DebugLog("[HNH:SUB] HanaDS_SetErrStr_423CCC\n");
 
   g_pDDErrStr = (LPSTR)DDErrToString_423CE7(hr);
   return g_pDDErrStr;
@@ -290,35 +290,41 @@ int __cdecl HanaDS_Init(HWND hwnd)
 // HanaHeap_Destroy - destroy the module's private heap (g_hHeap) via HeapDestroy and null g_hHeap. Refuses (returns 0) while g_nHeapRefCount > 0 (heap still has live references); otherwise destroys, clears g_nHeapRefCount and returns 1. Counterpart to HanaHeap_Create.
 int HanaHeap_Destroy()
 {
-    if ( g_nHeapRefCount > 0 )
-        return 0;
-    if ( g_hHeapHandle )
-        HeapDestroy(g_hHeapHandle);
-    g_hHeapHandle = 0;
-    g_nHeapRefCount = 0;
-    return 1;
+  DebugLog("[HNH:SUB] HanaHeap_Destroy_427551\n");
+  
+  if ( g_nHeapRefCount > 0 )
+     return 0;
+  if ( g_hHeapHandle )
+    HeapDestroy(g_hHeapHandle);
+  g_hHeapHandle = 0;
+  g_nHeapRefCount = 0;
+  return 1;
 }
 
 // HanaDS_DestroyHeap - audio-subsystem hook that tears down the private module heap by calling HanaHeap_Destroy(); returns its result. Called as the final step of HanaDS_Shutdown.
 int HanaDS_DestroyHeap()
 {
-    return HanaHeap_Destroy();
+  DebugLog("[HNH:SUB] HanaDS_DestroyHeap_42489D\n");
+  
+  return HanaHeap_Destroy();
 }
 
 // HanaDS_Shutdown - tear down the DirectSound subsystem if initialized: release g_pdsBuffer and g_ppDS, null both, clear g_bDSInited_5185C4, then call sub_42489D() (further 3D/audio cleanup) and return its result. Returns 0 when not initialized.
 void HanaDS_Shutdown()
 {
-    if ( g_bDSInited_5185C4 )
-    {
-        if ( g_pdsBuffer )
-            g_pdsBuffer->Release();
-        if ( g_ppDS )
-            g_ppDS->Release();
-        g_pdsBuffer = 0;
-        g_ppDS = 0;
-        g_bDSInited_5185C4 = 0;
-        HanaDS_DestroyHeap();
-    }
+  DebugLog("[HNH:SUB] HanaDS_Shutdown_422E14\n");
+
+  if ( g_bDSInited_5185C4 )
+  {
+    if ( g_pdsBuffer )
+      g_pdsBuffer->Release();
+    if ( g_ppDS )
+      g_ppDS->Release();
+    g_pdsBuffer = 0;
+    g_ppDS = 0;
+    g_bDSInited_5185C4 = 0;
+    HanaDS_DestroyHeap();
+  }
 }
 
 // HanaDS_Create3DListener - obtain the 3D sound listener. Requires g_bDSInited. If g_pdsBuffer is not yet created, create it (DSBUFFERDESC dwSize=36, dwFlags=17) via g_ppDS->CreateSoundBuffer; on failure record the error (HanaDS_SetErrStr) and return 0. Then QueryInterface IDirectSound3DListener - on failure record the error, release the buffer, return 0; on success SetDistanceFactor(1.0f) and SetRolloffFactor(~0.1f) and return the listener.
@@ -396,29 +402,6 @@ int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName)
   return result;
 }
 
-HRESULT __cdecl SetFogColor_40E0B4(DWORD dwFogColor)
-{
-    DebugLog("[HNH:SUB] SetFogColor_40E0B4\n");
-
-    g_dwFogColor_4B00CC = dwFogColor;
-    return g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGCOLOR, dwFogColor);
-}
-
-HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
-{
-    HRESULT hr; // [esp+0h] [ebp-4h]
-
-    DebugLog("[HNH:SUB] SetFogRange_40E0E2\n");
-
-    hr = 0;
-    if ( g_dwFogMode_4B00C8 == 3 )
-    {
-        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGSTART, dwFogStart);
-        return g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGEND, dwFogEnd);
-    }
-    return hr;
-}
-
 // ---
 #define WMU_CHECK_SYSTEM 0x0BD0   // posted by WM_CREATE: install/disc/config gate
 #define WMU_ENGINE_INIT  0x2B10   // posted on success: sound + renderer init
@@ -426,78 +409,78 @@ HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
 // shared "quit" epilogue (replaces LABEL_14 and the WM_CLOSE duplication)
 static LRESULT QuitWindow(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    DestroyWindow(hWnd);
-    return DefWindowProcA(hWnd, msg, wp, lp);
+  DestroyWindow(hWnd);
+  return DefWindowProcA(hWnd, msg, wp, lp);
 }
 
 static LRESULT OnCheckSystem(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    CHAR szExe[256], szText[256], szCdRoot[256];
+  CHAR szExe[256], szText[256], szCdRoot[256];
 
-    if (!CheckInstalledDirRoot_4869A7(hWnd))
-        return QuitWindow(hWnd, msg, wp, lp);
+  if (!CheckInstalledDirRoot_4869A7(hWnd))
+    return QuitWindow(hWnd, msg, wp, lp);
 
-    lstrcpyA(szExe, "HaNaHiMe.exe");
+  lstrcpyA(szExe, "HaNaHiMe.exe");
+  CHanaObj__GetRealPath_486D9A(szExe, 1001);
+  if (!IsFileExists_47E8EE(szExe))
+  {
+    SetWindowTextA(hWnd, "インストール失敗");
+    szExe[0] = '\0';
     CHanaObj__GetRealPath_486D9A(szExe, 1001);
-    if (!IsFileExists_47E8EE(szExe))
-    {
-        SetWindowTextA(hWnd, "インストール失敗");
-        szExe[0] = '\0';
-        CHanaObj__GetRealPath_486D9A(szExe, 1001);
-        szExe[lstrlenA(szExe) - 1] = '\0';           // strip trailing '\'
-        wsprintfA(szText, "  「華の悲鳴」のインストールは失敗しています。\n"
-            "新たに作成された『 %s 』フォルダーを削除してから\n"
-            "もう一度インストールしてください。", szExe);
-        MessageBoxA(g_hwndParent, szText, "", MB_OK);
-        return QuitWindow(hWnd, msg, wp, lp);
-    }
+    szExe[lstrlenA(szExe) - 1] = '\0';           // strip trailing '\'
+    wsprintfA(szText, "  「華の悲鳴」のインストールは失敗しています。\n"
+      "新たに作成された『 %s 』フォルダーを削除してから\n"
+      "もう一度インストールしてください。", szExe);
+    MessageBoxA(g_hwndParent, szText, "", MB_OK);
+    return QuitWindow(hWnd, msg, wp, lp);
+  }
 
-    for (;;)                                          // Disk-2 'GM' signature loop
+  for (;;)                                          // Disk-2 'GM' signature loop
+  {
+    char szGMLabel[3] = "GM";
+    szCdRoot[0] = '\0';
+    CHanaObj__GetRealPath_486D9A(szCdRoot, 1000);
+    if (CDROM_VerifyDiscSignature(szCdRoot[0], szGMLabel, 4))
+      break;
+    if (MessageBoxA(hWnd, "「華の悲鳴」のＤｉｓｋ－２を挿入して下さい",
+      "", MB_SYSTEMMODAL | MB_OKCANCEL) == IDCANCEL)
     {
-        char szGMLabel[3] = "GM";
-        szCdRoot[0] = '\0';
-        CHanaObj__GetRealPath_486D9A(szCdRoot, 1000);
-        if (CDROM_VerifyDiscSignature(szCdRoot[0], szGMLabel, 4))
-            break;
-        if (MessageBoxA(hWnd, "「華の悲鳴」のＤｉｓｋ－２を挿入して下さい",
-            "", MB_SYSTEMMODAL | MB_OKCANCEL) == IDCANCEL)
-        {
-            DestroyWindow(hWnd);                     // LABEL_19 path: returns 0,
-            return 0;                                // NOT DefWindowProc
-        }
+      DestroyWindow(hWnd);                     // LABEL_19 path: returns 0,
+      return 0;                                // NOT DefWindowProc
     }
+  }
 
-    if (!CheckRunGame_4863C8(hWnd, 1))               // title menu + D3D init
-    {
-        DestroyWindow(hWnd);
-        return 0;
-    }
-    PostMessageA(hWnd, WMU_ENGINE_INIT, 0, 0);
-    return DefWindowProcA(hWnd, msg, wp, lp);
+  if (!CheckRunGame_4863C8(hWnd, 1))               // title menu + D3D init
+  {
+    DestroyWindow(hWnd);
+    return 0;
+  }
+  PostMessageA(hWnd, WMU_ENGINE_INIT, 0, 0);
+  return DefWindowProcA(hWnd, msg, wp, lp);
 }
 
 static LRESULT OnEngineInit(HWND hWnd)
 {
     if (HanaDS_Init(hWnd) == 1)
     {
-        g_pds3DListener = HanaDS_Create3DListener();
-        g_pdsBuffer->Play(0, 0, 1);
+      g_pds3DListener = HanaDS_Create3DListener();
+      g_pdsBuffer->Play(0, 0, 1);
     }
     else if (MessageBoxA(hWnd,
-        "ダイレクトサウンドの初期化に失敗しました。\nゲームを終了します。よろしいですか？",
-        "サウンド機能のエラーです。",
-        MB_SYSTEMMODAL | MB_YESNO) == IDYES)
+      "ダイレクトサウンドの初期化に失敗しました。\nゲームを終了します。よろしいですか？",
+      "サウンド機能のエラーです。",
+      MB_SYSTEMMODAL | MB_YESNO) == IDYES)
     {
-        DestroyWindow(hWnd);
-        return 0;
+      DestroyWindow(hWnd);
+      return 0;
     }                                                 // IDNO: continue silently
 
     Renderer_InitializeTrigTablesAndPixelFormat();
     if (SetFogEnable_40DFB0(g_bFogIsActive_4B3480, g_bFogIsActive_4B3480) == S_OK)
     {
-        SetFogMode_40E02D(TRUE, D3DFOG_LINEAR);       // table fog, linear
-        SetFogColor_40E0B4(0);                        // black
-        SetFogRange_40E0E2(0x40A00000u, 0x437A0000u); // 5.0f .. 250.0f
+      SetFogMode_40E02D(TRUE, D3DFOG_LINEAR);       // table fog, linear
+      SetFogColor_40E0B4(0);                        // black
+      SetFogRange_40E0E2(0x40A00000u, 0x437A0000u); // 5.0f .. 250.0f
     }
     ShowCursor(FALSE);
     InvalidateRect(hWnd, NULL, FALSE);
@@ -506,60 +489,74 @@ static LRESULT OnEngineInit(HWND hWnd)
 
 LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-    static bool notyet = true;
-    if (notyet) {
-        DebugLog("[HNH:SUB] WndProcCheckSystem_485FC2\n"); notyet = false;
-    }
+  static bool notyet = true;
+  if (notyet) {
+    DebugLog("[HNH:SUB] WndProcCheckSystem_485FC2\n"); notyet = false;
+  }
 
-    g_hwndParent = hWnd;
-    LCID lcid;
+  g_hwndParent = hWnd;
+  LCID lcid;
 
-    switch (Msg)
+  switch (Msg)
+  {
+  case WM_CREATE:
+    lcid = GetSystemDefaultLCID();
+    DebugLog("[HNH:LCID] lcid = 0x%X\n", (DWORD)lcid);
+    if ((lcid & 0xFF) == 0x11)           // Japanese system
     {
-    case WM_CREATE:
-        lcid = GetSystemDefaultLCID();
-        DebugLog("[HNH:LCID] lcid = 0x%X\n", (DWORD)lcid);
-        if ((lcid & 0xFF) == 0x11)           // Japanese system
-        {
-            srand(timeGetTime());
-            PostMessageA(hWnd, WMU_CHECK_SYSTEM, 0, 0);
-        }
-        else
-        {
-            MessageBoxA(hWnd, "このゲームは日本語版Windowsでのみ動作致します。\n"
-                "  (This software operates with only the Japanese edition Windows )",
-                "誠に申し訳ありません。  ", MB_ICONEXCLAMATION);
-            DestroyWindow(hWnd);
-        }
-        return 0;
-
-    case WMU_CHECK_SYSTEM: return OnCheckSystem(hWnd, Msg, wParam, lParam);
-    case WMU_ENGINE_INIT:  return OnEngineInit(hWnd);
-    case WM_CLOSE:         return QuitWindow(hWnd, Msg, wParam, lParam);
-
-    case WM_DESTROY:
-        ShowCursor(TRUE);
-        if (g_pdsBuffer)
-            g_pdsBuffer->Stop();
-        if (g_pds3DListener)
-        {
-            g_pds3DListener->Release();
-            g_pds3DListener = NULL;
-        }
-        HanaDS_Shutdown();
-        Renderer_CleanupFont();
-        D3DDeinit();
-        Sleep(100);
-        PostQuitMessage(0);
-        return 1;
-
-    default:
-        return DefWindowProcA(hWnd, Msg, wParam, lParam);
+      srand(timeGetTime());
+      PostMessageA(hWnd, WMU_CHECK_SYSTEM, 0, 0);
     }
+    else
+    {
+      MessageBoxA(hWnd, "このゲームは日本語版Windowsでのみ動作致します。\n"
+        "  (This software operates with only the Japanese edition Windows )",
+        "誠に申し訳ありません。  ", MB_ICONEXCLAMATION);
+      DestroyWindow(hWnd);
+    }
+    return 0;
+
+  case WMU_CHECK_SYSTEM: return OnCheckSystem(hWnd, Msg, wParam, lParam);
+  case WMU_ENGINE_INIT:  return OnEngineInit(hWnd);
+  case WM_CLOSE:         return QuitWindow(hWnd, Msg, wParam, lParam);
+
+  case WM_DESTROY:
+    ShowCursor(TRUE);
+    if (g_pdsBuffer)
+      g_pdsBuffer->Stop();
+    if (g_pds3DListener)
+    {
+      g_pds3DListener->Release();
+      g_pds3DListener = NULL;
+    }
+    HanaDS_Shutdown();
+    Renderer_CleanupFont();
+    D3DDeinit();
+    Sleep(100);
+    PostQuitMessage(0);
+    return 1;
+
+  default:
+     return DefWindowProcA(hWnd, Msg, wParam, lParam);
+  }
 }
 
 // ---
 
 void register_WndProcCheckSystem_485FC2() {
   hnh_Hook(0x485FC2, WndProcCheckSystem_485FC2, "WndProcCheckSystem_485FC2");
+  /**
+  D3DDeinit_40AC7C
+  Renderer_InitializeTrigTablesAndPixelFormat_418620
+  HanaDS_SetErrStr_423CCC
+  HanaHeap_Create_427520
+  HanaDS_InitHeap_424886
+  HanaDS_Init_422D50
+  HanaHeap_Destroy_427551
+  HanaDS_DestroyHeap_42489D
+  HanaDS_Shutdown_422E14
+  HanaDS_Create3DListener_422690
+  Renderer_CleanupFont_0x41888E
+  SetUiFont_419BCD
+  */
 }

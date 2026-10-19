@@ -21,9 +21,6 @@
     <ClCompile Include="src\SetFogEnable_40DFB0.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\SetFogMode_40E02D.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\IsFileExists_47E8EE.cpp">
       <Filter>src</Filter>
     </ClCompile>

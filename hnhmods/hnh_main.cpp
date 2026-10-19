@@ -81,7 +81,6 @@ void register_WndProcCheckSystem_485FC2();
 void register_CheckInstalledDirRoot_4869A7();
 void register_GAlloc80_40DEF7();
 void register_SetFogEnable_40DFB0();
-void register_SetFogMode_40E02D();
 void register_IsFileExists_47E8EE();
 void AssertHanaStructSize();
 void register_CHanaObj__Free_40C1E4();
@@ -111,7 +110,6 @@ void InitHNH() {
 	register_CheckInstalledDirRoot_4869A7();
 	register_GAlloc80_40DEF7();
 	register_SetFogEnable_40DFB0();
-	register_SetFogMode_40E02D();
 	register_IsFileExists_47E8EE();
 	register_CHanaObj__Free_40C1E4();
 }
