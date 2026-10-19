@@ -31,11 +31,20 @@ extern CObjItemRef_S208* &g_pObjectTable;
 extern int &g_nObjectTableCount;
 extern int &g_bDSInited_5185C4;
 extern BOOL& g_bFogIsActive_4B3480;
+extern uint32_t &g_bSpecularEnable_4B3474;
+extern uint32_t &g_bAntiAliasEnable;
+extern uint32_t &g_bDitherEnable;
+extern uint32_t &g_bLightEnable_4B3484;
+extern uint32_t &g_bShadowEnable_518CA8;
+extern int &g_nResolutionMode_518C80;
+extern uint32_t &g_nColorDepthMode_518C9C;
+extern int &g_nRenderHALMode_518CA0;
+extern uint32_t &g_nWidth2;
+extern uint32_t& g_fScreenScale_52F19C;
 
 void __cdecl SetupDirPath_486630();
 bool __cdecl CheckInstalledDirRoot_4869A7(HWND hWnd);
 BOOL __cdecl CDROM_VerifyDiscSignature(int chDriveLetter, const char *szExpectedLabel, size_t nLabelSize);
-int __cdecl CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode);
 
 const char *__cdecl DDErrToString_423CE7(DWORD hr);
 BOOL __cdecl IsFileExists_47E8EE(CHAR* pszFilePath);

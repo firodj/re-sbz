@@ -1041,6 +1041,52 @@ void __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj)
   }
 }
 
+void __cdecl CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode)
+{
+  CHAR szPathTemp[256]; // [esp+4h] [ebp-100h] BYREF
+
+  switch ( nPathCode )
+  {
+  case 0x3E8:
+    wsprintfA(szPathTemp, "%s\\%s", g_szDriveLetr_52FC70, szPathOut);
+    break;
+  case 0x3E9:
+    wsprintfA(szPathTemp, "%s\\%s", g_szHnhPath_530270, szPathOut);
+    break;
+  case 0x3EA:
+    wsprintfA(szPathTemp, "%s%s", g_szODSPath, szPathOut);
+    break;
+  case 0x3EB:
+    wsprintfA(szPathTemp, "%s%s", g_szSPRPath, szPathOut);
+    break;
+  case 0x3EC:
+    wsprintfA(szPathTemp, "%s%s", g_szStrPath, szPathOut);
+    break;
+  case 0x3ED:
+    wsprintfA(szPathTemp, "%s%s", g_szODFPath, szPathOut);
+    break;
+  case 0x3EE:
+    wsprintfA(szPathTemp, "%s%s", g_szWAVPath, szPathOut);
+    break;
+  case 0x3EF:
+    wsprintfA(szPathTemp, "%s%s", g_szGRPPath, szPathOut);
+    break;
+  case 0x3F0:
+    wsprintfA(szPathTemp, "%s%s", g_szGRP800Path, szPathOut);
+    break;
+  case 0x3F1:
+    wsprintfA(szPathTemp, "%s%s", g_szSEPath, szPathOut);
+    break;
+  case 0x3F2:
+    wsprintfA(szPathTemp, "%s%s", g_szDATAPath, szPathOut);
+    break;
+  default:
+    break;
+  }
+  wsprintfA(szPathOut, "%s", szPathTemp);
+}
+
+
 void register_CHanaObj__Free_40C1E4() {
   hnh_Hook(0x40C1E4, CHanaObj__Free_40C1E4, "CHanaObj__Free_40C1E4");
   hnh_Hook(0x40BD4D, CHanaObj__RemoveFromGlobalRef, "CHanaObj__RemoveFromGlobalRef_40BD4D");
@@ -1074,4 +1120,5 @@ void register_CHanaObj__Free_40C1E4() {
   hnh_Hook(0x4012FE, CSekBody__Release_4012FE, "CSekBody__Release_4012FE");
   hnh_Hook(0x4821FA, CHanaObj__FreeSceneT458, "CHanaObj__FreeSceneT458_4821FA");
   hnh_Hook(0x40C1E4, CHanaObj__Free_40C1E4, "CHanaObj__Free_40C1E4");
+  hnh_Hook(0x486D9A, CHanaObj__GetRealPath_486D9A, "CHanaObj__GetRealPath_486D9A");
 }

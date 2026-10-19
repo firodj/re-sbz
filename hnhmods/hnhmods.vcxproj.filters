@@ -39,6 +39,9 @@
     <ClCompile Include="src\CHanaObj__Free_40C1E4.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\CheckRunGame_4863C8.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

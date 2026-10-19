@@ -524,3 +524,4 @@ struct CHanaSceneT458_S504: public CHanaBase_S130
 void AssertHanaStructSize();
 
 void __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj);
+void __cdecl CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode);
