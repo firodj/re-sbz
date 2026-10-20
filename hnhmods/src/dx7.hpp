@@ -18,12 +18,106 @@
 #include <timeapi.h>
 
 #include "minhook/include/MinHook.h"
+#include "../d3dx/ida_defs.hpp"
 
-class D3DXContext : public IUnknown {};
-typedef D3DXContext* LPD3DXCONTEXT;
+typedef struct ID3DXContext *LPD3DXCONTEXT;
+DECLARE_INTERFACE_(ID3DXContext, IUnknown)
+{
+  //
+  // IUnknown methods 
+  //
+  STDMETHOD(QueryInterface)(THIS_ REFIID riid, LPVOID* ppvObj) PURE;
+  STDMETHOD_(ULONG,AddRef)(THIS) PURE;
+  STDMETHOD_(ULONG,Release)(THIS) PURE;
 
-struct D3DXVECTOR3 {
+  // Get the DDraw and Direct3D objects to call DirectDraw or
+  // Direct3D Immediate Mode functions. 
+  // If the objects don't exist (because they have not
+  // been created for some reason) NULL is returned.
+  // All the objects returned in the following Get* functions
+  // are addref'ed. It is the application's responsibility to
+  // release them when no longer needed.
+  STDMETHOD_(LPDIRECTDRAW7,GetDD)(THIS) PURE;
+  STDMETHOD_(LPDIRECT3D7,GetD3D)(THIS) PURE;
+  STDMETHOD_(LPDIRECT3DDEVICE7,GetD3DDevice)(THIS) PURE;
+
+  // Get the various buffers that get created at the init time
+  // These are addref'ed as well. It is the application's responsibility
+  // to release them before the app quits or when it needs a resize.
+  STDMETHOD_(LPDIRECTDRAWSURFACE7,GetPrimary)(THIS) PURE;
+  STDMETHOD_(LPDIRECTDRAWSURFACE7,GetZBuffer)(THIS) PURE;
+  STDMETHOD_(LPDIRECTDRAWSURFACE7,GetBackBuffer)(THIS_ DWORD which) PURE;
+
+  // Get the associated window handles 
+  STDMETHOD_(HWND,GetWindow)(THIS) PURE;
+  STDMETHOD_(HWND,GetFocusWindow)(THIS) PURE;
+
+  // 
+  // Various Get methods, in case the user had specified default
+  // parameters
+  //
+  STDMETHOD(GetDeviceIndex)(THIS_ 
+    LPDWORD pDeviceIndex, 
+    LPDWORD pHwLevel) PURE;
+
+  STDMETHOD_(DWORD, GetNumBackBuffers)(THIS) PURE;
+
+  STDMETHOD(GetNumBits)(THIS_
+    LPDWORD pColorBits, 
+    LPDWORD pDepthBits,
+    LPDWORD pAlphaBits, 
+    LPDWORD pStencilBits) PURE;
+
+  STDMETHOD(GetBufferSize)(THIS_ 
+    LPDWORD pWidth, 
+    LPDWORD pHeight) PURE;
+
+  // Get the flags that were used to create this context
+  STDMETHOD_(DWORD, GetCreationFlags)(THIS) PURE;
+  STDMETHOD_(DWORD, GetRefreshRate)(THIS) PURE;
+
+  // Restoring surfaces in case stuff is lost
+  STDMETHOD(RestoreSurfaces)(THIS) PURE;
+
+  // Resize all the buffers to the new width and height
+  STDMETHOD(Resize)(THIS_ DWORD width, DWORD height) PURE;
+
+  // Update the frame using a flip or a blit,
+  // If the D3DX_UPDATE_NOVSYNC flag is set, blit is used if the 
+  // driver cannot flip without waiting for vsync in full-screen mode.
+  STDMETHOD(UpdateFrame)(THIS_ DWORD flags) PURE;
+
+  // Render a string at the specified coordinates, with the specified 
+  // colour. This is only provided as a convenience for 
+  // debugging/information during development.
+  // topLeftX and topLeftY represent the location of the top left corner
+  // of the string, on the render target.  
+  // The coordinate and color parameters each have a range of 0.0-1.0
+  STDMETHOD(DrawDebugText)(THIS_
+    float topLeftX, 
+    float topLeftY,
+    D3DCOLOR color,
+    LPSTR pString) PURE;
+
+  // Clears to the current viewport
+  // The following are the valid flags:
+  // D3DCLEAR_TARGET  (to clear the render target )
+  // D3DCLEAR_ZBUFFER (to clear the depth-buffer )
+  // D3DCLEAR_STENCIL (to clear the stencil-buffer )
+  STDMETHOD(Clear)(THIS_ DWORD ClearFlags) PURE;
+
+  STDMETHOD(SetClearColor)(THIS_ D3DCOLOR color ) PURE;
+  STDMETHOD(SetClearDepth)(THIS_ float z) PURE;
+  STDMETHOD(SetClearStencil)(THIS_ DWORD stencil) PURE;
+};
+
+class D3DXVECTOR3 {
+public:
     float x, y, z;
+    D3DXVECTOR3() : x(0), y(0), z(0) {};
+    D3DXVECTOR3(float _x, float _y, float _z) {
+      x = _x; y = _y; z = _z;
+    };
 };
 
 typedef struct D3DXQUATERNION {
@@ -81,10 +175,6 @@ struct D3DX_DEVICEDESC {
   BOOL        onPrimary;
 };
 
-extern LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78;
-extern D3DDEVICEDESC7 g_d3dDevDesc_4D6980;
-extern LPDIRECTSOUND3DLISTENER& g_pds3DListener; // 0x52F3C4
-
 extern HRESULT(*D3DXUninitialize)(void);
 extern HRESULT (*D3DXInitialize)(void); 
 extern DWORD (*D3DXGetDeviceCount)(void);
@@ -93,3 +183,15 @@ extern HRESULT (*D3DXGetDeviceDescription)(DWORD deviceIndex, D3DX_DEVICEDESC* p
 extern HRESULT (*D3DXGetVideoMode)(DWORD deviceIndex, DWORD flags, DWORD modeIndex, D3DX_VIDMODEDESC* pModeList);
 extern HRESULT (*D3DXGetDeviceCaps)(DWORD deviceIndex, D3DX_VIDMODEDESC* pVidMode, D3DDEVICEDESC7* pD3DCaps, DDCAPS* pDDHALCaps, DDCAPS* pDDHELCaps); 
 extern void (__stdcall* D3DXGetErrorString)(int hr, size_t strLength, char* str);
+
+D3DXVECTOR3* __stdcall D3DXVec3Normalize(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV);
+D3DXMATRIX* __stdcall D3DXMatrixRotationAxis(D3DXMATRIX* pOut, const D3DXVECTOR3* pV, float angle);
+double __cdecl Vec3LengthSq(const D3DXVECTOR3* pV);
+void __cdecl Vec3Set(D3DXVECTOR3* This, float x, float y, float z);
+double __cdecl Vec3Dot(const D3DXVECTOR3* pV1, const D3DXVECTOR3* pV2);
+double __cdecl DegreesToRadians(float deg);
+HRESULT __cdecl MatrixPerspectiveFovLH(D3DXMATRIX* pMat, float fovy, float aspect, float zn, float zf);
+D3DXMATRIX* __cdecl D3DXMatrixIdentity(D3DXMATRIX* pOut);
+D3DXMATRIX* __stdcall D3DXMatrixMultiply(D3DXMATRIX* pOut, const D3DXMATRIX* pM1, const D3DXMATRIX* pM2);
+HRESULT __cdecl MatrixLookAtLH(D3DXMATRIX* pMat, const D3DXVECTOR3* pEye, const D3DXVECTOR3* pAt, const D3DXVECTOR3* pUp);
+D3DXMATRIX* __stdcall D3DXMatrixInverse(D3DXMATRIX* pOut, float* pfDeterminant, const D3DXMATRIX* pM);

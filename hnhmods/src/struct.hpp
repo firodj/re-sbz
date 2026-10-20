@@ -2,8 +2,6 @@
 
 #include "dx7.hpp"
 
-#include "..\d3dx\ida_defs.hpp"
-
 #pragma pack(push, 1)
 
 struct CHanaVector2
@@ -51,9 +49,9 @@ struct CHanaFrameRootT3EC_S2D4: public CHanaBase_S130
 {
     int bFlagAlpha_130;
     int flag_134;
-    D3DMATRIX mat4x4_fmrx;
-    D3DMATRIX mat4x4_after;
-    D3DMATRIX mat4x4_before;
+    D3DXMATRIX mat4x4_fmrx;
+    D3DXMATRIX mat4x4_after;
+    D3DXMATRIX mat4x4_before;
     int bIsRoot_1F8;
     CHanaFrameT3EC_S354 *pParent;
     CHanaNode *pFirstChildNode;
@@ -525,3 +523,4 @@ void AssertHanaStructSize();
 
 void __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj);
 void __cdecl CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode);
+void __cdecl CHanaObj__AddRef_40BFC3(CHanaBase_S130* pObj);

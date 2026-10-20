@@ -8,6 +8,21 @@ void hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName);
 extern HINSTANCE &g_hInstance;
 extern HWND &g_hwndParent;
 
+extern LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78;
+extern D3DDEVICEDESC7 &g_d3dDevDesc_4D6980;
+extern LPDIRECTSOUND3DLISTENER &g_pds3DListener; // 0x52F3C4
+extern LPD3DXCONTEXT& g_pRenderCtx;
+extern LPDIRECTDRAWSURFACE7 &g_pZBuffer_4D6C94;
+extern LPDIRECTDRAWSURFACE7 &g_pBackBuffer_4D6C90;
+extern LPDIRECTDRAWSURFACE7& g_pPrimaryBuffer_4D6C88;
+extern LPDIRECTDRAW7& g_pDD_4D6C7C;
+//LPDIRECTDRAW7 &g_pDD_4D6C7C = *(LPDIRECTDRAW7 *)0x4D6C7C; // WRITABLE
+extern LPDIRECT3D7& g_pD3D_4D6C84;
+//LPDIRECT3D7 &g_pD3D_4D6C84 = *(LPDIRECT3D7 *)0x4D6C84; // WRITABLE
+//LPDIRECTDRAWSURFACE7 &g_pBackBuffer_4D6C90 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C90; // WRITABLE
+//LPDIRECTDRAWSURFACE7 &g_pZBuffer_4D6C94 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C94; // WRITABLE
+
+
 extern DWORD &g_dwFogEnable_4D6CF4;
 extern DWORD &g_dwFogRangeEnable_4D6CFC;
 extern DWORD & g_dwFogMode_4B00C8;
@@ -31,7 +46,7 @@ extern CObjItemRef_S208* &g_pObjectTable;
 extern int      &g_nObjectTableCount;
 extern int      &g_bDSInited_5185C4;
 extern BOOL     &g_bFogIsActive_4B3480;
-extern uint32_t &g_bSpecularEnable_4B3474;
+extern BOOL     &g_bSpecularEnable_4B3474;
 extern uint32_t &g_bAntiAliasEnable;
 extern uint32_t &g_bDitherEnable;
 extern uint32_t &g_bLightEnable_4B3484;
@@ -41,9 +56,29 @@ extern uint32_t &g_nColorDepthMode_518C9C;
 extern int      &g_nRenderHALMode_518CA0;
 extern uint32_t &g_nWidth2;
 extern uint32_t &g_fScreenScale_52F19C;
+extern BOOL     &g_bSpecularEnable;
 
 extern int (&g_arrZBufDepthCountPerDev_518C40)[16];
 extern int (&g_arrZBufDepthsPerDev_518828)[256];
+
+extern int& g_nObjectTableCapacity_4B009C;
+
+extern uint32_t& g_nLightningState;
+extern uint32_t& g_nLightningEnabled;
+extern __int64& g_bitsLightIndexes_4D6CB8;
+
+extern uint32_t& g_bInited_4D6C6C;
+extern CHanaLightT3EF_S1A0*& g_pLight_4D6CE0;
+extern CHanaMateT3EE_S184*& g_pMaterial;
+//CHanaMateT3EE_S184 * &g_pMaterial = *(CHanaMateT3EE_S184 * *)0x4D6CDC; // WRITABLE
+extern CHanaFrameRootT3EC_S2D4*& g_pSceneFrame;
+//CHanaFrameRootT3EC_S2D4 * &g_pSceneFrame = *(CHanaFrameRootT3EC_S2D4 * *)0x4D6CA8; // WRITABLE
+extern CHanaFrameT3EC_S354*& g_pCameraFrame;
+//CHanaFrameT3EC_S354 * &g_pCameraFrame = *(CHanaFrameT3EC_S354 * *)0x4D6CAC; // WRITABLE
+extern CHanaFrameT3EC_S354*& g_pLightFrame;
+//CHanaFrameT3EC_S354 * &g_pLightFrame = *(CHanaFrameT3EC_S354 * *)0x4D6CB0; // WRITABLE
+
+
 
 void __cdecl SetupDirPath_486630();
 bool __cdecl CheckInstalledDirRoot_4869A7(HWND hWnd);
@@ -59,3 +94,5 @@ HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd);
 int __cdecl GlobalFree_40DF64(void* pBuf);
 LPVOID __cdecl GAlloc80_40DEF7(SIZE_T dwBytes);
 void __cdecl PrintDebugError(int hr);
+void __cdecl ApplyMaterial(CHanaMateT3EE_S184* pMate, D3DMATERIAL7* pD3Dmaterial);
+void __cdecl ApplyLightSettings(CHanaLightT3EF_S1A0* pLight);

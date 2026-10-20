@@ -557,7 +557,6 @@ void __cdecl CHanaObj__FreeMateAnimSetT3F8(CHanaMateAnimSetT3F8_S140 *pMateAnimS
 
 uint32_t &g_nLightningEnabled = *(uint32_t *)0x4B00AC; // WRITABLE
 uint32_t &flt_4A8340 = *(uint32_t *)0x4A8340; // READ-ONLY
-bool &g_bSpecularEnable = *(bool *)0x4B00A0; // WRITABLE
 uint32_t &g_bForceDirectionalLights = *(uint32_t *)0x4D6D04; // WRITABLE
 
 void __cdecl ApplyLightSettings(CHanaLightT3EF_S1A0 *pLight)
@@ -579,7 +578,7 @@ void __cdecl ApplyLightSettings(CHanaLightT3EF_S1A0 *pLight)
     }
     else
     {
-      if ( !*&g_bSpecularEnable )
+      if ( !g_bSpecularEnable )
       {
         pLight->d3dLight_134.dcvSpecular.r = 0.0;
         pLight->d3dLight_134.dcvSpecular.g = 0.0;
@@ -1086,6 +1085,65 @@ void __cdecl CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode)
   wsprintfA(szPathOut, "%s", szPathTemp);
 }
 
+void __cdecl CHanaObj__AddRef_40BFC3(CHanaBase_S130 *pObj)
+{
+  DebugLog("[HNH:SUB] %s\n", "CHanaObj__AddRef_40BFC3");
+
+  switch ( pObj->dwType )
+  {
+  case 0x3EA:
+    ++g_nRefVertT3EA;
+    break;
+  case 0x3EB:
+    ++g_nRefTextureT3EB;
+    break;
+  case 0x3EC:
+    ++g_nRefFrameT3EC;
+    break;
+  case 0x3ED:
+    ++g_nRefFrameArrayT3ED;
+    break;
+  case 0x3EE:
+    ++g_nRefMateT3EE;
+    break;
+  case 0x3EF:
+    ++g_nRefLightT3EF;
+    break;
+  case 0x3F0:
+    ++g_nRefAnimT3F0;
+    break;
+  case 0x3F1:
+    ++g_nRefAnimSetT3F1;
+    break;
+  case 0x3F2:
+    ++g_nRefTexCoordT3F2;
+    break;
+  case 0x3F5:
+    ++g_nRefMeshT3F5;
+    break;
+  case 0x3F6:
+    ++g_nRefSpriteT3F6;
+    break;
+  case 0x3F7:
+    ++g_nRefMateAnimT3F7;
+    break;
+  case 0x3F8:
+    ++g_nRefMateAnimSetT3F8;
+    break;
+  case 0x3F9:
+    ++g_nRefLightAnimT3F9;
+    break;
+  case 0x3FA:
+    ++g_nRefLightAnimSetT3FA;
+    break;
+  case 0x457:
+    ++g_nRefMorpT457;
+    break;
+  default:
+    break;
+  }
+  ++pObj->nCount_12C;
+}
 
 void register_CHanaObj__Free_40C1E4() {
   hnh_Hook(0x40C1E4, CHanaObj__Free_40C1E4, "CHanaObj__Free_40C1E4");
@@ -1121,4 +1179,5 @@ void register_CHanaObj__Free_40C1E4() {
   hnh_Hook(0x4821FA, CHanaObj__FreeSceneT458, "CHanaObj__FreeSceneT458_4821FA");
   hnh_Hook(0x40C1E4, CHanaObj__Free_40C1E4, "CHanaObj__Free_40C1E4");
   hnh_Hook(0x486D9A, CHanaObj__GetRealPath_486D9A, "CHanaObj__GetRealPath_486D9A");
+  hnh_Hook(0x40BFC3, CHanaObj__AddRef_40BFC3, "CHanaObj__AddRef_40BFC3");
 }
