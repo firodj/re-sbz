@@ -371,7 +371,7 @@ IDirectSound3DListener *HanaDS_Create3DListener()
 
 int Renderer_CleanupFont()
 {
-    DebugLog("[HNH:SUB] Renderer_CleanupFont_0x41888E\n");
+    DebugLog("[HNH:SUB] Renderer_CleanupFont_41888E\n");
 
     if ( g_hFont )
     {
@@ -544,18 +544,17 @@ LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, 
 
 void register_WndProcCheckSystem_485FC2() {
   hnh_Hook(0x485FC2, WndProcCheckSystem_485FC2, "WndProcCheckSystem_485FC2");
-  /**
-  D3DDeinit_40AC7C
-  Renderer_InitializeTrigTablesAndPixelFormat_418620
-  HanaDS_SetErrStr_423CCC
-  HanaHeap_Create_427520
-  HanaDS_InitHeap_424886
-  HanaDS_Init_422D50
-  HanaHeap_Destroy_427551
-  HanaDS_DestroyHeap_42489D
-  HanaDS_Shutdown_422E14
-  HanaDS_Create3DListener_422690
-  Renderer_CleanupFont_0x41888E
-  SetUiFont_419BCD
-  */
+  hnh_Hook(0x40AC7C, D3DDeinit, "D3DDeinit_40AC7C");
+  hnh_Hook(0x418620, Renderer_InitializeTrigTablesAndPixelFormat, "Renderer_InitializeTrigTablesAndPixelFormat_418620");
+  hnh_Hook(0x423CCC, HanaDS_SetErrStr, "HanaDS_SetErrStr_423CCC");
+  hnh_Hook(0x427520, HanaHeap_Create, "HanaHeap_Create_427520");
+  hnh_Hook(0x424886, HanaDS_InitHeap, "HanaDS_InitHeap_424886");
+  hnh_Hook(0x422D50, HanaDS_Init, "HanaDS_Init_422D50");
+  hnh_Hook(0x427551, HanaHeap_Destroy, "HanaHeap_Destroy_427551");
+  hnh_Hook(0x42489D, HanaDS_DestroyHeap, "HanaDS_DestroyHeap_42489D");
+  hnh_Hook(0x422E14, HanaDS_Shutdown, "HanaDS_Shutdown_422E14");
+  hnh_Hook(0x422690, HanaDS_Create3DListener, "HanaDS_Create3DListener_422690");
+  hnh_Hook(0x41888E, Renderer_CleanupFont, "Renderer_CleanupFont_41888E");
+  hnh_Hook(0x419BCD, SetUiFont_419BCD, "SetUiFont_419BCD");
+  
 }

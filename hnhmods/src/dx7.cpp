@@ -427,4 +427,14 @@ void hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName) {
 
 void register_MatrixLookAtLH_40C64A() {
   hnh_Hook(0x40C64A, MatrixLookAtLH, "MatrixLookAtLH_40C64A");
+  hnh_Hook(0x48A1EC, D3DXVec3Normalize, "D3DXVec3Normalize_48A1EC");
+  hnh_Hook(0x48ABB3, D3DXMatrixRotationAxis, "D3DXMatrixRotationAxis_48ABB3");
+  hnh_Hook(0x40E3C0, Vec3LengthSq, "Vec3LengthSq_40E3C0");
+  hnh_Hook(0x40E420, hook_Vec3Set, "hook_Vec3Set_40E420");
+  hnh_Hook(0x40E3F0,  Vec3Dot, "Vec3Dot_40E3F0");
+  hnh_Hook(0x40DDF3, DegreesToRadians, "DegreesToRadians_40DDF3");
+  hnh_Hook(0x40CB94, MatrixPerspectiveFovLH, "MatrixPerspectiveFovLH_40CB94");
+  hnh_Hook(0x40E450, D3DXMatrixIdentity, "D3DXMatrixIdentity_40E450");
+  hnh_Hook(0x48A4BC, D3DXMatrixMultiply, "D3DXMatrixMultiply_48A4BC");
+  hnh_Hook(0x48A5BD, D3DXMatrixInverse, "D3DXMatrixInverse_48A5BD");
 }

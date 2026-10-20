@@ -7,7 +7,8 @@ For each input file, reports:
   * global variables: data refs / array refs / function-pointer imports,
     with the trailing `// once!` / `// WRITABLE` note when present
   * implemented functions, and for each:
-      - DebugLog("[HNH:SUB] ...") presence + the tag(s) used
+      - DebugLog("[HNH:SUB] ...") presence + the tag(s) used; the
+        '[HNH:SUB] %s' form is resolved from the 2nd argument
       - hnh_Hook() registration: address + registering register_* function
 
 Heuristic brace/regex scanner tuned to the decompiled style in hnhmods/src
@@ -107,7 +108,10 @@ PLAIN_NAME = re.compile(r"([A-Za-z_]\w*)\s*(?:\[[^\]]*\])*$")
 ADDR_SUFFIX = re.compile(r"_([0-9A-Fa-f]{6})$")
 INIT_ADDR = re.compile(r"0x([0-9A-Fa-f]{6})\b")
 HOOK_CALL = re.compile(r"\bhnh_Hook\s*\(")
-DEBUG_TAG = re.compile(r'DebugLog\s*\(\s*"\[HNH:SUB\]\s*([^"\\]*)')
+DEBUG_CALL = re.compile(r"\bDebugLog\s*\(")
+STRING_LITERAL = re.compile(r'^"(.*)"$', re.S)
+ESCAPES = re.compile(r'\\[nrt"\\]')
+SUB_PREFIX = re.compile(r"\[HNH:SUB\]\s*(.*)", re.S)
 
 
 def find_matching_brace(text: str, open_pos: int) -> int:
@@ -202,7 +206,33 @@ def addr_from_name(name: str) -> str:
 
 
 def debug_tags(body: str) -> list[str]:
-    return [m.group(1).strip() for m in DEBUG_TAG.finditer(body)]
+    """[HNH:SUB] tags logged by a function body.
+
+    Handles both forms:
+      DebugLog("[HNH:SUB] Name\\n");              -> "Name"
+      DebugLog("[HNH:SUB] %s\\n", "Name");        -> 2nd arg: "Name"
+    A non-literal 2nd argument is reported as the raw expression.
+    Other channels ([HNH:LCID], {%s} WARN, ...) are ignored.
+    """
+    tags = []
+    for m in DEBUG_CALL.finditer(body):
+        args = split_call_args(body, m.end())
+        if not args:
+            continue
+        lit = STRING_LITERAL.match(args[0].strip())
+        if not lit:
+            continue
+        fm = SUB_PREFIX.match(ESCAPES.sub("", lit.group(1)))
+        if not fm:
+            continue
+        rest = fm.group(1).strip()
+        if "%s" in rest:
+            arg2 = args[1].strip() if len(args) > 1 else "<no 2nd arg>"
+            lit2 = STRING_LITERAL.match(arg2)
+            tags.append(lit2.group(1) if lit2 else arg2)
+        else:
+            tags.append(rest)
+    return tags
 
 
 def scan(text: str, src: str):
@@ -336,7 +366,11 @@ def report(path: Path) -> None:
     print(f"  {'line':<7}{pad('name', fw):<{fw}}  {'DebugLog [HNH:SUB]':<44}  hnh_Hook")
     for f in funcs:
         tags = debug_tags(f["body"])
-        dbg = f"yes: {tags[0]}" + (f" (+{len(tags)-1})" if len(tags) > 1 else "") if tags else "no"
+        dbg = (
+            f"yes: {tags[0] or '(no tag)'}" + (f" (+{len(tags)-1})" if len(tags) > 1 else "")
+            if tags
+            else "no"
+        )
         if f["name"].startswith("register_"):
             cnt = sum(1 for h in hooks.values() if h["container"] == f["name"])
             reg = f"registrar ({cnt} hooks)"

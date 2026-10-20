@@ -84,6 +84,7 @@ void register_SetFogEnable_40DFB0();
 void register_IsFileExists_47E8EE();
 void AssertHanaStructSize();
 void register_CHanaObj__Free_40C1E4();
+void register_MatrixLookAtLH_40C64A();
 
 void InitHNH() {
 	LPVOID pfnWinMain = (LPVOID)0x485CE0;
@@ -112,6 +113,7 @@ void InitHNH() {
 	register_SetFogEnable_40DFB0();
 	register_IsFileExists_47E8EE();
 	register_CHanaObj__Free_40C1E4();
+	register_MatrixLookAtLH_40C64A();
 }
 
 void FinishHNH() {
@@ -132,7 +134,6 @@ void DrawHNH(const char *window_name) {
 	ImGui::End();
 	
 }
-
 
 //////////////////
 
