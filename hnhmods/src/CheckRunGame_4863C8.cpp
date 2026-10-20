@@ -449,6 +449,8 @@ BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, int bFullScreen)
 
 HRESULT __cdecl SetLightingState(DWORD dwEnable)
 {
+  DebugLog("[HNH:SUB] %s\n", "SetLightingState_40DD71");
+
   g_nLightningState = dwEnable;
   g_nLightningEnabled = dwEnable;
   return g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_LIGHTING, dwEnable);
@@ -469,6 +471,8 @@ void D3DInitBuffers_40AF60()
   float upAxisZ;
   D3DXVECTOR3 pAt;
   D3DMATERIAL7 d3dDefaultMaterial;
+
+  DebugLog("[HNH:SUB] %s\n", "D3DInitBuffers_40AF60");
 
   // --- 1. Guard Clauses (Early Exits for Pointers & Init Flags) ---
   if (!g_bInited_4D6C6C) 
@@ -627,6 +631,8 @@ void D3DInitBuffers_40AF60()
 
 void __cdecl CHanaObj__NewLightT3EF(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dlight)
 {
+  DebugLog("[HNH:SUB] %s\n", "CHanaObj__NewLightT3EF_408F00");
+
   // Allocate and initialize the light object container
   CHanaLightT3EF_S1A0 *newLight = (CHanaLightT3EF_S1A0 *)GAlloc80_40DEF7(0x1A0u);
   memset(newLight, 0, sizeof(CHanaLightT3EF_S1A0));
@@ -718,6 +724,8 @@ void __cdecl CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130 *pObj)
   CObjItemRef_S208 *pStruct208; // [esp+10h] [ebp-4h]
   CObjItemRef_S208 *pDestItemRef; // [esp+10h] [ebp-4h]
 
+  DebugLog("[HNH:SUB] %s\n", "CHanaObj__AddObjItemRef_40B848");
+
   if ( szName && *szName )
   {
     v3 = lstrlenA(szName);
@@ -804,6 +812,8 @@ D3DXMATRIX *__cdecl MatrixRotateCubeMapFace(CHanaFrameT3EC_S354 *pFrame, int mod
   D3DXMATRIX rotationMatrix;
   D3DXMATRIX strippedMatrix;
 
+  DebugLog("[HNH:SUB] %s\n", "MatrixRotateCubeMapFace_4070AB");
+
   // Variables to preserve the translation components (m[3][0], m[3][1], m[3][2])
   __int64 savedTransXY;
   float savedTransZ;
@@ -864,6 +874,8 @@ void __cdecl CalculateLocalRotationMatrix(
 {
   D3DXMATRIX pOut; // [esp+0h] [ebp-40h] BYREF
 
+  DebugLog("[HNH:SUB] %s\n", "CalculateLocalRotationMatrix_407047");
+
   D3DXMatrixInverse(&pOut, 0, &pSceneFrame->mat4x4_after);
   D3DXMatrixMultiply(&pOut, &pCameraFrame->mat4x4_after, &pOut);
   *pXYrot = pOut._12;
@@ -882,4 +894,12 @@ void register_CheckRunGame_4863C8() {
   hnh_Hook(0x427F8C, DisplayConfig_ProcessDriverDesc, "DisplayConfig_ProcessDriverDesc_427F8C");
   hnh_Hook(0x427C51, IsVideoModeSupported, "IsVideoModeSupported_427C51");
   hnh_Hook(0x428927, ShowTitleMenuWnd_428927, "ShowTitleMenuWnd_428927");
+
+    hnh_Hook(0x40DD71, SetLightingState, "SetLightingState_40DD71");
+    hnh_Hook(0x40AF60, D3DInitBuffers_40AF60, "D3DInitBuffers_40AF60");
+    hnh_Hook(0x408F00, CHanaObj__NewLightT3EF, "CHanaObj__NewLightT3EF");
+    hnh_Hook(0x40B848, CHanaObj__AddObjItemRef_40B848, "CHanaObj__AddObjItemRef_40B848");
+    hnh_Hook(0x40BAB8, AttachHanaObj_40BAB8, "AttachHanaObj_40BAB8");
+    hnh_Hook(0x4070AB, MatrixRotateCubeMapFace, "MatrixRotateCubeMapFace");
+    hnh_Hook(0x407047, CalculateLocalRotationMatrix, "CalculateLocalRotationMatrix");
 }
