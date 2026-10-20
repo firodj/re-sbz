@@ -8,8 +8,8 @@
 
 void HNHCustomInit() {
     // Check Executable
-    bool isSbz = CheckIsHNH();
-    if (isSbz) {
+    bool isHnh = CheckIsHNH();
+    if (isHnh) {
         InitHNH();
     }
 }

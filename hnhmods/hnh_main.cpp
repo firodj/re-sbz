@@ -85,11 +85,17 @@ void register_IsFileExists_47E8EE();
 void AssertHanaStructSize();
 void register_CHanaObj__Free_40C1E4();
 void register_MatrixLookAtLH_40C64A();
+void register_CheckRunGame_4863C8();
+void register_CDROM_VerifyDiscSignature_485C50();
 
+HANDLE g_hStartEvent = NULL;
 void InitHNH() {
-	LPVOID pfnWinMain = (LPVOID)0x485CE0;
+	g_hStartEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-	MH_STATUS res = MH_CreateHook(pfnWinMain, reinterpret_cast<LPVOID>(hookWinMain), reinterpret_cast<LPVOID*>(&origWinMain));
+	MH_STATUS res;
+
+	LPVOID pfnWinMain = (LPVOID)0x485CE0;
+	res = MH_CreateHook(pfnWinMain, reinterpret_cast<LPVOID>(hookWinMain), reinterpret_cast<LPVOID*>(&origWinMain));
 	if (res == MH_OK) res = MH_EnableHook(pfnWinMain);
 	DebugLog("[HNH] Hooked WinMain; %s\n", MH_StatusToString(res));
 
@@ -106,14 +112,23 @@ void InitHNH() {
 	DebugLog("[HNH] Hooked PlayVideoWith3DAudio; %s\n", MH_StatusToString(res));
 
 	AssertHanaStructSize();
-	// register_WinMain_485CE0();
+	
+	//register_MatrixLookAtLH_40C64A();
 	register_WndProcCheckSystem_485FC2();
-	register_CheckInstalledDirRoot_4869A7();
-	register_GAlloc80_40DEF7();
-	register_SetFogEnable_40DFB0();
-	register_IsFileExists_47E8EE();
-	register_CHanaObj__Free_40C1E4();
-	register_MatrixLookAtLH_40C64A();
+	register_CDROM_VerifyDiscSignature_485C50();
+	//register_CheckInstalledDirRoot_4869A7();
+	//register_GAlloc80_40DEF7();
+	//register_SetFogEnable_40DFB0();
+	//register_IsFileExists_47E8EE();
+	//register_CHanaObj__Free_40C1E4();
+	register_CheckRunGame_4863C8();
+
+	DebugLog("[HNH] Hoke all done !\n");
+	if (g_hStartEvent)
+	{
+		// Signal the event, waking up the main thread
+		SetEvent(g_hStartEvent);
+	}
 }
 
 void FinishHNH() {
@@ -132,7 +147,6 @@ void DrawHNH(const char *window_name) {
 		ImGui::Text("Press <INSERT> to toggle menu.");
 	}
 	ImGui::End();
-	
 }
 
 //////////////////
@@ -150,7 +164,9 @@ std::string getModuleDir() {
 int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
 
 int WINAPI hookWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
-	DebugLog("[HNH] WinMain !\n");
+	DebugLog("[HNH] WinMain ! Wait for Start Event...\n");
+	WaitForSingleObject(g_hStartEvent, INFINITE);
+	DebugLog("[HNH] WinMain continue ...\n");
 
 	py::scoped_interpreter guard{};
 

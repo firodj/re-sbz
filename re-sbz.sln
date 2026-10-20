@@ -16,6 +16,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testing", "testing\testing.
 		{4841A944-4E3B-4935-84DC-3B48D094D781} = {4841A944-4E3B-4935-84DC-3B48D094D781}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Injector2", "SB3ImGuiHook\Injector2\Injector2.vcxproj", "{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -64,6 +66,14 @@ Global
 		{5A52B3F6-96C7-6B1A-4CC2-EB74A7D4E233}.Release|x64.Build.0 = Release|x64
 		{5A52B3F6-96C7-6B1A-4CC2-EB74A7D4E233}.Release|x86.ActiveCfg = Release|Win32
 		{5A52B3F6-96C7-6B1A-4CC2-EB74A7D4E233}.Release|x86.Build.0 = Release|Win32
+		{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}.Debug|x64.ActiveCfg = Debug|x64
+		{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}.Debug|x64.Build.0 = Debug|x64
+		{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}.Debug|x86.ActiveCfg = Debug|Win32
+		{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}.Debug|x86.Build.0 = Debug|Win32
+		{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}.Release|x64.ActiveCfg = Release|x64
+		{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}.Release|x64.Build.0 = Release|x64
+		{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}.Release|x86.ActiveCfg = Release|Win32
+		{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

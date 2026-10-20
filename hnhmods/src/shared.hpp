@@ -80,7 +80,7 @@ extern CHanaFrameT3EC_S354*& g_pLightFrame;
 
 void __cdecl SetupDirPath_486630();
 bool __cdecl CheckInstalledDirRoot_4869A7(HWND hWnd);
-BOOL __cdecl CDROM_VerifyDiscSignature(int chDriveLetter, const char *szExpectedLabel, size_t nLabelSize);
+extern BOOL(__cdecl* CDROM_VerifyDiscSignature)(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize);
 
 const char *__cdecl DDErrToString_423CE7(DWORD hr);
 BOOL __cdecl IsFileExists_47E8EE(CHAR* pszFilePath);
@@ -109,7 +109,7 @@ void __cdecl CalculateLocalRotationMatrix(
   float* pYXrot,
   float* pZXrot);
 
-int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName);
+void __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName);
 void __cdecl D3DDeinit();
-BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, int bFullScreen);
+BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen);
 LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);

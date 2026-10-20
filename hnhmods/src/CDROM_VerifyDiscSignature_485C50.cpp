@@ -28,15 +28,18 @@ typedef struct _DIOC_REGISTERS {
     DWORD reg_EBX, reg_EDX, reg_ECX, reg_EAX, reg_EDI, reg_ESI, reg_Flags;
 } DIOC_REGISTERS;
 
+int(*CDROM_DeviceIoControlVWIN32)(DIOC_REGISTERS* regs)
+= reinterpret_cast<int(*)(DIOC_REGISTERS* regs)>(0x485B27);
+
 // Returns 1 on success. reg_Flags bit 0x8000 is an error sentinel: preset here, a
 // successful DOS call clears it. (Original leaks hVWIN32 when DeviceIoControl
 // fails; it is closed here instead.)
-int CDROM_DeviceIoControlVWIN32(DIOC_REGISTERS *regs)
+int hook_CDROM_DeviceIoControlVWIN32(DIOC_REGISTERS *regs)
 {
     DWORD dwBytesReturned;
     HANDLE hVWIN32;
 
-    DebugLog("[HNH:SUB] CDROM_DeviceIoControlVWIN32\n");
+    DebugLog("[HNH:SUB] CDROM_DeviceIoControlVWIN32_485B27\n");
 
     regs->reg_Flags = 0x8000;
     hVWIN32 = CreateFileA("\\\\.\\vwin32",   // g_szVWIN32Device @0x4C764C
@@ -53,15 +56,19 @@ int CDROM_DeviceIoControlVWIN32(DIOC_REGISTERS *regs)
     return 0;
 }
 
+BOOL(*CDROM_IoctlReadSectorWin9x)(void* pBuffer, int nDriveNumber)
+= reinterpret_cast<BOOL(*)(void* pBuffer, int nDriveNumber)
+>(0x485ADA);
+
 // Raw sector read via DOS Int 21h 440Dh (generic block-device IOCTL), category 08h
 // (disk) / minor 66h ("read long sector"), tunnelled through \\.\vwin32.
 // nDriveNumber is 1-based (1 = A:). The original leaves reg_EDI/reg_ESI as stack
 // garbage; they are zeroed here instead.
-BOOL CDROM_IoctlReadSectorWin9x(void *pBuffer, int nDriveNumber)
+BOOL hook_CDROM_IoctlReadSectorWin9x(void *pBuffer, int nDriveNumber)
 {
     DIOC_REGISTERS regs = { 0 };
 
-    DebugLog("[HNH:SUB] CDROM_IoctlReadSectorWin9x\n");
+    DebugLog("[HNH:SUB] CDROM_IoctlReadSectorWin9x_485ADA\n");
 
     regs.reg_EBX = (DWORD)nDriveNumber;
     regs.reg_EDX = (DWORD)pBuffer;
@@ -70,9 +77,12 @@ BOOL CDROM_IoctlReadSectorWin9x(void *pBuffer, int nDriveNumber)
     return CDROM_DeviceIoControlVWIN32(&regs) && (regs.reg_Flags & 0x8000) == 0;
 }
 
+int(*CDROM_GetDriveFileSystemType)(CHAR chDriveLetter)
+= reinterpret_cast<int(*)(CHAR chDriveLetter)>(0x485A2A);
+
 // Volume FS name -> code map (original string globals @0x4C7630..0x4C764C):
 // FAT->1, FAT32->2, NTFS->3, CDFS->4, unknown->0, GetVolumeInformationA-fail->-1.
-int CDROM_GetDriveFileSystemType(CHAR chDriveLetter)
+int hook_CDROM_GetDriveFileSystemType(CHAR chDriveLetter)
 {
     static const struct { LPCSTR szName; int nCode; } s_map[] = {
         { "FAT", 1 }, { "FAT32", 2 }, { "NTFS", 3 }, { "CDFS", 4 },
@@ -81,7 +91,7 @@ int CDROM_GetDriveFileSystemType(CHAR chDriveLetter)
     CHAR szFileSystem[64];
     int i;
 
-    DebugLog("[HNH:SUB] CDROM_GetDriveFileSystemType\n");
+    DebugLog("[HNH:SUB] CDROM_GetDriveFileSystemType_485A2A\n");
 
     szRootPath[0] = chDriveLetter;
     if (!GetVolumeInformationA(szRootPath, NULL, NULL, NULL, NULL, NULL,
@@ -95,9 +105,13 @@ int CDROM_GetDriveFileSystemType(CHAR chDriveLetter)
     return 0;
 }
 
+BOOL(__cdecl* CDROM_VerifyNT)(int nDriveIndex, const char* szExpectedLabel, size_t nLabelSize)
+= reinterpret_cast<BOOL(__cdecl*)(int nDriveIndex, const char* szExpectedLabel, size_t nLabelSize)
+>(0x4858D0);
+
 // NT: compare the ISO9660 Primary Volume Descriptor's Volume Identifier
 // (LBA 16, offset 0x28) against the expected label. Every error path returns TRUE.
-BOOL __cdecl CDROM_VerifyNT(int nDriveIndex /* 0 = 'A' */, const char *szExpectedLabel, size_t nLabelSize)
+BOOL __cdecl hook_CDROM_VerifyNT(int nDriveIndex /* 0 = 'A' */, const char *szExpectedLabel, size_t nLabelSize)
 {
     CHAR szRootPath[4]   = "A:\\";
     CHAR szVolumePath[8] = "\\\\.\\A:";
@@ -106,7 +120,7 @@ BOOL __cdecl CDROM_VerifyNT(int nDriveIndex /* 0 = 'A' */, const char *szExpecte
     HANDLE hVolume;
     BOOL bResult;
 
-    DebugLog("[HNH:SUB] CDROM_VerifyNT\n");
+    DebugLog("[HNH:SUB] CDROM_VerifyNT_4858D0\n");
 
     if (CDROM_GetDriveFileSystemType((CHAR)(nDriveIndex + 'A')) != 4)  // CDFS only
         return TRUE;
@@ -141,17 +155,21 @@ BOOL __cdecl CDROM_VerifyNT(int nDriveIndex /* 0 = 'A' */, const char *szExpecte
     return bResult;
 }
 
+BOOL(__cdecl* CDROM_VerifyWin9x)(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize)
+= reinterpret_cast<BOOL(__cdecl*)(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize)
+>(0x485BA8);
+
 // Win9x: raw sector read via the DOS ioctl above, then two label layouts in the
 // 28-byte result:
 //   pass 1: buf[7+2i] == label[i] (exact)     -- wide/UCS-2 layout, low bytes at odd offsets
 //   pass 2: _memicmp(&buf[6], label, n) == 0  -- narrow layout at +6
-BOOL __cdecl CDROM_VerifyWin9x(int chDriveLetter, const char *szExpectedLabel, size_t nLabelSize)
+BOOL __cdecl hook_CDROM_VerifyWin9x(int chDriveLetter, const char *szExpectedLabel, size_t nLabelSize)
 {
     BYTE buf[28];
     BOOL bWideMatch;
     size_t i;
 
-    DebugLog("[HNH:SUB] CDROM_VerifyWin9x\n");
+    DebugLog("[HNH:SUB] CDROM_VerifyWin9x_485BA8\n");
 
     memset(buf, 0, 25);            // original zeroes 25 of the 28 bytes
     if (!CDROM_IoctlReadSectorWin9x(buf, chDriveLetter - 'A' + 1))
@@ -169,11 +187,15 @@ BOOL __cdecl CDROM_VerifyWin9x(int chDriveLetter, const char *szExpectedLabel, s
     return bWideMatch || _memicmp((const char *)&buf[6], szExpectedLabel, nLabelSize) == 0;
 }
 
+BOOL(__cdecl* CDROM_VerifyDiscSignature)(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize)
+= reinterpret_cast<BOOL(__cdecl*)(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize)
+>(0x485C50);
+
 // OS dispatcher. NOTE the convention mismatch is deliberate: Win9x gets the ASCII
 // drive letter, NT a 0-based drive index ('A' = 0). Unknown platform -> "verified".
-BOOL __cdecl CDROM_VerifyDiscSignature(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize)
+BOOL __cdecl hook_CDROM_VerifyDiscSignature(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize)
 {
-    DebugLog("[HNH:SUB] CDROM_VerifyDiscSignature_0x485C50\n");
+    DebugLog("[HNH:SUB] CDROM_VerifyDiscSignature_485C50\n");
 #if 0
     OSVERSIONINFOA osvi;
     ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
@@ -196,4 +218,10 @@ BOOL __cdecl CDROM_VerifyDiscSignature(int chDriveLetter, const char* szExpected
     }
     return CDROM_VerifyWin9x(chDriveLetter, szExpectedLabel, nLabelSize);
 #endif
+}
+
+void register_CDROM_VerifyDiscSignature_485C50() {
+  hnh_Hook(0x485C50, hook_CDROM_VerifyDiscSignature, "CDROM_VerifyDiscSignature_485C50");
+  hnh_Hook(0x4858D0, hook_CDROM_VerifyNT, "CDROM_VerifyNT_4858D0");
+  hnh_Hook(0x485A2A, hook_CDROM_GetDriveFileSystemType, "CDROM_GetDriveFileSystemType_485A2A");
 }

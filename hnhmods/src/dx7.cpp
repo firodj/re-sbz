@@ -417,12 +417,13 @@ D3DXMATRIX *__stdcall D3DXMatrixInverse(D3DXMATRIX *pOut, float *pfDeterminant, 
   return pOut;
 }
 
-void hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName) {
+LPVOID hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName) {
   LPVOID addr = (LPVOID)dwAddr;
-  LPVOID* orig = NULL;
+  LPVOID orig = NULL;
   MH_STATUS res = MH_CreateHook(addr, pDetour, reinterpret_cast<LPVOID*>(&orig));
   if (res == MH_OK) res = MH_EnableHook(addr);
   DebugLog("[HNH] Hooked %s; %s\n", pszName, MH_StatusToString(res));
+  return orig;
 }
 
 void register_MatrixLookAtLH_40C64A() {

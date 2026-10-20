@@ -387,10 +387,8 @@ int Renderer_CleanupFont()
 // FIXED_PITCH 0x80, DEFAULT_CHARSET, ps 2, CP 0x30, szFaceName), store the char width in
 // g_dwCharWidth and the height in g_dwFontHeight. Returns nCharW. Caller then uses
 // g_hFont / g_dwCharWidth for all menu text.
-int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName)
+void __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName)
 {
-  int result; // eax
-
   DebugLog("[HNH:SUB] SetUiFont_419BCD\n");
 
   if ( g_hFont )
@@ -399,15 +397,14 @@ int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName)
     g_hFont = 0;
   }
   g_hFont = CreateFontA(nFontH, nCharW / 2, 0, 0, 400, 0, 0, 0, 0x80u, 0, 0, 2u, 0x30u, szFaceName);
-  result = nCharW;
   g_dwCharWidth = nCharW;
   g_dwFontHeight = nFontH;
-  return result;
 }
 
 // shared "quit" epilogue (replaces LABEL_14 and the WM_CLOSE duplication)
 static LRESULT QuitWindow(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+  DebugLog("[HNH] WM_CLOSE\n");
   DestroyWindow(hWnd);
   return DefWindowProcA(hWnd, msg, wp, lp);
 }
@@ -415,6 +412,8 @@ static LRESULT QuitWindow(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 static LRESULT OnCheckSystem(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 {
   CHAR szExe[256], szText[256], szCdRoot[256];
+
+  DebugLog("[HNH] OnCheckSystem\n");
 
   if (!CheckInstalledDirRoot_4869A7(hWnd))
     return QuitWindow(hWnd, msg, wp, lp);
@@ -460,6 +459,7 @@ static LRESULT OnCheckSystem(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 
 static LRESULT OnEngineInit(HWND hWnd)
 {
+    DebugLog("[HNH] OnEngineInit\n");
     if (HanaDS_Init(hWnd) == 1)
     {
       g_pds3DListener = HanaDS_Create3DListener();
@@ -520,6 +520,7 @@ LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, 
   case WM_CLOSE:         return QuitWindow(hWnd, Msg, wParam, lParam);
 
   case WM_DESTROY:
+    DebugLog("[HNH] WM_DESTROY\n");
     ShowCursor(TRUE);
     if (g_pdsBuffer)
       g_pdsBuffer->Stop();
@@ -554,7 +555,6 @@ void register_WndProcCheckSystem_485FC2() {
   hnh_Hook(0x42489D, HanaDS_DestroyHeap, "HanaDS_DestroyHeap_42489D");
   hnh_Hook(0x422E14, HanaDS_Shutdown, "HanaDS_Shutdown_422E14");
   hnh_Hook(0x422690, HanaDS_Create3DListener, "HanaDS_Create3DListener_422690");
-  hnh_Hook(0x41888E, Renderer_CleanupFont, "Renderer_CleanupFont_41888E");
   hnh_Hook(0x419BCD, SetUiFont_419BCD, "SetUiFont_419BCD");
-  
+  hnh_Hook(0x41888E, Renderer_CleanupFont, "Renderer_CleanupFont_41888E");
 }

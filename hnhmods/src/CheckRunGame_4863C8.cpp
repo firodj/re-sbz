@@ -101,7 +101,7 @@ uint32_t &g_fScreenScale_52F19C    = *(uint32_t *)0x52F19C; // WRITABLE
 
 // === GLOBAL FUNCTIONS ===
 
-BOOL(__cdecl *ShowTitleMenu_427DA8)(HWND hWnd, int bFullScreen) = (BOOL(__cdecl*)(HWND, int))0x427DA8;
+BOOL(__cdecl *ShowTitleMenu_427DA8)(HWND hWnd, BOOL bFullScreen) = (BOOL(__cdecl*)(HWND, BOOL))0x427DA8;
 void(__cdecl* CHanaObj__NewMateT3EE_S184)(CHanaMateT3EE_S184** ppOutMate) = reinterpret_cast<void(__cdecl*)(CHanaMateT3EE_S184**)>(0x40F720);
 void(__cdecl* CHanaObj__NewFrameRootT3EC_S2D4)(CHanaFrameRootT3EC_S2D4 **ppOutFrameRoot) = reinterpret_cast<void(__cdecl*)(CHanaFrameRootT3EC_S2D4**)>(0x404908);
 void(__cdecl *CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354 *pParent, CHanaFrameT3EC_S354 **ppOutFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*, CHanaFrameT3EC_S354**)>(0x404720);
@@ -393,8 +393,13 @@ int __cdecl ShowTitleMenuWnd_428927(HINSTANCE hInstance)
   }
 }
 
-BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, int bFullScreen)
+LPVOID pfnCheckRunGame_4863C8 = NULL;
+
+BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen)
 {
+  auto fn = (BOOL(__cdecl*)(HWND, BOOL))pfnCheckRunGame_4863C8;
+  return fn(hWnd, bFullScreen);
+
   CHAR szTeaEx[256]; // [esp+0h] [ebp-204h] BYREF
   int bRunGame; // [esp+100h] [ebp-104h]
   _DWORD szTeaConfigData[64]; // [esp+104h] [ebp-100h] BYREF
@@ -887,19 +892,18 @@ void __cdecl CalculateLocalRotationMatrix(
 }
 
 void register_CheckRunGame_4863C8() {
-  hnh_Hook(0x4863C8, CheckRunGame_4863C8, "CheckRunGame_4863C8");
-  hnh_Hook(0x47E858, ReadFileToBuffer, "ReadFileToBuffer_47E858");
-  hnh_Hook(0x47E7F2, WriteBufferToFile, "WriteBufferToFile_47E7F2");
-  hnh_Hook(0x4278FF, DisplayConfig_Init, "DisplayConfig_Init_4278FF");
-  hnh_Hook(0x427F8C, DisplayConfig_ProcessDriverDesc, "DisplayConfig_ProcessDriverDesc_427F8C");
-  hnh_Hook(0x427C51, IsVideoModeSupported, "IsVideoModeSupported_427C51");
-  hnh_Hook(0x428927, ShowTitleMenuWnd_428927, "ShowTitleMenuWnd_428927");
-
-    hnh_Hook(0x40DD71, SetLightingState, "SetLightingState_40DD71");
-    hnh_Hook(0x40AF60, D3DInitBuffers_40AF60, "D3DInitBuffers_40AF60");
-    hnh_Hook(0x408F00, CHanaObj__NewLightT3EF, "CHanaObj__NewLightT3EF");
-    hnh_Hook(0x40B848, CHanaObj__AddObjItemRef_40B848, "CHanaObj__AddObjItemRef_40B848");
-    hnh_Hook(0x40BAB8, AttachHanaObj_40BAB8, "AttachHanaObj_40BAB8");
-    hnh_Hook(0x4070AB, MatrixRotateCubeMapFace, "MatrixRotateCubeMapFace");
-    hnh_Hook(0x407047, CalculateLocalRotationMatrix, "CalculateLocalRotationMatrix");
+  pfnCheckRunGame_4863C8 = hnh_Hook(0x4863C8, CheckRunGame_4863C8, "CheckRunGame_4863C8");
+  //hnh_Hook(0x47E858, ReadFileToBuffer, "ReadFileToBuffer_47E858");
+  //hnh_Hook(0x47E7F2, WriteBufferToFile, "WriteBufferToFile_47E7F2");
+  //hnh_Hook(0x4278FF, DisplayConfig_Init, "DisplayConfig_Init_4278FF");
+  //hnh_Hook(0x427F8C, DisplayConfig_ProcessDriverDesc, "DisplayConfig_ProcessDriverDesc_427F8C");
+  //hnh_Hook(0x427C51, IsVideoModeSupported, "IsVideoModeSupported_427C51");
+  //hnh_Hook(0x428927, ShowTitleMenuWnd_428927, "ShowTitleMenuWnd_428927");
+  //hnh_Hook(0x40DD71, SetLightingState, "SetLightingState_40DD71");
+  //hnh_Hook(0x40AF60, D3DInitBuffers_40AF60, "D3DInitBuffers_40AF60");
+  //hnh_Hook(0x408F00, CHanaObj__NewLightT3EF, "CHanaObj__NewLightT3EF");
+  //hnh_Hook(0x40B848, CHanaObj__AddObjItemRef_40B848, "CHanaObj__AddObjItemRef_40B848");
+  //hnh_Hook(0x40BAB8, AttachHanaObj_40BAB8, "AttachHanaObj_40BAB8");
+  //hnh_Hook(0x4070AB, MatrixRotateCubeMapFace, "MatrixRotateCubeMapFace");
+  //hnh_Hook(0x407047, CalculateLocalRotationMatrix, "CalculateLocalRotationMatrix");
 }

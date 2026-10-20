@@ -14,8 +14,10 @@ HINSTANCE &g_hInstance  = *(HINSTANCE*)0x52F5C8;
 HWND      &g_hwndParent = *(HWND*)0x52F5CC;
 
 // === GLOBAL FUNCTIONS ===
-int (__cdecl *DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd) = reinterpret_cast<int(__cdecl*)(HINSTANCE, HWND)>(0x43AD67);
-void (__cdecl *GameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x47F013);
+int (__cdecl *pfnDInputInit_43AD67)(HINSTANCE hinst, HWND hWnd) = reinterpret_cast<int(__cdecl*)(HINSTANCE, HWND)>(0x43AD67);
+void (__cdecl *pfnGameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x47F013);
+LRESULT(__stdcall* pfnWndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) =
+  reinterpret_cast<LRESULT(__stdcall*)(HWND, UINT, WPARAM, LPARAM)>(0x485FC2);
 
 // === FUNCTION IMPLEMENTATIONS ===
 int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
@@ -111,7 +113,7 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
                 // Initialize subsystems
                 directInputInitResult = 0;
                 soundInitResult = 0;
-                DInputInit_43AD67(g_hInstance, g_hwndParent);
+                pfnDInputInit_43AD67(g_hInstance, g_hwndParent);
                 directInputInitResult = 1;
                 soundInitResult = 1;
                 
@@ -135,7 +137,7 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
                 
                 // Cleanup
                 InvalidateRect(g_hwndParent, 0, 1);
-                GameMainLoop_47F013();
+                pfnGameMainLoop_47F013();
                 DestroyWindow(g_hwndParent);
                 
                 // Final cleanup checks
