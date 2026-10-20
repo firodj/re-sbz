@@ -7,15 +7,23 @@
 #include "shared.hpp"
 #include "struct.hpp"
 
-HANDLE &g_hHeapHandle   = *(HANDLE*)0x5187F0;
-int &g_nHeapRefCount    = *(int*)0x5187F4;
-LPDIRECTSOUND &g_ppDS   = *(LPDIRECTSOUND*)0x5185C0;
-DSCAPS &g_dsCaps_518560 = *(DSCAPS*)0x518560;
-int &g_bDSInited_5185C4 = *(int*)0x5185C4;
-LPDIRECTSOUNDBUFFER &g_pdsBuffer = *(LPDIRECTSOUNDBUFFER*)0x5185D0;
-HGDIOBJ &g_hFont    = *(HGDIOBJ*)0x518378;
-int &g_dwCharWidth  = *(int*)0x4B01B4;
-int &g_dwFontHeight = *(int*)0x4B01B8;
+// ---
+#define WMU_CHECK_SYSTEM 0x0BD0   // posted by WM_CREATE: install/disc/config gate
+#define WMU_ENGINE_INIT  0x2B10   // posted on success: sound + renderer init
+
+// === GLOBAL VARIABLES ===
+LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78 = *(LPDIRECT3DDEVICE7*)0x4D6C78;
+D3DDEVICEDESC7    &g_d3dDevDesc_4D6980 = *(D3DDEVICEDESC7 *)0x4D6980;
+
+HANDLE              &g_hHeapHandle   = *(HANDLE*)0x5187F0;
+int                 &g_nHeapRefCount = *(int*)0x5187F4;
+LPDIRECTSOUND       &g_ppDS          = *(LPDIRECTSOUND*)0x5185C0;
+DSCAPS              &g_dsCaps_518560 = *(DSCAPS*)0x518560;
+int                 &g_bDSInited_5185C4 = *(int*)0x5185C4;
+LPDIRECTSOUNDBUFFER &g_pdsBuffer     = *(LPDIRECTSOUNDBUFFER*)0x5185D0;
+HGDIOBJ             &g_hFont         = *(HGDIOBJ*)0x518378;
+int                 &g_dwCharWidth   = *(int*)0x4B01B4;
+int                 &g_dwFontHeight  = *(int*)0x4B01B8;
 
 LPDIRECTSOUND3DLISTENER &g_pds3DListener = *(LPDIRECTSOUND3DLISTENER*)0x52F3C4;
 
@@ -43,10 +51,6 @@ uint32_t &g_dwLowestRGBBit  = *(uint32_t *)0x51837C; // WRITABLE
 CHAR &g_szFontFaceName      = *(CHAR *)0x4B01C8; // WRITABLE
 LPSTR &g_pDDErrStr = *(LPSTR*)0x5185CC;
 
-int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName);
-void __cdecl D3DDeinit();
-BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, int bFullScreen);
-
 uint32_t &g_bInited_4D6C6C              = *(uint32_t *)0x4D6C6C; // WRITABLE
 CHanaLightT3EF_S1A0 * &g_pLight_4D6CE0  = *(CHanaLightT3EF_S1A0 * *)0x4D6CE0; // WRITABLE
 CHanaMateT3EE_S184 * &g_pMaterial       = *(CHanaMateT3EE_S184 * *)0x4D6CDC; // WRITABLE
@@ -66,6 +70,8 @@ LPDIRECT3D7 &g_pD3D_4D6C84               = *(LPDIRECT3D7 *)0x4D6C84; // WRITABLE
 LPD3DXCONTEXT &g_pRenderCtx              = *(LPD3DXCONTEXT*)0x4D6C80; // WRITABLE
 uint32_t &g_nMemCnt_4D6CF0               = *(uint32_t *)0x4D6CF0; // WRITABLE
 
+// === FUNCTION IMPLEMENTATIONS ===
+// 
 // D3DDeinit(): full D3D/DDraw teardown, the mirror of D3DInit.
 //   Runs only if g_bInited. Frees/releases, in order:
 //     - CHanaObj light g_Light & default g_pMaterial (CHanaObj::Free)
@@ -398,10 +404,6 @@ int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName)
   g_dwFontHeight = nFontH;
   return result;
 }
-
-// ---
-#define WMU_CHECK_SYSTEM 0x0BD0   // posted by WM_CREATE: install/disc/config gate
-#define WMU_ENGINE_INIT  0x2B10   // posted on success: sound + renderer init
 
 // shared "quit" epilogue (replaces LABEL_14 and the WM_CLOSE duplication)
 static LRESULT QuitWindow(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)

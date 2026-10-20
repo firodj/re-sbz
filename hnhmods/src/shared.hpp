@@ -3,8 +3,6 @@
 #include <type_traits>
 #include "struct.hpp"
 
-void hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName);
-
 extern HINSTANCE &g_hInstance;
 extern HWND &g_hwndParent;
 
@@ -96,3 +94,22 @@ LPVOID __cdecl GAlloc80_40DEF7(SIZE_T dwBytes);
 void __cdecl PrintDebugError(int hr);
 void __cdecl ApplyMaterial(CHanaMateT3EE_S184* pMate, D3DMATERIAL7* pD3Dmaterial);
 void __cdecl ApplyLightSettings(CHanaLightT3EF_S1A0* pLight);
+
+void __cdecl CHanaObj__NewLightT3EF(CHanaLightT3EF_S1A0** pOut, D3DLIGHT7* pD3Dlight);
+void __cdecl AttachHanaObj_40BAB8(CHanaBase_S130* pParent, LPCSTR szName);
+void __cdecl CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130* pObj);
+D3DXMATRIX* __cdecl MatrixRotateCubeMapFace(CHanaFrameT3EC_S354* pFrame, int mode, D3DXVECTOR3* pV, float angle);
+void __cdecl CalculateLocalRotationMatrix(
+  CHanaFrameT3EC_S354* pCameraFrame,
+  CHanaFrameT3EC_S354* pSceneFrame,
+  float* pXpos,
+  float* pYpos,
+  float* pZpos,
+  float* pXYrot,
+  float* pYXrot,
+  float* pZXrot);
+
+int __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName);
+void __cdecl D3DDeinit();
+BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, int bFullScreen);
+LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);

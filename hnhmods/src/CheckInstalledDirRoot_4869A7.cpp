@@ -3,6 +3,7 @@
 #include "console.hpp"
 #include "shared.hpp"
 
+// === GLOBAL VARIABLES ===
 
 CHAR (&g_szHnhPath_530270)[256] = *(CHAR (*)[256])0x530270; // WRITABLE
 CHAR (&g_szODSPath)[256]        = *(CHAR (*)[256])0x52F6E0; // WRITABLE
@@ -16,9 +17,13 @@ CHAR (&g_szGRP800Path)[256]     = *(CHAR (*)[256])0x52FA70; // WRITABLE
 CHAR (&g_szSEPath)[256]         = *(CHAR (*)[256])0x52FD70; // WRITABLE
 CHAR (&g_szDATAPath)[256]       = *(CHAR (*)[256])0x52FE70; // WRITABLE
 
+// === FUNCTION IMPLEMENTATIONS ===
+
 void __cdecl SetupDirPath_486630()
 {
     CHAR Src[256]; // [esp+0h] [ebp-100h] BYREF
+
+    DebugLog("[HNH:SUB] %s\n", "SetupDirPath_486630");
 
     wsprintfA(Src, "%s\\ODS", g_szHnhPath_530270);
     if ( IsFileExists_47E8EE(Src) )
@@ -68,7 +73,6 @@ void __cdecl SetupDirPath_486630()
     }
     wsprintfA(g_szDATAPath, "%s\\DATA\\", g_szHnhPath_530270);
 }
-
 
 // CheckInstalledDirRoot_4869A7(HWND hWnd) -> bool
 //
@@ -181,9 +185,6 @@ bool __cdecl CheckInstalledDirRoot_4869A7(HWND hWnd)
 }
 
 void register_CheckInstalledDirRoot_4869A7() {
-    LPVOID addr = (LPVOID)0x4869A7; // <- the function address
-    LPVOID* orig = NULL;
-    MH_STATUS res = MH_CreateHook(addr, reinterpret_cast<LPVOID>(CheckInstalledDirRoot_4869A7), reinterpret_cast<LPVOID*>(&orig));
-    if (res == MH_OK) res = MH_EnableHook(addr);
-    DebugLog("[HNH] Hooked CheckInstalledDirRoot_4869A7; %s\n", MH_StatusToString(res));
+    hnh_Hook(0x4869A7, CheckInstalledDirRoot_4869A7, "CheckInstalledDirRoot_4869A7");
+    hnh_Hook(0x486630, SetupDirPath_486630, "SetupDirPath_486630");
 }

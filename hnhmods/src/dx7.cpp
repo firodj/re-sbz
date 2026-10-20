@@ -4,12 +4,16 @@
 #include <cmath>
 #include <corecrt_math_defines.h>
 
+// === GLOBAL FUNCTIONS ===
+HRESULT (*D3DXUninitialize)(void) = reinterpret_cast<HRESULT(*)(void)>(0x48B8F0);
+HRESULT (*D3DXInitialize)(void) = (HRESULT(*)(void))0x48B80B; 
+DWORD (*D3DXGetDeviceCount)(void) = (DWORD(*)(void))0x48B9DD;
+DWORD (*D3DXGetMaxNumVideoModes)(DWORD deviceIndex, DWORD flags) = (DWORD (*)(DWORD, DWORD))0x48BBF0; 
+HRESULT (*D3DXGetDeviceDescription)(DWORD deviceIndex, D3DX_DEVICEDESC* pd3dxDeviceDesc) = (HRESULT(*)(DWORD, D3DX_DEVICEDESC*))0x48BA9E; 
+HRESULT (*D3DXGetVideoMode)(DWORD deviceIndex, DWORD flags, DWORD modeIndex, D3DX_VIDMODEDESC* pModeList) = (HRESULT (*)(DWORD, DWORD, DWORD, D3DX_VIDMODEDESC*))0x48BCDE;
+HRESULT (*D3DXGetDeviceCaps)(DWORD deviceIndex, D3DX_VIDMODEDESC* pVidMode, D3DDEVICEDESC7* pD3DCaps, DDCAPS* pDDHALCaps, DDCAPS* pDDHELCaps) = (HRESULT (*)(DWORD, D3DX_VIDMODEDESC*, D3DDEVICEDESC7*, DDCAPS*, DDCAPS*))0x48C28D; 
 
-// Global variables
-LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78 = *(LPDIRECT3DDEVICE7*)0x4D6C78;
-D3DDEVICEDESC7    &g_d3dDevDesc_4D6980 = *(D3DDEVICEDESC7 *)0x4D6980;
-
-HRESULT(*D3DXUninitialize)(void) = reinterpret_cast<HRESULT(*)(void)>(0x48B8F0);
+// === FUNCTION IMPLEMENATIONS ===
 
 D3DXVECTOR3 *__stdcall D3DXVec3Normalize(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV)
 {
@@ -411,4 +415,16 @@ D3DXMATRIX *__stdcall D3DXMatrixInverse(D3DXMATRIX *pOut, float *pfDeterminant, 
 
   *pOut = temp;
   return pOut;
+}
+
+void hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName) {
+  LPVOID addr = (LPVOID)dwAddr;
+  LPVOID* orig = NULL;
+  MH_STATUS res = MH_CreateHook(addr, pDetour, reinterpret_cast<LPVOID*>(&orig));
+  if (res == MH_OK) res = MH_EnableHook(addr);
+  DebugLog("[HNH] Hooked %s; %s\n", pszName, MH_StatusToString(res));
+}
+
+void register_MatrixLookAtLH_40C64A() {
+  hnh_Hook(0x40C64A, MatrixLookAtLH, "MatrixLookAtLH_40C64A");
 }

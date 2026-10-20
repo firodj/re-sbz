@@ -3,6 +3,37 @@
 #include "shared.hpp"
 #include "struct.hpp"
 
+// === GLOBAL VARIABLES ===
+
+uint32_t &g_nRefLightAnimSetT3FA = *(uint32_t *)0x4D6D4C; // WRITABLE
+uint32_t &g_nRefLightAnimT3F9 = *(uint32_t *)0x4D6D48; // WRITABLE
+uint32_t &g_nRefMateAnimSetT3F8 = *(uint32_t *)0x4D6D44; // WRITABLE
+uint32_t &g_nRefMateAnimT3F7 = *(uint32_t *)0x4D6D40; // WRITABLE
+uint32_t &g_nRefSpriteT3F6 = *(uint32_t *)0x4D6D3C; // WRITABLE
+uint32_t &g_nRefMeshT3F5 = *(uint32_t *)0x4D6D14; // WRITABLE
+uint32_t &g_nRefTexCoordT3F2 = *(uint32_t *)0x4D6D38; // WRITABLE
+uint32_t &g_nRefTextureT3EB = *(uint32_t *)0x4D6D30; // WRITABLE
+uint32_t &g_nRefVertT3EA = *(uint32_t *)0x4D6D2C; // WRITABLE
+uint32_t &g_nRefFrameT3EC = *(uint32_t *)0x4D6D24; // WRITABLE
+uint32_t &g_nRefFrameArrayT3ED = *(uint32_t *)0x4D6D34; // WRITABLE
+uint32_t &g_nRefMateT3EE = *(uint32_t *)0x4D6D28; // WRITABLE
+uint32_t &g_nRefLightT3EF = *(uint32_t *)0x4D6D18; // WRITABLE
+uint32_t &g_nRefAnimT3F0 = *(uint32_t *)0x4D6D1C; // WRITABLE
+uint32_t &g_nRefAnimSetT3F1 = *(uint32_t *)0x4D6D20; // WRITABLE
+uint32_t &g_nRefMorpT457 = *(uint32_t *)0x4D6D50; // WRITABLE
+
+CHanaTextureT3EB_S2CC* &g_pCurTexObj = *(CHanaTextureT3EB_S2CC**)0x4D6CA0;
+
+__int64 &g_bitsLightIndexes_4D6CB8 = *(__int64*)0x4D6CB8;
+
+// === GLOBAL FUNCTIONS ===
+
+void (__cdecl *CHanaObj__FreeT3FB)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x4166B5);
+void (__cdecl *CHanaObj__FreeT3FC)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x410501);
+void (__cdecl *CHanaObj__FreeT3FD)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x4114DF);
+void (__cdecl *CHanaObj__FreeT3FE)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x413075);
+
+// === FUNCTION IMPLEMENTATIONS ===
 void __cdecl CHanaObj__RemoveFromGlobalRef(CHanaBase_S130 *pObj)
 {
   DebugLog("[HNH:SUB] CHanaObj__RemoveFromGlobalRef_40BD4D\n");
@@ -51,8 +82,6 @@ void __cdecl CHanaObj__FreeVertT3EA(CHanaVertT3EA_S1FC *pVert)
     --pVert->nCount_12C;
   }
 }
-
-CHanaTextureT3EB_S2CC* &g_pCurTexObj = *(CHanaTextureT3EB_S2CC**)0x4D6CA0;
 
 void __cdecl CHanaObj__FreeTextureT3EB(CHanaTextureT3EB_S2CC *pTexture)
 {
@@ -209,8 +238,6 @@ void __cdecl CHanaObj__FreeMateT3EE(CHanaMateT3EE_S184 *pMate)
     --pMate->nCount_12C;
   }
 }
-
-__int64 &g_bitsLightIndexes_4D6CB8 = *(__int64*)0x4D6CB8;
 
 void __cdecl CHanaObj__FreeLightT3EF(CHanaLightT3EF_S1A0 *pLight)
 {
@@ -918,28 +945,6 @@ void __cdecl CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
   }
 }
 
-uint32_t &g_nRefLightAnimSetT3FA = *(uint32_t *)0x4D6D4C; // WRITABLE
-uint32_t &g_nRefLightAnimT3F9 = *(uint32_t *)0x4D6D48; // WRITABLE
-uint32_t &g_nRefMateAnimSetT3F8 = *(uint32_t *)0x4D6D44; // WRITABLE
-uint32_t &g_nRefMateAnimT3F7 = *(uint32_t *)0x4D6D40; // WRITABLE
-uint32_t &g_nRefSpriteT3F6 = *(uint32_t *)0x4D6D3C; // WRITABLE
-uint32_t &g_nRefMeshT3F5 = *(uint32_t *)0x4D6D14; // WRITABLE
-uint32_t &g_nRefTexCoordT3F2 = *(uint32_t *)0x4D6D38; // WRITABLE
-uint32_t &g_nRefTextureT3EB = *(uint32_t *)0x4D6D30; // WRITABLE
-uint32_t &g_nRefVertT3EA = *(uint32_t *)0x4D6D2C; // WRITABLE
-uint32_t &g_nRefFrameT3EC = *(uint32_t *)0x4D6D24; // WRITABLE
-uint32_t &g_nRefFrameArrayT3ED = *(uint32_t *)0x4D6D34; // WRITABLE
-uint32_t &g_nRefMateT3EE = *(uint32_t *)0x4D6D28; // WRITABLE
-uint32_t &g_nRefLightT3EF = *(uint32_t *)0x4D6D18; // WRITABLE
-uint32_t &g_nRefAnimT3F0 = *(uint32_t *)0x4D6D1C; // WRITABLE
-uint32_t &g_nRefAnimSetT3F1 = *(uint32_t *)0x4D6D20; // WRITABLE
-uint32_t &g_nRefMorpT457 = *(uint32_t *)0x4D6D50; // WRITABLE
-
-void (__cdecl *CHanaObj__FreeT3FB)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x4166B5);
-void (__cdecl *CHanaObj__FreeT3FC)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x410501);
-void (__cdecl *CHanaObj__FreeT3FD)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x4114DF);
-void (__cdecl *CHanaObj__FreeT3FE)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x413075);
-
 void __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj)
 {
   DebugLog("[HNH:SUB] CHanaObj__Free_40C1E4\n");
@@ -1043,6 +1048,8 @@ void __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj)
 void __cdecl CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode)
 {
   CHAR szPathTemp[256]; // [esp+4h] [ebp-100h] BYREF
+
+  DebugLog("[HNH:SUB] %s\n", "CHanaObj__GetRealPath_486D9A");
 
   switch ( nPathCode )
   {

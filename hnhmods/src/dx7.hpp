@@ -175,6 +175,8 @@ struct D3DX_DEVICEDESC {
   BOOL        onPrimary;
 };
 
+void hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName);
+
 extern HRESULT(*D3DXUninitialize)(void);
 extern HRESULT (*D3DXInitialize)(void); 
 extern DWORD (*D3DXGetDeviceCount)(void);

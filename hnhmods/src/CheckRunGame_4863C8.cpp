@@ -3,6 +3,8 @@
 #include "struct.hpp"
 #include "shared.hpp"
 
+// === STRUCTS ===
+
 struct CVideoModeDesc // sizeof=0x18
 {
   int nMaxNumVideoModes;
@@ -21,7 +23,90 @@ struct CDisplayConfig // sizeof=0x10
   CVideoModeDesc *parrVidModeDesc;
 };
 
+struct CVideoModeWhiteItem
+{
+  int Width;
+  int Height;
+  int bpp;
+};
+
+// === GLOBAL VARIABLES ===
+
+/*
+A null-terminated table of (width, height, bpp) triples -- the game's officially supported fullscreen modes:
+
++-----+-------+--------+-----+
+|  #  | Width | Height | bpp |
++-----+-------+--------+-----+
+| 1   | 640   | 480    | 16  |
++-----+-------+--------+-----+
+| 2   | 640   | 480    | 32  |
++-----+-------+--------+-----+
+| 3   | 800   | 600    | 16  |
++-----+-------+--------+-----+
+| 4   | 800   | 600    | 32  |
++-----+-------+--------+-----+
+| 5   | 1024  | 768    | 16  |
++-----+-------+--------+-----+
+| 6   | 1024  | 768    | 32  |
++-----+-------+--------+-----+
+| 7   | 0     | 0      | 0   |
+*/
+CVideoModeWhiteItem(&g_arrModeWhitelist_4B33F0)[7] = *(CVideoModeWhiteItem(*)[7])0x4B33F0; // once!
+
 int &g_bPreferTnLHal_4B33E8 = *(int*)0x4B33E8; // once!
+
+uint32_t   &g_dwRGBBitCount_4D6D00 = *(uint32_t *)0x4D6D00; // WRITABLE
+D3DXMATRIX &g_mat4x4View_4D4780    = *(D3DXMATRIX *)0x4D4780; // WRITABLE
+
+float &g_fProjZFar   = *(float *)0x4B00C0; // WRITABLE
+float &g_fProjZNear  = *(float *)0x4B00BC; // WRITABLE
+float &g_fProjAspect = *(float *)0x4B00B8; // WRITABLE
+float &g_fProjFov    = *(float *)0x4B00C4; // WRITABLE
+D3DXMATRIX  &g_mat4x4Projection_4CE870 = *(D3DXMATRIX *)0x4CE870; // WRITABLE
+D3DXVECTOR3 &g_vec3AxisX_4CE8E8 = *(D3DXVECTOR3 *)0x4CE8E8; // WRITABLE
+D3DXVECTOR3 &g_vec3AxisY_4CE8F8 = *(D3DXVECTOR3 *)0x4CE8F8; // WRITABLE
+D3DXVECTOR3 &g_vec3AxisZ_4CE908 = *(D3DXVECTOR3 *)0x4CE908; // WRITABLE
+D3DXVECTOR3 (&g_arrFwdByYaw360_4CD788)[360]   = *(D3DXVECTOR3 (*)[360])0x4CD788; // WRITABLE
+D3DXVECTOR3 (&g_arrUpByPitch360_4D47C0)[360]  = *(D3DXVECTOR3 (*)[360])0x4D47C0; // WRITABLE
+D3DXVECTOR3 (&g_arrFwdByPitch360_4D58A0)[360] = *(D3DXVECTOR3 (*)[360])0x4D58A0; // WRITABLE
+uint32_t &g_bAlphaBlendEnabled_4D6CC0    = *(uint32_t *)0x4D6CC0; // WRITABLE
+uint32_t &g_nAlphaOpState_4D6CC4         = *(uint32_t *)0x4D6CC4; // WRITABLE
+BOOL     &g_bSpecularEnable              = *(BOOL*)0x4B00A0; // WRITABLE
+BOOL     &g_bSpecularEnableMirror_4B00A4 = *(BOOL*)0x4B00A4; // WRITABLE
+int      &g_nObjectTableCapacity_4B009C  = *(int*)0x4B009C;
+uint32_t &g_nLightningState              = *(uint32_t *)0x4B00A8; // WRITABLE
+
+int (&g_arrZBufDepthCountPerDev_518C40)[16] = *(int(*)[16])0x518C40;
+int (&g_arrZBufDepthsPerDev_518828)[256]    = *(int(*)[256])0x518828;
+
+
+HINSTANCE &g_hInstance_518CB0 = *(HINSTANCE*)0x518CB0;
+HWND      &g_hWnd             = *(HWND*)0x518CAC;
+BOOL      &g_bRunGame         = *(BOOL*)0x4B3488;
+
+WNDPROC WndProcTitleMenu_428C11 = (WNDPROC)0x428C11;
+
+
+BOOL     &g_bSpecularEnable_4B3474 = *(BOOL*)0x4B3474;
+uint32_t &g_bAntiAliasEnable       = *(uint32_t *)0x4B347C; // WRITABLE
+uint32_t &g_bDitherEnable          = *(uint32_t *)0x4B3478; // WRITABLE
+uint32_t &g_bLightEnable_4B3484    = *(uint32_t *)0x4B3484; // WRITABLE
+uint32_t &g_bShadowEnable_518CA8   = *(uint32_t *)0x518CA8; // WRITABLE
+int      &g_nResolutionMode_518C80      = *(int *)0x518C80; // WRITABLE
+uint32_t &g_nColorDepthMode_518C9C = *(uint32_t *)0x518C9C; // WRITABLE
+int      &g_nRenderHALMode_518CA0       = *(int *)0x518CA0; // WRITABLE
+uint32_t &g_nWidth2                = *(uint32_t *)0x518C28; // WRITABLE
+uint32_t &g_fScreenScale_52F19C    = *(uint32_t *)0x52F19C; // WRITABLE
+
+// === GLOBAL FUNCTIONS ===
+
+BOOL(__cdecl *ShowTitleMenu_427DA8)(HWND hWnd, int bFullScreen) = (BOOL(__cdecl*)(HWND, int))0x427DA8;
+void(__cdecl* CHanaObj__NewMateT3EE_S184)(CHanaMateT3EE_S184** ppOutMate) = reinterpret_cast<void(__cdecl*)(CHanaMateT3EE_S184**)>(0x40F720);
+void(__cdecl* CHanaObj__NewFrameRootT3EC_S2D4)(CHanaFrameRootT3EC_S2D4 **ppOutFrameRoot) = reinterpret_cast<void(__cdecl*)(CHanaFrameRootT3EC_S2D4**)>(0x404908);
+void(__cdecl *CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354 *pParent, CHanaFrameT3EC_S354 **ppOutFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*, CHanaFrameT3EC_S354**)>(0x404720);
+
+// === FUNCTION IMPLEMENTATIONS ===
 
 void DisplayConfig_ProcessDriverDesc(CDisplayConfig *pConfig)
 {
@@ -68,35 +153,6 @@ void DisplayConfig_ProcessDriverDesc(CDisplayConfig *pConfig)
   }
 }
 
-struct CVideoModeWhiteItem
-{
-  int Width;
-  int Height;
-  int bpp;
-};
-
-/*
-A null-terminated table of (width, height, bpp) triples -- the game's officially supported fullscreen modes:
-
-+-----+-------+--------+-----+
-|  #  | Width | Height | bpp |
-+-----+-------+--------+-----+
-| 1   | 640   | 480    | 16  |
-+-----+-------+--------+-----+
-| 2   | 640   | 480    | 32  |
-+-----+-------+--------+-----+
-| 3   | 800   | 600    | 16  |
-+-----+-------+--------+-----+
-| 4   | 800   | 600    | 32  |
-+-----+-------+--------+-----+
-| 5   | 1024  | 768    | 16  |
-+-----+-------+--------+-----+
-| 6   | 1024  | 768    | 32  |
-+-----+-------+--------+-----+
-| 7   | 0     | 0      | 0   |
-*/
-CVideoModeWhiteItem(&g_arrModeWhitelist_4B33F0)[7] = *(CVideoModeWhiteItem(*)[7])0x4B33F0; // once!
-
 BOOL __cdecl IsVideoModeSupported(D3DX_VIDMODEDESC *pVidModeDesc)
 {
   int index; // [esp+0h] [ebp-4h]
@@ -117,16 +173,6 @@ BOOL __cdecl IsVideoModeSupported(D3DX_VIDMODEDESC *pVidModeDesc)
   while ( g_arrModeWhitelist_4B33F0[index].Width );
   return FALSE;
 }
-
-HRESULT (*D3DXInitialize)(void) = (HRESULT(*)(void))0x48B80B; 
-DWORD (*D3DXGetDeviceCount)(void) = (DWORD(*)(void))0x48B9DD;
-DWORD (*D3DXGetMaxNumVideoModes)(DWORD deviceIndex, DWORD flags) = (DWORD (*)(DWORD, DWORD))0x48BBF0; 
-HRESULT (*D3DXGetDeviceDescription)(DWORD deviceIndex, D3DX_DEVICEDESC* pd3dxDeviceDesc) = (HRESULT(*)(DWORD, D3DX_DEVICEDESC*))0x48BA9E; 
-HRESULT (*D3DXGetVideoMode)(DWORD deviceIndex, DWORD flags, DWORD modeIndex, D3DX_VIDMODEDESC* pModeList) = (HRESULT (*)(DWORD, DWORD, DWORD, D3DX_VIDMODEDESC*))0x48BCDE;
-HRESULT (*D3DXGetDeviceCaps)(DWORD deviceIndex, D3DX_VIDMODEDESC* pVidMode, D3DDEVICEDESC7* pD3DCaps, DDCAPS* pDDHALCaps, DDCAPS* pDDHELCaps) = (HRESULT (*)(DWORD, D3DX_VIDMODEDESC*, D3DDEVICEDESC7*, DDCAPS*, DDCAPS*))0x48C28D; 
-
-int (&g_arrZBufDepthCountPerDev_518C40)[16] = *(int(*)[16])0x518C40;
-int (&g_arrZBufDepthsPerDev_518828)[256] = *(int(*)[256])0x518828;
 
 void __cdecl DisplayConfig_Init(CDisplayConfig *pDisplayConfig)
 {
@@ -280,12 +326,6 @@ void __cdecl WriteBufferToFile(LPCSTR lpFileName, LPCVOID lpBuffer, DWORD nNumbe
   }
 }
 
-HINSTANCE &g_hInstance_518CB0 = *(HINSTANCE*)0x518CB0;
-HWND &g_hWnd = *(HWND*)0x518CAC;
-BOOL& g_bRunGame = *(BOOL*)0x4B3488;
-
-WNDPROC WndProcTitleMenu_428C11 = (WNDPROC)0x428C11;
-
 int __cdecl ShowTitleMenuWnd_428927(HINSTANCE hInstance)
 {
   HWND DesktopWindow; // eax
@@ -353,22 +393,6 @@ int __cdecl ShowTitleMenuWnd_428927(HINSTANCE hInstance)
   }
 }
 
-BOOL     &g_bSpecularEnable_4B3474 = *(BOOL*)0x4B3474;
-uint32_t &g_bAntiAliasEnable       = *(uint32_t *)0x4B347C; // WRITABLE
-uint32_t &g_bDitherEnable          = *(uint32_t *)0x4B3478; // WRITABLE
-uint32_t &g_bLightEnable_4B3484    = *(uint32_t *)0x4B3484; // WRITABLE
-uint32_t &g_bShadowEnable_518CA8   = *(uint32_t *)0x518CA8; // WRITABLE
-int      &g_nResolutionMode_518C80      = *(int *)0x518C80; // WRITABLE
-uint32_t &g_nColorDepthMode_518C9C = *(uint32_t *)0x518C9C; // WRITABLE
-int      &g_nRenderHALMode_518CA0       = *(int *)0x518CA0; // WRITABLE
-uint32_t &g_nWidth2                = *(uint32_t *)0x518C28; // WRITABLE
-uint32_t &g_fScreenScale_52F19C    = *(uint32_t *)0x52F19C; // WRITABLE
-
-BOOL(__cdecl *ShowTitleMenu_427DA8)(HWND hWnd, int bFullScreen) = (BOOL(__cdecl*)(HWND, int))0x427DA8;
-void(__cdecl* CHanaObj__NewMateT3EE_S184)(CHanaMateT3EE_S184** ppOutMate) = reinterpret_cast<void(__cdecl*)(CHanaMateT3EE_S184**)>(0x40F720);
-void(__cdecl* CHanaObj__NewFrameRootT3EC_S2D4)(CHanaFrameRootT3EC_S2D4 **ppOutFrameRoot) = reinterpret_cast<void(__cdecl*)(CHanaFrameRootT3EC_S2D4**)>(0x404908);
-void(__cdecl *CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354 *pParent, CHanaFrameT3EC_S354 **ppOutFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*, CHanaFrameT3EC_S354**)>(0x404720);
-
 BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, int bFullScreen)
 {
   CHAR szTeaEx[256]; // [esp+0h] [ebp-204h] BYREF
@@ -422,45 +446,6 @@ BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, int bFullScreen)
   }
   return bRunGame;
 }
-
-uint32_t &g_dwRGBBitCount_4D6D00 = *(uint32_t *)0x4D6D00; // WRITABLE
-D3DXMATRIX &g_mat4x4View_4D4780 = *(D3DXMATRIX *)0x4D4780; // WRITABLE
-
-float &g_fProjZFar = *(float *)0x4B00C0; // WRITABLE
-float &g_fProjZNear = *(float *)0x4B00BC; // WRITABLE
-float &g_fProjAspect = *(float *)0x4B00B8; // WRITABLE
-float &g_fProjFov = *(float *)0x4B00C4; // WRITABLE
-D3DXMATRIX &g_mat4x4Projection_4CE870 = *(D3DXMATRIX *)0x4CE870; // WRITABLE
-D3DXVECTOR3 &g_vec3AxisX_4CE8E8 = *(D3DXVECTOR3 *)0x4CE8E8; // WRITABLE
-D3DXVECTOR3 &g_vec3AxisY_4CE8F8 = *(D3DXVECTOR3 *)0x4CE8F8; // WRITABLE
-D3DXVECTOR3 &g_vec3AxisZ_4CE908 = *(D3DXVECTOR3 *)0x4CE908; // WRITABLE
-D3DXVECTOR3 (&g_arrFwdByYaw360_4CD788)[360] = *(D3DXVECTOR3 (*)[360])0x4CD788; // WRITABLE
-D3DXVECTOR3 (&g_arrUpByPitch360_4D47C0)[360] = *(D3DXVECTOR3 (*)[360])0x4D47C0; // WRITABLE
-D3DXVECTOR3 (&g_arrFwdByPitch360_4D58A0)[360] = *(D3DXVECTOR3 (*)[360])0x4D58A0; // WRITABLE
-uint32_t &g_bAlphaBlendEnabled_4D6CC0 = *(uint32_t *)0x4D6CC0; // WRITABLE
-uint32_t &g_nAlphaOpState_4D6CC4 = *(uint32_t *)0x4D6CC4; // WRITABLE
-BOOL &g_bSpecularEnable = *(BOOL*)0x4B00A0; // WRITABLE
-BOOL &g_bSpecularEnableMirror_4B00A4 = *(BOOL*)0x4B00A4; // WRITABLE
-int &g_nObjectTableCapacity_4B009C = *(int*)0x4B009C;
-
-//CHanaLightT3EF_S1A0 * &g_pLight_4D6CE0 = *(CHanaLightT3EF_S1A0 * *)0x4D6CE0; // WRITABLE
-
-
-void __cdecl CHanaObj__NewLightT3EF(CHanaLightT3EF_S1A0** pOut, D3DLIGHT7* pD3Dlight);
-void __cdecl AttachHanaObj_40BAB8(CHanaBase_S130* pParent, LPCSTR szName);
-void __cdecl CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130* pObj);
-D3DXMATRIX* __cdecl MatrixRotateCubeMapFace(CHanaFrameT3EC_S354* pFrame, int mode, D3DXVECTOR3* pV, float angle);
-void __cdecl CalculateLocalRotationMatrix(
-  CHanaFrameT3EC_S354* pCameraFrame,
-  CHanaFrameT3EC_S354* pSceneFrame,
-  float* pXpos,
-  float* pYpos,
-  float* pZpos,
-  float* pXYrot,
-  float* pYXrot,
-  float* pZXrot);
-
-uint32_t &g_nLightningState = *(uint32_t *)0x4B00A8; // WRITABLE
 
 HRESULT __cdecl SetLightingState(DWORD dwEnable)
 {
@@ -551,7 +536,7 @@ void D3DInitBuffers_40AF60()
   g_arrFwdByYaw360_4CD788[0] = D3DXVECTOR3{0.0f, 0.0f, 1.0f};
   for (iAngle = 1; iAngle < 360; ++iAngle)
   {
-    radStep = DegreesToRadians(1.0f);
+    radStep = static_cast<float>(DegreesToRadians(1.0f));
     MatrixRotateCubeMapFace(g_pCameraFrame, 2, &g_vec3AxisY_4CE8F8, radStep);
     CalculateLocalRotationMatrix(
       g_pCameraFrame, (CHanaFrameT3EC_S354*)g_pSceneFrame,
@@ -565,7 +550,7 @@ void D3DInitBuffers_40AF60()
   g_arrFwdByPitch360_4D58A0[0] = D3DXVECTOR3{0.0f, 0.0f, 1.0f};
   for (iAngle = 1; iAngle < 360; ++iAngle)
   {
-    anglea = DegreesToRadians(1.0f);
+    anglea = static_cast<float>(DegreesToRadians(1.0f));
     MatrixRotateCubeMapFace(g_pCameraFrame, 2, &g_vec3AxisX_4CE8E8, anglea);
     CalculateLocalRotationMatrix(
       g_pCameraFrame, (CHanaFrameT3EC_S354*)g_pSceneFrame,

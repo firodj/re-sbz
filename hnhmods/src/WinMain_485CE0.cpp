@@ -9,15 +9,15 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-// Global variables
+// === GLOBAL VARIABLES ===
 HINSTANCE &g_hInstance  = *(HINSTANCE*)0x52F5C8;
 HWND      &g_hwndParent = *(HWND*)0x52F5CC;
 
-LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-
+// === GLOBAL FUNCTIONS ===
 int (__cdecl *DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd) = reinterpret_cast<int(__cdecl*)(HINSTANCE, HWND)>(0x43AD67);
 void (__cdecl *GameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x47F013);
 
+// === FUNCTION IMPLEMENTATIONS ===
 int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
     size_t stringLength; // Length of window text
@@ -158,14 +158,6 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
         exitCode = -1;
         return -1; // HanaHime installer window found with matching text
     }
-}
-
-void hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName) {
-    LPVOID addr = (LPVOID)dwAddr;
-    LPVOID* orig = NULL;
-    MH_STATUS res = MH_CreateHook(addr, pDetour, reinterpret_cast<LPVOID*>(&orig));
-    if (res == MH_OK) res = MH_EnableHook(addr);
-    DebugLog("[HNH] Hooked %s; %s\n", pszName, MH_StatusToString(res));
 }
 
 void register_WinMain_485CE0() {
