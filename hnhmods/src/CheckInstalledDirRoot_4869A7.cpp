@@ -19,7 +19,9 @@ CHAR (&g_szDATAPath)[256]       = *(CHAR (*)[256])0x52FE70; // WRITABLE
 
 // === FUNCTION IMPLEMENTATIONS ===
 
-void __cdecl SetupDirPath_486630()
+void (__cdecl * SetupDirPath_486630)() = reinterpret_cast<void(__cdecl*)()>(0x486630);
+
+void __cdecl hook_SetupDirPath_486630()
 {
     CHAR Src[256]; // [esp+0h] [ebp-100h] BYREF
 
@@ -151,7 +153,9 @@ static CHAR FindMarkerDrive(CHAR chSkip, LPCSTR pszTail, const BYTE szMagic[17])
     return 0;
 }
 
-bool __cdecl CheckInstalledDirRoot_4869A7(HWND hWnd)
+bool(__cdecl* CheckInstalledDirRoot_4869A7)(HWND hWnd) = reinterpret_cast<bool(__cdecl*)(HWND hWnd)>(0x4869A7);
+
+bool __cdecl hook_CheckInstalledDirRoot_4869A7(HWND hWnd)
 {
     CHAR chInstall, chCdRom;
 
@@ -185,6 +189,6 @@ bool __cdecl CheckInstalledDirRoot_4869A7(HWND hWnd)
 }
 
 void register_CheckInstalledDirRoot_4869A7() {
-    hnh_Hook(0x4869A7, CheckInstalledDirRoot_4869A7, "CheckInstalledDirRoot_4869A7");
-    hnh_Hook(0x486630, SetupDirPath_486630, "SetupDirPath_486630");
+    hnh_Hook(0x4869A7, hook_CheckInstalledDirRoot_4869A7, "CheckInstalledDirRoot_4869A7");
+    hnh_Hook(0x486630, hook_SetupDirPath_486630, "SetupDirPath_486630");
 }

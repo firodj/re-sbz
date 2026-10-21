@@ -101,12 +101,12 @@ void __cdecl D3DDeinit()
     }
     if ( g_pSekHeader )
     {
-      GlobalFree_40DF64(g_pSekHeader);
+      MemFree_40DF64(g_pSekHeader);
       g_pSekHeader = 0;
     }
     if ( g_pObjPool )
     {
-      GlobalFree_40DF64(g_pObjPool);
+      MemFree_40DF64(g_pObjPool);
       g_pObjPool = 0;
     }
     if ( g_pZBuffer_4D6C94 )
@@ -146,7 +146,7 @@ void __cdecl D3DDeinit()
     }
     if ( g_pObjectTable )
     {
-      GlobalFree_40DF64(g_pObjectTable);
+      MemFree_40DF64(g_pObjectTable);
       g_pObjectTable = 0;
     }
     if ( g_pDD_4D6C7C )

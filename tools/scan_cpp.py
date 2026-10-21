@@ -10,12 +10,17 @@ For each input file, reports:
       - DebugLog("[HNH:SUB] ...") presence + the tag(s) used; the
         '[HNH:SUB] %s' form is resolved from the 2nd argument
       - hnh_Hook() registration: address + registering register_* function
+  * for each [HNH:SUB] function: the same-signature func-ptr declaration
+    for the original (name = hook name minus 'hook_', address from
+    hnh_Hook or the name suffix), flagging ones already declared in the
+    file; --funcptrs prints only the missing ones, paste-ready
 
 Heuristic brace/regex scanner tuned to the decompiled style in hnhmods/src
 (no templates, no file-scope classes, globals are `T &g_x_ADDR = *(T*)ADDR;`).
 
 Usage:
   py tools/scan_cpp.py hnhmods/src/CheckRunGame_4863C8.cpp
+  py tools/scan_cpp.py --funcptrs hnhmods/src/*.cpp
 """
 
 from __future__ import annotations
@@ -98,6 +103,9 @@ NOT_FUNC_NAMES = {
     "if", "for", "while", "switch", "return", "sizeof", "do", "else", "asm",
     "__declspec", "static_assert", "alignas",
 }
+CALLING_CONVENTIONS = ("__cdecl", "__stdcall", "__fastcall", "__thiscall", "__vectorcall")
+CONV_RE = re.compile(r"(__cdecl|__stdcall|__fastcall|__thiscall|__vectorcall)\b")
+STORAGE_SPECIFIERS = ("static", "extern", "inline", "virtual")
 
 ARRAY_REF = re.compile(r"\(\s*&\s*([A-Za-z_]\w*)\s*\)")
 FUNC_PTR = re.compile(
@@ -235,6 +243,71 @@ def debug_tags(body: str) -> list[str]:
     return tags
 
 
+def split_signature(sig: str, name: str) -> tuple[str, str, str]:
+    """Split a flattened definition signature into (return_type, convention, params).
+
+    `params` runs from the '(' after `name` to its matching ')' (params may
+    contain nested parens), verbatim incl. parameter names. The prefix before
+    the name loses storage specifiers; the calling convention is split off.
+    """
+    npos = sig.find(name)
+    popen = sig.find("(", npos + len(name))
+    depth, i = 0, popen
+    while i < len(sig):
+        if sig[i] == "(":
+            depth += 1
+        elif sig[i] == ")":
+            depth -= 1
+            if depth == 0:
+                break
+        i += 1
+    params = re.sub(r"\s+,", ",", sig[popen:i + 1])  # comment-stripping residue
+    prefix = " ".join(
+        t for t in sig[:npos].split() if t not in STORAGE_SPECIFIERS
+    )
+    # regex, not token equality: `D3DXMATRIX *__stdcall f` keeps the conv
+    # glued to the return type's `*`
+    m = CONV_RE.search(prefix)
+    conv = m.group(1) if m else ""
+    ret = " ".join((prefix[: m.start()] + " " + prefix[m.end():]).split()) if m else prefix
+    return ret, conv, params
+
+
+def make_funcptr_decl(ret: str, conv: str, name: str, params: str, addr: str) -> str:
+    """bool __cdecl f(HWND)  ->  bool (__cdecl * f)(HWND) = reinterpret_cast<...>(addr);"""
+    if conv:
+        return (
+            f"{ret} ({conv} * {name}){params}"
+            f" = reinterpret_cast<{ret}({conv}*){params}>({addr});"
+        )
+    return f"{ret} (* {name}){params} = reinterpret_cast<{ret}(*){params}>({addr});"
+
+
+def build_funcptr_rows(impl: list[dict], globals_: list[dict], funcs: list[dict],
+                       hooks: dict) -> list[dict]:
+    """One row per [HNH:SUB] function: its original-call func-ptr declaration."""
+    fp_globals = {g["name"]: g for g in globals_ if g["kind"] == "func-ptr"}
+    fn_names = {f["name"] for f in funcs}
+    rows = []
+    for f in impl:
+        if not debug_tags(f["body"]):
+            continue
+        fp_name = f["name"][5:] if f["name"].startswith("hook_") else f["name"]
+        addr = (hooks.get(f["name"]) or {}).get("addr") or addr_from_name(fp_name)
+        ret, conv, params = split_signature(f["sig"], f["name"])
+        rows.append({
+            "func": f,
+            "fp_name": fp_name,
+            "decl": make_funcptr_decl(ret, conv, fp_name, params, addr or "0x??????"),
+            "exists": fp_globals.get(fp_name),
+            "unknown_addr": not addr,
+            # func-ptr name already used by a function definition: the fn has
+            # not been renamed to hook_* yet, so the decl can't be pasted
+            "collides": fp_name in fn_names,
+        })
+    return rows
+
+
 def scan(text: str, src: str):
     """Returns (globals, funcs, structs, hooks)."""
     n = len(text)
@@ -307,6 +380,7 @@ def scan(text: str, src: str):
                             INIT_ADDR.search(flat)
                         ),
                         "note": note,
+                        "decl": flat,
                     })
             pos += 1
             stmt_start = pos
@@ -336,10 +410,28 @@ def pad(s: str, w: int) -> str:
     return s if len(s) <= w else s[: w - 1] + ">"
 
 
-def report(path: Path) -> None:
+def report(path: Path, funcptrs_only: bool = False, header: bool = False) -> None:
     src = read_source(path)
     text = strip_comments(src)
     globals_, funcs, structs, hooks = scan(text, src)
+    impl = [f for f in funcs if not f["name"].startswith("register_")]
+    registrars = [f for f in funcs if f["name"].startswith("register_")]
+    fp_rows = build_funcptr_rows(impl, globals_, funcs, hooks)
+
+    if funcptrs_only:
+        if header:
+            print(f"// {path}")
+        missing = [r for r in fp_rows if not r["exists"]]
+        if not missing:
+            print(f"// all {len(fp_rows)} [HNH:SUB] func-ptrs already declared")
+            return
+        for r in missing:
+            if r["collides"]:
+                print(f"// rename fn to hook_{r['fp_name']} first:")
+                print(f"// {r['decl']}")
+            else:
+                print(r["decl"])
+        return
 
     print("=" * 110)
     print(str(path))
@@ -357,9 +449,6 @@ def report(path: Path) -> None:
             f"  L{g['line']:<6}{g['kind']:<10}{pad(g['name'], nw):<{nw}}"
             f"  {g['addr'] or '-':<10}{note}"
         )
-
-    impl = [f for f in funcs if not f["name"].startswith("register_")]
-    registrars = [f for f in funcs if f["name"].startswith("register_")]
 
     print(f"\nFUNCTIONS ({len(funcs)})")
     fw = max([len(f["name"]) for f in funcs] + [4])
@@ -381,6 +470,24 @@ def report(path: Path) -> None:
             reg = "NOT REGISTERED"
         print(f"  L{f['line']:<6}{pad(f['name'], fw):<{fw}}  {pad(dbg, 44):<44}  {reg}")
 
+    n_exists = sum(1 for r in fp_rows if r["exists"])
+    print(
+        f"\nFUNC-PTRS ([HNH:SUB]) - {len(fp_rows)} total, {n_exists} exists,"
+        f" {len(fp_rows) - n_exists} missing"
+    )
+    for r in fp_rows:
+        if r["exists"]:
+            g = r["exists"]
+            print(f"  L{g['line']:<6}{g['decl']}  [exists]")
+        else:
+            notes = ["missing"]
+            if r["collides"]:
+                notes.append(f"name in use by fn L{r['func']['line']};"
+                             f" rename to hook_{r['fp_name']}")
+            if r["unknown_addr"]:
+                notes.append("addr unknown")
+            print(f"  L{r['func']['line']:<6}{r['decl']}  [{'; '.join(notes)}]")
+
     no_dbg = [f for f in impl if not debug_tags(f["body"])]
     hooked = [f for f in impl if f["name"] in hooks]
     no_hook = [f for f in impl if f["name"] not in hooks]
@@ -392,6 +499,7 @@ def report(path: Path) -> None:
     print(f"  functions:            {len(funcs)} ({len(impl)} implemented + {len(registrars)} registrar)")
     print(f"  DebugLog [HNH:SUB]:   {len(impl) - len(no_dbg)}/{len(impl)}")
     print(f"  hnh_Hook-registered:  {len(hooked)}/{len(impl)}")
+    print(f"  func-ptrs declared:   {n_exists}/{len(fp_rows)}")
     if no_dbg:
         print("  missing DebugLog:     " + ", ".join(f["name"] for f in no_dbg))
     if no_hook:
@@ -409,19 +517,25 @@ def main(argv=None) -> int:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     ap.add_argument("files", nargs="+", type=Path, help="C++ source files to scan")
+    ap.add_argument(
+        "--funcptrs",
+        action="store_true",
+        help="print only the missing [HNH:SUB] func-ptr declarations (paste-ready)",
+    )
     args = ap.parse_args(argv)
     if sys.stdout and hasattr(sys.stdout, "reconfigure"):
         try:
             sys.stdout.reconfigure(encoding="utf-8", errors="replace")
         except Exception:
             pass
+    header = args.funcptrs and len(args.files) > 1
     for i, p in enumerate(args.files):
         if not p.is_file():
             print(f"error: {p} not found", file=sys.stderr)
             return 1
-        if i:
+        if i and not args.funcptrs:
             print()
-        report(p)
+        report(p, funcptrs_only=args.funcptrs, header=header)
     return 0
 
 

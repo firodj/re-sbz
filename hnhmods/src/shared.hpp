@@ -77,9 +77,8 @@ extern CHanaFrameT3EC_S354*& g_pLightFrame;
 //CHanaFrameT3EC_S354 * &g_pLightFrame = *(CHanaFrameT3EC_S354 * *)0x4D6CB0; // WRITABLE
 
 
-
-void __cdecl SetupDirPath_486630();
-bool __cdecl CheckInstalledDirRoot_4869A7(HWND hWnd);
+extern void (__cdecl * SetupDirPath_486630)(void);
+extern bool (__cdecl * CheckInstalledDirRoot_4869A7)(HWND hWnd);
 extern BOOL(__cdecl* CDROM_VerifyDiscSignature)(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize);
 
 const char *__cdecl DDErrToString_423CE7(DWORD hr);
@@ -89,11 +88,11 @@ HRESULT __cdecl SetFogMode_40E02D(int bFogTableEnable, DWORD dwFogMode);
 HRESULT __cdecl SetFogColor_40E0B4(DWORD dwFogColor);
 HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd);
 
-int __cdecl GlobalFree_40DF64(void* pBuf);
-LPVOID __cdecl GAlloc80_40DEF7(SIZE_T dwBytes);
-void __cdecl PrintDebugError(int hr);
-void __cdecl ApplyMaterial(CHanaMateT3EE_S184* pMate, D3DMATERIAL7* pD3Dmaterial);
-void __cdecl ApplyLightSettings(CHanaLightT3EF_S1A0* pLight);
+extern int (__cdecl*MemFree_40DF64)(void* pBuf);
+extern LPVOID (__cdecl*MemAlloc80_40DEF7)(SIZE_T dwBytes);
+extern void (__cdecl*PrintDebugError)(int hr);
+extern void(__cdecl*ApplyMaterial)(CHanaMateT3EE_S184* pMate, D3DMATERIAL7* pD3Dmaterial);
+extern void(__cdecl*ApplyLightSettings)(CHanaLightT3EF_S1A0* pLight);
 
 void __cdecl CHanaObj__NewLightT3EF(CHanaLightT3EF_S1A0** pOut, D3DLIGHT7* pD3Dlight);
 void __cdecl AttachHanaObj_40BAB8(CHanaBase_S130* pParent, LPCSTR szName);

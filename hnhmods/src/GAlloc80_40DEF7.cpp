@@ -10,7 +10,9 @@ int &g_nMinD3DPrintfLevel_534388 = *(int*)0x534388;
 
 void(__stdcall *D3DXGetErrorString)(int hr, size_t strLength, char* str) = reinterpret_cast<void (__stdcall*)(int hr, size_t strLength, char* str)>(0x48c80e);
 
-void __cdecl D3DXDprintf(int nLevel, LPCSTR szMsg)
+void(__cdecl* D3DXDprintf)(int nLevel, LPCSTR szMsg) = reinterpret_cast<void(__cdecl*)(int nLevel, LPCSTR szMsg)>(0x490AC6);
+
+void __cdecl hook_D3DXDprintf(int nLevel, LPCSTR szMsg)
 {
   int v2; // eax
   CHAR String[256]; // [esp+0h] [ebp-100h] BYREF
@@ -26,7 +28,9 @@ void __cdecl D3DXDprintf(int nLevel, LPCSTR szMsg)
   }
 }
 
-void __cdecl PrintDebugError(int hr)
+void(__cdecl* PrintDebugError)(int hr) = reinterpret_cast<void(__cdecl*)(int)>(0x40A813);
+
+void __cdecl hook_PrintDebugError(int hr)
 {
   CHAR str[512]; // [esp+0h] [ebp-200h] BYREF
 
@@ -39,14 +43,16 @@ void __cdecl PrintDebugError(int hr)
   OutputDebugStringA("----D3DXL end------------------------------------------\n");
 }
 
+LPVOID (__cdecl * MemAlloc80_40DEF7)(SIZE_T dwBytes) = reinterpret_cast<LPVOID(__cdecl*)(SIZE_T dwBytes)>(0x40DEF7);
+
 /**
  * Allocates memory with zero initialization and tracks allocation count.
  * @param dwBytes Number of bytes to allocate (excluding the extra 128‑byte overhead).
  * @return Pointer to allocated memory, or NULL on failure.
  */
-LPVOID __cdecl GAlloc80_40DEF7(SIZE_T dwBytes)
+LPVOID __cdecl hook_MemAlloc80_40DEF7(SIZE_T dwBytes)
 {
-  DebugLog("[HNH:SUB] GAlloc80_40DEF7\n");
+  DebugLog("[HNH:SUB] MemAlloc80_40DEF7\n");
 
   LPVOID ptr; // Allocated memory pointer
 
@@ -68,9 +74,11 @@ LPVOID __cdecl GAlloc80_40DEF7(SIZE_T dwBytes)
   }
 }
 
-int __cdecl GlobalFree_40DF64(void *pBuf)
+int (__cdecl * MemFree_40DF64)(void *pBuf) = reinterpret_cast<int(__cdecl*)(void *pBuf)>(0x40DF64);
+
+int __cdecl hook_MemFree_40DF64(void *pBuf)
 {
-  DebugLog("[HNH:SUB] GlobalFree_40DF64\n");
+  DebugLog("[HNH:SUB] MemFree_40DF64\n");
 
   if ( pBuf )
   {
@@ -86,12 +94,12 @@ int __cdecl GlobalFree_40DF64(void *pBuf)
   }
 }
 
-void register_GAlloc80_40DEF7() {
-  hnh_Hook(0x40DEF7, GAlloc80_40DEF7, "GAlloc80_40DEF7");
-  hnh_Hook(0x40DF64, GlobalFree_40DF64, "GlobalFree_40DF64");
-  hnh_Hook(0x40A813, PrintDebugError, "PrintDebugError_40A813");
+void register_MemAlloc80_40DEF7() {
+  hnh_Hook(0x40DEF7, hook_MemAlloc80_40DEF7, "MemAlloc80_40DEF7");
+  hnh_Hook(0x40DF64, hook_MemFree_40DF64, "MemFree_40DF64");
+  hnh_Hook(0x40A813, hook_PrintDebugError, "PrintDebugError_40A813");
 
   g_nMinD3DPrintfLevel_534388 = -1;
 
-  hnh_Hook(0x490AC6, D3DXDprintf, "D3DXDprintf_490AC6");
+  hnh_Hook(0x490AC6, hook_D3DXDprintf, "D3DXDprintf_490AC6");
 }

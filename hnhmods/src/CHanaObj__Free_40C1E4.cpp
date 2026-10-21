@@ -32,9 +32,42 @@ void (__cdecl *CHanaObj__FreeT3FB)(CHanaBase_S130 *pObj) = reinterpret_cast<void
 void (__cdecl *CHanaObj__FreeT3FC)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x410501);
 void (__cdecl *CHanaObj__FreeT3FD)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x4114DF);
 void (__cdecl *CHanaObj__FreeT3FE)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x413075);
-
+void (__cdecl * CHanaObj__RemoveFromGlobalRef)(CHanaBase_S130 *pObj) = reinterpret_cast<void(__cdecl*)(CHanaBase_S130 *pObj)>(0x40BD4D);
+void (__cdecl * CHanaObj__FreeVertT3EA)(CHanaVertT3EA_S1FC *pVert) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert)>(0x417A0C);
+void (__cdecl * CHanaObj__FreeTextureT3EB)(CHanaTextureT3EB_S2CC *pTexture) = reinterpret_cast<void(__cdecl*)(CHanaTextureT3EB_S2CC *pTexture)>(0x416256);
+void (__cdecl * Frame_FreeAttachedObject)(CHanaFrameT3EC_S354 *pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x40536D);
+void (__cdecl * Frame_FreeAttachedLight)(CHanaFrameT3EC_S354 *pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x405421);
+void (__cdecl * RemoveChild_4058C3)(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFrameT3EC_S354 *pChild) = reinterpret_cast<void(__cdecl*)(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFrameT3EC_S354 *pChild)>(0x4058C3);
+void (__cdecl * CHanaObj__FreeFrameT3EC)(CHanaFrameT3EC_S354 *pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x4054B3);
+void (__cdecl * CHanaObj__FreeMateT3EE)(CHanaMateT3EE_S184 *pMate) = reinterpret_cast<void(__cdecl*)(CHanaMateT3EE_S184 *pMate)>(0x40FC5E);
+void (__cdecl * CHanaObj__FreeLightT3EF)(CHanaLightT3EF_S1A0 *pLight) = reinterpret_cast<void(__cdecl*)(CHanaLightT3EF_S1A0 *pLight)>(0x409437);
+void (__cdecl * CHanaObj__FreeFrameArrayT3ED)(CHanaFrameArrayT3ED_S138 *pFrameArrayT3ED) = reinterpret_cast<void(__cdecl*)(CHanaFrameArrayT3ED_S138 *pFrameArrayT3ED)>(0x408E8D);
+void (__cdecl * UnlinkHanaAnimFromFrame)(CHanaAnimT3F0_S240 *pAnim) = reinterpret_cast<void(__cdecl*)(CHanaAnimT3F0_S240 *pAnim)>(0x401EDF);
+void (__cdecl * CHanaObj__FreeAnimT3F0)(CHanaAnimT3F0_S240 *pAnim) = reinterpret_cast<void(__cdecl*)(CHanaAnimT3F0_S240 *pAnim)>(0x401F53);
+void (__cdecl * FreeSoundStruct_422C72)(CSoundStruct_8 *pSound) = reinterpret_cast<void(__cdecl*)(CSoundStruct_8 *pSound)>(0x422C72);
+void (__cdecl * CHanaObj__FreeAnimSetT3F1)(CHanaAnimSetT3F1_S150 *pAnimSet) = reinterpret_cast<void(__cdecl*)(CHanaAnimSetT3F1_S150 *pAnimSet)>(0x403A55);
+void (__cdecl * CHanaObj__FreeTexCoordT3F2)(CHanaTextureCoordsT3F2_S140 *pTexCoord) = reinterpret_cast<void(__cdecl*)(CHanaTextureCoordsT3F2_S140 *pTexCoord)>(0x415E05);
+void (__cdecl * CHanaObj__FreeTexAnimT3F3)(CHanaTextureAnimT3F3_S16C *pTexAnim) = reinterpret_cast<void(__cdecl*)(CHanaTextureAnimT3F3_S16C *pTexAnim)>(0x414F62);
+void (__cdecl * CHanaObj__FreeTexAnimSetT3F4)(CHanaTextureAnimSetT3F4_S138 *pTexAnimSet) = reinterpret_cast<void(__cdecl*)(CHanaTextureAnimSetT3F4_S138 *pTexAnimSet)>(0x41595B);
+void (__cdecl * CHanaObj__FreeMeshT3F5)(CHanaMeshT3F5_S138 *pMesh) = reinterpret_cast<void(__cdecl*)(CHanaMeshT3F5_S138 *pMesh)>(0x40FDCB);
+void (__cdecl * CHanaObj__FreeSpriteT3F6)(CHanaSpriteT3F6_S1FC *pSprite) = reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *pSprite)>(0x413F07);
+void (__cdecl * ApplyMaterial)(CHanaMateT3EE_S184 *pMate, D3DMATERIAL7 *pD3Dmaterial) = reinterpret_cast<void(__cdecl*)(CHanaMateT3EE_S184 *pMate, D3DMATERIAL7 *pD3Dmaterial)>(0x40F891);
+void (__cdecl * CHanaObj__FreeMateAnimT3F7)(CHanaMateAnimT3F7_S148 *pMateAnim) = reinterpret_cast<void(__cdecl*)(CHanaMateAnimT3F7_S148 *pMateAnim)>(0x40E6B6);
+void (__cdecl * CHanaObj__FreeMateAnimSetT3F8)(CHanaMateAnimSetT3F8_S140 *pMateAnimSet) = reinterpret_cast<void(__cdecl*)(CHanaMateAnimSetT3F8_S140 *pMateAnimSet)>(0x40F3E5);
+void (__cdecl * ApplyLightSettings)(CHanaLightT3EF_S1A0 *pLight) = reinterpret_cast<void(__cdecl*)(CHanaLightT3EF_S1A0 *pLight)>(0x40929C);
+void (__cdecl * SetupLightFromD3D)(CHanaLightT3EF_S1A0 *pHanaLight, D3DLIGHT7 *pD3DLight) = reinterpret_cast<void(__cdecl*)(CHanaLightT3EF_S1A0 *pHanaLight, D3DLIGHT7 *pD3DLight)>(0x40922E);
+void (__cdecl * CHanaObj__FreeLightAnimT3F9)(CHanaLightAnimT3F9_S144 *pLightAnim) = reinterpret_cast<void(__cdecl*)(CHanaLightAnimT3F9_S144 *pLightAnim)>(0x409820);
+void (__cdecl * CHanaObj__FreeLightAnimSetT3FA)(CHanaLightAnimSetT3FA_S13C *pLightAnimSet) = reinterpret_cast<void(__cdecl*)(CHanaLightAnimSetT3FA_S13C *pLightAnimSet)>(0x40A3BB);
+void (__cdecl * CHanaObj__FreeMorpT457)(CHanaMorpT457_S40C *pMorp) = reinterpret_cast<void(__cdecl*)(CHanaMorpT457_S40C *pMorp)>(0x433E8D);
+void (__cdecl * FreeSekHeader)(CSekHeader *pSekHeader) = reinterpret_cast<void(__cdecl*)(CSekHeader *pSekHeader)>(0x40D8F6);
+void (__cdecl * CSekBody__Release_4012FE)(CSekBody *pSekBody) = reinterpret_cast<void(__cdecl*)(CSekBody *pSekBody)>(0x4012FE);
+void (__cdecl * CHanaObj__FreeSceneT458)(CHanaSceneT458_S504 *pScene) = reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *pScene)>(0x4821FA);
+void (__cdecl * CHanaObj__Free_40C1E4)(CHanaBase_S130 *pObj) = reinterpret_cast<void(__cdecl*)(CHanaBase_S130 *pObj)>(0x40C1E4);
+void (__cdecl * CHanaObj__GetRealPath_486D9A)(LPSTR szPathOut, int nPathCode) = reinterpret_cast<void(__cdecl*)(LPSTR szPathOut, int nPathCode)>(0x486D9A);
+void (__cdecl * CHanaObj__AddRef_40BFC3)(CHanaBase_S130 *pObj) = reinterpret_cast<void(__cdecl*)(CHanaBase_S130 *pObj)>(0x40BFC3);
+ 
 // === FUNCTION IMPLEMENTATIONS ===
-void __cdecl CHanaObj__RemoveFromGlobalRef(CHanaBase_S130 *pObj)
+void __cdecl hook_CHanaObj__RemoveFromGlobalRef(CHanaBase_S130 *pObj)
 {
   DebugLog("[HNH:SUB] CHanaObj__RemoveFromGlobalRef_40BD4D\n");
 
@@ -46,7 +79,7 @@ void __cdecl CHanaObj__RemoveFromGlobalRef(CHanaBase_S130 *pObj)
   }
 }
 
-void __cdecl CHanaObj__FreeVertT3EA(CHanaVertT3EA_S1FC *pVert)
+void __cdecl hook_CHanaObj__FreeVertT3EA(CHanaVertT3EA_S1FC *pVert)
 {
   int v1; // [esp+0h] [ebp-4h]
 
@@ -66,7 +99,7 @@ void __cdecl CHanaObj__FreeVertT3EA(CHanaVertT3EA_S1FC *pVert)
     }
     if ( pVert->pVtxIndices )
     {
-      GlobalFree_40DF64(pVert->pVtxIndices);
+      MemFree_40DF64(pVert->pVtxIndices);
       pVert->pVtxIndices = 0;
     }
     v1 = pVert->pD3DVtxBuf_130->Release();
@@ -75,7 +108,7 @@ void __cdecl CHanaObj__FreeVertT3EA(CHanaVertT3EA_S1FC *pVert)
     if ( pVert->pUnk_164 )
       pVert->pUnk_164->Release();
     CHanaObj__RemoveFromGlobalRef(pVert);
-    GlobalFree_40DF64(pVert);
+    MemFree_40DF64(pVert);
   }
   else
   {
@@ -83,7 +116,7 @@ void __cdecl CHanaObj__FreeVertT3EA(CHanaVertT3EA_S1FC *pVert)
   }
 }
 
-void __cdecl CHanaObj__FreeTextureT3EB(CHanaTextureT3EB_S2CC *pTexture)
+void __cdecl hook_CHanaObj__FreeTextureT3EB(CHanaTextureT3EB_S2CC *pTexture)
 {
   int v1; // [esp+0h] [ebp-4h]
 
@@ -101,7 +134,7 @@ void __cdecl CHanaObj__FreeTextureT3EB(CHanaTextureT3EB_S2CC *pTexture)
         PrintDebugError(v1);
     }
     CHanaObj__RemoveFromGlobalRef(pTexture);
-    GlobalFree_40DF64(pTexture);
+    MemFree_40DF64(pTexture);
   }
   else
   {
@@ -109,7 +142,7 @@ void __cdecl CHanaObj__FreeTextureT3EB(CHanaTextureT3EB_S2CC *pTexture)
   }
 }
 
-void __cdecl Frame_FreeAttachedObject(CHanaFrameT3EC_S354 *pFrame)
+void __cdecl hook_Frame_FreeAttachedObject(CHanaFrameT3EC_S354 *pFrame)
 {
   DebugLog("[HNH:SUB] Frame_FreeAttachedObject_40536D\n");
  
@@ -120,7 +153,7 @@ void __cdecl Frame_FreeAttachedObject(CHanaFrameT3EC_S354 *pFrame)
   }
 }
 
-void __cdecl Frame_FreeAttachedLight(CHanaFrameT3EC_S354 *pFrame)
+void __cdecl hook_Frame_FreeAttachedLight(CHanaFrameT3EC_S354 *pFrame)
 {
   DebugLog("[HNH:SUB] Frame_FreeAttachedLight_405421\n");
 
@@ -133,7 +166,7 @@ void __cdecl Frame_FreeAttachedLight(CHanaFrameT3EC_S354 *pFrame)
   }
 }
 
-void __cdecl RemoveChild_4058C3(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFrameT3EC_S354 *pChild)
+void __cdecl hook_RemoveChild_4058C3(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFrameT3EC_S354 *pChild)
 {
   CHanaNode *pPrev; // [esp+0h] [ebp-Ch]
   CHanaNode *pNext; // [esp+0h] [ebp-Ch]
@@ -165,7 +198,7 @@ void __cdecl RemoveChild_4058C3(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFrameT3EC
         }
         if ( pNode == pParent->pLastChildNode )
           pParent->pLastChildNode = pNode->pPrev;
-        GlobalFree_40DF64(pNode);
+        MemFree_40DF64(pNode);
         if ( !--pParent->nCountChild )
         {
           pParent->pLastChildNode = 0;
@@ -179,7 +212,7 @@ void __cdecl RemoveChild_4058C3(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFrameT3EC
   }
 }
 
-void __cdecl CHanaObj__FreeFrameT3EC(CHanaFrameT3EC_S354 *pFrame)
+void __cdecl hook_CHanaObj__FreeFrameT3EC(CHanaFrameT3EC_S354 *pFrame)
 {
   CHanaNode *pNext; // [esp+0h] [ebp-14h]
   unsigned int i; // [esp+4h] [ebp-10h]
@@ -216,7 +249,7 @@ void __cdecl CHanaObj__FreeFrameT3EC(CHanaFrameT3EC_S354 *pFrame)
     if ( pFrame->pParent )
       RemoveChild_4058C3(pFrame->pParent, pFrame);
     CHanaObj__RemoveFromGlobalRef(pFrame);
-    GlobalFree_40DF64(pFrame);
+    MemFree_40DF64(pFrame);
   }
   else
   {
@@ -224,14 +257,14 @@ void __cdecl CHanaObj__FreeFrameT3EC(CHanaFrameT3EC_S354 *pFrame)
   }
 }
 
-void __cdecl CHanaObj__FreeMateT3EE(CHanaMateT3EE_S184 *pMate)
+void __cdecl hook_CHanaObj__FreeMateT3EE(CHanaMateT3EE_S184 *pMate)
 {
   DebugLog("[HNH:SUB] CHanaObj__FreeMateT3EE_40FC5E\n");
 
   if ( pMate->nCount_12C <= 1 )
   {
     CHanaObj__RemoveFromGlobalRef(pMate);
-    GlobalFree_40DF64(pMate);
+    MemFree_40DF64(pMate);
   }
   else
   {
@@ -239,7 +272,7 @@ void __cdecl CHanaObj__FreeMateT3EE(CHanaMateT3EE_S184 *pMate)
   }
 }
 
-void __cdecl CHanaObj__FreeLightT3EF(CHanaLightT3EF_S1A0 *pLight)
+void __cdecl hook_CHanaObj__FreeLightT3EF(CHanaLightT3EF_S1A0 *pLight)
 {
   DebugLog("[HNH:SUB] CHanaObj__FreeLightT3EF_409437\n");
 
@@ -249,7 +282,7 @@ void __cdecl CHanaObj__FreeLightT3EF(CHanaLightT3EF_S1A0 *pLight)
     g_pD3DDevice_4D6C78->SetLight(pLight->dwLightIndex_130, 0);
     g_pD3DDevice_4D6C78->LightEnable(pLight->dwLightIndex_130, 0);
     CHanaObj__RemoveFromGlobalRef(pLight);
-    GlobalFree_40DF64(pLight);
+    MemFree_40DF64(pLight);
   }
   else
   {
@@ -258,7 +291,7 @@ void __cdecl CHanaObj__FreeLightT3EF(CHanaLightT3EF_S1A0 *pLight)
 }
 
 // Idiomatic with IUnknown::Release() - decrements nCount_12C; at <= 1 frees arrFrames, unlinks global ref, frees object
-void __cdecl CHanaObj__FreeFrameArrayT3ED(CHanaFrameArrayT3ED_S138 *pFrameArrayT3ED)
+void __cdecl hook_CHanaObj__FreeFrameArrayT3ED(CHanaFrameArrayT3ED_S138 *pFrameArrayT3ED)
 {
   DebugLog("[HNH:SUB] CHanaObj__FreeFrameArrayT3ED_408E8D\n");
 
@@ -268,11 +301,11 @@ void __cdecl CHanaObj__FreeFrameArrayT3ED(CHanaFrameArrayT3ED_S138 *pFrameArrayT
     {
       if ( pFrameArrayT3ED->arrFrames )
       {
-        GlobalFree_40DF64(pFrameArrayT3ED->arrFrames);
+        MemFree_40DF64(pFrameArrayT3ED->arrFrames);
         pFrameArrayT3ED->arrFrames = 0;
       }
       CHanaObj__RemoveFromGlobalRef(pFrameArrayT3ED);
-      GlobalFree_40DF64(pFrameArrayT3ED);
+      MemFree_40DF64(pFrameArrayT3ED);
     }
     else
     {
@@ -281,7 +314,7 @@ void __cdecl CHanaObj__FreeFrameArrayT3ED(CHanaFrameArrayT3ED_S138 *pFrameArrayT
   }
 }
 
-void __cdecl UnlinkHanaAnimFromFrame(CHanaAnimT3F0_S240 *pAnim)
+void __cdecl hook_UnlinkHanaAnimFromFrame(CHanaAnimT3F0_S240 *pAnim)
 {
   CHanaFrameT3EC_S354 *pFrame; // [esp+0h] [ebp-Ch]
   int i; // [esp+4h] [ebp-8h]
@@ -305,7 +338,7 @@ void __cdecl UnlinkHanaAnimFromFrame(CHanaAnimT3F0_S240 *pAnim)
   }
 }
 
-void __cdecl CHanaObj__FreeAnimT3F0(CHanaAnimT3F0_S240 *pAnim)
+void __cdecl hook_CHanaObj__FreeAnimT3F0(CHanaAnimT3F0_S240 *pAnim)
 {
   DebugLog("[HNH:SUB] CHanaObj__FreeAnimT3F0_401F53\n");
 
@@ -313,9 +346,9 @@ void __cdecl CHanaObj__FreeAnimT3F0(CHanaAnimT3F0_S240 *pAnim)
   {
     UnlinkHanaAnimFromFrame(pAnim);
     if ( pAnim->arroS78_13C )
-      GlobalFree_40DF64(pAnim->arroS78_13C);
+      MemFree_40DF64(pAnim->arroS78_13C);
     CHanaObj__RemoveFromGlobalRef(pAnim);
-    GlobalFree_40DF64(pAnim);
+    MemFree_40DF64(pAnim);
   }
   else
   {
@@ -323,7 +356,7 @@ void __cdecl CHanaObj__FreeAnimT3F0(CHanaAnimT3F0_S240 *pAnim)
   }
 }
 
-void __cdecl FreeSoundStruct_422C72(CSoundStruct_8 *pSound)
+void __cdecl hook_FreeSoundStruct_422C72(CSoundStruct_8 *pSound)
 {
   DebugLog("[HNH:SUB] FreeSoundStruct_422C72\n");
 
@@ -340,7 +373,7 @@ void __cdecl FreeSoundStruct_422C72(CSoundStruct_8 *pSound)
   }
 }
 
-void __cdecl CHanaObj__FreeAnimSetT3F1(CHanaAnimSetT3F1_S150 *pAnimSet)
+void __cdecl hook_CHanaObj__FreeAnimSetT3F1(CHanaAnimSetT3F1_S150 *pAnimSet)
 {
   unsigned int k; // [esp+0h] [ebp-Ch]
   int j; // [esp+4h] [ebp-8h]
@@ -359,23 +392,23 @@ void __cdecl CHanaObj__FreeAnimSetT3F1(CHanaAnimSetT3F1_S150 *pAnimSet)
         if ( pAnimSet->arroS118_14C[i].pSnd_0 )
           FreeSoundStruct_422C72(pAnimSet->arroS118_14C[i].pSnd_0);
       }
-      GlobalFree_40DF64(pAnimSet->arroS118_14C);
+      MemFree_40DF64(pAnimSet->arroS118_14C);
     }
     if ( pAnimSet->refsAnimT3F0_138 )
     {
       for ( j = 0; j < pAnimSet->nAnimCount_134; ++j )
         CHanaObj__Free_40C1E4(pAnimSet->refsAnimT3F0_138[j]);
-      GlobalFree_40DF64(pAnimSet->refsAnimT3F0_138);
+      MemFree_40DF64(pAnimSet->refsAnimT3F0_138);
       pAnimSet->refsAnimT3F0_138 = 0;
     }
     if ( pAnimSet->pRefsManmT3F7 )
     {
       for ( k = 0; k < pAnimSet->nManmCount_140; ++k )
         CHanaObj__Free_40C1E4(pAnimSet->pRefsManmT3F7[k]);
-      GlobalFree_40DF64(pAnimSet->pRefsManmT3F7);
+      MemFree_40DF64(pAnimSet->pRefsManmT3F7);
     }
     CHanaObj__RemoveFromGlobalRef(pAnimSet);
-    GlobalFree_40DF64(pAnimSet);
+    MemFree_40DF64(pAnimSet);
   }
   else
   {
@@ -383,18 +416,18 @@ void __cdecl CHanaObj__FreeAnimSetT3F1(CHanaAnimSetT3F1_S150 *pAnimSet)
   }
 }
 
-void __cdecl CHanaObj__FreeTexCoordT3F2(CHanaTextureCoordsT3F2_S140 *pTexCoord)
+void __cdecl hook_CHanaObj__FreeTexCoordT3F2(CHanaTextureCoordsT3F2_S140 *pTexCoord)
 {
   DebugLog("[HNH:SUB] CHanaObj__FreeTexCoordT3F2_415E05\n");
 
   if ( pTexCoord->tvs_138 )
-    GlobalFree_40DF64(pTexCoord->tvs_138);
+    MemFree_40DF64(pTexCoord->tvs_138);
   if ( pTexCoord->tus_134 )
-    GlobalFree_40DF64(pTexCoord->tus_134);
-  GlobalFree_40DF64(pTexCoord);
+    MemFree_40DF64(pTexCoord->tus_134);
+  MemFree_40DF64(pTexCoord);
 }
 
-void __cdecl CHanaObj__FreeTexAnimT3F3(CHanaTextureAnimT3F3_S16C *pTexAnim)
+void __cdecl hook_CHanaObj__FreeTexAnimT3F3(CHanaTextureAnimT3F3_S16C *pTexAnim)
 {
   unsigned int i; // [esp+0h] [ebp-4h]
 
@@ -406,10 +439,10 @@ void __cdecl CHanaObj__FreeTexAnimT3F3(CHanaTextureAnimT3F3_S16C *pTexAnim)
     {
       for ( i = 0; i < pTexAnim->dwCount_140; ++i )
         CHanaObj__Free_40C1E4(pTexAnim->pTexCoords[i]);
-      GlobalFree_40DF64(pTexAnim->pTexCoords);
+      MemFree_40DF64(pTexAnim->pTexCoords);
     }
     CHanaObj__RemoveFromGlobalRef(pTexAnim);
-    GlobalFree_40DF64(pTexAnim);
+    MemFree_40DF64(pTexAnim);
   }
   else
   {
@@ -417,7 +450,7 @@ void __cdecl CHanaObj__FreeTexAnimT3F3(CHanaTextureAnimT3F3_S16C *pTexAnim)
   }
 }
 
-void __cdecl CHanaObj__FreeTexAnimSetT3F4(CHanaTextureAnimSetT3F4_S138 *pTexAnimSet)
+void __cdecl hook_CHanaObj__FreeTexAnimSetT3F4(CHanaTextureAnimSetT3F4_S138 *pTexAnimSet)
 {
   unsigned int i; // [esp+0h] [ebp-4h]
 
@@ -429,10 +462,10 @@ void __cdecl CHanaObj__FreeTexAnimSetT3F4(CHanaTextureAnimSetT3F4_S138 *pTexAnim
     {
       for ( i = 0; i < pTexAnimSet->nCount_130; ++i )
         CHanaObj__Free_40C1E4(pTexAnimSet->pArrObjs_134[i]);
-      GlobalFree_40DF64(pTexAnimSet->pArrObjs_134);
+      MemFree_40DF64(pTexAnimSet->pArrObjs_134);
     }
     CHanaObj__RemoveFromGlobalRef(pTexAnimSet);
-    GlobalFree_40DF64(pTexAnimSet);
+    MemFree_40DF64(pTexAnimSet);
   }
   else
   {
@@ -440,7 +473,7 @@ void __cdecl CHanaObj__FreeTexAnimSetT3F4(CHanaTextureAnimSetT3F4_S138 *pTexAnim
   }
 }
 
-void __cdecl CHanaObj__FreeMeshT3F5(CHanaMeshT3F5_S138 *pMesh)
+void __cdecl hook_CHanaObj__FreeMeshT3F5(CHanaMeshT3F5_S138 *pMesh)
 {
   unsigned int i; // [esp+0h] [ebp-4h]
 
@@ -458,10 +491,10 @@ void __cdecl CHanaObj__FreeMeshT3F5(CHanaMeshT3F5_S138 *pMesh)
           pMesh->refsVertT3EA[i] = 0;
         }
       }
-      GlobalFree_40DF64(pMesh->refsVertT3EA);
+      MemFree_40DF64(pMesh->refsVertT3EA);
     }
     CHanaObj__RemoveFromGlobalRef(pMesh);
-    GlobalFree_40DF64(pMesh);
+    MemFree_40DF64(pMesh);
   }
   else
   {
@@ -469,7 +502,7 @@ void __cdecl CHanaObj__FreeMeshT3F5(CHanaMeshT3F5_S138 *pMesh)
   }
 }
 
-void __cdecl CHanaObj__FreeSpriteT3F6(CHanaSpriteT3F6_S1FC *pSprite)
+void __cdecl hook_CHanaObj__FreeSpriteT3F6(CHanaSpriteT3F6_S1FC *pSprite)
 {
   DebugLog("[HNH:SUB] CHanaObj__FreeSpriteT3F6_413F07\n");
 
@@ -478,7 +511,7 @@ void __cdecl CHanaObj__FreeSpriteT3F6(CHanaSpriteT3F6_S1FC *pSprite)
     if ( pSprite->pTexture_134 )
       pSprite->pTexture_134->Release();
     CHanaObj__RemoveFromGlobalRef(&pSprite->base_0);
-    GlobalFree_40DF64(pSprite);
+    MemFree_40DF64(pSprite);
   }
   else
   {
@@ -486,7 +519,7 @@ void __cdecl CHanaObj__FreeSpriteT3F6(CHanaSpriteT3F6_S1FC *pSprite)
   }
 }
 
-void __cdecl ApplyMaterial(CHanaMateT3EE_S184 *pMate, D3DMATERIAL7 *pD3Dmaterial)
+void __cdecl hook_ApplyMaterial(CHanaMateT3EE_S184 *pMate, D3DMATERIAL7 *pD3Dmaterial)
 {
   DebugLog("[HNH:SUB] ApplyMaterial_40F891\n");
 
@@ -526,7 +559,7 @@ void __cdecl ApplyMaterial(CHanaMateT3EE_S184 *pMate, D3DMATERIAL7 *pD3Dmaterial
   pMate->fMatDirty = 1;
 }
 
-void __cdecl CHanaObj__FreeMateAnimT3F7(CHanaMateAnimT3F7_S148 *pMateAnim)
+void __cdecl hook_CHanaObj__FreeMateAnimT3F7(CHanaMateAnimT3F7_S148 *pMateAnim)
 {
   CHanaSubObj_S50 *psoS50_4C; // [esp+0h] [ebp-8h]
   CHanaSubObj_S50 *hMem; // [esp+4h] [ebp-4h]
@@ -544,14 +577,14 @@ void __cdecl CHanaObj__FreeMateAnimT3F7(CHanaMateAnimT3F7_S148 *pMateAnim)
       while ( 1 )
       {
         psoS50_4C = hMem->psoS50_4C;
-        GlobalFree_40DF64(hMem);
+        MemFree_40DF64(hMem);
         if ( !psoS50_4C )
           break;
         hMem = psoS50_4C;
       }
     }
     CHanaObj__RemoveFromGlobalRef(pMateAnim);
-    GlobalFree_40DF64(pMateAnim);
+    MemFree_40DF64(pMateAnim);
   }
   else
   {
@@ -559,7 +592,7 @@ void __cdecl CHanaObj__FreeMateAnimT3F7(CHanaMateAnimT3F7_S148 *pMateAnim)
   }
 }
 
-void __cdecl CHanaObj__FreeMateAnimSetT3F8(CHanaMateAnimSetT3F8_S140 *pMateAnimSet)
+void __cdecl hook_CHanaObj__FreeMateAnimSetT3F8(CHanaMateAnimSetT3F8_S140 *pMateAnimSet)
 {
   unsigned int i; // [esp+0h] [ebp-4h]
 
@@ -571,10 +604,10 @@ void __cdecl CHanaObj__FreeMateAnimSetT3F8(CHanaMateAnimSetT3F8_S140 *pMateAnimS
     {
       for ( i = 0; i < pMateAnimSet->dwObjCount_134; ++i )
         CHanaObj__Free_40C1E4(pMateAnimSet->pArrObjs_138[i]);
-      GlobalFree_40DF64(pMateAnimSet->pArrObjs_138);
+      MemFree_40DF64(pMateAnimSet->pArrObjs_138);
     }
     CHanaObj__RemoveFromGlobalRef(pMateAnimSet);
-    GlobalFree_40DF64(pMateAnimSet);
+    MemFree_40DF64(pMateAnimSet);
   }
   else
   {
@@ -583,10 +616,9 @@ void __cdecl CHanaObj__FreeMateAnimSetT3F8(CHanaMateAnimSetT3F8_S140 *pMateAnimS
 }
 
 uint32_t &g_nLightningEnabled = *(uint32_t *)0x4B00AC; // WRITABLE
-uint32_t &flt_4A8340 = *(uint32_t *)0x4A8340; // READ-ONLY
 uint32_t &g_bForceDirectionalLights = *(uint32_t *)0x4D6D04; // WRITABLE
 
-void __cdecl ApplyLightSettings(CHanaLightT3EF_S1A0 *pLight)
+void __cdecl hook_ApplyLightSettings(CHanaLightT3EF_S1A0 *pLight)
 {
   CHanaFrameT3EC_S354 *pHanaFrame; // [esp+4h] [ebp-4h]
 
@@ -625,7 +657,7 @@ void __cdecl ApplyLightSettings(CHanaLightT3EF_S1A0 *pLight)
   }
 }
 
-void __cdecl SetupLightFromD3D(CHanaLightT3EF_S1A0 *pHanaLight, D3DLIGHT7 *pD3DLight)
+void __cdecl hook_SetupLightFromD3D(CHanaLightT3EF_S1A0 *pHanaLight, D3DLIGHT7 *pD3DLight)
 {
   DebugLog("[HNH:SUB] SetupLightFromD3D_40922E\n");
 
@@ -633,7 +665,7 @@ void __cdecl SetupLightFromD3D(CHanaLightT3EF_S1A0 *pHanaLight, D3DLIGHT7 *pD3DL
   ApplyLightSettings(pHanaLight);
 }
 
-void __cdecl CHanaObj__FreeLightAnimT3F9(CHanaLightAnimT3F9_S144 *pLightAnim)
+void __cdecl hook_CHanaObj__FreeLightAnimT3F9(CHanaLightAnimT3F9_S144 *pLightAnim)
 {
   CHanaSubObj_S74 *pNext_70; // [esp+0h] [ebp-8h]
   CHanaSubObj_S74 *hMem; // [esp+4h] [ebp-4h]
@@ -650,14 +682,14 @@ void __cdecl CHanaObj__FreeLightAnimT3F9(CHanaLightAnimT3F9_S144 *pLightAnim)
       {
         pNext_70 = hMem->pNext_70;
         if ( hMem )
-          GlobalFree_40DF64(hMem);
+          MemFree_40DF64(hMem);
         if ( !pNext_70 )
           break;
         hMem = pNext_70;
       }
     }
     CHanaObj__RemoveFromGlobalRef(pLightAnim);
-    GlobalFree_40DF64(pLightAnim);
+    MemFree_40DF64(pLightAnim);
   }
   else
   {
@@ -665,7 +697,7 @@ void __cdecl CHanaObj__FreeLightAnimT3F9(CHanaLightAnimT3F9_S144 *pLightAnim)
   }
 }
 
-void __cdecl CHanaObj__FreeLightAnimSetT3FA(CHanaLightAnimSetT3FA_S13C *pLightAnimSet)
+void __cdecl hook_CHanaObj__FreeLightAnimSetT3FA(CHanaLightAnimSetT3FA_S13C *pLightAnimSet)
 {
   unsigned int i; // [esp+0h] [ebp-4h]
 
@@ -677,10 +709,10 @@ void __cdecl CHanaObj__FreeLightAnimSetT3FA(CHanaLightAnimSetT3FA_S13C *pLightAn
     {
       for ( i = 0; i < pLightAnimSet->nCount_4; ++i )
         CHanaObj__Free_40C1E4(pLightAnimSet->pArrObjs_8[i]);
-      GlobalFree_40DF64(pLightAnimSet->pArrObjs_8);
+      MemFree_40DF64(pLightAnimSet->pArrObjs_8);
     }
     CHanaObj__RemoveFromGlobalRef(pLightAnimSet);
-    GlobalFree_40DF64(pLightAnimSet);
+    MemFree_40DF64(pLightAnimSet);
   }
   else
   {
@@ -688,7 +720,7 @@ void __cdecl CHanaObj__FreeLightAnimSetT3FA(CHanaLightAnimSetT3FA_S13C *pLightAn
   }
 }
 
-void __cdecl CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
+void __cdecl hook_CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
 {
   unsigned int m; // [esp+0h] [ebp-8h]
   unsigned int n; // [esp+0h] [ebp-8h]
@@ -708,14 +740,14 @@ void __cdecl CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
         {
           if ( pMorp->pArrObjs_140[i] )
           {
-            GlobalFree_40DF64(pMorp->pArrObjs_140[i]);
+            MemFree_40DF64(pMorp->pArrObjs_140[i]);
             pMorp->pArrObjs_140[i] = 0;
             pMorp->pArrObjs_140[i] = 0;
           }
         }
         if ( pMorp->pArrObjs_140 )
         {
-          GlobalFree_40DF64(pMorp->pArrObjs_140);
+          MemFree_40DF64(pMorp->pArrObjs_140);
           pMorp->pArrObjs_140 = 0;
         }
         pMorp->pArrObjs_140 = 0;
@@ -724,7 +756,7 @@ void __cdecl CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
       {
         if ( pMorp->arrMKeyT3EASize_348 )
         {
-          GlobalFree_40DF64(pMorp->arrMKeyT3EASize_348);
+          MemFree_40DF64(pMorp->arrMKeyT3EASize_348);
           pMorp->arrMKeyT3EASize_348 = 0;
         }
         if ( pMorp->arrMKeyT3EA_34C )
@@ -733,14 +765,14 @@ void __cdecl CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
           {
             if ( pMorp->arrMKeyT3EA_34C[j] )
             {
-              GlobalFree_40DF64(pMorp->arrMKeyT3EA_34C[j]);
+              MemFree_40DF64(pMorp->arrMKeyT3EA_34C[j]);
               pMorp->arrMKeyT3EA_34C[j] = 0;
               pMorp->arrMKeyT3EA_34C[j] = 0;
             }
           }
           if ( pMorp->arrMKeyT3EA_34C )
           {
-            GlobalFree_40DF64(pMorp->arrMKeyT3EA_34C);
+            MemFree_40DF64(pMorp->arrMKeyT3EA_34C);
             pMorp->arrMKeyT3EA_34C = 0;
           }
           pMorp->arrMKeyT3EA_34C = 0;
@@ -756,7 +788,7 @@ void __cdecl CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
         }
         if ( pMorp->refsVertT3EA_13C )
         {
-          GlobalFree_40DF64(pMorp->refsVertT3EA_13C);
+          MemFree_40DF64(pMorp->refsVertT3EA_13C);
           pMorp->refsVertT3EA_13C = 0;
         }
       }
@@ -764,7 +796,7 @@ void __cdecl CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
       {
         if ( pMorp->arrSubObj_144[m].arrFun_4 )
         {
-          GlobalFree_40DF64(pMorp->arrSubObj_144[m].arrFun_4);
+          MemFree_40DF64(pMorp->arrSubObj_144[m].arrFun_4);
           pMorp->arrSubObj_144[m].arrFun_4 = 0;
           pMorp->arrSubObj_144[m].arrFun_4 = 0;
         }
@@ -775,19 +807,19 @@ void __cdecl CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
         {
           if ( pMorp->arrSubObj_144[n].pSubObj_0->parrS2C )
           {
-            GlobalFree_40DF64(pMorp->arrSubObj_144[n].pSubObj_0->parrS2C);
+            MemFree_40DF64(pMorp->arrSubObj_144[n].pSubObj_0->parrS2C);
             pMorp->arrSubObj_144[n].pSubObj_0->parrS2C = 0;
             pMorp->arrSubObj_144[n].pSubObj_0->parrS2C = 0;
           }
           if ( pMorp->arrSubObj_144[n].pSubObj_0 )
           {
-            GlobalFree_40DF64(pMorp->arrSubObj_144[n].pSubObj_0);
+            MemFree_40DF64(pMorp->arrSubObj_144[n].pSubObj_0);
             pMorp->arrSubObj_144[n].pSubObj_0 = 0;
           }
           pMorp->arrSubObj_144[n].pSubObj_0 = 0;
           if ( pMorp->arrSubObj_144[n].pSubObj_0 )
           {
-            GlobalFree_40DF64(pMorp->arrSubObj_144[n].pSubObj_0);
+            MemFree_40DF64(pMorp->arrSubObj_144[n].pSubObj_0);
             pMorp->arrSubObj_144[n].pSubObj_0 = 0;
           }
         }
@@ -798,7 +830,7 @@ void __cdecl CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
         CHanaObj__Free_40C1E4(pMorp->pMeshT3F5_138);
       }
       CHanaObj__RemoveFromGlobalRef(pMorp);
-      GlobalFree_40DF64(pMorp);
+      MemFree_40DF64(pMorp);
     }
     else
     {
@@ -807,7 +839,7 @@ void __cdecl CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
   }
 }
 
-void __cdecl FreeSekHeader(CSekHeader *pSekHeader)
+void __cdecl hook_FreeSekHeader(CSekHeader *pSekHeader)
 {
   DebugLog("[HNH:SUB] FreeSekHeader_40D8F6\n");
 
@@ -825,12 +857,12 @@ void __cdecl FreeSekHeader(CSekHeader *pSekHeader)
       CHanaObj__Free_40C1E4(pSekHeader->pAnimSetT3F1);
     if ( pSekHeader->pFrameT3EC )
       CHanaObj__Free_40C1E4(pSekHeader->pFrameT3EC);
-    GlobalFree_40DF64(pSekHeader);
+    MemFree_40DF64(pSekHeader);
   }
 }
 
 // CSekBody::Release - refcounted release of a CSekBody. Decrement count_5050; when it hits 0, free the header (sub_40D8F6 on pSekHeader_220) and GlobalFree the body. Returns the body pointer.
-void __cdecl CSekBody__Release_4012FE(CSekBody *pSekBody)
+void __cdecl hook_CSekBody__Release_4012FE(CSekBody *pSekBody)
 {
   DebugLog("[HNH:SUB] CSekBody__Release_4012FE\n");
 
@@ -845,7 +877,7 @@ void __cdecl CSekBody__Release_4012FE(CSekBody *pSekBody)
   }
 }
 
-void __cdecl CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
+void __cdecl hook_CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
 {
   unsigned int i; // [esp+0h] [ebp-4h]
   unsigned int j; // [esp+0h] [ebp-4h]
@@ -890,7 +922,7 @@ void __cdecl CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
     {
       if ( pScene->arrSekItemProps_140 && pScene->arrSekItemProps_140[k] )
       {
-        GlobalFree_40DF64(pScene->arrSekItemProps_140[k]);
+        MemFree_40DF64(pScene->arrSekItemProps_140[k]);
         pScene->arrSekItemProps_140[k] = 0;
       }
       if ( pScene->refsAnimeSets_138 && pScene->refsAnimeSets_138[k] )
@@ -908,36 +940,36 @@ void __cdecl CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
     }
     if ( pScene->refsFrames_134 )
     {
-      GlobalFree_40DF64(pScene->refsFrames_134);
+      MemFree_40DF64(pScene->refsFrames_134);
       pScene->refsFrames_134 = 0;
     }
     if ( pScene->refsAnimeSets_138 )
     {
-      GlobalFree_40DF64(pScene->refsAnimeSets_138);
+      MemFree_40DF64(pScene->refsAnimeSets_138);
       pScene->refsAnimeSets_138 = 0;
     }
     if ( pScene->refsSekBody_13C )
     {
-      GlobalFree_40DF64(pScene->refsSekBody_13C);
+      MemFree_40DF64(pScene->refsSekBody_13C);
       pScene->refsSekBody_13C = 0;
     }
     if ( pScene->arrSizes_144 )
     {
-      GlobalFree_40DF64(pScene->arrSizes_144);
+      MemFree_40DF64(pScene->arrSizes_144);
       pScene->arrSizes_144 = 0;
     }
     if ( pScene->arrSekItemProps_140 )
     {
-      GlobalFree_40DF64(pScene->arrSekItemProps_140);
+      MemFree_40DF64(pScene->arrSekItemProps_140);
       pScene->arrSekItemProps_140 = 0;
     }
     if ( pScene->ptrStrData_260 )
     {
-      GlobalFree_40DF64(pScene->ptrStrData_260);
+      MemFree_40DF64(pScene->ptrStrData_260);
       pScene->ptrStrData_260 = 0;
     }
     if ( pScene )
-      GlobalFree_40DF64(pScene);
+      MemFree_40DF64(pScene);
   }
   else
   {
@@ -945,7 +977,7 @@ void __cdecl CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
   }
 }
 
-void __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj)
+void __cdecl hook_CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj)
 {
   DebugLog("[HNH:SUB] CHanaObj__Free_40C1E4\n");
 
@@ -1045,7 +1077,7 @@ void __cdecl CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj)
   }
 }
 
-void __cdecl CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode)
+void __cdecl hook_CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode)
 {
   CHAR szPathTemp[256]; // [esp+4h] [ebp-100h] BYREF
 
@@ -1092,7 +1124,7 @@ void __cdecl CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode)
   wsprintfA(szPathOut, "%s", szPathTemp);
 }
 
-void __cdecl CHanaObj__AddRef_40BFC3(CHanaBase_S130 *pObj)
+void __cdecl hook_CHanaObj__AddRef_40BFC3(CHanaBase_S130 *pObj)
 {
   DebugLog("[HNH:SUB] %s\n", "CHanaObj__AddRef_40BFC3");
 
@@ -1153,38 +1185,38 @@ void __cdecl CHanaObj__AddRef_40BFC3(CHanaBase_S130 *pObj)
 }
 
 void register_CHanaObj__Free_40C1E4() {
-  hnh_Hook(0x40C1E4, CHanaObj__Free_40C1E4, "CHanaObj__Free_40C1E4");
-  hnh_Hook(0x40BD4D, CHanaObj__RemoveFromGlobalRef, "CHanaObj__RemoveFromGlobalRef_40BD4D");
-  hnh_Hook(0x417A0C, CHanaObj__FreeVertT3EA, "CHanaObj__FreeVertT3EA_417A0C");
-  hnh_Hook(0x416256, CHanaObj__FreeTextureT3EB, "CHanaObj__FreeTextureT3EB_416256");
-  hnh_Hook(0x40536D, Frame_FreeAttachedObject, "Frame_FreeAttachedObject_40536D");
-  hnh_Hook(0x405421, Frame_FreeAttachedLight, "Frame_FreeAttachedLight_405421");
-  hnh_Hook(0x4058C3, RemoveChild_4058C3, "RemoveChild_4058C3");
-  hnh_Hook(0x4054B3, CHanaObj__FreeFrameT3EC, "CHanaObj__FreeFrameT3EC_4054B3");
-  hnh_Hook(0x40FC5E, CHanaObj__FreeMateT3EE, "CHanaObj__FreeMateT3EE_40FC5E");
-  hnh_Hook(0x409437, CHanaObj__FreeLightT3EF, "CHanaObj__FreeLightT3EF_409437");
-  hnh_Hook(0x408E8D, CHanaObj__FreeFrameArrayT3ED, "CHanaObj__FreeFrameArrayT3ED_408E8D");
-  hnh_Hook(0x401EDF, UnlinkHanaAnimFromFrame, "UnlinkHanaAnimFromFrame_401EDF");
-  hnh_Hook(0x401F53, CHanaObj__FreeAnimT3F0, "CHanaObj__FreeAnimT3F0_401F53");
-  hnh_Hook(0x422C72, FreeSoundStruct_422C72, "FreeSoundStruct_422C72");
-  hnh_Hook(0x403A55, CHanaObj__FreeAnimSetT3F1, "CHanaObj__FreeAnimSetT3F1_403A55");
-  hnh_Hook(0x415E05, CHanaObj__FreeTexCoordT3F2, "CHanaObj__FreeTexCoordT3F2_415E05");
-  hnh_Hook(0x414F62, CHanaObj__FreeTexAnimT3F3, "CHanaObj__FreeTexAnimT3F3_414F62");
-  hnh_Hook(0x41595B, CHanaObj__FreeTexAnimSetT3F4, "CHanaObj__FreeTexAnimSetT3F4_41595B");
-  hnh_Hook(0x40FDCB, CHanaObj__FreeMeshT3F5, "CHanaObj__FreeMeshT3F5_40FDCB");
-  hnh_Hook(0x413F07, CHanaObj__FreeSpriteT3F6, "CHanaObj__FreeSpriteT3F6_413F07");
-  hnh_Hook(0x40F891, ApplyMaterial, "ApplyMaterial_40F891");
-  hnh_Hook(0x40E6B6, CHanaObj__FreeMateAnimT3F7, "CHanaObj__FreeMateAnimT3F7_40E6B6");
-  hnh_Hook(0x40F3E5, CHanaObj__FreeMateAnimSetT3F8, "CHanaObj__FreeMateAnimSetT3F8_40F3E5");
-  hnh_Hook(0x40929C, ApplyLightSettings, "ApplyLightSettings_40929C");
-  hnh_Hook(0x40922E, SetupLightFromD3D, "SetupLightFromD3D_40922E");
-  hnh_Hook(0x409820, CHanaObj__FreeLightAnimT3F9, "CHanaObj__FreeLightAnimT3F9_409820");
-  hnh_Hook(0x40A3BB, CHanaObj__FreeLightAnimSetT3FA, "CHanaObj__FreeLightAnimSetT3FA_40A3BB");
-  hnh_Hook(0x433E8D, CHanaObj__FreeMorpT457, "CHanaObj__FreeMorpT457_433E8D");
-  hnh_Hook(0x40D8F6, FreeSekHeader, "FreeSekHeader_40D8F6");
-  hnh_Hook(0x4012FE, CSekBody__Release_4012FE, "CSekBody__Release_4012FE");
-  hnh_Hook(0x4821FA, CHanaObj__FreeSceneT458, "CHanaObj__FreeSceneT458_4821FA");
-  hnh_Hook(0x40C1E4, CHanaObj__Free_40C1E4, "CHanaObj__Free_40C1E4");
-  hnh_Hook(0x486D9A, CHanaObj__GetRealPath_486D9A, "CHanaObj__GetRealPath_486D9A");
-  hnh_Hook(0x40BFC3, CHanaObj__AddRef_40BFC3, "CHanaObj__AddRef_40BFC3");
+  hnh_Hook(0x40C1E4, hook_CHanaObj__Free_40C1E4, "CHanaObj__Free_40C1E4");
+  hnh_Hook(0x40BD4D, hook_CHanaObj__RemoveFromGlobalRef, "CHanaObj__RemoveFromGlobalRef_40BD4D");
+  hnh_Hook(0x417A0C, hook_CHanaObj__FreeVertT3EA, "CHanaObj__FreeVertT3EA_417A0C");
+  hnh_Hook(0x416256, hook_CHanaObj__FreeTextureT3EB, "CHanaObj__FreeTextureT3EB_416256");
+  hnh_Hook(0x40536D, hook_Frame_FreeAttachedObject, "Frame_FreeAttachedObject_40536D");
+  hnh_Hook(0x405421, hook_Frame_FreeAttachedLight, "Frame_FreeAttachedLight_405421");
+  hnh_Hook(0x4058C3, hook_RemoveChild_4058C3, "RemoveChild_4058C3");
+  hnh_Hook(0x4054B3, hook_CHanaObj__FreeFrameT3EC, "CHanaObj__FreeFrameT3EC_4054B3");
+  hnh_Hook(0x40FC5E, hook_CHanaObj__FreeMateT3EE, "CHanaObj__FreeMateT3EE_40FC5E");
+  hnh_Hook(0x409437, hook_CHanaObj__FreeLightT3EF, "CHanaObj__FreeLightT3EF_409437");
+  hnh_Hook(0x408E8D, hook_CHanaObj__FreeFrameArrayT3ED, "CHanaObj__FreeFrameArrayT3ED_408E8D");
+  hnh_Hook(0x401EDF, hook_UnlinkHanaAnimFromFrame, "UnlinkHanaAnimFromFrame_401EDF");
+  hnh_Hook(0x401F53, hook_CHanaObj__FreeAnimT3F0, "CHanaObj__FreeAnimT3F0_401F53");
+  hnh_Hook(0x422C72, hook_FreeSoundStruct_422C72, "FreeSoundStruct_422C72");
+  hnh_Hook(0x403A55, hook_CHanaObj__FreeAnimSetT3F1, "CHanaObj__FreeAnimSetT3F1_403A55");
+  hnh_Hook(0x415E05, hook_CHanaObj__FreeTexCoordT3F2, "CHanaObj__FreeTexCoordT3F2_415E05");
+  hnh_Hook(0x414F62, hook_CHanaObj__FreeTexAnimT3F3, "CHanaObj__FreeTexAnimT3F3_414F62");
+  hnh_Hook(0x41595B, hook_CHanaObj__FreeTexAnimSetT3F4, "CHanaObj__FreeTexAnimSetT3F4_41595B");
+  hnh_Hook(0x40FDCB, hook_CHanaObj__FreeMeshT3F5, "CHanaObj__FreeMeshT3F5_40FDCB");
+  hnh_Hook(0x413F07, hook_CHanaObj__FreeSpriteT3F6, "CHanaObj__FreeSpriteT3F6_413F07");
+  hnh_Hook(0x40F891, hook_ApplyMaterial, "ApplyMaterial_40F891");
+  hnh_Hook(0x40E6B6, hook_CHanaObj__FreeMateAnimT3F7, "CHanaObj__FreeMateAnimT3F7_40E6B6");
+  hnh_Hook(0x40F3E5, hook_CHanaObj__FreeMateAnimSetT3F8, "CHanaObj__FreeMateAnimSetT3F8_40F3E5");
+  hnh_Hook(0x40929C, hook_ApplyLightSettings, "ApplyLightSettings_40929C");
+  hnh_Hook(0x40922E, hook_SetupLightFromD3D, "SetupLightFromD3D_40922E");
+  hnh_Hook(0x409820, hook_CHanaObj__FreeLightAnimT3F9, "CHanaObj__FreeLightAnimT3F9_409820");
+  hnh_Hook(0x40A3BB, hook_CHanaObj__FreeLightAnimSetT3FA, "CHanaObj__FreeLightAnimSetT3FA_40A3BB");
+  hnh_Hook(0x433E8D, hook_CHanaObj__FreeMorpT457, "CHanaObj__FreeMorpT457_433E8D");
+  hnh_Hook(0x40D8F6, hook_FreeSekHeader, "FreeSekHeader_40D8F6");
+  hnh_Hook(0x4012FE, hook_CSekBody__Release_4012FE, "CSekBody__Release_4012FE");
+  hnh_Hook(0x4821FA, hook_CHanaObj__FreeSceneT458, "CHanaObj__FreeSceneT458_4821FA");
+  hnh_Hook(0x40C1E4, hook_CHanaObj__Free_40C1E4, "CHanaObj__Free_40C1E4");
+  hnh_Hook(0x486D9A, hook_CHanaObj__GetRealPath_486D9A, "CHanaObj__GetRealPath_486D9A");
+  hnh_Hook(0x40BFC3, hook_CHanaObj__AddRef_40BFC3, "CHanaObj__AddRef_40BFC3");
 }
