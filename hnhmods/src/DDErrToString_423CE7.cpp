@@ -1,7 +1,9 @@
 #include "dx7.hpp"
 #include "console.hpp"
 
-const char *__cdecl DDErrToString_423CE7(DWORD hr)
+const char * (__cdecl*DDErrToString_423CE7)(DWORD hr) = reinterpret_cast<const char *(__cdecl*)(DWORD hr)>(0x423CE7);
+
+const char *__cdecl hook_DDErrToString_423CE7(DWORD hr)
 {
     DebugLog("[HNH:SUB] DDErrToString_423CE7\n");
 
@@ -74,4 +76,8 @@ const char *__cdecl DDErrToString_423CE7(DWORD hr)
         }
     }
     return "DirectSound: ïsñæÇ»ÉGÉâÅ[";
+}
+
+void register_DDErrToString_423CE7() {
+  hnh_Hook(0x423CE7, hook_DDErrToString_423CE7, "hook_DDErrToString_423CE7");
 }

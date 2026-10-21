@@ -81,15 +81,16 @@ extern void (__cdecl * SetupDirPath_486630)(void);
 extern bool (__cdecl * CheckInstalledDirRoot_4869A7)(HWND hWnd);
 extern BOOL(__cdecl* CDROM_VerifyDiscSignature)(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize);
 
-const char *__cdecl DDErrToString_423CE7(DWORD hr);
-BOOL __cdecl IsFileExists_47E8EE(CHAR* pszFilePath);
-HRESULT __cdecl SetFogEnable_40DFB0(BOOL bFogEnable, BOOL bFogRangeEnable);
-HRESULT __cdecl SetFogMode_40E02D(int bFogTableEnable, DWORD dwFogMode);
-HRESULT __cdecl SetFogColor_40E0B4(DWORD dwFogColor);
-HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd);
+extern const char * (__cdecl*DDErrToString_423CE7)(DWORD hr);
+extern BOOL (__cdecl*IsFileExists_47E8EE)(CHAR* pszFilePath);
+
+extern HRESULT (__cdecl*SetFogEnable_40DFB0)(BOOL bFogEnable, BOOL bFogRangeEnable);
+extern HRESULT (__cdecl*SetFogMode_40E02D)(int bFogTableEnable, DWORD dwFogMode);
+extern HRESULT (__cdecl*SetFogColor_40E0B4)(DWORD dwFogColor);
+extern HRESULT (__cdecl*SetFogRange_40E0E2)(DWORD dwFogStart, DWORD dwFogEnd);
 
 extern int (__cdecl*MemFree_40DF64)(void* pBuf);
-extern LPVOID (__cdecl*MemAlloc80_40DEF7)(SIZE_T dwBytes);
+extern LPVOID (__cdecl*MemAlloc_40DEF7)(SIZE_T dwBytes);
 extern void (__cdecl*PrintDebugError)(int hr);
 extern void(__cdecl*ApplyMaterial)(CHanaMateT3EE_S184* pMate, D3DMATERIAL7* pD3Dmaterial);
 extern void(__cdecl*ApplyLightSettings)(CHanaLightT3EF_S1A0* pLight);
@@ -108,7 +109,8 @@ void __cdecl CalculateLocalRotationMatrix(
   float* pYXrot,
   float* pZXrot);
 
-void __cdecl SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName);
-void __cdecl D3DDeinit();
+extern void (__cdecl*SetUiFont_419BCD)(int nCharW, int nFontH, LPCSTR szFaceName);
+extern void (__cdecl*D3DDeinit)(void);
+extern LRESULT (__stdcall*WndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+
 BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen);
-LRESULT __stdcall WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);

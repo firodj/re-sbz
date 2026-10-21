@@ -4,6 +4,8 @@
 #include "console.hpp"
 #include "shared.hpp"
 
+BOOL (__cdecl*IsFileExists_47E8EE)(CHAR* pszFilePath) = reinterpret_cast<BOOL (__cdecl*)(CHAR*)>(0x47E8EE);
+
 /**
  * Checks whether a file or directory exists, via a FindFirstFileA probe.
  * @param pszFilePath Path to check; a trailing backslash is stripped so
@@ -13,7 +15,7 @@
  *       (SetupDirPath_486630, CheckRunGame_4863C8, GameMainLoop_47F013,
  *       SystemMenu_4655AB, LoadDataFiles_461557, ...).
  */
-BOOL __cdecl IsFileExists_47E8EE(CHAR *pszFilePath)
+BOOL __cdecl hook_IsFileExists_47E8EE(CHAR *pszFilePath)
 {
     DebugLog("[HNH:SUB] IsFileExists_47E8EE\n");
 
@@ -36,5 +38,5 @@ BOOL __cdecl IsFileExists_47E8EE(CHAR *pszFilePath)
 }
 
 void register_IsFileExists_47E8EE() {
-    hnh_Hook(0x47E8EE, IsFileExists_47E8EE, "IsFileExists_47E8EE");
+    hnh_Hook(0x47E8EE, hook_IsFileExists_47E8EE, "IsFileExists_47E8EE");
 }

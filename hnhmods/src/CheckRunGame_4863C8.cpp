@@ -197,20 +197,20 @@ void __cdecl DisplayConfig_Init(CDisplayConfig *pDisplayConfig)
   D3DXInitialize();
   nDeviceCount = D3DXGetDeviceCount();
   pDisplayConfig->nDeviceCount = nDeviceCount;
-  pDisplayConfig->parrD3DXDevDesc = (D3DX_DEVICEDESC*) MemAlloc80_40DEF7(sizeof(D3DX_DEVICEDESC) * nDeviceCount);
+  pDisplayConfig->parrD3DXDevDesc = (D3DX_DEVICEDESC*) MemAlloc_40DEF7(sizeof(D3DX_DEVICEDESC) * nDeviceCount);
   pD3DXDevDesc = pDisplayConfig->parrD3DXDevDesc;
-  pDisplayConfig->parrVidModeDesc = (CVideoModeDesc*) MemAlloc80_40DEF7(sizeof(CVideoModeDesc) * nDeviceCount);
+  pDisplayConfig->parrVidModeDesc = (CVideoModeDesc*) MemAlloc_40DEF7(sizeof(CVideoModeDesc) * nDeviceCount);
   pVidModeDesc = pDisplayConfig->parrVidModeDesc;
   for ( iDevice = 0; iDevice < nDeviceCount; ++iDevice )
   {
     D3DXGetDeviceDescription(iDevice, pD3DXDevDesc);
     nMaxNumVideoModes = D3DXGetMaxNumVideoModes(iDevice, 0);
     pVidModeDesc->nMaxNumVideoModes = nMaxNumVideoModes;
-    pVidModeDesc->pModeDesc = (D3DX_VIDMODEDESC*) MemAlloc80_40DEF7(16 * nMaxNumVideoModes);
-    pVidModeDesc->pD3DCaps  = (D3DDEVICEDESC7*) MemAlloc80_40DEF7(236 * nMaxNumVideoModes);
-    pVidModeDesc->pDDHALCaps = (DDCAPS*) MemAlloc80_40DEF7(sizeof(DDCAPS) * nMaxNumVideoModes);
-    pVidModeDesc->pDDHELCaps = (DDCAPS*) MemAlloc80_40DEF7(sizeof(DDCAPS) * nMaxNumVideoModes);
-    pVidModeDesc->parrbActive = (BOOL *) MemAlloc80_40DEF7(4 * nMaxNumVideoModes);
+    pVidModeDesc->pModeDesc = (D3DX_VIDMODEDESC*) MemAlloc_40DEF7(16 * nMaxNumVideoModes);
+    pVidModeDesc->pD3DCaps  = (D3DDEVICEDESC7*) MemAlloc_40DEF7(236 * nMaxNumVideoModes);
+    pVidModeDesc->pDDHALCaps = (DDCAPS*) MemAlloc_40DEF7(sizeof(DDCAPS) * nMaxNumVideoModes);
+    pVidModeDesc->pDDHELCaps = (DDCAPS*) MemAlloc_40DEF7(sizeof(DDCAPS) * nMaxNumVideoModes);
+    pVidModeDesc->parrbActive = (BOOL *) MemAlloc_40DEF7(4 * nMaxNumVideoModes);
     pModeDesc = pVidModeDesc->pModeDesc;
     pD3DCaps = pVidModeDesc->pD3DCaps;
     pDDHALCaps = pVidModeDesc->pDDHALCaps;
@@ -639,7 +639,7 @@ void __cdecl CHanaObj__NewLightT3EF(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dl
   DebugLog("[HNH:SUB] %s\n", "CHanaObj__NewLightT3EF_408F00");
 
   // Allocate and initialize the light object container
-  CHanaLightT3EF_S1A0 *newLight = (CHanaLightT3EF_S1A0 *)MemAlloc80_40DEF7(0x1A0u);
+  CHanaLightT3EF_S1A0 *newLight = (CHanaLightT3EF_S1A0 *)MemAlloc_40DEF7(0x1A0u);
   memset(newLight, 0, sizeof(CHanaLightT3EF_S1A0));
   newLight->dwType = 0x3EF;
 
@@ -764,7 +764,7 @@ void __cdecl CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130 *pObj)
     if ( g_nObjectTableCount >= g_nObjectTableCapacity_4B009C )// If above capacity, do Realloc
     {
       pObjItemRef = g_pObjectTable;
-      g_pObjectTable = (CObjItemRef_S208*) MemAlloc80_40DEF7(520 * (g_nObjectTableCapacity_4B009C + 256));
+      g_pObjectTable = (CObjItemRef_S208*) MemAlloc_40DEF7(520 * (g_nObjectTableCapacity_4B009C + 256));
       memset(g_pObjectTable, 0, sizeof(CObjItemRef_S208) * (g_nObjectTableCapacity_4B009C + 256));
       memcpy(g_pObjectTable, pObjItemRef, sizeof(CObjItemRef_S208) * g_nObjectTableCapacity_4B009C);
       g_nObjectTableCapacity_4B009C += 256;

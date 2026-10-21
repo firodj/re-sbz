@@ -3,6 +3,7 @@
 #include "console.hpp"
 #include "shared.hpp"
 
+// === GLOBAL VARIABLES ===
 DWORD &g_dwFogEnable_4D6CF4      = *(DWORD *)0x4D6CF4; 
 DWORD &g_dwFogRangeEnable_4D6CFC = *(DWORD *)0x4D6CFC;
 DWORD &g_dwFogMode_4B00C8        = *(DWORD *)0x4B00C8;
@@ -10,6 +11,13 @@ DWORD &g_dwFogTableEnable_4D6CF8 = *(DWORD *)0x4D6CF8;
 DWORD &g_dwFogColor_4B00CC       = *(DWORD*)0x4B00CC;
 BOOL &g_bFogIsActive_4B3480      = *(BOOL*)0x4B3480;
 
+// === GLOBAL FUNCTIONS ===
+HRESULT (__cdecl * SetFogEnable_40DFB0)(BOOL bFogEnable, BOOL bFogRangeEnable) = reinterpret_cast<HRESULT(__cdecl*)(BOOL bFogEnable, BOOL bFogRangeEnable)>(0x40DFB0);
+HRESULT (__cdecl * SetFogMode_40E02D)(int bFogTableEnable, DWORD dwFogMode) = reinterpret_cast<HRESULT(__cdecl*)(int bFogTableEnable, DWORD dwFogMode)>(0x40E02D);
+HRESULT (__cdecl * SetFogColor_40E0B4)(DWORD dwFogColor) = reinterpret_cast<HRESULT(__cdecl*)(DWORD dwFogColor)>(0x40E0B4);
+HRESULT (__cdecl * SetFogRange_40E0E2)(DWORD dwFogStart, DWORD dwFogEnd) = reinterpret_cast<HRESULT(__cdecl*)(DWORD dwFogStart, DWORD dwFogEnd)>(0x40E0E2);
+
+// === FUNCTION IMPLEMENTATIONS ===
 /**
  * Enables or disables fog (and optionally range-based fog) on the D3D7 device.
  * @param bFogEnable FALSE disables fog; any other value enables it.
@@ -17,7 +25,7 @@ BOOL &g_bFogIsActive_4B3480      = *(BOOL*)0x4B3480;
  *                        when the device advertises D3DPRASTERCAPS_FOGRANGE.
  * @return HRESULT of the last SetRenderState call performed.
  */
-HRESULT __cdecl SetFogEnable_40DFB0(BOOL bFogEnable, BOOL bFogRangeEnable)
+HRESULT __cdecl hook_SetFogEnable_40DFB0(BOOL bFogEnable, BOOL bFogRangeEnable)
 {
   DebugLog("[HNH:SUB] SetFogEnable_40DFB0\n");
 
@@ -45,7 +53,7 @@ HRESULT __cdecl SetFogEnable_40DFB0(BOOL bFogEnable, BOOL bFogRangeEnable)
 * @param dwFogMode D3DFOG_NONE / D3DFOG_EXP / D3DFOG_EXP2 / D3DFOG_LINEAR.
 * @return HRESULT of the SetRenderState call performed.
 */
-HRESULT __cdecl SetFogMode_40E02D(int bFogTableEnable, DWORD dwFogMode)
+HRESULT __cdecl hook_SetFogMode_40E02D(int bFogTableEnable, DWORD dwFogMode)
 {
   DebugLog("[HNH:SUB] SetFogMode_40E02D\n");
 
@@ -60,7 +68,7 @@ HRESULT __cdecl SetFogMode_40E02D(int bFogTableEnable, DWORD dwFogMode)
     return g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGVERTEXMODE, dwFogMode); /*0x40e0aa*/
 }
 
-HRESULT __cdecl SetFogColor_40E0B4(DWORD dwFogColor)
+HRESULT __cdecl hook_SetFogColor_40E0B4(DWORD dwFogColor)
 {
   DebugLog("[HNH:SUB] SetFogColor_40E0B4\n");
 
@@ -68,7 +76,7 @@ HRESULT __cdecl SetFogColor_40E0B4(DWORD dwFogColor)
   return g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGCOLOR, dwFogColor);
 }
 
-HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
+HRESULT __cdecl hook_SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
 {
   HRESULT hr; // [esp+0h] [ebp-4h]
 
@@ -84,8 +92,8 @@ HRESULT __cdecl SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
 }
 
 void register_SetFogEnable_40DFB0() {
-  hnh_Hook(0x40DFB0, SetFogEnable_40DFB0, "SetFogEnable_40DFB0");
-  hnh_Hook(0x40E02D, SetFogMode_40E02D, "SetFogMode_40E02D");
-  hnh_Hook(0x40E0B4, SetFogColor_40E0B4, "SetFogColor_40E0B4");
-  hnh_Hook(0x40E0E2, SetFogRange_40E0E2, "SetFogRange_40E0E2");
+  hnh_Hook(0x40DFB0, hook_SetFogEnable_40DFB0, "SetFogEnable_40DFB0");
+  hnh_Hook(0x40E02D, hook_SetFogMode_40E02D, "SetFogMode_40E02D");
+  hnh_Hook(0x40E0B4, hook_SetFogColor_40E0B4, "SetFogColor_40E0B4");
+  hnh_Hook(0x40E0E2, hook_SetFogRange_40E0E2, "SetFogRange_40E0E2");
 }

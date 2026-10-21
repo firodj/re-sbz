@@ -43,16 +43,16 @@ void __cdecl hook_PrintDebugError(int hr)
   OutputDebugStringA("----D3DXL end------------------------------------------\n");
 }
 
-LPVOID (__cdecl * MemAlloc80_40DEF7)(SIZE_T dwBytes) = reinterpret_cast<LPVOID(__cdecl*)(SIZE_T dwBytes)>(0x40DEF7);
+LPVOID (__cdecl * MemAlloc_40DEF7)(SIZE_T dwBytes) = reinterpret_cast<LPVOID(__cdecl*)(SIZE_T dwBytes)>(0x40DEF7);
 
 /**
  * Allocates memory with zero initialization and tracks allocation count.
  * @param dwBytes Number of bytes to allocate (excluding the extra 128‑byte overhead).
  * @return Pointer to allocated memory, or NULL on failure.
  */
-LPVOID __cdecl hook_MemAlloc80_40DEF7(SIZE_T dwBytes)
+LPVOID __cdecl hook_MemAlloc_40DEF7(SIZE_T dwBytes)
 {
-  DebugLog("[HNH:SUB] MemAlloc80_40DEF7\n");
+  DebugLog("[HNH:SUB] MemAlloc_40DEF7\n");
 
   LPVOID ptr; // Allocated memory pointer
 
@@ -94,8 +94,8 @@ int __cdecl hook_MemFree_40DF64(void *pBuf)
   }
 }
 
-void register_MemAlloc80_40DEF7() {
-  hnh_Hook(0x40DEF7, hook_MemAlloc80_40DEF7, "MemAlloc80_40DEF7");
+void register_MemAlloc_40DEF7() {
+  hnh_Hook(0x40DEF7, hook_MemAlloc_40DEF7, "MemAlloc_40DEF7");
   hnh_Hook(0x40DF64, hook_MemFree_40DF64, "MemFree_40DF64");
   hnh_Hook(0x40A813, hook_PrintDebugError, "PrintDebugError_40A813");
 
