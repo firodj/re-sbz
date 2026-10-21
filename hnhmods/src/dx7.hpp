@@ -186,14 +186,14 @@ extern HRESULT (*D3DXGetVideoMode)(DWORD deviceIndex, DWORD flags, DWORD modeInd
 extern HRESULT (*D3DXGetDeviceCaps)(DWORD deviceIndex, D3DX_VIDMODEDESC* pVidMode, D3DDEVICEDESC7* pD3DCaps, DDCAPS* pDDHALCaps, DDCAPS* pDDHELCaps); 
 extern void (__stdcall* D3DXGetErrorString)(int hr, size_t strLength, char* str);
 
-D3DXVECTOR3* __stdcall D3DXVec3Normalize(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV);
-D3DXMATRIX* __stdcall D3DXMatrixRotationAxis(D3DXMATRIX* pOut, const D3DXVECTOR3* pV, float angle);
-double __cdecl Vec3LengthSq(const D3DXVECTOR3* pV);
-void __cdecl Vec3Set(D3DXVECTOR3* This, float x, float y, float z);
-double __cdecl Vec3Dot(const D3DXVECTOR3* pV1, const D3DXVECTOR3* pV2);
-double __cdecl DegreesToRadians(float deg);
-HRESULT __cdecl MatrixPerspectiveFovLH(D3DXMATRIX* pMat, float fovy, float aspect, float zn, float zf);
-D3DXMATRIX* __cdecl D3DXMatrixIdentity(D3DXMATRIX* pOut);
-D3DXMATRIX* __stdcall D3DXMatrixMultiply(D3DXMATRIX* pOut, const D3DXMATRIX* pM1, const D3DXMATRIX* pM2);
-HRESULT __cdecl MatrixLookAtLH(D3DXMATRIX* pMat, const D3DXVECTOR3* pEye, const D3DXVECTOR3* pAt, const D3DXVECTOR3* pUp);
-D3DXMATRIX* __stdcall D3DXMatrixInverse(D3DXMATRIX* pOut, float* pfDeterminant, const D3DXMATRIX* pM);
+extern D3DXVECTOR3* (__stdcall*D3DXVec3Normalize)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV);
+extern D3DXMATRIX* (__stdcall*D3DXMatrixRotationAxis)(D3DXMATRIX* pOut, const D3DXVECTOR3* pV, float angle);
+extern double (__cdecl*Vec3LengthSq)(const D3DXVECTOR3* pV);
+extern void (__thiscall * Vec3Set)(D3DXVECTOR3 *This, float x, float y, float z);
+extern double (__cdecl*Vec3Dot)(const D3DXVECTOR3* pV1, const D3DXVECTOR3* pV2);
+extern double (__cdecl*DegreesToRadians)(float deg);
+extern HRESULT (__cdecl*MatrixPerspectiveFovLH)(D3DXMATRIX* pMat, float fovy, float aspect, float zn, float zf);
+extern D3DXMATRIX* (__cdecl*D3DXMatrixIdentity)(D3DXMATRIX* pOut);
+extern D3DXMATRIX* (__stdcall*D3DXMatrixMultiply)(D3DXMATRIX* pOut, const D3DXMATRIX* pM1, const D3DXMATRIX* pM2);
+extern HRESULT (__cdecl*MatrixLookAtLH)(D3DXMATRIX* pMat, const D3DXVECTOR3* pEye, const D3DXVECTOR3* pAt, const D3DXVECTOR3* pUp);
+extern D3DXMATRIX* (__stdcall*D3DXMatrixInverse)(D3DXMATRIX* pOut, float* pfDeterminant, const D3DXMATRIX* pM);

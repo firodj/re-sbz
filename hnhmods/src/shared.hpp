@@ -95,11 +95,11 @@ extern void (__cdecl*PrintDebugError)(int hr);
 extern void(__cdecl*ApplyMaterial)(CHanaMateT3EE_S184* pMate, D3DMATERIAL7* pD3Dmaterial);
 extern void(__cdecl*ApplyLightSettings)(CHanaLightT3EF_S1A0* pLight);
 
-void __cdecl CHanaObj__NewLightT3EF(CHanaLightT3EF_S1A0** pOut, D3DLIGHT7* pD3Dlight);
-void __cdecl AttachHanaObj_40BAB8(CHanaBase_S130* pParent, LPCSTR szName);
-void __cdecl CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130* pObj);
-D3DXMATRIX* __cdecl MatrixRotateCubeMapFace(CHanaFrameT3EC_S354* pFrame, int mode, D3DXVECTOR3* pV, float angle);
-void __cdecl CalculateLocalRotationMatrix(
+extern void (__cdecl*CHanaObj__NewLightT3EF)(CHanaLightT3EF_S1A0** pOut, D3DLIGHT7* pD3Dlight);
+extern void (__cdecl*AttachHanaObj_40BAB8)(CHanaBase_S130* pParent, LPCSTR szName);
+extern void (__cdecl*CHanaObj__AddObjItemRef_40B848)(LPCSTR szName, CHanaBase_S130* pObj);
+extern D3DXMATRIX* (__cdecl* MatrixRotateCubeMapFace)(CHanaFrameT3EC_S354* pFrame, int mode, D3DXVECTOR3* pV, float angle);
+extern void(__cdecl* CalculateLocalRotationMatrix)(
   CHanaFrameT3EC_S354* pCameraFrame,
   CHanaFrameT3EC_S354* pSceneFrame,
   float* pXpos,
@@ -113,4 +113,4 @@ extern void (__cdecl*SetUiFont_419BCD)(int nCharW, int nFontH, LPCSTR szFaceName
 extern void (__cdecl*D3DDeinit)(void);
 extern LRESULT (__stdcall*WndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
-BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen);
+extern BOOL(__cdecl* CheckRunGame_4863C8)(HWND hWnd, BOOL bFullScreen);

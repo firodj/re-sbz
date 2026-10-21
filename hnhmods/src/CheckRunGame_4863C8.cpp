@@ -106,9 +106,26 @@ void(__cdecl* CHanaObj__NewMateT3EE_S184)(CHanaMateT3EE_S184** ppOutMate) = rein
 void(__cdecl* CHanaObj__NewFrameRootT3EC_S2D4)(CHanaFrameRootT3EC_S2D4 **ppOutFrameRoot) = reinterpret_cast<void(__cdecl*)(CHanaFrameRootT3EC_S2D4**)>(0x404908);
 void(__cdecl *CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354 *pParent, CHanaFrameT3EC_S354 **ppOutFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*, CHanaFrameT3EC_S354**)>(0x404720);
 
+void (* DisplayConfig_ProcessDriverDesc)(CDisplayConfig *pConfig) = reinterpret_cast<void(*)(CDisplayConfig *pConfig)>(0x427F8C);
+BOOL (__cdecl * IsVideoModeSupported)(D3DX_VIDMODEDESC *pVidModeDesc) = reinterpret_cast<BOOL(__cdecl*)(D3DX_VIDMODEDESC *pVidModeDesc)>(0x427C51);
+void (__cdecl * DisplayConfig_Init)(CDisplayConfig *pDisplayConfig) = reinterpret_cast<void(__cdecl*)(CDisplayConfig *pDisplayConfig)>(0x4278FF);
+DWORD (__cdecl * ReadFileToBuffer)(LPCSTR lpFileName, LPVOID lpBuffer, int nBufSize) = reinterpret_cast<DWORD(__cdecl*)(LPCSTR lpFileName, LPVOID lpBuffer, int nBufSize)>(0x47E858);
+void (__cdecl * WriteBufferToFile)(LPCSTR lpFileName, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite) = reinterpret_cast<void(__cdecl*)(LPCSTR lpFileName, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite)>(0x47E7F2);
+int (__cdecl * ShowTitleMenuWnd_428927)(HINSTANCE hInstance) = reinterpret_cast<int(__cdecl*)(HINSTANCE hInstance)>(0x428927);
+BOOL (__cdecl * CheckRunGame_4863C8)(HWND hWnd, BOOL bFullScreen) = reinterpret_cast<BOOL(__cdecl*)(HWND hWnd, BOOL bFullScreen)>(0x4863C8);
+HRESULT (__cdecl * SetLightingState)(DWORD dwEnable) = reinterpret_cast<HRESULT(__cdecl*)(DWORD dwEnable)>(0x40DD71);
+void (* D3DInitBuffers_40AF60)() = reinterpret_cast<void(*)()>(0x40AF60);
+void (__cdecl * CHanaObj__NewLightT3EF)(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dlight) = reinterpret_cast<void(__cdecl*)(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dlight)>(0x408F00);
+void (__cdecl * CHanaObj__AddObjItemRef_40B848)(LPCSTR szName, CHanaBase_S130 *pObj) = reinterpret_cast<void(__cdecl*)(LPCSTR szName, CHanaBase_S130 *pObj)>(0x40B848);
+void (__cdecl * AttachHanaObj_40BAB8)(CHanaBase_S130 *pParent, LPCSTR szName) = reinterpret_cast<void(__cdecl*)(CHanaBase_S130 *pParent, LPCSTR szName)>(0x40BAB8);
+D3DXMATRIX * (__cdecl * MatrixRotateCubeMapFace)(CHanaFrameT3EC_S354 *pFrame, int mode, D3DXVECTOR3 *pV, float angle) =
+  reinterpret_cast<D3DXMATRIX *(__cdecl*)(CHanaFrameT3EC_S354 *pFrame, int mode, D3DXVECTOR3 *pV, float angle)>(0x4070AB);
+void (__cdecl * CalculateLocalRotationMatrix)( CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pSceneFrame, float *pXpos, float *pYpos, float *pZpos, float *pXYrot, float *pYXrot, float *pZXrot) =
+  reinterpret_cast<void(__cdecl*)( CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pSceneFrame, float *pXpos, float *pYpos, float *pZpos, float *pXYrot, float *pYXrot, float *pZXrot)>(0x407047);
+
 // === FUNCTION IMPLEMENTATIONS ===
 
-void DisplayConfig_ProcessDriverDesc(CDisplayConfig *pConfig)
+void hook_DisplayConfig_ProcessDriverDesc(CDisplayConfig *pConfig)
 {
   DebugLog("[HNH:SUB] DisplayConfig_ProcessDriverDesc_427F8C\n");
 
@@ -153,7 +170,7 @@ void DisplayConfig_ProcessDriverDesc(CDisplayConfig *pConfig)
   }
 }
 
-BOOL __cdecl IsVideoModeSupported(D3DX_VIDMODEDESC *pVidModeDesc)
+BOOL __cdecl hook_IsVideoModeSupported(D3DX_VIDMODEDESC *pVidModeDesc)
 {
   int index; // [esp+0h] [ebp-4h]
 
@@ -174,7 +191,7 @@ BOOL __cdecl IsVideoModeSupported(D3DX_VIDMODEDESC *pVidModeDesc)
   return FALSE;
 }
 
-void __cdecl DisplayConfig_Init(CDisplayConfig *pDisplayConfig)
+void __cdecl hook_DisplayConfig_Init(CDisplayConfig *pDisplayConfig)
 {
   DDCAPS *pDDHALCaps; // [esp+0h] [ebp-38h]
   DDCAPS *pDDHELCaps; // [esp+4h] [ebp-34h]
@@ -263,7 +280,7 @@ void __cdecl DisplayConfig_Init(CDisplayConfig *pDisplayConfig)
 // (GENERIC_READ/OPEN_EXISTING), cap the read at min(fileSize, nBufSize) to avoid
 // overflow, ReadFile into lpBuffer; return bytes actually read (0 on open/read failure).
 // Generic whole-file loader used for game assets/config.
-DWORD __cdecl ReadFileToBuffer(LPCSTR lpFileName, LPVOID lpBuffer, int nBufSize)
+DWORD __cdecl hook_ReadFileToBuffer(LPCSTR lpFileName, LPVOID lpBuffer, int nBufSize)
 {
   HANDLE hFile; // [esp+0h] [ebp-Ch]
   int nNumberOfBytesToRead; // [esp+4h] [ebp-8h]
@@ -307,7 +324,7 @@ DWORD __cdecl ReadFileToBuffer(LPCSTR lpFileName, LPVOID lpBuffer, int nBufSize)
 //    Callers:  CheckRunGame_4863C8 / SystemMenu_4655AB / SysMenu_ScenePage0_462135
 //              (persist fog/specular/AA/dither/light/shadow/resolution options),
 //              GameMainLoop_47F013 (on exit)
-void __cdecl WriteBufferToFile(LPCSTR lpFileName, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite)
+void __cdecl hook_WriteBufferToFile(LPCSTR lpFileName, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite)
 {
   HANDLE hFile; // [esp+0h] [ebp-8h]
   DWORD NumberOfBytesWritten; // [esp+4h] [ebp-4h] BYREF
@@ -326,7 +343,7 @@ void __cdecl WriteBufferToFile(LPCSTR lpFileName, LPCVOID lpBuffer, DWORD nNumbe
   }
 }
 
-int __cdecl ShowTitleMenuWnd_428927(HINSTANCE hInstance)
+int __cdecl hook_ShowTitleMenuWnd_428927(HINSTANCE hInstance)
 {
   HWND DesktopWindow; // eax
   tagMSG Msg; // [esp+0h] [ebp-58h] BYREF
@@ -395,10 +412,10 @@ int __cdecl ShowTitleMenuWnd_428927(HINSTANCE hInstance)
 
 LPVOID pfnCheckRunGame_4863C8 = NULL;
 
-BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen)
+BOOL __cdecl hook_CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen)
 {
   auto fn = (BOOL(__cdecl*)(HWND, BOOL))pfnCheckRunGame_4863C8;
-  return fn(hWnd, bFullScreen);
+  // return fn(hWnd, bFullScreen);
 
   CHAR szTeaEx[256]; // [esp+0h] [ebp-204h] BYREF
   int bRunGame; // [esp+100h] [ebp-104h]
@@ -452,7 +469,7 @@ BOOL __cdecl CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen)
   return bRunGame;
 }
 
-HRESULT __cdecl SetLightingState(DWORD dwEnable)
+HRESULT __cdecl hook_SetLightingState(DWORD dwEnable)
 {
   DebugLog("[HNH:SUB] %s\n", "SetLightingState_40DD71");
 
@@ -461,7 +478,7 @@ HRESULT __cdecl SetLightingState(DWORD dwEnable)
   return g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_LIGHTING, dwEnable);
 }
 
-void D3DInitBuffers_40AF60()
+void hook_D3DInitBuffers_40AF60()
 {
   float radStep;
   float anglea;
@@ -634,7 +651,7 @@ void D3DInitBuffers_40AF60()
   }
 }
 
-void __cdecl CHanaObj__NewLightT3EF(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dlight)
+void __cdecl hook_CHanaObj__NewLightT3EF(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dlight)
 {
   DebugLog("[HNH:SUB] %s\n", "CHanaObj__NewLightT3EF_408F00");
 
@@ -719,7 +736,7 @@ void __cdecl CHanaObj__NewLightT3EF(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dl
   ApplyLightSettings(newLight);
 }
 
-void __cdecl CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130 *pObj)
+void __cdecl hook_CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130 *pObj)
 {
   CObjItemRef_S208 *pObjItemRef; // [esp+0h] [ebp-14h]
   int v3; // [esp+4h] [ebp-10h]
@@ -773,7 +790,7 @@ void __cdecl CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130 *pObj)
   }
 }
 
-void __cdecl AttachHanaObj_40BAB8(CHanaBase_S130 *pParent, LPCSTR szName)
+void __cdecl hook_AttachHanaObj_40BAB8(CHanaBase_S130 *pParent, LPCSTR szName)
 {
   int lenStr; // [esp+0h] [ebp-14h]
   int j; // [esp+4h] [ebp-10h]
@@ -812,7 +829,7 @@ void __cdecl AttachHanaObj_40BAB8(CHanaBase_S130 *pParent, LPCSTR szName)
   }
 }
 
-D3DXMATRIX *__cdecl MatrixRotateCubeMapFace(CHanaFrameT3EC_S354 *pFrame, int mode, D3DXVECTOR3 *pV, float angle)
+D3DXMATRIX *__cdecl hook_MatrixRotateCubeMapFace(CHanaFrameT3EC_S354 *pFrame, int mode, D3DXVECTOR3 *pV, float angle)
 {
   D3DXMATRIX rotationMatrix;
   D3DXMATRIX strippedMatrix;
@@ -867,7 +884,7 @@ D3DXMATRIX *__cdecl MatrixRotateCubeMapFace(CHanaFrameT3EC_S354 *pFrame, int mod
   return D3DXMatrixMultiply(&pFrame->mat4x4_after, &pFrame->mat4x4_fmrx, &pFrame->mat4x4_before);
 }
 
-void __cdecl CalculateLocalRotationMatrix(
+void __cdecl hook_CalculateLocalRotationMatrix(
   CHanaFrameT3EC_S354 *pCameraFrame,
   CHanaFrameT3EC_S354 *pSceneFrame,
   float *pXpos,
@@ -892,18 +909,18 @@ void __cdecl CalculateLocalRotationMatrix(
 }
 
 void register_CheckRunGame_4863C8() {
-  pfnCheckRunGame_4863C8 = hnh_Hook(0x4863C8, CheckRunGame_4863C8, "CheckRunGame_4863C8");
-  //hnh_Hook(0x47E858, ReadFileToBuffer, "ReadFileToBuffer_47E858");
-  //hnh_Hook(0x47E7F2, WriteBufferToFile, "WriteBufferToFile_47E7F2");
-  //hnh_Hook(0x4278FF, DisplayConfig_Init, "DisplayConfig_Init_4278FF");
-  //hnh_Hook(0x427F8C, DisplayConfig_ProcessDriverDesc, "DisplayConfig_ProcessDriverDesc_427F8C");
-  //hnh_Hook(0x427C51, IsVideoModeSupported, "IsVideoModeSupported_427C51");
-  //hnh_Hook(0x428927, ShowTitleMenuWnd_428927, "ShowTitleMenuWnd_428927");
-  //hnh_Hook(0x40DD71, SetLightingState, "SetLightingState_40DD71");
-  //hnh_Hook(0x40AF60, D3DInitBuffers_40AF60, "D3DInitBuffers_40AF60");
-  //hnh_Hook(0x408F00, CHanaObj__NewLightT3EF, "CHanaObj__NewLightT3EF");
-  //hnh_Hook(0x40B848, CHanaObj__AddObjItemRef_40B848, "CHanaObj__AddObjItemRef_40B848");
-  //hnh_Hook(0x40BAB8, AttachHanaObj_40BAB8, "AttachHanaObj_40BAB8");
-  //hnh_Hook(0x4070AB, MatrixRotateCubeMapFace, "MatrixRotateCubeMapFace");
-  //hnh_Hook(0x407047, CalculateLocalRotationMatrix, "CalculateLocalRotationMatrix");
+  /*pfnCheckRunGame_4863C8 = hnh_Hook(0x4863C8, hook_CheckRunGame_4863C8, "CheckRunGame_4863C8");
+  hnh_Hook(0x47E858, hook_ReadFileToBuffer, "ReadFileToBuffer_47E858");
+  hnh_Hook(0x47E7F2, hook_WriteBufferToFile, "WriteBufferToFile_47E7F2");
+  hnh_Hook(0x4278FF, hook_DisplayConfig_Init, "DisplayConfig_Init_4278FF");
+  hnh_Hook(0x427F8C, hook_DisplayConfig_ProcessDriverDesc, "DisplayConfig_ProcessDriverDesc_427F8C");
+  hnh_Hook(0x427C51, hook_IsVideoModeSupported, "IsVideoModeSupported_427C51");
+  hnh_Hook(0x428927, hook_ShowTitleMenuWnd_428927, "ShowTitleMenuWnd_428927");
+  hnh_Hook(0x40DD71, hook_SetLightingState, "SetLightingState_40DD71");
+  hnh_Hook(0x40AF60, hook_D3DInitBuffers_40AF60, "D3DInitBuffers_40AF60");
+  hnh_Hook(0x408F00, hook_CHanaObj__NewLightT3EF, "CHanaObj__NewLightT3EF");
+  hnh_Hook(0x40B848, hook_CHanaObj__AddObjItemRef_40B848, "CHanaObj__AddObjItemRef_40B848");
+  hnh_Hook(0x40BAB8, hook_AttachHanaObj_40BAB8, "AttachHanaObj_40BAB8");
+  hnh_Hook(0x4070AB, hook_MatrixRotateCubeMapFace, "MatrixRotateCubeMapFace");
+  hnh_Hook(0x407047, hook_CalculateLocalRotationMatrix, "CalculateLocalRotationMatrix");*/
 }
