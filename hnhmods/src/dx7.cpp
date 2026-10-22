@@ -8,10 +8,10 @@
 HRESULT (*D3DXUninitialize)(void) = reinterpret_cast<HRESULT(*)(void)>(0x48B8F0);
 HRESULT (*D3DXInitialize)(void) = (HRESULT(*)(void))0x48B80B; 
 DWORD (*D3DXGetDeviceCount)(void) = (DWORD(*)(void))0x48B9DD;
-DWORD (*D3DXGetMaxNumVideoModes)(DWORD deviceIndex, DWORD flags) = (DWORD (*)(DWORD, DWORD))0x48BBF0; 
-HRESULT (*D3DXGetDeviceDescription)(DWORD deviceIndex, D3DX_DEVICEDESC* pd3dxDeviceDesc) = (HRESULT(*)(DWORD, D3DX_DEVICEDESC*))0x48BA9E; 
-HRESULT (*D3DXGetVideoMode)(DWORD deviceIndex, DWORD flags, DWORD modeIndex, D3DX_VIDMODEDESC* pModeList) = (HRESULT (*)(DWORD, DWORD, DWORD, D3DX_VIDMODEDESC*))0x48BCDE;
-HRESULT (*D3DXGetDeviceCaps)(DWORD deviceIndex, D3DX_VIDMODEDESC* pVidMode, D3DDEVICEDESC7* pD3DCaps, DDCAPS* pDDHALCaps, DDCAPS* pDDHELCaps) = (HRESULT (*)(DWORD, D3DX_VIDMODEDESC*, D3DDEVICEDESC7*, DDCAPS*, DDCAPS*))0x48C28D; 
+DWORD (__stdcall *D3DXGetMaxNumVideoModes)(DWORD deviceIndex, DWORD flags) = (DWORD (__stdcall*)(DWORD, DWORD))0x48BBF0; 
+HRESULT (__stdcall *D3DXGetDeviceDescription)(DWORD deviceIndex, D3DX_DEVICEDESC* pd3dxDeviceDesc) = (HRESULT(__stdcall*)(DWORD, D3DX_DEVICEDESC*))0x48BA9E; 
+HRESULT (__stdcall *D3DXGetVideoMode)(DWORD deviceIndex, DWORD flags, DWORD modeIndex, D3DX_VIDMODEDESC* pModeList) = (HRESULT (__stdcall*)(DWORD, DWORD, DWORD, D3DX_VIDMODEDESC*))0x48BCDE;
+HRESULT (__stdcall *D3DXGetDeviceCaps)(DWORD deviceIndex, D3DX_VIDMODEDESC* pVidMode, D3DDEVICEDESC7* pD3DCaps, DDCAPS* pDDHALCaps, DDCAPS* pDDHELCaps) = (HRESULT (__stdcall*)(DWORD, D3DX_VIDMODEDESC*, D3DDEVICEDESC7*, DDCAPS*, DDCAPS*))0x48C28D; 
 
 D3DXVECTOR3 * (__stdcall * D3DXVec3Normalize)(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV) = reinterpret_cast<D3DXVECTOR3 *(__stdcall*)(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV)>(0x48A1EC);
 D3DXMATRIX * (__stdcall * D3DXMatrixRotationAxis)(D3DXMATRIX *pOut, const D3DXVECTOR3 *pV, float angle) = reinterpret_cast<D3DXMATRIX *(__stdcall*)(D3DXMATRIX *pOut, const D3DXVECTOR3 *pV, float angle)>(0x48ABB3);
@@ -135,9 +135,7 @@ double __cdecl hook_Vec3LengthSq(const D3DXVECTOR3 *pV)
 void __fastcall hook_Vec3Set(D3DXVECTOR3 *This, int unused_edx, float x, float y, float z)
 {
   DebugLog("[HNH:SUB] hook_Vec3Set_40E420\n");
-  This->x = x;
-  This->y = y;
-  This->z = z;
+  This->Vec3Set(x, y, z);
 }
 
 double __cdecl hook_Vec3Dot(const D3DXVECTOR3 *pV1, const D3DXVECTOR3 *pV2)

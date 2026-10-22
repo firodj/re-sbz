@@ -213,6 +213,8 @@ void __cdecl hook_DisplayConfig_Init(CDisplayConfig *pDisplayConfig)
   memset(g_arrZBufDepthsPerDev_518828, 0, sizeof(g_arrZBufDepthsPerDev_518828));
   D3DXInitialize();
   nDeviceCount = D3DXGetDeviceCount();
+  DebugLog("{check} nDeviceCount = %d\n", nDeviceCount);
+
   pDisplayConfig->nDeviceCount = nDeviceCount;
   pDisplayConfig->parrD3DXDevDesc = (D3DX_DEVICEDESC*) MemAlloc_40DEF7(sizeof(D3DX_DEVICEDESC) * nDeviceCount);
   pD3DXDevDesc = pDisplayConfig->parrD3DXDevDesc;
@@ -222,9 +224,11 @@ void __cdecl hook_DisplayConfig_Init(CDisplayConfig *pDisplayConfig)
   {
     D3DXGetDeviceDescription(iDevice, pD3DXDevDesc);
     nMaxNumVideoModes = D3DXGetMaxNumVideoModes(iDevice, 0);
+    DebugLog("{check} %i nMaxNumVideoModes = %d\n", nMaxNumVideoModes);
+
     pVidModeDesc->nMaxNumVideoModes = nMaxNumVideoModes;
-    pVidModeDesc->pModeDesc = (D3DX_VIDMODEDESC*) MemAlloc_40DEF7(16 * nMaxNumVideoModes);
-    pVidModeDesc->pD3DCaps  = (D3DDEVICEDESC7*) MemAlloc_40DEF7(236 * nMaxNumVideoModes);
+    pVidModeDesc->pModeDesc = (D3DX_VIDMODEDESC*) MemAlloc_40DEF7(sizeof(D3DX_VIDMODEDESC) * nMaxNumVideoModes);
+    pVidModeDesc->pD3DCaps  = (D3DDEVICEDESC7*) MemAlloc_40DEF7(sizeof(D3DDEVICEDESC7) * nMaxNumVideoModes);
     pVidModeDesc->pDDHALCaps = (DDCAPS*) MemAlloc_40DEF7(sizeof(DDCAPS) * nMaxNumVideoModes);
     pVidModeDesc->pDDHELCaps = (DDCAPS*) MemAlloc_40DEF7(sizeof(DDCAPS) * nMaxNumVideoModes);
     pVidModeDesc->parrbActive = (BOOL *) MemAlloc_40DEF7(4 * nMaxNumVideoModes);
@@ -235,6 +239,7 @@ void __cdecl hook_DisplayConfig_Init(CDisplayConfig *pDisplayConfig)
     pbActive = pVidModeDesc->parrbActive;
     for ( jVideoMode = 0; jVideoMode < nMaxNumVideoModes; ++jVideoMode )
     {
+      DebugLog("{check} VideoMode %d\n", jVideoMode);
       D3DXGetVideoMode(iDevice, 0, jVideoMode, pModeDesc);
       *pbActive = FALSE;
       if ( IsVideoModeSupported(pModeDesc) == 1 )
@@ -410,11 +415,11 @@ int __cdecl hook_ShowTitleMenuWnd_428927(HINSTANCE hInstance)
   }
 }
 
-LPVOID pfnCheckRunGame_4863C8 = NULL;
+//LPVOID pfnCheckRunGame_4863C8 = NULL;
 
 BOOL __cdecl hook_CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen)
 {
-  auto fn = (BOOL(__cdecl*)(HWND, BOOL))pfnCheckRunGame_4863C8;
+  //auto fn = (BOOL(__cdecl*)(HWND, BOOL))pfnCheckRunGame_4863C8;
   // return fn(hWnd, bFullScreen);
 
   CHAR szTeaEx[256]; // [esp+0h] [ebp-204h] BYREF
@@ -909,11 +914,13 @@ void __cdecl hook_CalculateLocalRotationMatrix(
 }
 
 void register_CheckRunGame_4863C8() {
-  /*pfnCheckRunGame_4863C8 = hnh_Hook(0x4863C8, hook_CheckRunGame_4863C8, "CheckRunGame_4863C8");
+  hnh_Hook(0x4863C8, hook_CheckRunGame_4863C8, "CheckRunGame_4863C8");
   hnh_Hook(0x47E858, hook_ReadFileToBuffer, "ReadFileToBuffer_47E858");
   hnh_Hook(0x47E7F2, hook_WriteBufferToFile, "WriteBufferToFile_47E7F2");
+  
   hnh_Hook(0x4278FF, hook_DisplayConfig_Init, "DisplayConfig_Init_4278FF");
   hnh_Hook(0x427F8C, hook_DisplayConfig_ProcessDriverDesc, "DisplayConfig_ProcessDriverDesc_427F8C");
+  
   hnh_Hook(0x427C51, hook_IsVideoModeSupported, "IsVideoModeSupported_427C51");
   hnh_Hook(0x428927, hook_ShowTitleMenuWnd_428927, "ShowTitleMenuWnd_428927");
   hnh_Hook(0x40DD71, hook_SetLightingState, "SetLightingState_40DD71");
@@ -921,6 +928,7 @@ void register_CheckRunGame_4863C8() {
   hnh_Hook(0x408F00, hook_CHanaObj__NewLightT3EF, "CHanaObj__NewLightT3EF");
   hnh_Hook(0x40B848, hook_CHanaObj__AddObjItemRef_40B848, "CHanaObj__AddObjItemRef_40B848");
   hnh_Hook(0x40BAB8, hook_AttachHanaObj_40BAB8, "AttachHanaObj_40BAB8");
+ 
   hnh_Hook(0x4070AB, hook_MatrixRotateCubeMapFace, "MatrixRotateCubeMapFace");
-  hnh_Hook(0x407047, hook_CalculateLocalRotationMatrix, "CalculateLocalRotationMatrix");*/
-}
+  hnh_Hook(0x407047, hook_CalculateLocalRotationMatrix, "CalculateLocalRotationMatrix");
+} 

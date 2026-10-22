@@ -116,8 +116,12 @@ public:
     float x, y, z;
     D3DXVECTOR3() : x(0), y(0), z(0) {};
     D3DXVECTOR3(float _x, float _y, float _z) {
-      x = _x; y = _y; z = _z;
+      Vec3Set(_x, _y, _z);
     };
+
+    void Vec3Set(float _x, float _y, float _z) {
+      x = _x; y = _y; z = _z;
+    }
 };
 
 typedef struct D3DXQUATERNION {
@@ -180,10 +184,10 @@ LPVOID hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName);
 extern HRESULT(*D3DXUninitialize)(void);
 extern HRESULT (*D3DXInitialize)(void); 
 extern DWORD (*D3DXGetDeviceCount)(void);
-extern DWORD (*D3DXGetMaxNumVideoModes)(DWORD deviceIndex, DWORD flags);
-extern HRESULT (*D3DXGetDeviceDescription)(DWORD deviceIndex, D3DX_DEVICEDESC* pd3dxDeviceDesc); 
-extern HRESULT (*D3DXGetVideoMode)(DWORD deviceIndex, DWORD flags, DWORD modeIndex, D3DX_VIDMODEDESC* pModeList);
-extern HRESULT (*D3DXGetDeviceCaps)(DWORD deviceIndex, D3DX_VIDMODEDESC* pVidMode, D3DDEVICEDESC7* pD3DCaps, DDCAPS* pDDHALCaps, DDCAPS* pDDHELCaps); 
+extern DWORD (__stdcall *D3DXGetMaxNumVideoModes)(DWORD deviceIndex, DWORD flags);
+extern HRESULT (__stdcall *D3DXGetDeviceDescription)(DWORD deviceIndex, D3DX_DEVICEDESC* pd3dxDeviceDesc); 
+extern HRESULT (__stdcall *D3DXGetVideoMode)(DWORD deviceIndex, DWORD flags, DWORD modeIndex, D3DX_VIDMODEDESC* pModeList);
+extern HRESULT (__stdcall *D3DXGetDeviceCaps)(DWORD deviceIndex, D3DX_VIDMODEDESC* pVidMode, D3DDEVICEDESC7* pD3DCaps, DDCAPS* pDDHALCaps, DDCAPS* pDDHELCaps); 
 extern void (__stdcall* D3DXGetErrorString)(int hr, size_t strLength, char* str);
 
 extern D3DXVECTOR3* (__stdcall*D3DXVec3Normalize)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV);
