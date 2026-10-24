@@ -352,73 +352,91 @@ HRESULT __cdecl hook_MatrixLookAtLH(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, c
   return S_OK;
 }
 
-D3DXMATRIX *__stdcall hook_D3DXMatrixInverse(D3DXMATRIX *pOut, float *pfDeterminant, const D3DXMATRIX *pM)
+LPVOID orig_D3DXMatrixInverse = NULL;
+
+D3DXMATRIX* WINAPI hook_D3DXMatrixInverse(D3DXMATRIX *pOut, float *pfDeterminant, const D3DXMATRIX *pM)
 {
+  if (!pOut || !pM)
+    return 0;
+
   DebugLog("[HNH:SUB] %s\n", "D3DXMatrixInverse_48A5BD");
 
-  if (!pOut || !pM)
-    return NULL;
+  // 1. Cache source matrix elements
+  float m11 = pM->_11, m12 = pM->_12, m13 = pM->_13, m14 = pM->_14;
+  float m21 = pM->_21, m22 = pM->_22, m23 = pM->_23, m24 = pM->_24;
+  float m31 = pM->_31, m32 = pM->_32, m33 = pM->_33, m34 = pM->_34;
+  float m41 = pM->_41, m42 = pM->_42, m43 = pM->_43, m44 = pM->_44;
 
-  // Extract matrix elements for readability
-  float a00 = pM->_11, a01 = pM->_12, a02 = pM->_13, a03 = pM->_14;
-  float a10 = pM->_21, a11 = pM->_22, a12 = pM->_23, a13 = pM->_24;
-  float a20 = pM->_31, a21 = pM->_32, a22 = pM->_33, a23 = pM->_34;
-  float a30 = pM->_41, a31 = pM->_42, a32 = pM->_43, a33 = pM->_44;
+  // 2. Compute intermediate 2x2 determinants and minors
+  float minor_12_12 = m22 * m11 - m21 * m12;
+  float invDeta     = m32 * m11 - m31 * m12;
+  float minor_14_12 = m42 * m11 - m41 * m12;
+  float minor_14_22 = m32 * m21 - m31 * m22;
+  float minor_14_32 = m42 * m21 - m41 * m22;
+  float minor_14_34 = m42 * m31 - m41 * m32;
 
-  // Compute 2x2 sub-determinant cross-products
-  float b00 = a00 * a11 - a01 * a10;
-  float b01 = a00 * a12 - a02 * a10;
-  float b02 = a00 * a13 - a03 * a10;
-  float b03 = a01 * a12 - a02 * a11;
-  float b04 = a01 * a13 - a03 * a11;
-  float b05 = a02 * a13 - a03 * a12;
+  // 3. Compute row 0 cofactors
+  float cofactor_00 = minor_14_22 * m13 - invDeta * m23 + minor_12_12 * m33;
+  float cofactor_01 = minor_14_12 * m23 - minor_12_12 * m43 - minor_14_32 * m13;
+  float cofactor_02 = minor_14_34 * m13 - minor_14_12 * m33 + invDeta * m43;
+  float cofactor_03 = minor_14_32 * m33 - minor_14_22 * m43 - minor_14_34 * m23;
 
-  float b06 = a20 * a31 - a21 * a30;
-  float b07 = a20 * a32 - a22 * a30;
-  float b08 = a20 * a33 - a23 * a30;
-  float b09 = a21 * a32 - a22 * a31;
-  float b10 = a21 * a33 - a23 * a31;
-  float b11 = a22 * a33 - a23 * a32;
+  // 4. Compute row 1 cofactors
+  float cofactor_10 = invDeta * m24 - minor_12_12 * m34 - minor_14_22 * m14;
+  float cofactor_11 = minor_14_32 * m14 - minor_14_12 * m24 + minor_12_12 * m44;
+  float cofactor_12 = minor_14_12 * m34 - invDeta * m44 - minor_14_34 * m14;
+  float cofactor_13 = minor_14_34 * m24 - minor_14_32 * m34 + minor_14_22 * m44;
 
-  // Calculate the 4x4 determinant
-  float det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+  // 5. Additional sub-expressions for rows 2 and 3
+  float sub_12_12 = m24 * m13 - m23 * m14;
+  float sub_invDet = m34 * m13 - m33 * m14;
+  float sub_v15    = m44 * m13 - m43 * m14;
+
+  float sub_v16 = m34 * m23 - m33 * m24;
+  float sub_v17 = m44 * m23 - m43 * m24;
+  float sub_v19 = m44 * m33 - m43 * m34;
+
+  float minor_34_34 = sub_invDet * m22 - sub_12_12 * m32 - sub_v16 * m12;
+  float minor_33_33 = sub_v17 * m12 - sub_v15 * m22 + sub_12_12 * m42;
+  float minor_23_34 = sub_v15 * m32 - sub_invDet * m42 - sub_v19 * m12;
+  float cofactor_23 = sub_v19 * m22 - sub_v17 * m32 + sub_v16 * m42;
+
+  float pOuta = sub_v16 * m11 - sub_invDet * m21 + sub_12_12 * m31;
+  float pMa   = sub_v15 * m21 - sub_12_12 * m41 - sub_v17 * m11;
+  float m22_res = sub_v19 * m11 - sub_v15 * m31 + sub_invDet * m41;
+  float minor_14_22_b = sub_v17 * m31 - sub_v16 * m41 - sub_v19 * m21;
+
+  // 6. Compute Determinant
+  float determinant = minor_23_34 * m21 + minor_33_33 * m31 + minor_34_34 * m41 + cofactor_23 * m11;
 
   if (pfDeterminant)
-    *pfDeterminant = det;
+    *pfDeterminant = determinant;
 
-  // Check if the matrix is invertible (non-zero determinant & finite)
-  float invDet = 1.0f / det;
+  float invDet = 1.0f / determinant;
   if (!_finite(invDet))
-    return NULL;
+    return 0;
 
-  // Compute inverse matrix elements via adjugate matrix scaled by 1 / determinant
-  D3DXMATRIX temp;
+  // 7. Populate output inverse matrix
+  pOut->_11 = invDet * cofactor_23;
+  pOut->_12 = invDet * minor_23_34;
+  pOut->_13 = invDet * minor_33_33;
+  pOut->_14 = invDet * minor_34_34;
 
-  // Row 1
-  temp._11 = (a11 * b11 - a12 * b10 + a13 * b09) * invDet;
-  temp._12 = (a03 * b10 - a01 * b11 - a02 * b09) * invDet;
-  temp._13 = (a31 * b05 - a32 * b04 + a33 * b03) * invDet;
-  temp._14 = (a23 * b04 - a21 * b05 - a22 * b03) * invDet;
+  pOut->_21 = invDet * minor_14_22_b;
+  pOut->_22 = invDet * m22_res;
+  pOut->_23 = invDet * pMa;
+  pOut->_24 = invDet * pOuta;
 
-  // Row 2
-  temp._21 = (a12 * b08 - a10 * b11 - a13 * b07) * invDet;
-  temp._22 = (a00 * b11 - a02 * b08 + a03 * b07) * invDet;
-  temp._23 = (a32 * b02 - a30 * b05 - a33 * b01) * invDet;
-  temp._24 = (a20 * b05 - a22 * b02 + a23 * b01) * invDet;
+  pOut->_31 = cofactor_13 * invDet;
+  pOut->_32 = cofactor_12 * invDet;
+  pOut->_33 = cofactor_11 * invDet;
+  pOut->_34 = cofactor_10 * invDet;
 
-  // Row 3
-  temp._31 = (a10 * b10 - a11 * b08 + a13 * b06) * invDet;
-  temp._32 = (a01 * b08 - a00 * b10 - a03 * b06) * invDet;
-  temp._33 = (a30 * b04 - a31 * b02 + a33 * b00) * invDet;
-  temp._34 = (a21 * b02 - a20 * b04 - a23 * b00) * invDet;
+  pOut->_41 = cofactor_03 * invDet;
+  pOut->_42 = cofactor_02 * invDet;
+  pOut->_43 = cofactor_01 * invDet;
+  pOut->_44 = cofactor_00 * invDet;
 
-  // Row 4
-  temp._41 = (a11 * b07 - a10 * b09 - a12 * b06) * invDet;
-  temp._42 = (a00 * b09 - a01 * b07 + a02 * b06) * invDet;
-  temp._43 = (a31 * b01 - a30 * b03 - a32 * b00) * invDet;
-  temp._44 = (a20 * b03 - a21 * b01 + a22 * b00) * invDet;
-
-  *pOut = temp;
   return pOut;
 }
 
@@ -436,12 +454,13 @@ void register_MatrixLookAtLH_40C64A() {
   hnh_Hook(0x48A1EC, hook_D3DXVec3Normalize, "D3DXVec3Normalize_48A1EC");
   hnh_Hook(0x48ABB3, hook_D3DXMatrixRotationAxis, "D3DXMatrixRotationAxis_48ABB3");
   hnh_Hook(0x40E3C0, hook_Vec3LengthSq, "Vec3LengthSq_40E3C0");
-  */
   hnh_Hook(0x40E420, hook_Vec3Set, "hook_Vec3Set_40E420");
-  /*hnh_Hook(0x40E3F0, hook_Vec3Dot, "Vec3Dot_40E3F0");
+  hnh_Hook(0x40E3F0, hook_Vec3Dot, "Vec3Dot_40E3F0");
   hnh_Hook(0x40DDF3, hook_DegreesToRadians, "DegreesToRadians_40DDF3");
   hnh_Hook(0x40CB94, hook_MatrixPerspectiveFovLH, "MatrixPerspectiveFovLH_40CB94");
-  hnh_Hook(0x40E450, hook_D3DXMatrixIdentity, "D3DXMatrixIdentity_40E450");
-  hnh_Hook(0x48A4BC, hook_D3DXMatrixMultiply, "D3DXMatrixMultiply_48A4BC");
-  hnh_Hook(0x48A5BD, hook_D3DXMatrixInverse, "D3DXMatrixInverse_48A5BD");*/
+  hnh_Hook(0x40E450, hook_D3DXMatrixIdentity, "D3DXMatrixIdentity_40E450");*/
+
+  // problem! hnh_Hook(0x48A4BC, hook_D3DXMatrixMultiply, "D3DXMatrixMultiply_48A4BC");
+  orig_D3DXMatrixInverse = hnh_Hook(0x48A5BD, hook_D3DXMatrixInverse, "D3DXMatrixInverse_48A5BD");
+
 }

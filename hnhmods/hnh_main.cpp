@@ -114,7 +114,7 @@ void InitHNH() {
 
 	AssertHanaStructSize();
 	
-	//register_MatrixLookAtLH_40C64A();
+	register_MatrixLookAtLH_40C64A();
 	register_WndProcCheckSystem_485FC2();
 	register_CDROM_VerifyDiscSignature_485C50();
 	register_CheckInstalledDirRoot_4869A7();
