@@ -74,11 +74,6 @@ uint32_t &g_fScreenScale_52F19C    = *(uint32_t *)0x52F19C; // WRITABLE
 
 // === GLOBAL FUNCTIONS ===
 
-BOOL(__cdecl *ShowTitleMenu_427DA8)(HWND hWnd, BOOL bFullScreen) = (BOOL(__cdecl*)(HWND, BOOL))0x427DA8;
-void(__cdecl* CHanaObj__NewMateT3EE_S184)(CHanaMateT3EE_S184** ppOutMate) = reinterpret_cast<void(__cdecl*)(CHanaMateT3EE_S184**)>(0x40F720);
-void(__cdecl* CHanaObj__NewFrameRootT3EC_S2D4)(CHanaFrameRootT3EC_S2D4 **ppOutFrameRoot) = reinterpret_cast<void(__cdecl*)(CHanaFrameRootT3EC_S2D4**)>(0x404908);
-void(__cdecl *CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354 *pParent, CHanaFrameT3EC_S354 **ppOutFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*, CHanaFrameT3EC_S354**)>(0x404720);
-
 void (* DisplayConfig_ProcessDriverDesc)(CDisplayConfig *pConfig) = reinterpret_cast<void(*)(CDisplayConfig *pConfig)>(0x427F8C);
 BOOL (__cdecl * IsVideoModeSupported)(D3DX_VIDMODEDESC *pVidModeDesc) = reinterpret_cast<BOOL(__cdecl*)(D3DX_VIDMODEDESC *pVidModeDesc)>(0x427C51);
 void (__cdecl * DisplayConfig_Init)(CDisplayConfig *pDisplayConfig) = reinterpret_cast<void(__cdecl*)(CDisplayConfig *pDisplayConfig)>(0x4278FF);

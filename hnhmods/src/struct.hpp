@@ -167,7 +167,7 @@ struct CHanaMateAnimT3F7_S148: public CHanaBase_S130
 struct CHanaMateT3EE_S184 : public CHanaBase_S130
 {
     D3DMATERIAL7 d3dMaterial_130;
-    float flt_174;
+    float fDiffuseA;
     CHanaTextureT3EB_S2CC *pTexture_178;
     int fMatDirty;
     CHanaMateAnimT3F7_S148 *pManmT3F7;

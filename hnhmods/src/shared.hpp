@@ -148,3 +148,10 @@ extern void (__cdecl*CHanaObj__AddRef_40BFC3)(CHanaBase_S130* pObj);
 extern void(__cdecl* DisplayConfig_Init)(CDisplayConfig* pDisplayConfig);
 extern int(__cdecl* ShowTitleMenuWnd_428927)(HINSTANCE hInstance);
 extern HRESULT(__cdecl* D3DInitBuffers_40AF60)(void);
+extern BOOL(__cdecl* ShowTitleMenu_427DA8)(HWND hWnd, BOOL bFullScreen);
+
+extern void(__cdecl* CHanaObj__NewMateT3EE_S184)(CHanaMateT3EE_S184** ppOutMate);
+extern void(__cdecl* CHanaObj__NewFrameRootT3EC_S2D4)(CHanaFrameRootT3EC_S2D4** ppOutFrameRoot);
+extern void(__cdecl* CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354* pParent, CHanaFrameT3EC_S354** ppOutFrame);
+extern void(__cdecl* RemoveChild_4058C3)(CHanaFrameRootT3EC_S2D4* pParent, CHanaFrameT3EC_S354* pChild);
+

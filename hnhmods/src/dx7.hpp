@@ -20,6 +20,14 @@
 #include "minhook/include/MinHook.h"
 #include "../d3dx/ida_defs.hpp"
 
+//-------------------------------------------------------------------------
+// ID3DXContext interface: 
+//
+// This encapsulates all the stuff that the app might 
+// want to do at initialization time and any global control over d3d and 
+// ddraw.
+//-------------------------------------------------------------------------
+
 typedef struct ID3DXContext *LPD3DXCONTEXT;
 DECLARE_INTERFACE_(ID3DXContext, IUnknown)
 {
@@ -111,6 +119,7 @@ DECLARE_INTERFACE_(ID3DXContext, IUnknown)
   STDMETHOD(SetClearStencil)(THIS_ DWORD stencil) PURE;
 };
 
+
 class D3DXVECTOR3 {
 public:
     float x, y, z;
@@ -155,6 +164,99 @@ typedef struct D3DXMATRIX {
 #endif //__cplusplus
     };
 } D3DXMATRIX;
+
+
+
+//===========================================================================
+//
+//    Matrix Stack
+//
+//===========================================================================
+
+typedef struct ID3DXMatrixStack *LPD3DXMATRIXSTACK;
+DECLARE_INTERFACE_(ID3DXMatrixStack, IUnknown)
+{
+  //
+  // IUnknown methods
+  //
+  STDMETHOD(QueryInterface)(THIS_ REFIID riid, LPVOID * ppvObj) PURE;
+  STDMETHOD_(ULONG,AddRef)(THIS) PURE;
+  STDMETHOD_(ULONG,Release)(THIS) PURE;
+
+  //
+  // ID3DXMatrixStack methods
+  //
+
+  // Pops the top of the stack, returns the current top
+  // *after* popping the top.
+  STDMETHOD(Pop)(THIS) PURE;
+
+  // Pushes the stack by one, duplicating the current matrix.
+  STDMETHOD(Push)(THIS) PURE;
+
+  // Loads identity in the current matrix.
+  STDMETHOD(LoadIdentity)(THIS) PURE;
+
+  // Loads the given matrix into the current matrix
+  STDMETHOD(LoadMatrix)(THIS_ const D3DXMATRIX* pM ) PURE;
+
+  // Right-Multiplies the given matrix to the current matrix.
+  // (transformation is about the current world origin)
+  STDMETHOD(MultMatrix)(THIS_ const D3DXMATRIX* pM ) PURE;
+
+  // Left-Multiplies the given matrix to the current matrix
+  // (transformation is about the local origin of the object)
+  STDMETHOD(MultMatrixLocal)(THIS_ const D3DXMATRIX* pM ) PURE;
+
+  // Right multiply the current matrix with the computed rotation
+  // matrix, counterclockwise about the given axis with the given angle.
+  // (rotation is about the current world origin)
+  STDMETHOD(RotateAxis)
+    (THIS_ const D3DXVECTOR3* pV, float angle) PURE;
+
+  // Left multiply the current matrix with the computed rotation
+  // matrix, counterclockwise about the given axis with the given angle.
+  // (rotation is about the local origin of the object)
+  STDMETHOD(RotateAxisLocal)
+    (THIS_ const D3DXVECTOR3* pV, float angle) PURE;
+
+  // Right multiply the current matrix with the computed rotation
+  // matrix. All angles are counterclockwise. (rotation is about the
+  // current world origin)
+
+  // The rotation is composed of a yaw around the Y axis, a pitch around
+  // the X axis, and a roll around the Z axis.
+  STDMETHOD(RotateYawPitchRoll)
+    (THIS_ float yaw, float pitch, float roll) PURE;
+
+  // Left multiply the current matrix with the computed rotation
+  // matrix. All angles are counterclockwise. (rotation is about the
+  // local origin of the object)
+
+  // The rotation is composed of a yaw around the Y axis, a pitch around
+  // the X axis, and a roll around the Z axis.
+  STDMETHOD(RotateYawPitchRollLocal)
+    (THIS_ float yaw, float pitch, float roll) PURE;
+
+  // Right multiply the current matrix with the computed scale
+  // matrix. (transformation is about the current world origin)
+  STDMETHOD(Scale)(THIS_ float x, float y, float z) PURE;
+
+  // Left multiply the current matrix with the computed scale
+  // matrix. (transformation is about the local origin of the object)
+  STDMETHOD(ScaleLocal)(THIS_ float x, float y, float z) PURE;
+
+  // Right multiply the current matrix with the computed translation
+  // matrix. (transformation is about the current world origin)
+  STDMETHOD(Translate)(THIS_ float x, float y, float z ) PURE;
+
+  // Left multiply the current matrix with the computed translation
+  // matrix. (transformation is about the local origin of the object)
+  STDMETHOD(TranslateLocal)(THIS_ float x, float y, float z) PURE;
+
+  // Obtain the current matrix at the top of the stack
+  STDMETHOD_(D3DXMATRIX*, GetTop)(THIS) PURE;
+};
 
 
 // D3DX_VIDEOMODEDESC from d3dxcore.h size=0x10
@@ -242,3 +344,5 @@ extern HRESULT(__stdcall* D3DXCreateContextEx)(unsigned int devIndex, unsigned i
 extern HRESULT(__stdcall* D3DXCreateContext)(unsigned int devIndex, unsigned int flags, HWND hWnd, int width, int height, LPD3DXCONTEXT* ppCtx);
 extern HRESULT(__stdcall* D3DXGetSurfaceFormat)(int devIndex, D3DX_VIDMODEDESC* pVidMode, unsigned int surfClassFlags, unsigned int which, D3DX_SURFACEFORMAT* pFormat);
 extern DWORD(__stdcall* D3DXGetMaxSurfaceFormats)(int devIndex, _DWORD* pVidMode, int surfClassFlags);
+extern HRESULT(__stdcall* D3DXCreateMatrixStack)(DWORD flags, LPD3DXMATRIXSTACK* ppStack);
+

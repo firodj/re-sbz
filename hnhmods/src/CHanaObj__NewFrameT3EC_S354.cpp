@@ -1,0 +1,152 @@
+#include "dx7.hpp"
+#include "console.hpp"
+#include "shared.hpp"
+
+void(__cdecl *CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354 *pParent, CHanaFrameT3EC_S354 **ppOutFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*, CHanaFrameT3EC_S354**)>(0x404720);
+void(__cdecl* AttachChild_4055FD)(CHanaFrameRootT3EC_S2D4* pParent, CHanaFrameT3EC_S354* pChild) = reinterpret_cast<void(__cdecl *)(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFrameT3EC_S354 *pChild)>(0x4055FD);
+void(__cdecl* MtxStackStartMultLocal_4074EF)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x4074EF);
+void(__cdecl* MtxStackRecursiveMulLocal_4075B0)(CHanaFrameT3EC_S354* pFrame) = reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x4075B0);
+
+LPD3DXMATRIXSTACK g_pMatrixStack_4CD77C;
+
+// CHanaObj__NewFrameT3EC_S354 at 0x404720
+// Creates and initializes a new CHanaFrameT3EC_S354 object (size 0x354 bytes)
+// Attaches it to parent frame or scene root if no parent
+
+void __cdecl hook_CHanaObj__NewFrameT3EC_S354_404720(CHanaFrameT3EC_S354 *pParent, CHanaFrameT3EC_S354 **ppOutFrame)
+{
+    CHanaFrameT3EC_S354 *pNewFrame;
+
+    DebugLog("[HNH:SUB] %s\n", "CHanaObj__NewFrameT3EC_S354_404720");
+
+    // Allocate memory (0x354 bytes = 852 decimal)
+    // Note: memset only clears 0x2D4 bytes (same as FrameRoot size), leaving extra 0x80 bytes uninitialized
+    pNewFrame = (CHanaFrameT3EC_S354*)MemAlloc_40DEF7(0x354u);
+    memset(pNewFrame, 0, 0x2D4u);
+
+    // Set type identifier (same as FrameRoot: 0x3EC = 1004)
+    pNewFrame->dwType = 0x3EC;
+
+    // Initialize two 4x4 matrices to identity
+    // mat4x4_fmrx (frame matrix)
+    pNewFrame->mat4x4_fmrx._11 = 1.0f;
+    pNewFrame->mat4x4_fmrx._22 = 1.0f;
+    pNewFrame->mat4x4_fmrx._33 = 1.0f;
+    pNewFrame->mat4x4_fmrx._44 = 1.0f;
+    // Off-diagonal elements zeroed by memset, explicit zero stores for specific elements
+
+    // mat4x4_after
+    pNewFrame->mat4x4_after._11 = 1.0f;
+    pNewFrame->mat4x4_after._22 = 1.0f;
+    pNewFrame->mat4x4_after._33 = 1.0f;
+    pNewFrame->mat4x4_after._44 = 1.0f;
+
+    // Initialize child count
+    pNewFrame->nCountChild = 0;
+
+    // Increment reference count
+    CHanaObj__AddRef_40BFC3(pNewFrame);
+
+    // Attach to parent frame or scene root
+    if (pParent)
+        AttachChild_4055FD(pParent, pNewFrame);
+    else
+        AttachChild_4055FD(g_pSceneFrame, pNewFrame);  // Attach to global scene frame
+
+    // Clear animation pointer (offset 0x2C0)
+    pNewFrame->pHanaAnim_2C0 = 0;
+
+    // Return the new frame
+    *ppOutFrame = pNewFrame;
+}
+
+// MtxStackStartMultLocal_4074EF at 0x4074EF
+// Creates a D3DX matrix stack, loads the scene root frame matrix,
+// recursively multiplies local matrices for all child frames,
+// then releases the stack
+
+void __cdecl hook_MtxStackStartMultLocal_4074EF()
+{
+  unsigned int i;
+  CHanaNode *pChildNode;
+
+  DebugLog("[HNH:SUB] %s\n", "MtxStackStartMultLocal_4074EF");
+
+  // Create matrix stack
+  D3DXCreateMatrixStack(0, &g_pMatrixStack_4CD77C);
+
+  // Push initial matrix and load scene root frame matrix
+  g_pMatrixStack_4CD77C->Push();
+  g_pMatrixStack_4CD77C->LoadMatrix(&g_pSceneFrame->mat4x4_fmrx);
+
+  // Recursively multiply local matrices for all children of scene root
+  if (g_pSceneFrame->nCountChild > 0)
+  {
+    pChildNode = g_pSceneFrame->pFirstChildNode;
+    for (i = 0; i < g_pSceneFrame->nCountChild; ++i)
+    {
+      MtxStackRecursiveMulLocal_4075B0(pChildNode->pData);
+      pChildNode = pChildNode->pNext;
+    }
+  }
+
+  // Pop and release stack
+  g_pMatrixStack_4CD77C->Pop();
+  g_pMatrixStack_4CD77C->Release();
+}
+
+// AttachChild_4055FD at 0x4055FD
+// Attaches a child frame to a parent frame in the scene hierarchy
+// Uses a doubly-linked list of CHanaNode structures
+
+void __cdecl hook_AttachChild_4055FD(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFrameT3EC_S354 *pChild)
+{
+  CHanaNode *pNewNode;
+
+  DebugLog("[HNH:SUB] %s\n", "AttachChild_4055FD");
+
+  // If child is already attached to this parent, do nothing
+  if (pChild->pParent == pParent)
+    return;
+
+  // Add child to parent's child list
+  if (pParent->nCountChild > 0)
+  {
+    // Parent already has children - append to end of list
+    pNewNode = (CHanaNode *)MemAlloc_40DEF7(0xCu);  // Allocate new node (12 bytes)
+    pNewNode->pNext = 0;
+    pNewNode->pPrev = pParent->pLastChildNode;
+    pNewNode->pData = pChild;
+    pParent->pLastChildNode->pNext = pNewNode;
+    pParent->pLastChildNode = pNewNode;
+    ++pParent->nCountChild;
+  }
+  else
+  {
+    // First child - create the list
+    pParent->pFirstChildNode = (CHanaNode *) MemAlloc_40DEF7(0xCu);
+    memset(pParent->pFirstChildNode, 0, sizeof(CHanaNode));
+    pParent->pLastChildNode = pParent->pFirstChildNode;
+    pParent->nCountChild = 1;
+    pParent->pFirstChildNode->pData = pChild;
+    pParent->pFirstChildNode->pPrev = 0;
+    pParent->pFirstChildNode->pNext = 0;
+  }
+
+  // If child was attached to another parent, remove it from there
+  if (pChild->pParent)
+    RemoveChild_4058C3(pChild->pParent, pChild);
+
+  // Set new parent
+  pChild->pParent = (CHanaFrameT3EC_S354*)pParent;
+
+  // Notify matrix stack system
+  MtxStackStartMultLocal_4074EF();
+}
+
+// Register hook if needed
+void register_CHanaObj__NewFrameT3EC_S354_404720() {
+    hnh_Hook(0x404720, hook_CHanaObj__NewFrameT3EC_S354_404720, "CHanaObj__NewFrameT3EC_S354_404720");
+    hnh_Hook(0x4055FD, hook_AttachChild_4055FD, "AttachChild_4055FD");
+    hnh_Hook(0x4074EF, hook_MtxStackStartMultLocal_4074EF, "MtxStackStartMultLocal_4074EF");
+}

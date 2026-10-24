@@ -36,6 +36,7 @@ D3DXMATRIX * (__cdecl * D3DXMatrixIdentity)(D3DXMATRIX *pOut) = reinterpret_cast
 D3DXMATRIX * (__stdcall * D3DXMatrixMultiply)(D3DXMATRIX *pOut, const D3DXMATRIX *pM1, const D3DXMATRIX *pM2) = reinterpret_cast<D3DXMATRIX *(__stdcall*)(D3DXMATRIX *pOut, const D3DXMATRIX *pM1, const D3DXMATRIX *pM2)>(0x48A4BC);
 HRESULT (__cdecl * MatrixLookAtLH)(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, const D3DXVECTOR3 *pAt, const D3DXVECTOR3 *pUp) = reinterpret_cast<HRESULT(__cdecl*)(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, const D3DXVECTOR3 *pAt, const D3DXVECTOR3 *pUp)>(0x40C64A);
 D3DXMATRIX * (__stdcall * D3DXMatrixInverse)(D3DXMATRIX *pOut, float *pfDeterminant, const D3DXMATRIX *pM) = reinterpret_cast<D3DXMATRIX *(__stdcall*)(D3DXMATRIX *pOut, float *pfDeterminant, const D3DXMATRIX *pM)>(0x48A5BD);
+HRESULT (__stdcall *D3DXCreateMatrixStack)(DWORD flags, LPD3DXMATRIXSTACK* ppStack) = reinterpret_cast<HRESULT (__stdcall*)(DWORD flags, LPD3DXMATRIXSTACK* ppStack)>(0x48B793);
 
 // === FUNCTION IMPLEMENATIONS ===
 
