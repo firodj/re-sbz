@@ -179,6 +179,43 @@ struct D3DX_DEVICEDESC {
   BOOL        onPrimary;
 };
 
+typedef enum _D3DX_SURFACEFORMAT {
+  D3DX_SF_UNKNOWN    = 0,
+  D3DX_SF_R8G8B8     = 1,
+  D3DX_SF_A8R8G8B8   = 2,
+  D3DX_SF_X8R8G8B8   = 3,
+  D3DX_SF_R5G6B5     = 4,
+  D3DX_SF_R5G5B5     = 5,
+  D3DX_SF_PALETTE4   = 6,
+  D3DX_SF_PALETTE8   = 7,
+  D3DX_SF_A1R5G5B5   = 8,
+  D3DX_SF_X4R4G4B4   = 9,
+  D3DX_SF_A4R4G4B4   =10,
+  D3DX_SF_L8         =11,
+  D3DX_SF_A8L8       =12,
+  D3DX_SF_U8V8       =13,
+  D3DX_SF_U5V5L6     =14,
+  D3DX_SF_U8V8L8     =15,
+  D3DX_SF_UYVY       =16,
+  D3DX_SF_YUY2       =17,
+  D3DX_SF_DXT1       =18,
+  D3DX_SF_DXT3       =19,
+  D3DX_SF_DXT5       =20,
+  D3DX_SF_R3G3B2     =21,
+  D3DX_SF_A8         =22,
+  D3DX_SF_TEXTUREMAX =23,
+
+  D3DX_SF_Z16S0      =256,
+  D3DX_SF_Z32S0      =257,
+  D3DX_SF_Z15S1      =258,
+  D3DX_SF_Z24S8      =259,
+  D3DX_SF_S1Z15      =260,
+  D3DX_SF_S8Z24      =261,
+  D3DX_SF_DEPTHMAX   =262,
+
+  D3DX_SF_FORCEMAX  = (DWORD)(-1)
+} D3DX_SURFACEFORMAT;
+
 LPVOID hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName);
 
 extern HRESULT(*D3DXUninitialize)(void);

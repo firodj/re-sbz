@@ -22,6 +22,9 @@ uint32_t &g_nRefAnimT3F0 = *(uint32_t *)0x4D6D1C; // WRITABLE
 uint32_t &g_nRefAnimSetT3F1 = *(uint32_t *)0x4D6D20; // WRITABLE
 uint32_t &g_nRefMorpT457 = *(uint32_t *)0x4D6D50; // WRITABLE
 
+uint32_t &g_nLightningEnabled = *(uint32_t *)0x4B00AC; // WRITABLE
+uint32_t &g_bForceDirectionalLights = *(uint32_t *)0x4D6D04; // WRITABLE
+
 CHanaTextureT3EB_S2CC* &g_pCurTexObj = *(CHanaTextureT3EB_S2CC**)0x4D6CA0;
 
 __int64 &g_bitsLightIndexes_4D6CB8 = *(__int64*)0x4D6CB8;
@@ -619,9 +622,6 @@ void __cdecl hook_CHanaObj__FreeMateAnimSetT3F8(CHanaMateAnimSetT3F8_S140 *pMate
     --pMateAnimSet->nCount_12C;
   }
 }
-
-uint32_t &g_nLightningEnabled = *(uint32_t *)0x4B00AC; // WRITABLE
-uint32_t &g_bForceDirectionalLights = *(uint32_t *)0x4D6D04; // WRITABLE
 
 void __cdecl hook_ApplyLightSettings(CHanaLightT3EF_S1A0 *pLight)
 {

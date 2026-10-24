@@ -50,5 +50,9 @@ void AssertHanaStructSize() {
   static_assert(sizeof(CSekItem) == 0x9C, "CSekItem");
   static_assert(sizeof(CSekItemProp) == 0x8, "CSekItemProp");
 
+  static_assert(sizeof(CD3DInitParam) == 0x34, "CD3DInitParam");
+  static_assert(sizeof(CVideoModeDesc) ==0x18, "CVideoModeDesc");
+  static_assert(sizeof(CDisplayConfig) == 0x10, "CDisplayConfig");
+
   DebugLog("[%s] %s\n", "INFO", "finished AssertHanaStructSize");
 }

@@ -5,7 +5,9 @@ scan_cpp.py - inventory a reverse-engineered C++ source file (hnhmods style).
 For each input file, reports:
   * structs defined
   * global variables: data refs / array refs / function-pointer imports,
-    with the trailing `// once!` / `// WRITABLE` note when present
+    with the trailing `// once!` / `// WRITABLE` note when present; each
+    func-ptr import is matched against its hook implementation and marked
+    `[hook: L<n>]` or `[no hook fn]`
   * implemented functions, and for each:
       - DebugLog("[HNH:SUB] ...") presence + the tag(s) used; the
         '[HNH:SUB] %s' form is resolved from the 2nd argument
@@ -443,11 +445,20 @@ def report(path: Path, funcptrs_only: bool = False, header: bool = False) -> Non
 
     print(f"\nGLOBALS ({len(globals_)})")
     nw = max([len(g["name"]) for g in globals_] + [4])
+    # hook_* implementations by the func-ptr name they implement
+    # (hook_CDROM_VerifyNT implements the CDROM_VerifyNT func-ptr)
+    hook_fns = {
+        f["name"][5:]: f for f in funcs if f["name"].startswith("hook_")
+    }
     for g in globals_:
         note = f"  // {g['note']}" if g["note"] else ""
+        marker = ""
+        if g["kind"] == "func-ptr":
+            hk = hook_fns.get(g["name"])
+            marker = f"  [hook: L{hk['line']}]" if hk else "  [no hook fn]"
         print(
             f"  L{g['line']:<6}{g['kind']:<10}{pad(g['name'], nw):<{nw}}"
-            f"  {g['addr'] or '-':<10}{note}"
+            f"  {g['addr'] or '-':<10}{marker}{note}"
         )
 
     print(f"\nFUNCTIONS ({len(funcs)})")
@@ -500,6 +511,12 @@ def report(path: Path, funcptrs_only: bool = False, header: bool = False) -> Non
     print(f"  DebugLog [HNH:SUB]:   {len(impl) - len(no_dbg)}/{len(impl)}")
     print(f"  hnh_Hook-registered:  {len(hooked)}/{len(impl)}")
     print(f"  func-ptrs declared:   {n_exists}/{len(fp_rows)}")
+    fp_imports = [g for g in globals_ if g["kind"] == "func-ptr"]
+    fp_no_hook = [g for g in fp_imports if g["name"] not in hook_fns]
+    if fp_imports:
+        print(f"  func-ptrs w/o hook:   {len(fp_no_hook)}/{len(fp_imports)}")
+    if fp_no_hook:
+        print("  no hook function for: " + ", ".join(g["name"] for g in fp_no_hook))
     if no_dbg:
         print("  missing DebugLog:     " + ", ".join(f["name"] for f in no_dbg))
     if no_hook:

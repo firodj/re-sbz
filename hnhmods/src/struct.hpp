@@ -517,10 +517,48 @@ struct CHanaSceneT458_S504: public CHanaBase_S130
   int field_4A8[23];
 };
 
+struct CD3DInitParam // sizeof=0x34
+{
+  int nDeviceIndex;
+  int dwCreationFlags;
+  HWND hWnd;
+  HWND hWndFocus;
+  int nNumColorBits;
+  int nNumAlphaBits;
+  int nNumDepthBits;
+  int nNumStencilBits;
+  int nNumBackBuffers;
+  int nWidth;
+  int nHeight;
+  int nRefreshRate;
+  int bUseCreateEx;
+};
+
+struct CVideoModeDesc // sizeof=0x18
+{
+  int nMaxNumVideoModes;
+  D3DX_VIDMODEDESC *pModeDesc;
+  D3DDEVICEDESC7 *pD3DCaps;
+  DDCAPS *pDDHALCaps;
+  DDCAPS *pDDHELCaps;
+  BOOL *parrbActive;
+};
+
+struct CDisplayConfig // sizeof=0x10
+{
+  unsigned int nDeviceCount;
+  int nDeviceIdxHal;
+  D3DX_DEVICEDESC *parrD3DXDevDesc;
+  CVideoModeDesc *parrVidModeDesc;
+};
+
+struct CVideoModeWhiteItem
+{
+  int Width;
+  int Height;
+  int bpp;
+};
+
 #pragma pack(pop)
 
 void AssertHanaStructSize();
-
-extern void (__cdecl*CHanaObj__Free_40C1E4)(CHanaBase_S130 *pObj);
-extern void (__cdecl*CHanaObj__GetRealPath_486D9A)(LPSTR szPathOut, int nPathCode);
-extern void (__cdecl*CHanaObj__AddRef_40BFC3)(CHanaBase_S130* pObj);

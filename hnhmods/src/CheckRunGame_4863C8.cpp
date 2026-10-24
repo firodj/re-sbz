@@ -3,33 +3,6 @@
 #include "struct.hpp"
 #include "shared.hpp"
 
-// === STRUCTS ===
-
-struct CVideoModeDesc // sizeof=0x18
-{
-  int nMaxNumVideoModes;
-  D3DX_VIDMODEDESC *pModeDesc;
-  D3DDEVICEDESC7 *pD3DCaps;
-  DDCAPS *pDDHALCaps;
-  DDCAPS *pDDHELCaps;
-  BOOL *parrbActive;
-};
-
-struct CDisplayConfig // sizeof=0x10
-{
-  unsigned int nDeviceCount;
-  int nDeviceIdxHal;
-  D3DX_DEVICEDESC *parrD3DXDevDesc;
-  CVideoModeDesc *parrVidModeDesc;
-};
-
-struct CVideoModeWhiteItem
-{
-  int Width;
-  int Height;
-  int bpp;
-};
-
 // === GLOBAL VARIABLES ===
 
 /*
@@ -114,7 +87,7 @@ void (__cdecl * WriteBufferToFile)(LPCSTR lpFileName, LPCVOID lpBuffer, DWORD nN
 int (__cdecl * ShowTitleMenuWnd_428927)(HINSTANCE hInstance) = reinterpret_cast<int(__cdecl*)(HINSTANCE hInstance)>(0x428927);
 BOOL (__cdecl * CheckRunGame_4863C8)(HWND hWnd, BOOL bFullScreen) = reinterpret_cast<BOOL(__cdecl*)(HWND hWnd, BOOL bFullScreen)>(0x4863C8);
 HRESULT (__cdecl * SetLightingState)(DWORD dwEnable) = reinterpret_cast<HRESULT(__cdecl*)(DWORD dwEnable)>(0x40DD71);
-void (* D3DInitBuffers_40AF60)() = reinterpret_cast<void(*)()>(0x40AF60);
+HRESULT (* D3DInitBuffers_40AF60)() = reinterpret_cast<HRESULT(*)()>(0x40AF60);
 void (__cdecl * CHanaObj__NewLightT3EF)(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dlight) = reinterpret_cast<void(__cdecl*)(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dlight)>(0x408F00);
 void (__cdecl * CHanaObj__AddObjItemRef_40B848)(LPCSTR szName, CHanaBase_S130 *pObj) = reinterpret_cast<void(__cdecl*)(LPCSTR szName, CHanaBase_S130 *pObj)>(0x40B848);
 void (__cdecl * AttachHanaObj_40BAB8)(CHanaBase_S130 *pParent, LPCSTR szName) = reinterpret_cast<void(__cdecl*)(CHanaBase_S130 *pParent, LPCSTR szName)>(0x40BAB8);
@@ -483,7 +456,7 @@ HRESULT __cdecl hook_SetLightingState(DWORD dwEnable)
   return g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_LIGHTING, dwEnable);
 }
 
-void hook_D3DInitBuffers_40AF60()
+HRESULT hook_D3DInitBuffers_40AF60()
 {
   float radStep;
   float anglea;
@@ -503,32 +476,32 @@ void hook_D3DInitBuffers_40AF60()
 
   // --- 1. Guard Clauses (Early Exits for Pointers & Init Flags) ---
   if (!g_bInited_4D6C6C) 
-    return;
+    return E_FAIL;
 
   g_pD3DDevice_4D6C78 = g_pRenderCtx->GetD3DDevice();
   if (!g_pD3DDevice_4D6C78) 
-    return;
+    return E_FAIL;
   g_pD3DDevice_4D6C78->GetCaps(&g_d3dDevDesc_4D6980);
 
   g_pDD_4D6C7C = g_pRenderCtx->GetDD();
   if (!g_pDD_4D6C7C) 
-    return;
+    return E_FAIL;
 
   g_pD3D_4D6C84 = g_pRenderCtx->GetD3D();
   if (!g_pD3D_4D6C84) 
-    return;
+    return E_FAIL;
 
   g_pBackBuffer_4D6C90 = g_pRenderCtx->GetBackBuffer(0);
   if (!g_pBackBuffer_4D6C90) 
-    return;
+    return E_FAIL;
 
   g_pPrimaryBuffer_4D6C88 = g_pRenderCtx->GetPrimary();
   if (!g_pPrimaryBuffer_4D6C88) 
-    return;
+    return E_FAIL;
 
   g_pZBuffer_4D6C94 = g_pRenderCtx->GetZBuffer();
   if (!g_pZBuffer_4D6C94) 
-    return;
+    return E_FAIL;
 
   // --- 2. Setup Pixel Format & Scene Objects ---
   ddPixelFormat.dwSize = 32;
@@ -595,7 +568,7 @@ void hook_D3DInitBuffers_40AF60()
 
   // --- 5. Flattened Render State & HRESULT Checks ---
   hr = g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 1);
-  if (hr < 0) return;
+  if (hr < 0) return hr;
 
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_CLIPPING, 1);
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 2);
@@ -603,16 +576,16 @@ void hook_D3DInitBuffers_40AF60()
   g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MAGFILTER, 2);
 
   hr = g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
-  if (hr < 0) return;
+  if (hr < 0) return hr;
 
   hr = g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DITHERENABLE, 1);
-  if (hr < 0) return;
+  if (hr < 0) return hr;
 
   hr = g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_CULLMODE, 3);
-  if (hr < 0) return;
+  if (hr < 0) return hr;
 
   hr = g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
-  if (hr < 0) return;
+  if (hr < 0) return hr;
 
   g_bAlphaBlendEnabled_4D6CC0 = 1;
   g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ALPHAARG1, 2);
@@ -624,10 +597,10 @@ void hook_D3DInitBuffers_40AF60()
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
 
   hr = g_pD3DDevice_4D6C78->SetRenderState( D3DRENDERSTATE_COLORKEYENABLE, 1);
-  if (hr < 0) return;
+  if (hr < 0) return hr;
 
   hr = g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_COLORKEYBLENDENABLE, 1);
-  if (hr < 0) return;
+  if (hr < 0) return hr;
 
   SetLightingState(1u);
   memset(&d3dInitLight, 0, sizeof(d3dInitLight));
@@ -638,22 +611,25 @@ void hook_D3DInitBuffers_40AF60()
   CHanaObj__NewLightT3EF(&g_pLight_4D6CE0, &d3dInitLight);
 
   hr = g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_COLORVERTEX, 1);
-  if (hr < 0) return;
+  if (hr < 0) return hr;
 
   g_bSpecularEnable = 1;
   g_bSpecularEnableMirror_4B00A4 = 1;
 
   hr = g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, 1);
-  if (hr < 0) return;
+  if (hr < 0) return hr;
 
   hr = g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SPECULARMATERIALSOURCE, 0);
-  if (hr < 0) return;
+  if (hr < 0) return hr;
 
   hr = g_pRenderCtx->SetClearColor(0);
-  if (hr >= 0)
-  {
-    g_pRenderCtx->Clear(3);
-  }
+  if ( hr < 0 )
+    return hr;
+  hr = g_pRenderCtx->Clear(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER);
+  if ( hr >= 0 )
+    return S_OK;
+  else
+    return hr;
 }
 
 void __cdecl hook_CHanaObj__NewLightT3EF(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dlight)

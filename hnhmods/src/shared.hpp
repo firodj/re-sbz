@@ -20,6 +20,7 @@ extern LPDIRECT3D7& g_pD3D_4D6C84;
 //LPDIRECTDRAWSURFACE7 &g_pBackBuffer_4D6C90 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C90; // WRITABLE
 //LPDIRECTDRAWSURFACE7 &g_pZBuffer_4D6C94 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C94; // WRITABLE
 
+extern int& g_nMemCnt_4D6CF0;
 
 extern DWORD &g_dwFogEnable_4D6CF4;
 extern DWORD &g_dwFogRangeEnable_4D6CFC;
@@ -55,6 +56,29 @@ extern int      &g_nRenderHALMode_518CA0;
 extern uint32_t &g_nWidth2;
 extern uint32_t &g_fScreenScale_52F19C;
 extern BOOL     &g_bSpecularEnable;
+extern uint32_t &g_dwShadowOff;
+extern uint32_t &g_bForceDirectionalLights;
+extern CDisplayConfig &g_displayConfig_518C30;
+extern D3DXMATRIX &g_pM2;
+extern CD3DInitParam &g_D3DDevParams;
+extern uint32_t &g_bNonShowMenu_4D6C70;
+extern uint32_t &g_pCurMatObj;
+extern CHanaTextureT3EB_S2CC* &g_pCurTexObj;
+extern uint32_t &g_bAlphaBlendEnabled_4D6CC0;
+extern uint32_t &g_nAlphaOpState_4D6CC4;
+extern uint32_t &g_bCreateFlags_4D6CD4;
+extern HWND &g_hWndDev_4D6C74;
+extern uint32_t &g_nObjCount;
+extern uint32_t &g_nCapObjects_4CD780;
+extern CObjPoolMgr_S58* &g_pObjPool;
+extern D3DX_SURFACEFORMAT& g_dwSurfaceFormat_4B00B4;
+extern uint32_t& g_nColorBits_518C2C;
+extern uint32_t &g_nZBufDepthSelValue_518C98;
+extern int &g_nModeSetIndex;
+extern uint32_t &g_nWidth;
+extern uint32_t &g_nHeight;
+extern uint32_t &g_nHeight2;
+extern unsigned int& g_nBitness;
 
 extern int (&g_arrZBufDepthCountPerDev_518C40)[16];
 extern int (&g_arrZBufDepthsPerDev_518828)[256];
@@ -114,3 +138,11 @@ extern void (__cdecl*D3DDeinit)(void);
 extern LRESULT (__stdcall*WndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 extern BOOL(__cdecl* CheckRunGame_4863C8)(HWND hWnd, BOOL bFullScreen);
+
+extern void (__cdecl*CHanaObj__Free_40C1E4)(CHanaBase_S130 *pObj);
+extern void (__cdecl*CHanaObj__GetRealPath_486D9A)(LPSTR szPathOut, int nPathCode);
+extern void (__cdecl*CHanaObj__AddRef_40BFC3)(CHanaBase_S130* pObj);
+
+extern void(__cdecl* DisplayConfig_Init)(CDisplayConfig* pDisplayConfig);
+extern int(__cdecl* ShowTitleMenuWnd_428927)(HINSTANCE hInstance);
+extern HRESULT(__cdecl* D3DInitBuffers_40AF60)(void);

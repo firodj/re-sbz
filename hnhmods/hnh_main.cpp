@@ -88,6 +88,7 @@ void register_CHanaObj__Free_40C1E4();
 void register_MatrixLookAtLH_40C64A();
 void register_CheckRunGame_4863C8();
 void register_CDROM_VerifyDiscSignature_485C50();
+void register_ShowTitleMenu_427DA8();
 
 HANDLE g_hStartEvent = NULL;
 void InitHNH() {
@@ -124,6 +125,7 @@ void InitHNH() {
 	register_DDErrToString_423CE7();
 	register_CHanaObj__Free_40C1E4();
 	register_CheckRunGame_4863C8();
+	register_ShowTitleMenu_427DA8();
 
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)

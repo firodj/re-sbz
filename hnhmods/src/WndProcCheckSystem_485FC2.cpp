@@ -68,7 +68,6 @@ int& g_nObjectTableCount                 = *(int*)0x4D6C9C;
 LPDIRECTDRAW7 &g_pDD_4D6C7C              = *(LPDIRECTDRAW7 *)0x4D6C7C; // WRITABLE
 LPDIRECT3D7 &g_pD3D_4D6C84               = *(LPDIRECT3D7 *)0x4D6C84; // WRITABLE
 LPD3DXCONTEXT &g_pRenderCtx              = *(LPD3DXCONTEXT*)0x4D6C80; // WRITABLE
-uint32_t &g_nMemCnt_4D6CF0               = *(uint32_t *)0x4D6CF0; // WRITABLE
 
 // === FUNCTION POINTERS ===
 
