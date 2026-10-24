@@ -504,9 +504,10 @@ static LRESULT OnEngineInit(HWND hWnd)
 
 LRESULT __stdcall hook_WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-  static bool notyet = true;
-  if (notyet) {
-    DebugLog("[HNH:SUB] WndProcCheckSystem_485FC2\n"); notyet = false;
+  static int log_WndProcCheckSystem_485FC2 = 1;
+  if (log_WndProcCheckSystem_485FC2) {
+    DebugLog("[HNH:SUB] WndProcCheckSystem_485FC2\n");
+    log_WndProcCheckSystem_485FC2 = 0;
   }
 
   g_hwndParent = hWnd;

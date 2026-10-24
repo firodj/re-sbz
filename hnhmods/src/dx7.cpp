@@ -29,11 +29,17 @@ D3DXMATRIX * (__stdcall * D3DXMatrixInverse)(D3DXMATRIX *pOut, float *pfDetermin
 
 D3DXVECTOR3 *__stdcall hook_D3DXVec3Normalize(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV)
 {
-  DebugLog("[HNH:SUB] %s\n", "D3DXVec3Normalize_48A1EC");
-
   // Guard clause: Validate input pointers
   if (!pOut || !pV)
     return NULL;
+
+  // Logging
+  static int log_D3DXVec3Normalize_48A1EC = 1;
+  log_D3DXVec3Normalize_48A1EC--;
+  if (!log_D3DXVec3Normalize_48A1EC) {
+    DebugLog("[HNH:SUB] %s\n", "D3DXVec3Normalize_48A1EC");
+    log_D3DXVec3Normalize_48A1EC = 10000;
+  }
 
   // Calculate squared length of the vector
   float lengthSq = (pV->x * pV->x) + (pV->y * pV->y) + (pV->z * pV->z);
@@ -222,45 +228,45 @@ D3DXMATRIX *__cdecl hook_D3DXMatrixIdentity(D3DXMATRIX *pOut)
   return result;
 }
 
+LPVOID orig_D3DXMatrixMultiply = NULL;
+
 D3DXMATRIX *__stdcall hook_D3DXMatrixMultiply(D3DXMATRIX *pOut, const D3DXMATRIX *pM1, const D3DXMATRIX *pM2)
 {
-  DebugLog("[HNH:SUB] %s\n", "D3DXMatrixMultiply_48A4BC");
-
-  // Guard clause: Validate input pointers
   if (!pOut || !pM1 || !pM2)
-    return NULL;
+    return nullptr;
 
-  D3DXMATRIX tempResult;
-  const D3DXMATRIX *sourceM2 = pM2;
-
-  // Handle matrix aliasing (if output overlaps with input M2)
-  if (pM2 == pOut)
-  {
-    if (pM1 == pOut)
-    {
-      // If output overlaps with both, copy M1 first or handle safely
-      // Standard DX implementation handles this via a temporary buffer
-    }
-    qmemcpy(&tempResult, pM2, sizeof(tempResult));
-    sourceM2 = &tempResult;
+  // logging
+  static int log_D3DXMatrixMultiply_48A4BC = 1;
+  log_D3DXMatrixMultiply_48A4BC--;
+  if (!log_D3DXMatrixMultiply_48A4BC) {
+    DebugLog("[HNH:SUB] %s\n", "D3DXMatrixMultiply_48A4BC");
+    log_D3DXMatrixMultiply_48A4BC = 10000;
   }
 
-  // Perform standard 4x4 matrix multiplication (Row-major / DirectX convention)
-  // pOut = pM1 * sourceM2
+  // Use a temporary local matrix to safely handle aliasing 
+  // (if pOut points to the same memory as pM1 or pM2)
+  D3DXMATRIX tempResult;
+
+  // Access matrices as 2D arrays of floats (4x4)
+  const float(*m1)[4] = reinterpret_cast<const float(*)[4]>(pM1);
+  const float(*m2)[4] = reinterpret_cast<const float(*)[4]>(pM2);
+  float(*out)[4] = reinterpret_cast<float(*)[4]>(&tempResult);
+
+  // Standard 4x4 matrix multiplication: tempResult = m1 * m2
   for (int row = 0; row < 4; ++row)
   {
     for (int col = 0; col < 4; ++col)
     {
-      tempResult.m[row][col] = 
-        pM1->m[row][0] * sourceM2->m[0][col] +
-        pM1->m[row][1] * sourceM2->m[1][col] +
-        pM1->m[row][2] * sourceM2->m[2][col] +
-        pM1->m[row][3] * sourceM2->m[3][col];
+      out[row][col] = m1[row][0] * m2[0][col] +
+        m1[row][1] * m2[1][col] +
+        m1[row][2] * m2[2][col] +
+        m1[row][3] * m2[3][col];
     }
   }
 
-  // Copy the computed result back to pOut (safe if pOut == pM1)
-  qmemcpy(pOut, &tempResult, sizeof(*pOut));
+  // Copy the final result back to the output pointer safely
+  *pOut = tempResult;
+  return pOut;
 
   return pOut;
 }
@@ -359,7 +365,12 @@ D3DXMATRIX* WINAPI hook_D3DXMatrixInverse(D3DXMATRIX *pOut, float *pfDeterminant
   if (!pOut || !pM)
     return 0;
 
-  DebugLog("[HNH:SUB] %s\n", "D3DXMatrixInverse_48A5BD");
+  static int log_D3DXMatrixInverse_48A5BD = 1;
+  log_D3DXMatrixInverse_48A5BD--;
+  if (!log_D3DXMatrixInverse_48A5BD) {
+    DebugLog("[HNH:SUB] %s\n", "D3DXMatrixInverse_48A5BD");
+    log_D3DXMatrixInverse_48A5BD = 10000;
+  }
 
   // 1. Cache source matrix elements
   float m11 = pM->_11, m12 = pM->_12, m13 = pM->_13, m14 = pM->_14;
@@ -450,7 +461,7 @@ LPVOID hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName) {
 }
 
 void register_MatrixLookAtLH_40C64A() {
-  /*hnh_Hook(0x40C64A, hook_MatrixLookAtLH, "MatrixLookAtLH_40C64A");
+  hnh_Hook(0x40C64A, hook_MatrixLookAtLH, "MatrixLookAtLH_40C64A");
   hnh_Hook(0x48A1EC, hook_D3DXVec3Normalize, "D3DXVec3Normalize_48A1EC");
   hnh_Hook(0x48ABB3, hook_D3DXMatrixRotationAxis, "D3DXMatrixRotationAxis_48ABB3");
   hnh_Hook(0x40E3C0, hook_Vec3LengthSq, "Vec3LengthSq_40E3C0");
@@ -458,9 +469,9 @@ void register_MatrixLookAtLH_40C64A() {
   hnh_Hook(0x40E3F0, hook_Vec3Dot, "Vec3Dot_40E3F0");
   hnh_Hook(0x40DDF3, hook_DegreesToRadians, "DegreesToRadians_40DDF3");
   hnh_Hook(0x40CB94, hook_MatrixPerspectiveFovLH, "MatrixPerspectiveFovLH_40CB94");
-  hnh_Hook(0x40E450, hook_D3DXMatrixIdentity, "D3DXMatrixIdentity_40E450");*/
+  hnh_Hook(0x40E450, hook_D3DXMatrixIdentity, "D3DXMatrixIdentity_40E450");
 
-  // problem! hnh_Hook(0x48A4BC, hook_D3DXMatrixMultiply, "D3DXMatrixMultiply_48A4BC");
+  orig_D3DXMatrixMultiply = hnh_Hook(0x48A4BC, hook_D3DXMatrixMultiply, "D3DXMatrixMultiply_48A4BC");
   orig_D3DXMatrixInverse = hnh_Hook(0x48A5BD, hook_D3DXMatrixInverse, "D3DXMatrixInverse_48A5BD");
 
 }

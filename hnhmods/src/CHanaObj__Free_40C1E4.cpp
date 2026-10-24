@@ -979,7 +979,12 @@ void __cdecl hook_CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
 
 void __cdecl hook_CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj)
 {
-  DebugLog("[HNH:SUB] CHanaObj__Free_40C1E4\n");
+  static int log_CHanaObj__Free_40C1E4 = 1;
+  log_CHanaObj__Free_40C1E4--;
+  if (!log_CHanaObj__Free_40C1E4) {
+    DebugLog("[HNH:SUB] CHanaObj__Free_40C1E4\n");
+    log_CHanaObj__Free_40C1E4 = 1000;
+  }
 
   switch ( pObj->dwType )
   {
@@ -1126,7 +1131,12 @@ void __cdecl hook_CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode)
 
 void __cdecl hook_CHanaObj__AddRef_40BFC3(CHanaBase_S130 *pObj)
 {
-  DebugLog("[HNH:SUB] %s\n", "CHanaObj__AddRef_40BFC3");
+  static int log_CHanaObj__AddRef_40BFC3 = 1;
+  log_CHanaObj__AddRef_40BFC3--;
+  if (!log_CHanaObj__AddRef_40BFC3) {
+    DebugLog("[HNH:SUB] %s\n", "CHanaObj__AddRef_40BFC3");
+    log_CHanaObj__AddRef_40BFC3 = 1000;
+  }
 
   switch ( pObj->dwType )
   {

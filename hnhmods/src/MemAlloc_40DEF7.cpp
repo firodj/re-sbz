@@ -4,13 +4,19 @@
 #include "console.hpp"
 #include "shared.hpp"
 
+// === GLOBAL VARIABLES ===
 int &g_nMemCnt_4D6CF0 = *(int*)0x4D6CF0;
 char (&g_szDbgPrefix)[104] = *(char(*)[104])0x4D4718;
 int &g_nMinD3DPrintfLevel_534388 = *(int*)0x534388;
 
+// === GLOBAL FUNCTIONS ===
 void(__stdcall *D3DXGetErrorString)(int hr, size_t strLength, char* str) = reinterpret_cast<void (__stdcall*)(int hr, size_t strLength, char* str)>(0x48c80e);
-
 void(__cdecl* D3DXDprintf)(int nLevel, LPCSTR szMsg) = reinterpret_cast<void(__cdecl*)(int nLevel, LPCSTR szMsg)>(0x490AC6);
+int (__cdecl * MemFree_40DF64)(void *pBuf) = reinterpret_cast<int(__cdecl*)(void *pBuf)>(0x40DF64);
+void(__cdecl* PrintDebugError)(int hr) = reinterpret_cast<void(__cdecl*)(int)>(0x40A813);
+LPVOID (__cdecl * MemAlloc_40DEF7)(SIZE_T dwBytes) = reinterpret_cast<LPVOID(__cdecl*)(SIZE_T dwBytes)>(0x40DEF7);
+
+// === FUNCTION IMPLEMENTATIONS ===
 
 void __cdecl hook_D3DXDprintf(int nLevel, LPCSTR szMsg)
 {
@@ -28,8 +34,6 @@ void __cdecl hook_D3DXDprintf(int nLevel, LPCSTR szMsg)
   }
 }
 
-void(__cdecl* PrintDebugError)(int hr) = reinterpret_cast<void(__cdecl*)(int)>(0x40A813);
-
 void __cdecl hook_PrintDebugError(int hr)
 {
   CHAR str[512]; // [esp+0h] [ebp-200h] BYREF
@@ -43,8 +47,6 @@ void __cdecl hook_PrintDebugError(int hr)
   OutputDebugStringA("----D3DXL end------------------------------------------\n");
 }
 
-LPVOID (__cdecl * MemAlloc_40DEF7)(SIZE_T dwBytes) = reinterpret_cast<LPVOID(__cdecl*)(SIZE_T dwBytes)>(0x40DEF7);
-
 /**
  * Allocates memory with zero initialization and tracks allocation count.
  * @param dwBytes Number of bytes to allocate (excluding the extra 128‑byte overhead).
@@ -52,7 +54,12 @@ LPVOID (__cdecl * MemAlloc_40DEF7)(SIZE_T dwBytes) = reinterpret_cast<LPVOID(__c
  */
 LPVOID __cdecl hook_MemAlloc_40DEF7(SIZE_T dwBytes)
 {
-  DebugLog("[HNH:SUB] MemAlloc_40DEF7\n");
+  static int log_MemAlloc_40DEF7 = 1;
+  log_MemAlloc_40DEF7--;
+  if (!log_MemAlloc_40DEF7) {
+    DebugLog("[HNH:SUB] MemAlloc_40DEF7\n");
+    log_MemAlloc_40DEF7 = 1000;
+  }
 
   LPVOID ptr; // Allocated memory pointer
 
@@ -74,11 +81,14 @@ LPVOID __cdecl hook_MemAlloc_40DEF7(SIZE_T dwBytes)
   }
 }
 
-int (__cdecl * MemFree_40DF64)(void *pBuf) = reinterpret_cast<int(__cdecl*)(void *pBuf)>(0x40DF64);
-
 int __cdecl hook_MemFree_40DF64(void *pBuf)
 {
-  DebugLog("[HNH:SUB] MemFree_40DF64\n");
+  static int log_MemFree_40DF64 = 1;
+  log_MemFree_40DF64--;
+  if (!log_MemFree_40DF64) {
+    DebugLog("[HNH:SUB] MemFree_40DF64\n");
+    log_MemFree_40DF64 = 1000;
+  }
 
   if ( pBuf )
   {
