@@ -901,7 +901,12 @@ void __cdecl hook_CalculateLocalRotationMatrix(
 {
   D3DXMATRIX pOut; // [esp+0h] [ebp-40h] BYREF
 
-  DebugLog("[HNH:SUB] %s\n", "CalculateLocalRotationMatrix_407047");
+  static int log_CalculateLocalRotationMatrix_407047 = 1;
+  log_CalculateLocalRotationMatrix_407047--;
+  if (!log_CalculateLocalRotationMatrix_407047) {
+    DebugLog("[HNH:SUB] %s\n", "CalculateLocalRotationMatrix_407047");
+    log_CalculateLocalRotationMatrix_407047 = 1000;
+  }
 
   D3DXMatrixInverse(&pOut, 0, &pSceneFrame->mat4x4_after);
   D3DXMatrixMultiply(&pOut, &pCameraFrame->mat4x4_after, &pOut);

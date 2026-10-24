@@ -206,7 +206,12 @@ D3DXMATRIX *__cdecl hook_D3DXMatrixIdentity(D3DXMATRIX *pOut)
 {
   D3DXMATRIX *result; // eax
 
-  DebugLog("[HNH:SUB] %s\n", "D3DXMatrixIdentity_40E450");
+  static int log_D3DXMatrixIdentity = 1;
+  log_D3DXMatrixIdentity--;
+  if (!log_D3DXMatrixIdentity) {
+    DebugLog("[HNH:SUB] %s\n", "D3DXMatrixIdentity_40E450");
+    log_D3DXMatrixIdentity = 1000;
+  }
 
   result = pOut;
   pOut->m[3][2] = 0.0;

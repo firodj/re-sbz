@@ -69,7 +69,12 @@ void (__cdecl * CHanaObj__AddRef_40BFC3)(CHanaBase_S130 *pObj) = reinterpret_cas
 // === FUNCTION IMPLEMENTATIONS ===
 void __cdecl hook_CHanaObj__RemoveFromGlobalRef(CHanaBase_S130 *pObj)
 {
-  DebugLog("[HNH:SUB] CHanaObj__RemoveFromGlobalRef_40BD4D\n");
+  static int log_CHanaObj__RemoveFromGlobalRef_40BD4D = 1;
+  log_CHanaObj__RemoveFromGlobalRef_40BD4D--;
+  if (!log_CHanaObj__RemoveFromGlobalRef_40BD4D) {
+    DebugLog("[HNH:SUB] CHanaObj__RemoveFromGlobalRef_40BD4D\n");
+    log_CHanaObj__RemoveFromGlobalRef_40BD4D = 1000;
+  }
 
   if ( pObj->nIndex_108 > 0 )
   {
@@ -622,7 +627,12 @@ void __cdecl hook_ApplyLightSettings(CHanaLightT3EF_S1A0 *pLight)
 {
   CHanaFrameT3EC_S354 *pHanaFrame; // [esp+4h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] ApplyLightSettings_40929C\n");
+  static int log_ApplyLightSettings = 1;
+  log_ApplyLightSettings--;
+  if (!log_ApplyLightSettings) {
+    DebugLog("[HNH:SUB] ApplyLightSettings_40929C\n");
+    log_ApplyLightSettings = 1000;
+  }
 
   if ( g_nLightningEnabled )
   {
