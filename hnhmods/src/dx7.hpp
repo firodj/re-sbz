@@ -238,3 +238,7 @@ extern D3DXMATRIX* (__cdecl*D3DXMatrixIdentity)(D3DXMATRIX* pOut);
 extern D3DXMATRIX* (__stdcall*D3DXMatrixMultiply)(D3DXMATRIX* pOut, const D3DXMATRIX* pM1, const D3DXMATRIX* pM2);
 extern HRESULT (__cdecl*MatrixLookAtLH)(D3DXMATRIX* pMat, const D3DXVECTOR3* pEye, const D3DXVECTOR3* pAt, const D3DXVECTOR3* pUp);
 extern D3DXMATRIX* (__stdcall*D3DXMatrixInverse)(D3DXMATRIX* pOut, float* pfDeterminant, const D3DXMATRIX* pM);
+extern HRESULT(__stdcall* D3DXCreateContextEx)(unsigned int devIndex, unsigned int flags, HWND hwnd, HWND focusWnd, int nNumColorBits, int nNumAlphaBits, int nNumDepthBits, int nNumStencilBits, int nNumBackBuffers, int nWidth, int nHeight, int nRefreshRate, LPD3DXCONTEXT* ppCtx);
+extern HRESULT(__stdcall* D3DXCreateContext)(unsigned int devIndex, unsigned int flags, HWND hWnd, int width, int height, LPD3DXCONTEXT* ppCtx);
+extern HRESULT(__stdcall* D3DXGetSurfaceFormat)(int devIndex, D3DX_VIDMODEDESC* pVidMode, unsigned int surfClassFlags, unsigned int which, D3DX_SURFACEFORMAT* pFormat);
+extern DWORD(__stdcall* D3DXGetMaxSurfaceFormats)(int devIndex, _DWORD* pVidMode, int surfClassFlags);

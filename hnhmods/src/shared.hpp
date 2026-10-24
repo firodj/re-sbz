@@ -79,6 +79,8 @@ extern uint32_t &g_nWidth;
 extern uint32_t &g_nHeight;
 extern uint32_t &g_nHeight2;
 extern unsigned int& g_nBitness;
+extern uint32_t& g_nDeviceCount;
+extern D3DX_DEVICEDESC*& g_pDevicesDesc;
 
 extern int (&g_arrZBufDepthCountPerDev_518C40)[16];
 extern int (&g_arrZBufDepthsPerDev_518828)[256];
