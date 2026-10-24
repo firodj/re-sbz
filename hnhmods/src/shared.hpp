@@ -155,3 +155,7 @@ extern void(__cdecl* CHanaObj__NewFrameRootT3EC_S2D4)(CHanaFrameRootT3EC_S2D4** 
 extern void(__cdecl* CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354* pParent, CHanaFrameT3EC_S354** ppOutFrame);
 extern void(__cdecl* RemoveChild_4058C3)(CHanaFrameRootT3EC_S2D4* pParent, CHanaFrameT3EC_S354* pChild);
 
+extern void(__cdecl* CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354* pParent, CHanaFrameT3EC_S354** ppOutFrame);
+extern void(__cdecl* AttachChild_4055FD)(CHanaFrameRootT3EC_S2D4* pParent, CHanaFrameT3EC_S354* pChild);
+extern void(__cdecl* MtxStackStartMultLocal_4074EF)(void);
+extern void(__cdecl* MtxStackRecursiveMulLocal_4075B0)(CHanaFrameT3EC_S354* pFrame);

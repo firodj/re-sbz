@@ -60,6 +60,60 @@ void __cdecl hook_CHanaObj__NewFrameT3EC_S354_404720(CHanaFrameT3EC_S354 *pParen
     *ppOutFrame = pNewFrame;
 }
 
+
+// MtxStackRecursiveMulLocal_4075B0 at 0x4075B0
+// Recursively computes world matrices for a frame and its children
+// Uses the global D3DX matrix stack (g_pMatrixStack_4CD77C)
+
+void __cdecl hook_MtxStackRecursiveMulLocal_4075B0(CHanaFrameT3EC_S354 *pFrame)
+{
+  unsigned int i;
+  CHanaNode *pChildNode;
+
+  static int log_MtxStackRecursiveMulLocal_4075B0 = 1;
+  log_MtxStackRecursiveMulLocal_4075B0--;
+  if (!log_MtxStackRecursiveMulLocal_4075B0) {
+    DebugLog("[HNHS:SUB] %s\n", "MtxStackRecursiveMulLocal_4075B0");
+    log_MtxStackRecursiveMulLocal_4075B0 = 10000;
+  }
+
+  // Copy current stack top (parent's world matrix) to frame's mat4x4_before
+  qmemcpy(
+    &pFrame->mat4x4_before,
+    g_pMatrixStack_4CD77C->GetTop(),
+    sizeof(pFrame->mat4x4_before));
+
+  // Push new matrix onto stack
+  g_pMatrixStack_4CD77C->Push();
+
+  // Multiply by this frame's local matrix (mat4x4_fmrx)
+  g_pMatrixStack_4CD77C->MultMatrixLocal(&pFrame->mat4x4_fmrx);
+
+  // Copy result (this frame's world matrix) to mat4x4_after
+  qmemcpy(
+    &pFrame->mat4x4_after,
+    g_pMatrixStack_4CD77C->GetTop(),
+    sizeof(pFrame->mat4x4_after));
+
+  // Mark as processed/root (though this seems odd for non-root frames)
+  pFrame->bIsRoot_1F8 = 1;
+
+  // Recursively process all children
+  if (pFrame->nCountChild > 0)
+  {
+    pChildNode = pFrame->pFirstChildNode;
+    for (i = 0; i < pFrame->nCountChild; ++i)
+    {
+      MtxStackRecursiveMulLocal_4075B0(pChildNode->pData);
+      pChildNode = pChildNode->pNext;
+    }
+  }
+
+  // Pop this frame's matrix from stack (restore parent's matrix)
+  g_pMatrixStack_4CD77C->Pop();
+}
+
+
 // MtxStackStartMultLocal_4074EF at 0x4074EF
 // Creates a D3DX matrix stack, loads the scene root frame matrix,
 // recursively multiplies local matrices for all child frames,
@@ -70,7 +124,12 @@ void __cdecl hook_MtxStackStartMultLocal_4074EF()
   unsigned int i;
   CHanaNode *pChildNode;
 
-  DebugLog("[HNH:SUB] %s\n", "MtxStackStartMultLocal_4074EF");
+  static int log_MtxStackStartMultLocal_4074EF = 1;
+  log_MtxStackStartMultLocal_4074EF--;
+  if (!log_MtxStackStartMultLocal_4074EF) {
+    DebugLog("[HNH:SUB] %s\n", "MtxStackStartMultLocal_4074EF");
+    log_MtxStackStartMultLocal_4074EF = 1000;
+  }
 
   // Create matrix stack
   D3DXCreateMatrixStack(0, &g_pMatrixStack_4CD77C);
@@ -146,7 +205,8 @@ void __cdecl hook_AttachChild_4055FD(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFram
 
 // Register hook if needed
 void register_CHanaObj__NewFrameT3EC_S354_404720() {
-    hnh_Hook(0x404720, hook_CHanaObj__NewFrameT3EC_S354_404720, "CHanaObj__NewFrameT3EC_S354_404720");
-    hnh_Hook(0x4055FD, hook_AttachChild_4055FD, "AttachChild_4055FD");
-    hnh_Hook(0x4074EF, hook_MtxStackStartMultLocal_4074EF, "MtxStackStartMultLocal_4074EF");
+  hnh_Hook(0x404720, hook_CHanaObj__NewFrameT3EC_S354_404720, "CHanaObj__NewFrameT3EC_S354_404720");
+  hnh_Hook(0x4055FD, hook_AttachChild_4055FD, "AttachChild_4055FD");
+  hnh_Hook(0x4074EF, hook_MtxStackStartMultLocal_4074EF, "MtxStackStartMultLocal_4074EF");
+  hnh_Hook(0x4075B0, hook_MtxStackRecursiveMulLocal_4075B0, "MtxStackRecursiveMulLocal_4075B0");
 }
