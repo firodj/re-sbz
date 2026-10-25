@@ -56,5 +56,9 @@ void AssertHanaStructSize() {
   static_assert(sizeof(CBMPColor) == 0x8, "CBMPColor");
   static_assert(sizeof(CBMPFile) == 0x10, "CBMPFile");
 
+  static_assert(sizeof(CSceneSlot) == 0x8, "CSceneSlot");
+  static_assert(sizeof(CSceneMenuState_9C) == 0x9C, "CSceneMenuState_9C");
+  static_assert(sizeof(CSceneState) == 0x190, "CSceneState");
+
   DebugLog("[%s] %s\n", "INFO", "finished AssertHanaStructSize");
 }

@@ -93,6 +93,7 @@ void register_CHanaObj__NewMateT3EE_S184_40F720();
 void register_CHanaObj__NewFrameRootT3EC_S2D4_404908();
 void register_CHanaObj__NewFrameT3EC_S354_404720();
 void register_WndProcTitleMenu_428C11();
+void register_GameMainLoop_47F013();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -135,6 +136,7 @@ void InitHNH() {
 	register_CHanaObj__NewFrameRootT3EC_S2D4_404908();
 	register_CHanaObj__NewFrameT3EC_S354_404720();
 	register_WndProcTitleMenu_428C11();
+	register_GameMainLoop_47F013();
 
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)

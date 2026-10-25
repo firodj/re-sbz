@@ -1,6 +1,8 @@
 #pragma once
 
 #define DIRECT3D_VERSION 0x0700
+#define DIRECTINPUT_VERSION 0x0700
+
 // add headers that you want to pre-compile here
 #include "framework.h"
 
@@ -15,6 +17,7 @@
 #include <mmreg.h>  // Declares WAVEFORMATEX
 #include <dsound.h>
 #include <ddraw.h>
+#include <dinput.h>
 #include <timeapi.h>
 
 #include "minhook/include/MinHook.h"
@@ -346,3 +349,5 @@ extern HRESULT(__stdcall* D3DXGetSurfaceFormat)(int devIndex, D3DX_VIDMODEDESC* 
 extern DWORD(__stdcall* D3DXGetMaxSurfaceFormats)(int devIndex, _DWORD* pVidMode, int surfClassFlags);
 extern HRESULT(__stdcall* D3DXCreateMatrixStack)(DWORD flags, LPD3DXMATRIXSTACK* ppStack);
 
+extern BOOL(__cdecl* DIMouseKeybInit_43AF33)(int bAcquire);
+extern BOOL(__cdecl* DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd);

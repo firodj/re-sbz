@@ -13,13 +13,25 @@
 HINSTANCE &g_hInstance  = *(HINSTANCE*)0x52F5C8;
 HWND      &g_hwndParent = *(HWND*)0x52F5CC;
 
+BOOL                 &g_bdiAcquire_5196E0 = *(BOOL*)0x5196E0;
+LPDIRECTINPUTA       &g_ppDI = *(LPDIRECTINPUTA *)0x5196D4; // WRITABLE
+LPDIRECTINPUTDEVICEA &g_pdiMouse_5196D8 = *(LPDIRECTINPUTDEVICEA *)0x5196D8; // WRITABLE
+DIDATAFORMAT         &g_diMouseFormat_4ACD20 = *(DIDATAFORMAT *)0x4ACD20; // READ-ONLY
+LPDIRECTINPUTDEVICEA &g_pdiKeyboard = *(LPDIRECTINPUTDEVICEA *)0x5196DC; // WRITABLE
+DIDATAFORMAT         &g_diKeyboardFormat_4ACD08 = *(DIDATAFORMAT *)0x4ACD08; // READ-ONLY
+
+
 // === GLOBAL FUNCTIONS ===
-int (__cdecl *pfnDInputInit_43AD67)(HINSTANCE hinst, HWND hWnd) = reinterpret_cast<int(__cdecl*)(HINSTANCE, HWND)>(0x43AD67);
-void (__cdecl *pfnGameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x47F013);
-LRESULT(__stdcall* pfnWndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) =
-  reinterpret_cast<LRESULT(__stdcall*)(HWND, UINT, WPARAM, LPARAM)>(0x485FC2);
+
+void (__cdecl *GameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x47F013);
+
+BOOL (__cdecl*DIMouseKeybInit_43AF33)(int bAcquire) = reinterpret_cast<
+  BOOL(__cdecl*)(int bAcquire)>(0x43AF33);
+BOOL(__cdecl* DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd) = reinterpret_cast<
+  BOOL (__cdecl*)(HINSTANCE hinst, HWND hWnd)>(0x43AD67);
 
 // === FUNCTION IMPLEMENTATIONS ===
+
 int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
     size_t stringLength; // Length of window text
@@ -113,7 +125,7 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
                 // Initialize subsystems
                 directInputInitResult = 0;
                 soundInitResult = 0;
-                pfnDInputInit_43AD67(g_hInstance, g_hwndParent);
+                DInputInit_43AD67(g_hInstance, g_hwndParent);
                 directInputInitResult = 1;
                 soundInitResult = 1;
                 
@@ -137,7 +149,7 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
                 
                 // Cleanup
                 InvalidateRect(g_hwndParent, 0, 1);
-                pfnGameMainLoop_47F013();
+                GameMainLoop_47F013();
                 DestroyWindow(g_hwndParent);
                 
                 // Final cleanup checks
@@ -162,6 +174,52 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
     }
 }
 
+
+BOOL __cdecl hook_DIMouseKeybInit_43AF33(int bAcquire)
+{
+  if ( !g_pdiMouse_5196D8 )
+    return 0;
+  DebugLog("[HNH:SUB] DIMouseKeybInit_43AF33\n");
+  g_bdiAcquire_5196E0 = bAcquire;
+  if ( bAcquire )
+  {
+    g_pdiMouse_5196D8->Acquire();
+    g_pdiKeyboard->Acquire();
+  }
+  else
+  {
+    g_pdiMouse_5196D8->Unacquire();
+    g_pdiKeyboard->Unacquire();
+  }
+  return 1;
+}
+
+BOOL __cdecl hook_DInputInit_43AD67(HINSTANCE hinst, HWND hWnd)
+{
+  DebugLog("[HNH:SUB] DInputInit_43AD67\n");
+
+  if ( DirectInputCreateA(hinst, 0x700u, &g_ppDI, 0) < 0 )
+    return 0;
+  if ( g_ppDI->CreateDevice(GUID_SysMouse, &g_pdiMouse_5196D8, 0) < 0 )
+    return 0;
+  if ( g_pdiMouse_5196D8->SetDataFormat(&g_diMouseFormat_4ACD20) < 0 )
+    return 0;
+  if ( g_pdiMouse_5196D8->SetCooperativeLevel(hWnd, 21) < 0 )
+    return 0;
+  if ( g_ppDI->CreateDevice(GUID_SysKeyboard, &g_pdiKeyboard, 0) < 0 )
+    return 0;
+  if ( g_pdiKeyboard->SetDataFormat(&g_diKeyboardFormat_4ACD08) < 0 )
+    return 0;
+  if ( g_pdiKeyboard->SetCooperativeLevel(hWnd, 21) < 0 )
+    return 0;
+  DIMouseKeybInit_43AF33(1);
+  return 1;
+}
+
+
 void register_WinMain_485CE0() {
     hnh_Hook(0x485CE0, WinMain_485CE0, "WinMain_485CE0");
+
+    hnh_Hook(0x43AF33, hook_DIMouseKeybInit_43AF33, "DIMouseKeybInit_43AF33");
+    hnh_Hook(0x43AD67, hook_DInputInit_43AD67, "DInputInit_43AD67");
 }

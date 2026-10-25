@@ -4,7 +4,14 @@
 #include "struct.hpp"
 
 extern HINSTANCE &g_hInstance;
-extern HWND &g_hwndParent;
+extern HWND      &g_hwndParent;
+
+extern BOOL                 &g_bdiAcquire_5196E0;
+extern LPDIRECTINPUTA       &g_ppDI;
+extern LPDIRECTINPUTDEVICEA &g_pdiMouse_5196D8;
+extern DIDATAFORMAT         &g_diMouseFormat_4ACD20;
+extern LPDIRECTINPUTDEVICEA &g_pdiKeyboard;
+extern DIDATAFORMAT         &g_diKeyboardFormat_4ACD08;
 
 extern LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78;
 extern D3DDEVICEDESC7 &g_d3dDevDesc_4D6980;
@@ -143,6 +150,11 @@ extern void (__cdecl*D3DDeinit)(void);
 extern LRESULT (__stdcall*WndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 extern BOOL(__cdecl* CheckRunGame_4863C8)(HWND hWnd, BOOL bFullScreen);
+extern void (__cdecl*GameMainLoop_47F013)(void);
+extern DWORD(__cdecl* ReadFileToBuffer)(LPCSTR lpFileName, LPVOID lpBuffer, int nBufSize);
+extern void(__cdecl* WriteBufferToFile)(LPCSTR lpFileName, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite);
+extern void(__cdecl* D3DSetRenderStates_4276C0)(void);
+
 
 extern void (__cdecl*CHanaObj__Free_40C1E4)(CHanaBase_S130 *pObj);
 extern void (__cdecl*CHanaObj__GetRealPath_486D9A)(LPSTR szPathOut, int nPathCode);

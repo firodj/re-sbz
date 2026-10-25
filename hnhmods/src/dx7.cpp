@@ -4,6 +4,8 @@
 #include <cmath>
 #include <corecrt_math_defines.h>
 
+// === GLOBAL VARIABLES ===
+
 // === GLOBAL FUNCTIONS ===
 HRESULT (*D3DXUninitialize)(void) = reinterpret_cast<HRESULT(*)(void)>(0x48B8F0);
 HRESULT (*D3DXInitialize)(void) = (HRESULT(*)(void))0x48B80B; 
