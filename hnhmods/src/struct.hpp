@@ -618,6 +618,15 @@ struct CSceneState  // sizeof=0x190
   float fPosY_18C;                       // +0x18C
 };
 
+struct CInputState // sizeof=0x8
+{
+  __int16 mouseX_0;
+  __int16 mouseY_2;
+  char mouseBtn_4;
+  char kbdMove_5;
+  char true_6;
+  char gap_7;
+};
 
 #pragma pack(pop)
 

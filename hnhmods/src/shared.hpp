@@ -177,7 +177,6 @@ extern void(__cdecl* RemoveChild_4058C3)(CHanaFrameRootT3EC_S2D4* pParent, CHana
 
 // === CDROM_VerifyDiscSignature.cpp ===
 
-
 extern BOOL(__cdecl* CDROM_VerifyDiscSignature)(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize);
 
 // === DEFINED DDErrToString.cpp ===
@@ -191,6 +190,9 @@ extern BOOL (__cdecl*IsFileExists_47E8EE)(CHAR* pszFilePath);
 // === DEFINED GameMainLoop.cpp ===
 
 extern void (__cdecl*GameMainLoop_47F013)(void);
+extern LPDIRECTDRAWSURFACE7(__cdecl* GetSurfaceFromBmp_419DE5)(LPCSTR lpFileName);
+extern HRESULT(__cdecl* GetDC_4188B4)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC);
+extern int(__cdecl* ConvertFrom640AsInt)(int n);
 
 // === DEFINED CHanaObj__NewFrameT3EC_S354.cpp ===
 
@@ -202,7 +204,7 @@ extern void(__cdecl* AttachChild_4055FD)(CHanaFrameRootT3EC_S2D4* pParent, CHana
 extern void(__cdecl* MtxStackStartMultLocal_4074EF)(void);
 extern void(__cdecl* MtxStackRecursiveMulLocal_4075B0)(CHanaFrameT3EC_S354* pFrame);
 
-// === WndProcTitleMenu.cpp
+// === DEFINED WndProcTitleMenu.cpp ===
 
 extern WNDPROC WndProcTitleMenu_428C11;
 extern BOOL(__cdecl* FreeBmp_4211ED)(CBMPFile* pBMPFile);

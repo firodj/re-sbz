@@ -20,8 +20,9 @@
 #include <dinput.h>
 #include <timeapi.h>
 
-#include "minhook/include/MinHook.h"
 #include "../d3dx/ida_defs.hpp"
+
+#include "minhook/include/MinHook.h"
 
 //-------------------------------------------------------------------------
 // ID3DXContext interface: 

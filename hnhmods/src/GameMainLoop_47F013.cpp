@@ -224,6 +224,8 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_GetSurfaceFromBmp_419DE5(LPCSTR lpFileName)
   HRESULT hr; // [esp+Ch] [ebp-80h]
   DDSURFACEDESC2 ddSurfaceDesc; // [esp+10h] [ebp-7Ch] BYREF
 
+  DebugLog("[HNH:SUB] GetSurfaceFromBmp_419DE5\n");
+
   pBMPFile = LoadBmp_420DF0(lpFileName);
   if ( !pBMPFile )
     return 0;
@@ -245,7 +247,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_GetSurfaceFromBmp_419DE5(LPCSTR lpFileName)
   else
   {
     hr = GetDC_4188B4(pDDSurface, &hdc);
-    if ( hr )
+    if ( hr != S_OK )
     {
       if ( pDDSurface )
       {
@@ -279,6 +281,83 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_GetSurfaceFromBmp_419DE5(LPCSTR lpFileName)
   }
 }
 
+HRESULT __cdecl hook_GetDC_4188B4(LPDIRECTDRAWSURFACE7 pDDSurface, HDC *pDC)
+{
+  int nRetry; // [esp+0h] [ebp-8h]
+  HRESULT hResult; // [esp+4h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] GetDC_4188B4\n");
+
+  nRetry = 0;
+  while ( 1 )
+  {
+    hResult = pDDSurface->GetDC(pDC);
+    if ( hResult == S_OK )
+      break;
+    if ( ++nRetry > 30 )
+    {
+      *pDC = 0;
+      return hResult;
+    }
+    Sleep(1u);
+  }
+  return hResult;
+}
+
+char (&g_BayerDitherMatrix8x8)[] = *(char (*)[])0x4B23B0;
+
+int __cdecl hook_BMP_DitherRGB24ToRGB565(char b, char g, char r, int x, int y)
+{
+  int ditherY; // eax
+  int ditherX; // ecx
+  unsigned __int16 g6; // [esp+0h] [ebp-18h]
+  unsigned __int16 b5; // [esp+Ch] [ebp-Ch]
+  unsigned __int16 r5; // [esp+10h] [ebp-8h]
+
+  DebugLog("[HNH:SUB] %s\n", "BMP_DitherRGB24ToRGB565_421BD5");
+
+  ditherY = y % 8;
+  ditherX = x % 8;
+  r5 = b & 0xF8;
+  if ( g_BayerDitherMatrix8x8[72 * (b & 7) + 9 * (y % 8) + x % 8] == '1' )
+  {
+    r5 += 8;
+    if ( r5 > 0xF8u )
+      r5 = 0xF8;
+  }
+  g6 = g & 0xF8;
+  if ( g_BayerDitherMatrix8x8[72 * (g & 7) + 9 * ditherY + ditherX] == '1' )
+  {
+    g6 += 8;
+    if ( g6 > 0xF8u )
+      g6 = 0xF8;
+  }
+  b5 = r & 0xF8;
+  if ( g_BayerDitherMatrix8x8[72 * (r & 7) + 9 * ditherY + ditherX] == '1' )
+  {
+    b5 += 8;
+    if ( b5 > 0xF8u )
+      b5 = 0xF8;
+  }
+  return (r5 >> 3) | (4 * g6) | (b5 << 7);
+}
+
+int __cdecl hook_ConvertFrom640AsInt(int v)
+{
+  static int log_ConvertFrom640AsInt = 1;
+  log_ConvertFrom640AsInt--;
+  if (!log_ConvertFrom640AsInt) {
+    DebugLog("[HNH:SUB] %s\n", "ConvertFrom640AsInt_47E6AF");
+    log_ConvertFrom640AsInt = 1000;
+  }
+
+  return g_fScreenScale_52F19C * v / 640;
+}
+
 void register_GameMainLoop_47F013() {
     hnh_Hook(0x47F013, hook_GameMainLoop_47F013, "GameMainLoop_47F013");
+    hnh_Hook(0x419DE5, hook_GetSurfaceFromBmp_419DE5, "GetSurfaceFromBmp_419DE5");
+    hnh_Hook(0x4188B4, hook_GetDC_4188B4, "GetDC_4188B4");
+    hnh_Hook(0x421BD5, hook_BMP_DitherRGB24ToRGB565, "BMP_DitherRGB24ToRGB565");
+    hnh_Hook(0x47E6AF, hook_ConvertFrom640AsInt, "ConvertFrom640AsInt_47E6AF");
 }

@@ -59,6 +59,7 @@ void AssertHanaStructSize() {
   static_assert(sizeof(CSceneSlot) == 0x8, "CSceneSlot");
   static_assert(sizeof(CSceneMenuState_9C) == 0x9C, "CSceneMenuState_9C");
   static_assert(sizeof(CSceneState) == 0x190, "CSceneState");
+  static_assert(sizeof(CInputState) == 0x8, "CInputState");
 
   DebugLog("[%s] %s\n", "INFO", "finished AssertHanaStructSize");
 }

@@ -117,6 +117,7 @@ typedef int bool;       // we want to use bool in our C programs
 #ifndef LOBYTE
 #define LOBYTE(x)  BYTEn(x,LOW_IND(x,_BYTE))
 #endif
+#define LOBYTE_(x)  BYTEn(x,LOW_IND(x,_BYTE))
 
 #ifndef LOWORD
 #define LOWORD(x)  WORDn(x,LOW_IND(x,_WORD))
