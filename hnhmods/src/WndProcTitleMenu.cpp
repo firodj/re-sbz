@@ -116,1018 +116,646 @@ CBMPFile *__cdecl hook_LoadBmp_420DF0(LPCSTR lpFileName)
   }
 }
 
+// === TITLE MENU HELPERS ===
+
+// Exclusive-bounds hit test: x1 < x < x2, y1 < y < y2.
+static bool PtInBox(const POINT &Point, int x1, int y1, int x2, int y2)
+{
+  return x1 < Point.x && Point.x < x2 && y1 < Point.y && Point.y < y2;
+}
+
+// Tracks the left mouse button; true only on the frame it goes down.
+static int PollLMouseButton()
+{
+  if ( GetAsyncKeyState(VK_LBUTTON) >> 8 )
+  {
+    if ( !g_bLMouseClick )
+    {
+      g_bLMouseClick = 1;
+      return 1;
+    }
+  }
+  else
+  {
+    g_bLMouseClick = 0;
+  }
+  return 0;
+}
+
+static void FreeTitleMenuBitmaps()
+{
+  if ( g_pbmpDd )
+    FreeBmp_4211ED(g_pbmpDd);
+  if ( g_pbmpDdBt )
+    FreeBmp_4211ED(g_pbmpDdBt);
+  if ( g_pbmpDd2 )
+    FreeBmp_4211ED(g_pbmpDd2);
+  if ( g_pbmpDdBt3 )
+    FreeBmp_4211ED(g_pbmpDdBt3);
+  g_pbmpDdBt3 = 0;
+  g_pbmpDd2 = 0;
+  g_pbmpDdBt = 0;
+  g_pbmpDd = 0;
+}
+
+// Blits a whole bitmap with its origin at (x, y).
+static void BlitBmp(HDC hDC, int x, int y, CBMPFile *pBmp)
+{
+  int nWidth = pBmp->pBitmapInfoHeader->biWidth;
+  int nHeight = pBmp->pBitmapInfoHeader->biHeight;
+  StretchDIBits(hDC, x, y, nWidth, nHeight, 0, 0, nWidth, nHeight, pBmp->pData,
+    (BITMAPINFO *)pBmp->pBitmapInfoHeader, 0, SRCCOPY);
+}
+
+// Blits a w*h cell of pBmp; srcYFromBottom is measured up from the bottom edge.
+static void BlitBmpPart(HDC hDC, int x, int y, int w, int h, CBMPFile *pBmp, int srcX,
+  int srcYFromBottom)
+{
+  StretchDIBits(hDC, x, y, w, h, srcX, pBmp->pBitmapInfoHeader->biHeight - srcYFromBottom,
+    w, h, pBmp->pData, (BITMAPINFO *)pBmp->pBitmapInfoHeader, 0, SRCCOPY);
+}
+
+// Draws one help/tip line in the fixed 13px cell pitch used by the config screen.
+static void DrawTip(HDC hDC, int xBase, int y, LPCSTR pszText)
+{
+  DrawTextPairs(hDC, xBase, y, 13, (LPSTR)pszText, lstrlenA(pszText));
+}
+
+// Stores the picked video mode into the globals the renderer reads, then closes the menu.
+static void StartGame(HWND hWnd)
+{
+  g_bRunGame = 1;
+  g_nModeSetIndex = g_nRenderHALMode_518CA0;
+  GetNthActiveVideoMode(&g_displayConfig_518C30, g_nRenderHALMode_518CA0,
+    g_nResolutionMode_518C80, &g_nWidth, &g_nHeight, &g_nBitness);
+  g_nZBufDepthSelValue_518C98 = g_arrZBufDepthsPerDev_518828[16 * g_nModeSetIndex + g_nZBufDepthMode_518C9C];
+  DestroyWindow(hWnd);
+}
+
+// Prefers the first device whose description mentions "3D HAL", else "Emulation".
+static void PickDefaultRenderHALMode()
+{
+  D3DX_DEVICEDESC *parrD3DXDevDesc = g_displayConfig_518C30.parrD3DXDevDesc;
+
+  g_nRenderHALMode_518CA0 = 0;
+  for ( int i = 0; i < g_displayConfig_518C30.nDeviceCount; ++i )
+  {
+    int cchDriverDesc = lstrlenA(parrD3DXDevDesc->driverDesc);
+    if ( !memcmp(&parrD3DXDevDesc->ddDeviceID.Data4[cchDriverDesc + 2], "3D HAL", 6u) )
+    {
+      g_nRenderHALMode_518CA0 = i;
+      return;
+    }
+    ++parrD3DXDevDesc;
+  }
+  parrD3DXDevDesc = g_displayConfig_518C30.parrD3DXDevDesc;
+  for ( int i = 0; i < g_displayConfig_518C30.nDeviceCount; ++i )
+  {
+    int cchDriverDesc = lstrlenA(parrD3DXDevDesc->driverDesc);
+    if ( !memcmp(&parrD3DXDevDesc->ddDeviceID.Data3 + cchDriverDesc + 1, "Emulation", 9u) )
+    {
+      g_nRenderHALMode_518CA0 = i;
+      return;
+    }
+    ++parrD3DXDevDesc;
+  }
+}
+
+// Keeps renderer/z-buffer selections inside their per-device ranges.
+static void ClampConfigSelections()
+{
+  if ( g_nRenderHALMode_518CA0 < 0 )
+    g_nRenderHALMode_518CA0 = 0;
+  if ( g_nRenderHALMode_518CA0 >= g_displayConfig_518C30.nDeviceCount )
+    g_nRenderHALMode_518CA0 = g_displayConfig_518C30.nDeviceCount - 1;
+  if ( g_nZBufDepthMode_518C9C < 0 )
+    g_nZBufDepthMode_518C9C = 0;
+  if ( g_nZBufDepthMode_518C9C >= g_arrZBufDepthCountPerDev_518C40[g_nRenderHALMode_518CA0] )
+    g_nZBufDepthMode_518C9C = g_arrZBufDepthCountPerDev_518C40[g_nRenderHALMode_518CA0] - 1;
+}
+
+// WM_TIMER input handling while the config screen is shown.
+static void UpdateConfigScreenInput(HWND hWnd, const RECT *pRect, const POINT &Point,
+  int bMouseClicked, int *pnPrevHotId)
+{
+  // the six render option toggles, in hot-row order
+  static BOOL *const s_toggleFlags[6] = {
+    &g_bAntiAliasEnable,
+    &g_bDitherEnable,
+    &g_bSpecularEnable_4B3474,
+    &g_bFogIsActive_4B3480,
+    &g_bLightEnable_4B3484,
+    &g_bShadowEnable_518CA8,
+  };
+  int nImgOffX = 0;
+  int nImgOffY = 0;
+  if ( g_pbmpDd2 )
+  {
+    nImgOffX = (pRect->right - g_pbmpDd2->pBitmapInfoHeader->biWidth) / 2;
+    nImgOffY = (pRect->bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) / 2;
+  }
+
+  // "close" box in the corner; a right click anywhere also leaves the screen
+  if ( PtInBox(Point, nImgOffX + 590, nImgOffY + 258, nImgOffX + 618, nImgOffY + 286)
+    || GetAsyncKeyState(VK_RBUTTON) >> 8 )
+  {
+    g_nTitleMenuHotId_4B348C = 0;
+    if ( bMouseClicked == 1 || GetAsyncKeyState(VK_RBUTTON) >> 8 )
+    {
+      bMouseClicked = 1;
+      g_nTitleMenuHotId_4B348C = -1;
+      *pnPrevHotId = -2; // force a redraw of the hot state
+      InvalidateRect(hWnd, pRect, 1);
+      UpdateWindow(hWnd);
+      g_bTitleMenuConfigScreen_518CC4 = 0;
+    }
+  }
+  else
+  {
+    // toggles: 2 columns x 3 rows of 180x24 boxes
+    int nHotToggleRow = -1;
+    for ( int i = 0; i < 6; ++i )
+    {
+      int x = nImgOffX + 216 * (i % 2) + 164;
+      int y = nImgOffY + 40 * (i / 2) + 136;
+      if ( !PtInBox(Point, x, y, x + 180, y + 24) )
+        continue;
+      nHotToggleRow = i;
+      if ( g_nTitleMenuHotToggleRow_4B3490 != i )
+      {
+        g_nTitleMenuHotToggleRow_4B3490 = i;
+        InvalidateRect(hWnd, pRect, 0);
+        UpdateWindow(hWnd);
+      }
+      if ( bMouseClicked == 1 )
+      {
+        *s_toggleFlags[i] = *s_toggleFlags[i] == 0;
+        InvalidateRect(hWnd, pRect, 0);
+        UpdateWindow(hWnd);
+      }
+      break;
+    }
+    if ( nHotToggleRow == -1 && g_nTitleMenuHotToggleRow_4B3490 != -1 )
+    {
+      g_nTitleMenuHotToggleRow_4B3490 = -1;
+      InvalidateRect(hWnd, pRect, 0);
+      UpdateWindow(hWnd);
+    }
+  }
+
+  // three quality presets along the bottom edge
+  static const BOOL s_presetFlags[3][6] = {
+    { 0, 0, 0, 0, 0, 0 }, // speed: everything off
+    { 0, 1, 1, 1, 1, 0 }, // standard
+    { 1, 1, 1, 1, 1, 1 }, // quality: everything on
+  };
+  for ( int i = 0; i < 3; ++i )
+  {
+    int x = nImgOffX + 140 * i + 160;
+    if ( !PtInBox(Point, x, nImgOffY + 264, x + 120, nImgOffY + 288) )
+      continue;
+    g_nTitleMenuHotId_4B348C = i + 7;
+    if ( bMouseClicked == 1 )
+    {
+      g_nTitleMenuHotId_4B348C = -1;
+      for ( int j = 0; j < 6; ++j )
+        *s_toggleFlags[j] = s_presetFlags[i][j];
+    }
+  }
+
+  // selection arrows: renderer, z-buffer depth, resolution
+  if ( PtInBox(Point, nImgOffX + 326, nImgOffY + 50, nImgOffX + 346, nImgOffY + 70) )
+  {
+    g_nTitleMenuHotId_4B348C = 1; // renderer <
+    if ( bMouseClicked == 1 )
+    {
+      --g_nRenderHALMode_518CA0;
+      g_nTitleMenuHotId_4B348C = -1;
+    }
+  }
+  else if ( PtInBox(Point, nImgOffX + 382, nImgOffY + 50, nImgOffX + 402, nImgOffY + 70) )
+  {
+    g_nTitleMenuHotId_4B348C = 2; // renderer >
+    if ( bMouseClicked == 1 )
+    {
+      ++g_nRenderHALMode_518CA0;
+      g_nTitleMenuHotId_4B348C = -1;
+    }
+  }
+  else if ( PtInBox(Point, nImgOffX + 506, nImgOffY + 98, nImgOffX + 526, nImgOffY + 118) )
+  {
+    g_nTitleMenuHotId_4B348C = 3; // z-buffer <
+    if ( bMouseClicked == 1 )
+    {
+      --g_nZBufDepthMode_518C9C;
+      g_nTitleMenuHotId_4B348C = -1;
+    }
+  }
+  else if ( PtInBox(Point, nImgOffX + 562, nImgOffY + 98, nImgOffX + 582, nImgOffY + 118) )
+  {
+    g_nTitleMenuHotId_4B348C = 4; // z-buffer >
+    if ( bMouseClicked == 1 )
+    {
+      ++g_nZBufDepthMode_518C9C;
+      g_nTitleMenuHotId_4B348C = -1;
+    }
+  }
+  else if ( PtInBox(Point, nImgOffX + 146, nImgOffY + 96, nImgOffX + 166, nImgOffY + 116) )
+  {
+    g_nTitleMenuHotId_4B348C = 5; // resolution <
+    if ( bMouseClicked == 1 )
+    {
+      --g_nResolutionMode_518C80;
+      g_nTitleMenuHotId_4B348C = -1;
+    }
+  }
+  else if ( PtInBox(Point, nImgOffX + 202, nImgOffY + 96, nImgOffX + 222, nImgOffY + 116) )
+  {
+    g_nTitleMenuHotId_4B348C = 6; // resolution >
+    if ( bMouseClicked == 1 )
+    {
+      ++g_nResolutionMode_518C80;
+      g_nTitleMenuHotId_4B348C = -1;
+    }
+  }
+
+  ClampConfigSelections();
+}
+
+// WM_TIMER input handling while the main menu is shown.
+// Returns true if the window was destroyed.
+static bool UpdateMainMenuInput(HWND hWnd, const RECT *pRect, const POINT &Point, int bMouseClicked)
+{
+  int nImgOffX = 0;
+  int nImgOffY = 0;
+  if ( g_pbmpDd )
+  {
+    nImgOffX = (pRect->right - g_pbmpDd->pBitmapInfoHeader->biWidth) / 2;
+    nImgOffY = (pRect->bottom - g_pbmpDd->pBitmapInfoHeader->biHeight) / 2;
+  }
+
+  // three stacked entries on the right side: 0=start, 1=config, 2=quit
+  int nMainMenuItem = -1;
+  for ( int i = 0; i < 3; ++i )
+  {
+    if ( PtInBox(Point, nImgOffX + 469, nImgOffY + 160 * i + 104, nImgOffX + 597,
+      nImgOffY + 160 * i + 136) )
+    {
+      nMainMenuItem = i;
+      break;
+    }
+  }
+
+  switch ( nMainMenuItem )
+  {
+  case 0:
+    g_nTitleMenuHotId_4B348C = 0;
+    if ( bMouseClicked == 1 )
+    {
+      StartGame(hWnd);
+      return true;
+    }
+    break;
+  case 1:
+    g_nTitleMenuHotId_4B348C = 2;
+    if ( bMouseClicked == 1 )
+    {
+      g_nTitleMenuHotId_4B348C = -1;
+      InvalidateRect(hWnd, pRect, 1);
+      UpdateWindow(hWnd);
+      g_bTitleMenuConfigScreen_518CC4 = 1;
+    }
+    break;
+  case 2:
+    g_nTitleMenuHotId_4B348C = 1;
+    if ( bMouseClicked == 1 )
+    {
+      g_bRunGame = 0;
+      DestroyWindow(hWnd);
+      return true;
+    }
+    break;
+  }
+  return false;
+}
+
+// WM_TIMER: polls input at 50ms and drives the hot-highlight/click state.
+static void TitleMenu_OnTimer(HWND hWnd)
+{
+  RECT Rect;
+  POINT Point;
+  int nPrevHotId = g_nTitleMenuHotId_4B348C;
+
+  g_nTitleMenuHotId_4B348C = -1;
+  GetClientRect(hWnd, &Rect);
+  if ( GetAsyncKeyState(VK_ESCAPE) >> 8 )
+  {
+    DestroyWindow(hWnd);
+    return;
+  }
+  GetCursorPos(&Point);
+  int bMouseClicked = PollLMouseButton();
+
+  if ( g_bTitleMenuConfigScreen_518CC4 )
+    UpdateConfigScreenInput(hWnd, &Rect, Point, bMouseClicked, &nPrevHotId);
+  else if ( UpdateMainMenuInput(hWnd, &Rect, Point, bMouseClicked) )
+    return; // window destroyed
+  if ( g_nTitleMenuHotId_4B348C != nPrevHotId )
+  {
+    InvalidateRect(hWnd, &Rect, 0);
+    UpdateWindow(hWnd);
+  }
+}
+
+// Hot highlight cells on the config screen, all taken from g_pbmpDdBt.
+static void PaintConfigHotButtons(HDC hDC, int nImgOffX, int nImgOffY)
+{
+  static const struct
+  {
+    uint32_t nHotId;
+    int x, y, w, h;
+    int srcX, srcYFromBottom;
+  } s_buttons[] = {
+    { 0, 590, 258, 28, 28, 120, 192 }, // close box
+    { 1, 326, 50, 20, 20, 120, 164 },  // renderer <
+    { 2, 382, 50, 20, 20, 140, 164 },  // renderer >
+    { 5, 146, 97, 20, 20, 120, 164 },  // resolution <
+    { 6, 202, 97, 20, 20, 140, 164 },  // resolution >
+    { 7, 164, 264, 120, 24, 0, 168 },  // speed preset
+    { 8, 304, 264, 120, 24, 0, 192 },  // standard preset
+    { 9, 445, 264, 120, 24, 0, 216 },  // quality preset
+  };
+  for ( int i = 0; i < sizeof(s_buttons) / sizeof(s_buttons[0]); ++i )
+  {
+    if ( g_nTitleMenuHotId_4B348C == s_buttons[i].nHotId )
+      BlitBmpPart(hDC, nImgOffX + s_buttons[i].x, nImgOffY + s_buttons[i].y, s_buttons[i].w,
+        s_buttons[i].h, g_pbmpDdBt, s_buttons[i].srcX, s_buttons[i].srcYFromBottom);
+  }
+}
+
+// "enabled" overlays for the six option toggles, all taken from g_pbmpDdBt.
+static void PaintConfigToggleOverlays(HDC hDC, int nImgOffX, int nImgOffY)
+{
+  static const struct
+  {
+    BOOL *pbEnabled;
+    int x, y;
+    int srcYFromBottom;
+  } s_overlays[] = {
+    { &g_bAntiAliasEnable, 164, 136, 24 },
+    { &g_bDitherEnable, 380, 136, 48 },
+    { &g_bSpecularEnable_4B3474, 164, 176, 72 },
+    { &g_bFogIsActive_4B3480, 380, 176, 96 },
+    { &g_bLightEnable_4B3484, 164, 216, 120 },
+    { &g_bShadowEnable_518CA8, 380, 216, 144 },
+  };
+  for ( int i = 0; i < sizeof(s_overlays) / sizeof(s_overlays[0]); ++i )
+  {
+    if ( *s_overlays[i].pbEnabled )
+      BlitBmpPart(hDC, nImgOffX + s_overlays[i].x, nImgOffY + s_overlays[i].y, 183, 24,
+        g_pbmpDdBt, 0, s_overlays[i].srcYFromBottom);
+  }
+}
+
+// Device name, resolution string and the hovered control's help text.
+static void PaintConfigInfoText(HWND hWnd, HDC hDC, int nImgOffX, int nImgOffY)
+{
+  CHAR String[512];
+  int nTipX = nImgOffX + 180;
+
+  HGDIOBJ hOldFont = SelectObject(hDC, g_hFontTitleMenu_518CCC);
+  SetTextColor(hDC, 0);
+  SetBkMode(hDC, TRANSPARENT);
+
+  // name of the selected renderer, centered at (nImgOffX+364, nImgOffY+27)
+  D3DX_DEVICEDESC *parrD3DXDevDesc = g_displayConfig_518C30.parrD3DXDevDesc;
+  for ( int i = 0; i < g_displayConfig_518C30.nDeviceCount; ++i )
+  {
+    if ( g_nRenderHALMode_518CA0 == i )
+    {
+      int cchDriverDesc = lstrlenA(parrD3DXDevDesc->driverDesc);
+      TextOutA(hDC, nImgOffX + 364 - 14 * (cchDriverDesc / 2) / 2, nImgOffY + 27,
+        parrD3DXDevDesc->driverDesc, cchDriverDesc);
+      break;
+    }
+    ++parrD3DXDevDesc;
+  }
+
+  // current resolution string (also clamps g_nResolutionMode_518C80)
+  GetNthValidDimensionString(hWnd, &g_displayConfig_518C30, g_nRenderHALMode_518CA0,
+    &g_nResolutionMode_518C80, String);
+  TextOutA(hDC, nImgOffX + 121, nImgOffY + 76, String, lstrlenA(String));
+
+  // help text for the hovered control
+  if ( !g_nTitleMenuHotId_4B348C )
+  {
+    DrawTip(hDC, nTipX, nImgOffY + 350, "　このボタンを押すと環境設定画面から出ます。");
+  }
+  else if ( g_nTitleMenuHotId_4B348C == 1 || g_nTitleMenuHotId_4B348C == 2 )
+  {
+    DrawTip(hDC, nTipX, nImgOffY + 350, "　このボタンを押すことで動作モードを変えるができます。");
+    DrawTip(hDC, nTipX, nImgOffY + 370, "　 Emulationモードはソフトウエアのみで動作させるので安定した動作");
+    DrawTip(hDC, nTipX, nImgOffY + 390, "　を行いますが大変低速です。できるだけ他のモードで動かして下さい。");
+  }
+  else if ( g_nTitleMenuHotId_4B348C != 3 && g_nTitleMenuHotId_4B348C != 4 )
+  {
+    // 3/4 (z-buffer arrows) have no tip
+    switch ( g_nTitleMenuHotId_4B348C )
+    {
+    case 5:
+    case 6:
+      DrawTip(hDC, nTipX, nImgOffY + 350, "　このボタンを押すことで画面の解像度を変えられます。");
+      break;
+    case 7:
+      DrawTip(hDC, nTipX, nImgOffY + 350, "　環境設定スイッチが速度を最優先にした設定になります。");
+      break;
+    case 8:
+      DrawTip(hDC, nTipX, nImgOffY + 350, "　環境設定スイッチが標準設定になります。");
+      break;
+    case 9:
+      DrawTip(hDC, nTipX, nImgOffY + 350, "　環境設定スイッチが画質を最優先にした設定になります。");
+      break;
+    default:
+      // hovered one of the six option toggles
+      if ( !g_nTitleMenuHotToggleRow_4B3490 )
+      {
+        DrawTip(hDC, nTipX, nImgOffY + 350, "　このスイッチをオンにすると、ポリゴンの角を滑らかにします。");
+      }
+      else
+      {
+        switch ( g_nTitleMenuHotToggleRow_4B3490 )
+        {
+        case 1:
+          DrawTip(hDC, nTipX, nImgOffY + 350, "　このスイッチをオンにすると、テクスチャーの色を滑らかにします。");
+          DrawTip(hDC, nTipX, nImgOffY + 370, "＊　一部のグラフィックカードのドライバーで T&Lモードの時に、この");
+          DrawTip(hDC, nTipX, nImgOffY + 390, "　スイッチをオンにすると物体の一部が変色してしまう場合があります。");
+          break;
+        case 2:
+          DrawTip(hDC, nTipX, nImgOffY + 350, "　このスイッチをオンにすると、特定の物体に対して光沢を使用します。");
+          DrawTip(hDC, nTipX, nImgOffY + 370, "＊　ライトスイッチがオンの時のみ、このスイッチは効果をあらわします。");
+          break;
+        case 3:
+          DrawTip(hDC, nTipX, nImgOffY + 350, "　このスイッチをオンにすると、画面に霧の効果をつけます。");
+          break;
+        case 4:
+          DrawTip(hDC, nTipX, nImgOffY + 350, "　このスイッチをオンにすると、光と陰の効果をつけます。");
+          break;
+        case 5:
+          DrawTip(hDC, nTipX, nImgOffY + 350, "　このスイッチをオンにすると、影などの効果を描画します");
+          break;
+        }
+      }
+      break;
+    }
+  }
+
+  SelectObject(hDC, hOldFont);
+}
+
+static void PaintConfigScreen(HWND hWnd, HDC hDC, const RECT *pRect)
+{
+  int nImgOffX = 0;
+  int nImgOffY = 0;
+  if ( g_pbmpDd2 )
+  {
+    nImgOffX = (pRect->right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1;
+    nImgOffY = (pRect->bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1;
+    BlitBmp(hDC, nImgOffX, nImgOffY, g_pbmpDd2);
+  }
+  if ( g_pbmpDdBt )
+  {
+    PaintConfigHotButtons(hDC, nImgOffX, nImgOffY);
+    PaintConfigToggleOverlays(hDC, nImgOffX, nImgOffY);
+  }
+  PaintConfigInfoText(hWnd, hDC, nImgOffX, nImgOffY);
+}
+
+static void PaintMainMenu(HDC hDC, const RECT *pRect)
+{
+  int nImgOffX = (pRect->right - g_pbmpDd->pBitmapInfoHeader->biWidth) >> 1;
+  int nImgOffY = (pRect->bottom - g_pbmpDd->pBitmapInfoHeader->biHeight) >> 1;
+  // highlighted menu entry cells, taken from g_pbmpDdBt3
+  static const struct
+  {
+    uint32_t nHotId;
+    int y;
+    int srcYFromBottom;
+  } s_buttons[] = {
+    { 0, 104, 32 }, // start
+    { 2, 264, 64 }, // config
+    { 1, 424, 96 }, // quit
+  };
+
+  BlitBmp(hDC, nImgOffX, nImgOffY, g_pbmpDd);
+  if ( !g_pbmpDdBt3 )
+    return;
+  for ( int i = 0; i < sizeof(s_buttons) / sizeof(s_buttons[0]); ++i )
+  {
+    if ( g_nTitleMenuHotId_4B348C == s_buttons[i].nHotId )
+      BlitBmpPart(hDC, nImgOffX + 469, nImgOffY + s_buttons[i].y, 128, 32, g_pbmpDdBt3, 0,
+        s_buttons[i].srcYFromBottom);
+  }
+}
+
+// WM_PAINT: renders into a compatible DC, then blits it to the window.
+static int TitleMenu_OnPaint(HWND hWnd)
+{
+  PAINTSTRUCT Paint;
+  RECT Rect;
+  HBRUSH hbr;
+
+  GetClientRect(hWnd, &Rect);
+  HDC hdc = BeginPaint(hWnd, &Paint);
+  HDC hDC = CreateCompatibleDC(hdc);
+  HBITMAP hbmPaint = CreateCompatibleBitmap(hdc, Rect.right - Rect.left, Rect.bottom - Rect.top);
+  HGDIOBJ hOldBitmap = SelectObject(hDC, hbmPaint);
+  hbr = CreateSolidBrush(0xFFFFFFu);
+  FillRect(hDC, &Rect, hbr);
+  DeleteObject(hbr);
+
+  if ( g_bTitleMenuConfigScreen_518CC4 )
+    PaintConfigScreen(hWnd, hDC, &Rect);
+  else if ( g_pbmpDd )
+    PaintMainMenu(hDC, &Rect);
+
+  BitBlt(hdc, Rect.left, Rect.top, Rect.right - Rect.left, Rect.bottom - Rect.top, hDC, 0, 0,
+    SRCCOPY);
+  EndPaint(hWnd, &Paint);
+  SelectObject(hDC, hOldBitmap);
+  DeleteObject(hbmPaint);
+  DeleteObject(hDC);
+  ReleaseDC(hWnd, hdc);
+  return 0;
+}
+
+// WM_CREATE: loads the menu bitmaps and picks the default renderer.
+static int TitleMenu_OnCreate(HWND hWnd)
+{
+  CHAR String[512];
+  const struct
+  {
+    LPCSTR pszFile;
+    CBMPFile **ppBmp;
+  } bitmaps[4] = {
+    { "DD.bmp", &g_pbmpDd },
+    { "DD_BT.bmp", &g_pbmpDdBt },
+    { "DD2.bmp", &g_pbmpDd2 },
+    { "DD_BT3.bmp", &g_pbmpDdBt3 },
+  };
+
+  g_hFontTitleMenu_518CCC = CreateFontA(14, 7, 0, 0, 400, 0, 0, 0, 0x80u, 0, 0, 2u, 0x30u,
+    "ＭＳ 明朝");
+  SetTimer(hWnd, 0x113u, 0x32u, 0);
+  for ( int i = 0; i < 4; ++i )
+  {
+    wsprintfA(String, bitmaps[i].pszFile);
+    CHanaObj__GetRealPath_486D9A(String, 1007);
+    *bitmaps[i].ppBmp = LoadBmp_420DF0(String);
+  }
+  UpdateRenderOptionsCheckboxes(hWnd);
+  PickDefaultRenderHALMode();
+  return 0;
+}
+
+// WM_DESTROY
+static int TitleMenu_OnDestroy(HWND)
+{
+  FreeTitleMenuBitmaps();
+  Sleep(0x64u);
+  PostQuitMessage(0);
+  return 1;
+}
+
 // WndProcTitleMenu_428C11 at 0x428C11
 // Window procedure for the title menu - handles main menu and config screen
-
-LRESULT __stdcall hook_WndProcTitleMenu_428C11(HWND hWnd, unsigned int Msg, WPARAM wParam, LPARAM lParam)
+LRESULT __stdcall hook_WndProcTitleMenu_428C11(HWND hWnd, unsigned int Msg, WPARAM wParam,
+  LPARAM lParam)
 {
-  int cchDriverDesc1; // eax
-  int cchDriverDesc2; // eax
-  unsigned int nDevNameX; // esi
-  int cchDevNameCenter; // eax
-  int cchDimStr; // eax
-  int cchTipClose; // eax
-  int cchTipDevMode1; // eax
-  int cchTipDevMode2; // eax
-  int cchTipDevMode3; // eax
-  int cchTipRes; // eax
-  int cchTipPresetSpeed; // eax
-  int cchTipPresetStd; // eax
-  int cchTipPresetQual; // eax
-  int cchTipTglAA; // eax
-  int cchTipTglDither1; // eax
-  int cchTipTglDither2; // eax
-  int cchTipTglDither3; // eax
-  int cchTipTglSpec1; // eax
-  int cchTipTglSpec2; // eax
-  int cchTipTglFog; // eax
-  int cchTipTglLight; // eax
-  int cchTipTglShadow; // eax
-  int nDevNameY; // [esp-Ch] [ebp-2A0h]
-  const CHAR *driverDesc; // [esp-8h] [ebp-29Ch]
-  int cchDevName; // [esp-4h] [ebp-298h]
-  HBITMAP hbmPaint; // [esp+8h] [ebp-28Ch]
-  tagPAINTSTRUCT Paint; // [esp+Ch] [ebp-288h] BYREF
-  CHAR String[512]; // [esp+4Ch] [ebp-248h] BYREF
-  HGDIOBJ hOldBitmap; // [esp+24Ch] [ebp-48h]
-  HGDIOBJ hOldFont; // [esp+250h] [ebp-44h]
-  int nPrevHotId; // [esp+254h] [ebp-40h]
-  HDC hdc; // [esp+258h] [ebp-3Ch]
-  int i; // [esp+25Ch] [ebp-38h]
-  HBRUSH hbr; // [esp+260h] [ebp-34h]
-  HDC hDC; // [esp+264h] [ebp-30h]
-  int nImgOffY; // [esp+268h] [ebp-2Ch]
-  int nImgOffX; // [esp+26Ch] [ebp-28h]
-  struct tagPOINT Point; // [esp+270h] [ebp-24h] BYREF
-  D3DX_DEVICEDESC *parrD3DXDevDesc; // [esp+278h] [ebp-1Ch]
-  int nMainMenuItem; // [esp+27Ch] [ebp-18h]
-  struct tagRECT Rect; // [esp+280h] [ebp-14h] BYREF
-  int bMouseClicked; // [esp+290h] [ebp-4h]
-
   DebugLog("[HNH:SUB] hook_WndProcTitleMenu_428C11\n");
 
-  hOldBitmap = 0;
-  hbr = 0;
-  hdc = 0;
-  hDC = 0;
-  nImgOffX = 0;
-  nImgOffY = 0;
-  bMouseClicked = 0;
-  nMainMenuItem = 0;
   g_hWnd = hWnd;
-  if ( Msg > WM_PAINT )
+  if ( Msg > WM_PAINT ) // decompiler artifact of the original switch: WM_CLOSE / WM_TIMER
   {
     if ( Msg == WM_CLOSE )
     {
-      if ( g_pbmpDd )
-        FreeBmp_4211ED(g_pbmpDd);
-      if ( g_pbmpDdBt )
-        FreeBmp_4211ED(g_pbmpDdBt);
-      if ( g_pbmpDd2 )
-        FreeBmp_4211ED(g_pbmpDd2);
-      if ( g_pbmpDdBt3 )
-        FreeBmp_4211ED(g_pbmpDdBt3);
-      g_pbmpDdBt3 = 0;
-      g_pbmpDd2 = 0;
-      g_pbmpDdBt = 0;
-      g_pbmpDd = 0;
+      FreeTitleMenuBitmaps();
       DestroyWindow(hWnd);
     }
     else if ( Msg == WM_TIMER )
     {
-      nPrevHotId = g_nTitleMenuHotId_4B348C;
-      g_nTitleMenuHotId_4B348C = -1;
-      GetClientRect(hWnd, &Rect);
-      if ( GetAsyncKeyState(VK_ESCAPE) >> 8 )
-      {
-        DestroyWindow(hWnd);
-        return 0;
-      }
-      GetCursorPos(&Point);
-      if ( GetAsyncKeyState(VK_LBUTTON) >> 8 )
-      {
-        if ( !g_bLMouseClick )
-        {
-          g_bLMouseClick = 1;
-          bMouseClicked = 1;
-        }
-      }
-      else
-      {
-        g_bLMouseClick = 0;
-      }
-      if ( g_bTitleMenuConfigScreen_518CC4 )
-      {
-        i = 6; // fix msvc warning
-        if ( g_pbmpDd2 )
-        {
-          nImgOffX = (Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) / 2;
-          nImgOffY = (Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) / 2;
-        }
-        if ( nImgOffX + 590 < Point.x
-          && Point.x < nImgOffX + 618
-          && nImgOffY + 258 < Point.y
-          && Point.y < nImgOffY + 286
-          || GetAsyncKeyState(2) >> 8 )
-        {
-          g_nTitleMenuHotId_4B348C = 0;
-          if ( bMouseClicked == 1 || GetAsyncKeyState(VK_RBUTTON) >> 8 )
-          {
-            bMouseClicked = 1;
-            g_nTitleMenuHotId_4B348C = -1;
-            nPrevHotId = -2;
-            InvalidateRect(hWnd, &Rect, 1);
-            UpdateWindow(hWnd);
-            g_bTitleMenuConfigScreen_518CC4 = 0;
-          }
-        }
-        else
-        {
-          for ( i = 0; i < 6; ++i )
-          {
-            if ( nImgOffX + 216 * (i % 2) + 164 < Point.x
-              && Point.x < nImgOffX + 216 * (i % 2) + 344
-              && nImgOffY + 40 * (i / 2) + 136 < Point.y
-              && Point.y < nImgOffY + 40 * (i / 2) + 160 )
-            {
-              if ( g_nTitleMenuHotToggleRow_4B3490 == -1 || g_nTitleMenuHotToggleRow_4B3490 != i )
-              {
-                g_nTitleMenuHotToggleRow_4B3490 = i;
-                InvalidateRect(hWnd, &Rect, 0);
-                UpdateWindow(hWnd);
-              }
-              if ( bMouseClicked == 1 )
-              {
-                if ( !i )
-                  g_bAntiAliasEnable = g_bAntiAliasEnable == 0;
-                if ( i == 1 )
-                  g_bDitherEnable = g_bDitherEnable == 0;
-                if ( i == 2 )
-                  g_bSpecularEnable_4B3474 = g_bSpecularEnable_4B3474 == 0;
-                if ( i == 3 )
-                  g_bFogIsActive_4B3480 = !g_bFogIsActive_4B3480;
-                if ( i == 4 )
-                  g_bLightEnable_4B3484 = g_bLightEnable_4B3484 == 0;
-                if ( i == 5 )
-                  g_bShadowEnable_518CA8 = g_bShadowEnable_518CA8 == 0;
-                InvalidateRect(hWnd, &Rect, 0);
-                UpdateWindow(hWnd);
-              }
-              break;
-            }
-          }
-        }
-        if ( i == 6 && g_nTitleMenuHotToggleRow_4B3490 != -1 ) // i maybe undefined
-        {
-          g_nTitleMenuHotToggleRow_4B3490 = -1;
-          InvalidateRect(hWnd, &Rect, 0);
-          UpdateWindow(hWnd);
-        }
-        for ( i = 0; i < 3; ++i )
-        {
-          if ( nImgOffX + 140 * i + 160 < Point.x
-            && Point.x < nImgOffX + 140 * (i + 1) + 140
-            && nImgOffY + 264 < Point.y
-            && Point.y < nImgOffY + 288 )
-          {
-            g_nTitleMenuHotId_4B348C = i + 7;
-            if ( bMouseClicked == 1 )
-            {
-              g_nTitleMenuHotId_4B348C = -1;
-              if ( i )
-              {
-                if ( i == 1 )
-                {
-                  g_bAntiAliasEnable = 0;
-                  g_bDitherEnable = 1;
-                  g_bSpecularEnable_4B3474 = 1;
-                  g_bFogIsActive_4B3480 = 1;
-                  g_bLightEnable_4B3484 = 1;
-                  g_bShadowEnable_518CA8 = 0;
-                }
-                else
-                {
-                  g_bAntiAliasEnable = 1;
-                  g_bDitherEnable = 1;
-                  g_bSpecularEnable_4B3474 = 1;
-                  g_bFogIsActive_4B3480 = 1;
-                  g_bLightEnable_4B3484 = 1;
-                  g_bShadowEnable_518CA8 = 1;
-                }
-              }
-              else
-              {
-                g_bAntiAliasEnable = 0;
-                g_bDitherEnable = 0;
-                g_bSpecularEnable_4B3474 = 0;
-                g_bFogIsActive_4B3480 = 0;
-                g_bLightEnable_4B3484 = 0;
-                g_bShadowEnable_518CA8 = 0;
-              }
-            }
-          }
-        }
-        if ( nImgOffX + 326 >= Point.x
-          || Point.x >= nImgOffX + 346
-          || nImgOffY + 50 >= Point.y
-          || Point.y >= nImgOffY + 70 )
-        {
-          if ( nImgOffX + 382 >= Point.x
-            || Point.x >= nImgOffX + 402
-            || nImgOffY + 50 >= Point.y
-            || Point.y >= nImgOffY + 70 )
-          {
-            if ( nImgOffX + 506 >= Point.x
-              || Point.x >= nImgOffX + 526
-              || nImgOffY + 98 >= Point.y
-              || Point.y >= nImgOffY + 118 )
-            {
-              if ( nImgOffX + 562 >= Point.x
-                || Point.x >= nImgOffX + 582
-                || nImgOffY + 98 >= Point.y
-                || Point.y >= nImgOffY + 118 )
-              {
-                if ( nImgOffX + 146 >= Point.x
-                  || Point.x >= nImgOffX + 166
-                  || nImgOffY + 96 >= Point.y
-                  || Point.y >= nImgOffY + 116 )
-                {
-                  if ( nImgOffX + 202 < Point.x
-                    && Point.x < nImgOffX + 222
-                    && nImgOffY + 96 < Point.y
-                    && Point.y < nImgOffY + 116 )
-                  {
-                    g_nTitleMenuHotId_4B348C = 6;
-                    if ( bMouseClicked == 1 )
-                    {
-                      ++g_nResolutionMode_518C80;
-                      g_nTitleMenuHotId_4B348C = -1;
-                    }
-                  }
-                }
-                else
-                {
-                  g_nTitleMenuHotId_4B348C = 5;
-                  if ( bMouseClicked == 1 )
-                  {
-                    --g_nResolutionMode_518C80;
-                    g_nTitleMenuHotId_4B348C = -1;
-                  }
-                }
-              }
-              else
-              {
-                g_nTitleMenuHotId_4B348C = 4;
-                if ( bMouseClicked == 1 )
-                {
-                  ++g_nZBufDepthMode_518C9C;
-                  g_nTitleMenuHotId_4B348C = -1;
-                }
-              }
-            }
-            else
-            {
-              g_nTitleMenuHotId_4B348C = 3;
-              if ( bMouseClicked == 1 )
-              {
-                --g_nZBufDepthMode_518C9C;
-                g_nTitleMenuHotId_4B348C = -1;
-              }
-            }
-          }
-          else
-          {
-            g_nTitleMenuHotId_4B348C = 2;
-            if ( bMouseClicked == 1 )
-            {
-              ++g_nRenderHALMode_518CA0;
-              g_nTitleMenuHotId_4B348C = -1;
-            }
-          }
-        }
-        else
-        {
-          g_nTitleMenuHotId_4B348C = 1;
-          if ( bMouseClicked == 1 )
-          {
-            --g_nRenderHALMode_518CA0;
-            g_nTitleMenuHotId_4B348C = -1;
-          }
-        }
-        if ( g_nRenderHALMode_518CA0 < 0 )
-          g_nRenderHALMode_518CA0 = 0;
-        if ( g_nRenderHALMode_518CA0 >= g_displayConfig_518C30.nDeviceCount )
-          g_nRenderHALMode_518CA0 = g_displayConfig_518C30.nDeviceCount - 1;
-        if ( g_nZBufDepthMode_518C9C < 0 )
-          g_nZBufDepthMode_518C9C = 0;
-        if ( g_nZBufDepthMode_518C9C >= g_arrZBufDepthCountPerDev_518C40[g_nRenderHALMode_518CA0] )
-          g_nZBufDepthMode_518C9C = g_arrZBufDepthCountPerDev_518C40[g_nRenderHALMode_518CA0] - 1;
-      }
-      else
-      {
-        if ( g_pbmpDd )
-        {
-          nImgOffX = (Rect.right - g_pbmpDd->pBitmapInfoHeader->biWidth) / 2;
-          nImgOffY = (Rect.bottom - g_pbmpDd->pBitmapInfoHeader->biHeight) / 2;
-        }
-        nMainMenuItem = -1;
-        for ( i = 0; i < 3; ++i )
-        {
-          if ( nImgOffX + 469 < Point.x
-            && Point.x < nImgOffX + 597
-            && nImgOffY + 160 * i + 104 < Point.y
-            && Point.y < nImgOffY + 160 * i + 136 )
-          {
-            nMainMenuItem = i;
-            break;
-          }
-        }
-        if ( nMainMenuItem )
-        {
-          if ( nMainMenuItem == 2 )
-          {
-            g_nTitleMenuHotId_4B348C = 1;
-            if ( bMouseClicked == 1 )
-            {
-              g_bRunGame = 0;
-              DestroyWindow(hWnd);
-              return 0;
-            }
-          }
-          else if ( nMainMenuItem == 1 )
-          {
-            g_nTitleMenuHotId_4B348C = 2;
-            if ( bMouseClicked == 1 )
-            {
-              g_nTitleMenuHotId_4B348C = -1;
-              InvalidateRect(hWnd, &Rect, 1);
-              UpdateWindow(hWnd);
-              g_bTitleMenuConfigScreen_518CC4 = 1;
-            }
-          }
-        }
-        else
-        {
-          g_nTitleMenuHotId_4B348C = 0;
-          if ( bMouseClicked == 1 )
-          {
-            g_bRunGame = 1;
-            g_nModeSetIndex = g_nRenderHALMode_518CA0;
-            GetNthActiveVideoMode(
-              &g_displayConfig_518C30,
-              g_nRenderHALMode_518CA0,
-              g_nResolutionMode_518C80,
-              &g_nWidth,
-              &g_nHeight,
-              &g_nBitness);
-            g_nZBufDepthSelValue_518C98 = g_arrZBufDepthsPerDev_518828[16 * g_nModeSetIndex + g_nZBufDepthMode_518C9C];
-            DestroyWindow(hWnd);
-            return 0;
-          }
-        }
-      }
-      if ( g_nTitleMenuHotId_4B348C != nPrevHotId )
-      {
-        InvalidateRect(hWnd, &Rect, 0);
-        UpdateWindow(hWnd);
-      }
+      TitleMenu_OnTimer(hWnd);
     }
     return DefWindowProcA(hWnd, Msg, wParam, lParam);
   }
+
   switch ( Msg )
   {
   case WM_PAINT:
-    GetClientRect(hWnd, &Rect);
-    hdc = BeginPaint(hWnd, &Paint);
-    hDC = CreateCompatibleDC(hdc);
-    hbmPaint = CreateCompatibleBitmap(hdc, Rect.right - Rect.left, Rect.bottom - Rect.top);
-    hOldBitmap = SelectObject(hDC, hbmPaint);
-    hbr = CreateSolidBrush(0xFFFFFFu);
-    FillRect(hDC, &Rect, hbr);
-    DeleteObject(hbr);
-    if ( g_bTitleMenuConfigScreen_518CC4 )
-    {
-      if ( g_pbmpDd2 )
-      {
-        StretchDIBits(
-          hDC,
-          (Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1,
-          (Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1,
-          g_pbmpDd2->pBitmapInfoHeader->biWidth,
-          g_pbmpDd2->pBitmapInfoHeader->biHeight,
-          0,
-          0,
-          g_pbmpDd2->pBitmapInfoHeader->biWidth,
-          g_pbmpDd2->pBitmapInfoHeader->biHeight,
-          g_pbmpDd2->pData,
-          (BITMAPINFO*)g_pbmpDd2->pBitmapInfoHeader,
-          0,
-          0xCC0020u);
-        if ( g_pbmpDdBt )
-        {
-          if ( !g_nTitleMenuHotId_4B348C )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 590,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 258,
-              28,
-              28,
-              120,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 192,
-              28,
-              28,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          if ( g_nTitleMenuHotId_4B348C == 1 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 326,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 50,
-              20,
-              20,
-              120,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 164,
-              20,
-              20,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          if ( g_nTitleMenuHotId_4B348C == 2 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 382,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 50,
-              20,
-              20,
-              140,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 164,
-              20,
-              20,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          if ( g_nTitleMenuHotId_4B348C == 5 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 146,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 97,
-              20,
-              20,
-              120,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 164,
-              20,
-              20,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          if ( g_nTitleMenuHotId_4B348C == 6 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 202,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 97,
-              20,
-              20,
-              140,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 164,
-              20,
-              20,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          i = 0;
-          if ( g_nTitleMenuHotId_4B348C == 7 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 164,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 264,
-              120,
-              24,
-              0,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 168,
-              120,
-              24,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          i = 1;
-          if ( g_nTitleMenuHotId_4B348C == 8 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 304,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 264,
-              120,
-              24,
-              0,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 192,
-              120,
-              24,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          i = 2;
-          if ( g_nTitleMenuHotId_4B348C == 9 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 445,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 264,
-              120,
-              24,
-              0,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 216,
-              120,
-              24,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          i = 0;
-          if ( g_bAntiAliasEnable == 1 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 164,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 136,
-              183,
-              24,
-              0,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 24,
-              183,
-              24,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          i = 1;
-          if ( g_bDitherEnable == 1 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 380,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 136,
-              183,
-              24,
-              0,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 48,
-              183,
-              24,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          i = 2;
-          if ( g_bSpecularEnable_4B3474 == 1 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 164,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 176,
-              183,
-              24,
-              0,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 72,
-              183,
-              24,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          i = 3;
-          if ( g_bFogIsActive_4B3480 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 380,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 176,
-              183,
-              24,
-              0,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 96,
-              183,
-              24,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          i = 4;
-          if ( g_bLightEnable_4B3484 == 1 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 164,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 216,
-              183,
-              24,
-              0,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 120,
-              183,
-              24,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-          i = 5;
-          if ( g_bShadowEnable_518CA8 == 1 )
-            StretchDIBits(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 380,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 216,
-              183,
-              24,
-              0,
-              g_pbmpDdBt->pBitmapInfoHeader->biHeight - 144,
-              183,
-              24,
-              g_pbmpDdBt->pData,
-              (BITMAPINFO*)g_pbmpDdBt->pBitmapInfoHeader,
-              0,
-              0xCC0020u);
-        }
-      }
-      parrD3DXDevDesc = g_displayConfig_518C30.parrD3DXDevDesc;
-      hOldFont = SelectObject(hDC, g_hFontTitleMenu_518CCC);
-      SetTextColor(hDC, 0);
-      SetBkMode(hDC, 1);
-      for ( i = 0; i < g_displayConfig_518C30.nDeviceCount; ++i )
-      {
-        if ( g_nRenderHALMode_518CA0 == i )
-        {
-          cchDevName = lstrlenA(parrD3DXDevDesc->driverDesc);
-          driverDesc = parrD3DXDevDesc->driverDesc;
-          nDevNameY = ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 27;
-          nDevNameX = ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 364;
-          cchDevNameCenter = lstrlenA(parrD3DXDevDesc->driverDesc);
-          TextOutA(hDC, nDevNameX - 14 * (cchDevNameCenter / 2) / 2, nDevNameY, driverDesc, cchDevName);
-          break;
-        }
-        ++parrD3DXDevDesc;
-      }
-      GetNthValidDimensionString(
-        hWnd,
-        &g_displayConfig_518C30,
-        g_nRenderHALMode_518CA0,
-        &g_nResolutionMode_518C80,
-        String);
-      cchDimStr = lstrlenA(String);
-      TextOutA(
-        hDC,
-        ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 121,
-        ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 76,
-        String,
-        cchDimStr);
-      if ( g_nTitleMenuHotId_4B348C )
-      {
-        if ( g_nTitleMenuHotId_4B348C == 1 || g_nTitleMenuHotId_4B348C == 2 )
-        {
-          wsprintfA(String, "　このボタンを押すことで動作モードを変えるができます。");
-          cchTipDevMode1 = lstrlenA(String);
-          DrawTextPairs(
-            hDC,
-            ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-            ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 350,
-            13,
-            String,
-            cchTipDevMode1);
-          wsprintfA(
-            String,
-            "　 Emulationモードはソフトウエアのみで動作させるので安定した動作");
-          cchTipDevMode2 = lstrlenA(String);
-          DrawTextPairs(
-            hDC,
-            ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-            ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 370,
-            13,
-            String,
-            cchTipDevMode2);
-          wsprintfA(
-            String,
-            "　を行いますが大変低速です。できるだけ他のモードで動かして下さい。");
-          cchTipDevMode3 = lstrlenA(String);
-          DrawTextPairs(
-            hDC,
-            ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-            ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 390,
-            13,
-            String,
-            cchTipDevMode3);
-        }
-        else if ( g_nTitleMenuHotId_4B348C != 3 && g_nTitleMenuHotId_4B348C != 4 )
-        {
-          switch ( g_nTitleMenuHotId_4B348C )
-          {
-          case 5:
-          case 6:
-            wsprintfA(String, "　このボタンを押すことで画面の解像度を変えられます。");
-            cchTipRes = lstrlenA(String);
-            DrawTextPairs(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 350,
-              13,
-              String,
-              cchTipRes);
-            break;
-          case 7:
-            wsprintfA(String, "　環境設定スイッチが速度を最優先にした設定になります。");
-            cchTipPresetSpeed = lstrlenA(String);
-            DrawTextPairs(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 350,
-              13,
-              String,
-              cchTipPresetSpeed);
-            break;
-          case 8:
-            wsprintfA(String, "　環境設定スイッチが標準設定になります。");
-            cchTipPresetStd = lstrlenA(String);
-            DrawTextPairs(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 350,
-              13,
-              String,
-              cchTipPresetStd);
-            break;
-          case 9:
-            wsprintfA(String, "　環境設定スイッチが画質を最優先にした設定になります。");
-            cchTipPresetQual = lstrlenA(String);
-            DrawTextPairs(
-              hDC,
-              ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-              ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 350,
-              13,
-              String,
-              cchTipPresetQual);
-            break;
-          default:
-            if ( g_nTitleMenuHotToggleRow_4B3490 )
-            {
-              switch ( g_nTitleMenuHotToggleRow_4B3490 )
-              {
-              case 1:
-                wsprintfA(
-                  String,
-                  "　このスイッチをオンにすると、テクスチャーの色を滑らかにします。");
-                cchTipTglDither1 = lstrlenA(String);
-                DrawTextPairs(
-                  hDC,
-                  ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-                  ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 350,
-                  13,
-                  String,
-                  cchTipTglDither1);
-                wsprintfA(
-                  String,
-                  "＊　一部のグラフィックカードのドライバーで T&Lモードの時に、この");
-                cchTipTglDither2 = lstrlenA(String);
-                DrawTextPairs(
-                  hDC,
-                  ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-                  ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 370,
-                  13,
-                  String,
-                  cchTipTglDither2);
-                wsprintfA(
-                  String,
-                  "　スイッチをオンにすると物体の一部が変色してしまう場合があります。");
-                cchTipTglDither3 = lstrlenA(String);
-                DrawTextPairs(
-                  hDC,
-                  ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-                  ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 390,
-                  13,
-                  String,
-                  cchTipTglDither3);
-                break;
-              case 2:
-                wsprintfA(
-                  String,
-                  "　このスイッチをオンにすると、特定の物体に対して光沢を使用します。");
-                cchTipTglSpec1 = lstrlenA(String);
-                DrawTextPairs(
-                  hDC,
-                  ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-                  ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 350,
-                  13,
-                  String,
-                  cchTipTglSpec1);
-                wsprintfA(
-                  String,
-                  "＊　ライトスイッチがオンの時のみ、このスイッチは効果をあらわします。");
-                cchTipTglSpec2 = lstrlenA(String);
-                DrawTextPairs(
-                  hDC,
-                  ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-                  ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 370,
-                  13,
-                  String,
-                  cchTipTglSpec2);
-                break;
-              case 3:
-                wsprintfA(
-                  String,
-                  "　このスイッチをオンにすると、画面に霧の効果をつけます。");
-                cchTipTglFog = lstrlenA(String);
-                DrawTextPairs(
-                  hDC,
-                  ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-                  ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 350,
-                  13,
-                  String,
-                  cchTipTglFog);
-                break;
-              case 4:
-                wsprintfA(
-                  String,
-                  "　このスイッチをオンにすると、光と陰の効果をつけます。");
-                cchTipTglLight = lstrlenA(String);
-                DrawTextPairs(
-                  hDC,
-                  ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-                  ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 350,
-                  13,
-                  String,
-                  cchTipTglLight);
-                break;
-              case 5:
-                wsprintfA(
-                  String,
-                  "　このスイッチをオンにすると、影などの効果を描画します");
-                cchTipTglShadow = lstrlenA(String);
-                DrawTextPairs(
-                  hDC,
-                  ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-                  ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 350,
-                  13,
-                  String,
-                  cchTipTglShadow);
-                break;
-              }
-            }
-            else
-            {
-              wsprintfA(String, "　このスイッチをオンにすると、ポリゴンの角を滑らかにします。");
-              cchTipTglAA = lstrlenA(String);
-              DrawTextPairs(
-                hDC,
-                ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-                ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 350,
-                13,
-                String,
-                cchTipTglAA);
-            }
-            break;
-          }
-        }
-      }
-      else
-      {
-        wsprintfA(String, "　このボタンを押すと環境設定画面から出ます。");
-        cchTipClose = lstrlenA(String);
-        DrawTextPairs(
-          hDC,
-          ((Rect.right - g_pbmpDd2->pBitmapInfoHeader->biWidth) >> 1) + 180,
-          ((Rect.bottom - g_pbmpDd2->pBitmapInfoHeader->biHeight) >> 1) + 350,
-          13,
-          String,
-          cchTipClose);
-      }
-      SelectObject(hDC, hOldFont);
-    }
-    else if ( g_pbmpDd )
-    {
-      StretchDIBits(
-        hDC,
-        (Rect.right - g_pbmpDd->pBitmapInfoHeader->biWidth) >> 1,
-        (Rect.bottom - g_pbmpDd->pBitmapInfoHeader->biHeight) >> 1,
-        g_pbmpDd->pBitmapInfoHeader->biWidth,
-        g_pbmpDd->pBitmapInfoHeader->biHeight,
-        0,
-        0,
-        g_pbmpDd->pBitmapInfoHeader->biWidth,
-        g_pbmpDd->pBitmapInfoHeader->biHeight,
-        g_pbmpDd->pData,
-        (BITMAPINFO*)g_pbmpDd->pBitmapInfoHeader,
-        0,
-        0xCC0020u);
-      if ( g_pbmpDdBt3 )
-      {
-        if ( !g_nTitleMenuHotId_4B348C )
-          StretchDIBits(
-            hDC,
-            ((Rect.right - g_pbmpDd->pBitmapInfoHeader->biWidth) >> 1) + 469,
-            ((Rect.bottom - g_pbmpDd->pBitmapInfoHeader->biHeight) >> 1) + 104,
-            128,
-            32,
-            0,
-            g_pbmpDdBt3->pBitmapInfoHeader->biHeight - 32,
-            128,
-            32,
-            g_pbmpDdBt3->pData,
-            (BITMAPINFO*)g_pbmpDdBt3->pBitmapInfoHeader,
-            0,
-            0xCC0020u);
-        if ( g_nTitleMenuHotId_4B348C == 2 )
-          StretchDIBits(
-            hDC,
-            ((Rect.right - g_pbmpDd->pBitmapInfoHeader->biWidth) >> 1) + 469,
-            ((Rect.bottom - g_pbmpDd->pBitmapInfoHeader->biHeight) >> 1) + 264,
-            128,
-            32,
-            0,
-            g_pbmpDdBt3->pBitmapInfoHeader->biHeight - 64,
-            128,
-            32,
-            g_pbmpDdBt3->pData,
-            (BITMAPINFO*)g_pbmpDdBt3->pBitmapInfoHeader,
-            0,
-            0xCC0020u);
-        if ( g_nTitleMenuHotId_4B348C == 1 )
-          StretchDIBits(
-            hDC,
-            ((Rect.right - g_pbmpDd->pBitmapInfoHeader->biWidth) >> 1) + 469,
-            ((Rect.bottom - g_pbmpDd->pBitmapInfoHeader->biHeight) >> 1) + 424,
-            128,
-            32,
-            0,
-            g_pbmpDdBt3->pBitmapInfoHeader->biHeight - 96,
-            128,
-            32,
-            g_pbmpDdBt3->pData,
-            (BITMAPINFO*)g_pbmpDdBt3->pBitmapInfoHeader,
-            0,
-            0xCC0020u);
-      }
-    }
-    BitBlt(hdc, Rect.left, Rect.top, Rect.right - Rect.left, Rect.bottom - Rect.top, hDC, 0, 0, 0xCC0020u);
-    EndPaint(hWnd, &Paint);
-    SelectObject(hDC, hOldBitmap);
-    DeleteObject(hbmPaint);
-    DeleteObject(hDC);
-    ReleaseDC(hWnd, hdc);
-    return 0;
+    return TitleMenu_OnPaint(hWnd);
   case WM_CREATE:
-    g_hFontTitleMenu_518CCC = CreateFontA(14, 7, 0, 0, 400, 0, 0, 0, 0x80u, 0, 0, 2u, 0x30u, "ＭＳ 明朝");
-    SetTimer(hWnd, 0x113u, 0x32u, 0);
-    wsprintfA(String, "DD.bmp");
-    CHanaObj__GetRealPath_486D9A(String, 1007);
-    g_pbmpDd = LoadBmp_420DF0(String);
-    wsprintfA(String, "DD_BT.bmp");
-    CHanaObj__GetRealPath_486D9A(String, 1007);
-    g_pbmpDdBt = LoadBmp_420DF0(String);
-    wsprintfA(String, "DD2.bmp");
-    CHanaObj__GetRealPath_486D9A(String, 1007);
-    g_pbmpDd2 = LoadBmp_420DF0(String);
-    wsprintfA(String, "DD_BT3.bmp");
-    CHanaObj__GetRealPath_486D9A(String, 1007);
-    g_pbmpDdBt3 = LoadBmp_420DF0(String);
-    UpdateRenderOptionsCheckboxes(hWnd);
-    g_nRenderHALMode_518CA0 = 0;
-    parrD3DXDevDesc = g_displayConfig_518C30.parrD3DXDevDesc;
-    for ( i = 0; i < g_displayConfig_518C30.nDeviceCount; ++i )
-    {
-      cchDriverDesc1 = lstrlenA(parrD3DXDevDesc->driverDesc);
-      if ( !memcmp(&parrD3DXDevDesc->ddDeviceID.Data4[cchDriverDesc1 + 2], "3D HAL", 6u) )
-      {
-        g_nRenderHALMode_518CA0 = i;
-        break;
-      }
-      ++parrD3DXDevDesc;
-    }
-    if ( !g_nRenderHALMode_518CA0 )
-    {
-      parrD3DXDevDesc = g_displayConfig_518C30.parrD3DXDevDesc;
-      for ( i = 0; i < g_displayConfig_518C30.nDeviceCount; ++i )
-      {
-        cchDriverDesc2 = lstrlenA(parrD3DXDevDesc->driverDesc);
-        if ( !memcmp(&parrD3DXDevDesc->ddDeviceID.Data3 + cchDriverDesc2 + 1, "Emulation", 9u) )
-        {
-          g_nRenderHALMode_518CA0 = i;
-          return 0;
-        }
-        ++parrD3DXDevDesc;
-      }
-    }
-    return 0;
+    return TitleMenu_OnCreate(hWnd);
   case WM_DESTROY:
-    if ( g_pbmpDd )
-      FreeBmp_4211ED(g_pbmpDd);
-    if ( g_pbmpDdBt )
-      FreeBmp_4211ED(g_pbmpDdBt);
-    if ( g_pbmpDd2 )
-      FreeBmp_4211ED(g_pbmpDd2);
-    if ( g_pbmpDdBt3 )
-      FreeBmp_4211ED(g_pbmpDdBt3);
-    g_pbmpDdBt3 = 0;
-    g_pbmpDd2 = 0;
-    g_pbmpDdBt = 0;
-    g_pbmpDd = 0;
-    Sleep(0x64u);
-    PostQuitMessage(0);
-    return 1;
+    return TitleMenu_OnDestroy(hWnd);
   default:
     return DefWindowProcA(hWnd, Msg, wParam, lParam);
   }
