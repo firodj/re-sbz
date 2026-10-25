@@ -23,8 +23,6 @@ DIDATAFORMAT         &g_diKeyboardFormat_4ACD08 = *(DIDATAFORMAT *)0x4ACD08; // 
 
 // === GLOBAL FUNCTIONS ===
 
-void (__cdecl *GameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x47F013);
-
 BOOL (__cdecl*DIMouseKeybInit_43AF33)(int bAcquire) = reinterpret_cast<
   BOOL(__cdecl*)(int bAcquire)>(0x43AF33);
 BOOL(__cdecl* DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd) = reinterpret_cast<
