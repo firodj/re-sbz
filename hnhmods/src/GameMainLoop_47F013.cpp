@@ -56,7 +56,7 @@ int  (&g_arrFootstepSound_52F17C)[4] = *(int(*)[4])0x52F17C; // WRITABLE
 int  (&g_arrFootstepSound_52F18C)[4] = *(int(*)[4])0x52F18C; // WRITABLE
 BYTE (&g_byData0Dat_530170)[256]     = *(BYTE(*)[256])0x530170; // WRITABLE
 BYTE &g_nAviVolumeIndex_530266       = *(BYTE*)0x530266; // WRITABLE
-BYTE &g_byte_530267                  = *(BYTE*)0x530267; // WRITABLE
+BYTE &g_nAviFrameMultipler_530267    = *(BYTE*)0x530267; // WRITABLE
 BYTE &g_sceneProgressFlag_530269     = *(BYTE*)0x530269; // WRITABLE
 CSceneState &g_sceneState_52F7E0     = *(CSceneState*)0x52F7E0; // WRITABLE
 CSceneSlot (&g_arrSceneNo_4C6F78)[10] = *(CSceneSlot(*)[10])0x4C6F78; // READ-ONLY
@@ -99,7 +99,7 @@ void __cdecl hook_GameMainLoop_47F013(void)
     // reset the data0.dat save image, default AVI volume (2), byte_530267 := 1
     memset(g_byData0Dat_530170, 0, 0x100);
     g_nAviVolumeIndex_530266 = 2;
-    g_byte_530267 = 1;
+    g_nAviFrameMultipler_530267 = 1;
 
     // load the previous save if present: <DATA>\data0.dat
     wsprintfA(szPathBuf, "data0.dat");                // aData0Dat @0x4C7300
