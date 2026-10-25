@@ -49,6 +49,9 @@ int (__cdecl*RunPracticeScene_4703AE)(int iModeId, int iMenuTab) =
     reinterpret_cast<int(__cdecl*)(int, int)>(0x4703AE);
 void (__cdecl*ShowBackdropAndWait_4795CE)(void) = reinterpret_cast<void(__cdecl*)()>(0x4795CE);
 void (__cdecl*GameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)()>(0x47F013);
+int(__cdecl* BMP_DitherRGB24ToRGB565)(char, char, char, int, int) = reinterpret_cast<int(__cdecl*)(char, char, char, int, int)>(0x421BD5);
+void(__cdecl* BMP_Convert24bitTo16bitWithDither)(CBMPFile* pBMPFile) = reinterpret_cast<void(__cdecl*)(CBMPFile* pBMPFile)>(0x421FF4);
+HRESULT(__cdecl* GetDC_4188B4)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC) = reinterpret_cast<HRESULT(__cdecl*)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC)>(0x4188B4);
 
 // === PINNED GLOBALS ===
 LPDIRECTSOUNDBUFFER (&g_arrUIEffectDSBuffer_52F168)[5] = *(LPDIRECTSOUNDBUFFER(*)[5])0x52F168; // WRITABLE
@@ -65,6 +68,8 @@ CSceneSlot (&g_arrSceneNo_4C6F78)[10] = *(CSceneSlot(*)[10])0x4C6F78; // READ-ON
 // so it is always the empty string. The guard below really tests the DATA
 // directory, which SetupDirPath_486630 just created -> the autosave always fires.
 CHAR *g_pszSaveNameFmt_52F1AC = (CHAR*)0x52F1AC; // WRITABLE (never written)
+
+const char* &g_szLastDDError_51836C = *(const char* *)0x51836C; // WRITABLE
 
 // === FUNCTION ===
 void __cdecl hook_GameMainLoop_47F013(void)
@@ -211,13 +216,6 @@ void __cdecl hook_GameMainLoop_47F013(void)
     ReleaseSoundEffects();
 }
 
-char * &g_szLastDDError_51836C = *(char * *)0x51836C; // WRITABLE
-
-int(__cdecl* BMP_DitherRGB24ToRGB565)(char, char, char, int, int) = reinterpret_cast<int(__cdecl*)(char, char, char, int, int)>(0x421BD5);
-void(__cdecl* BMP_Convert24bitTo16bitWithDither)(CBMPFile* pBMPFile) = reinterpret_cast<void(__cdecl*)(CBMPFile* pBMPFile)>(0x421FF4);
-HRESULT(__cdecl* GetDC_4188B4)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC) = reinterpret_cast<HRESULT(__cdecl*)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC)>(0x4188B4);
-char* (__cdecl* DDErrorString_41898E)(int hr) = reinterpret_cast<char* (__cdecl*)(int hr)>(0x41898E);
-
 LPDIRECTDRAWSURFACE7 __cdecl hook_GetSurfaceFromBmp_419DE5(LPCSTR lpFileName)
 {
   CBMPFile *pBMPFile; // [esp+0h] [ebp-8Ch]
@@ -241,7 +239,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_GetSurfaceFromBmp_419DE5(LPCSTR lpFileName)
   if ( hr )
   {
     FreeBmp_4211ED(pBMPFile);
-    g_szLastDDError_51836C = DDErrorString_41898E(hr);
+    g_szLastDDError_51836C = DDErrToString_41898E(hr);
     return 0;
   }
   else
@@ -255,7 +253,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_GetSurfaceFromBmp_419DE5(LPCSTR lpFileName)
         pDDSurface = 0;
       }
       FreeBmp_4211ED(pBMPFile);
-      g_szLastDDError_51836C = DDErrorString_41898E(hr);
+      g_szLastDDError_51836C = DDErrToString_41898E(hr);
       return 0;
     }
     else

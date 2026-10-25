@@ -89,8 +89,7 @@ void register_MatrixLookAtLH_40C64A();
 void register_CheckRunGame_4863C8();
 void register_CDROM_VerifyDiscSignature_485C50();
 void register_ShowTitleMenu_427DA8();
-void register_CHanaObj__NewMateT3EE_S184_40F720();
-void register_CHanaObj__NewFrameRootT3EC_S2D4_404908();
+
 void register_CHanaObj__NewFrameT3EC_S354_404720();
 void register_WndProcTitleMenu_428C11();
 void register_GameMainLoop_47F013();
@@ -132,8 +131,7 @@ void InitHNH() {
 	register_CHanaObj__Free_40C1E4();
 	register_CheckRunGame_4863C8();
 	register_ShowTitleMenu_427DA8();
-	register_CHanaObj__NewMateT3EE_S184_40F720();
-	register_CHanaObj__NewFrameRootT3EC_S2D4_404908();
+
 	register_CHanaObj__NewFrameT3EC_S354_404720();
 	register_WndProcTitleMenu_428C11();
 	register_GameMainLoop_47F013();

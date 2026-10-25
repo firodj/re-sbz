@@ -45,12 +45,6 @@
     <ClCompile Include="src\ShowTitleMenu.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\CHanaObj__NewMateT3EE_S184.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\CHanaObj__NewFrameRootT3EC_S2D4.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\CHanaObj__NewFrameT3EC_S354.cpp">
       <Filter>src</Filter>
     </ClCompile>

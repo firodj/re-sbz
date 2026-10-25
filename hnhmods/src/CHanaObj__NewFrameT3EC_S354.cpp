@@ -2,13 +2,21 @@
 #include "console.hpp"
 #include "shared.hpp"
 
+// === GLOBAL VARIABLES ===
+
+LPD3DXMATRIXSTACK g_pMatrixStack_4CD77C;
+
+// === GLOBAL FUNCTIONS ===
 void(__cdecl *CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354 *pParent, CHanaFrameT3EC_S354 **ppOutFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*, CHanaFrameT3EC_S354**)>(0x404720);
 void(__cdecl* AttachChild_4055FD)(CHanaFrameRootT3EC_S2D4* pParent, CHanaFrameT3EC_S354* pChild) = reinterpret_cast<void(__cdecl *)(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFrameT3EC_S354 *pChild)>(0x4055FD);
 void(__cdecl* MtxStackStartMultLocal_4074EF)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x4074EF);
 void(__cdecl* MtxStackRecursiveMulLocal_4075B0)(CHanaFrameT3EC_S354* pFrame) = reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x4075B0);
+void(__cdecl* CHanaObj__NewFrameRootT3EC_S2D4)(CHanaFrameRootT3EC_S2D4 **ppOutFrameRoot) = reinterpret_cast<void(__cdecl*)(CHanaFrameRootT3EC_S2D4**)>(0x404908);
+void(__cdecl* CHanaObj__NewMateT3EE_S184)(CHanaMateT3EE_S184** ppOutMate) = reinterpret_cast<void(__cdecl*)(CHanaMateT3EE_S184**)>(0x40F720);
 
-LPD3DXMATRIXSTACK g_pMatrixStack_4CD77C;
 
+// === FUNCITON HOOKS ===
+// 
 // CHanaObj__NewFrameT3EC_S354 at 0x404720
 // Creates and initializes a new CHanaFrameT3EC_S354 object (size 0x354 bytes)
 // Attaches it to parent frame or scene root if no parent
@@ -113,6 +121,52 @@ void __cdecl hook_MtxStackRecursiveMulLocal_4075B0(CHanaFrameT3EC_S354 *pFrame)
   g_pMatrixStack_4CD77C->Pop();
 }
 
+// CHanaObj__NewFrameRootT3EC_S2D4 at 0x404908
+// Creates and initializes a new CHanaFrameRootT3EC_S2D4 object (size 0x2D4 bytes)
+
+void __cdecl hook_CHanaObj__NewFrameRootT3EC_S2D4_404908(CHanaFrameRootT3EC_S2D4 **ppOutFrameRoot)
+{
+  CHanaFrameRootT3EC_S2D4 *pFrameRoot;
+
+  DebugLog("[HNH:SUB] %s\n", "CHanaObj__NewFrameRootT3EC_S2D4_404908");
+
+  // Allocate memory (0x2D4 bytes = 724 decimal)
+  pFrameRoot = (CHanaFrameRootT3EC_S2D4*) MemAlloc_40DEF7(0x2D4u);
+  memset(pFrameRoot, 0, sizeof(CHanaFrameRootT3EC_S2D4));
+
+  // Set type identifier
+  pFrameRoot->dwType = 0x3EC;  // 1004 decimal
+
+  // Initialize three 4x4 matrices to identity
+  // mat4x4_fmrx (frame matrix?)
+  pFrameRoot->mat4x4_fmrx._11 = 1.0f;
+  pFrameRoot->mat4x4_fmrx._22 = 1.0f;
+  pFrameRoot->mat4x4_fmrx._33 = 1.0f;
+  pFrameRoot->mat4x4_fmrx._44 = 1.0f;
+  // Off-diagonal elements zeroed by memset, explicit zero stores:
+  // m[3][1], m[2][3], m[2][0], m[1][2], m[0][3], m[0][1] = 0
+
+  // mat4x4_after
+  pFrameRoot->mat4x4_after._11 = 1.0f;
+  pFrameRoot->mat4x4_after._22 = 1.0f;
+  pFrameRoot->mat4x4_after._33 = 1.0f;
+  pFrameRoot->mat4x4_after._44 = 1.0f;
+
+  // mat4x4_before
+  pFrameRoot->mat4x4_before._11 = 1.0f;
+  pFrameRoot->mat4x4_before._22 = 1.0f;
+  pFrameRoot->mat4x4_before._33 = 1.0f;
+  pFrameRoot->mat4x4_before._44 = 1.0f;
+
+  // Initialize root frame flags
+  pFrameRoot->bIsRoot_1F8 = 1;      // This is a root frame
+  pFrameRoot->nCountChild = 0;      // No children initially
+  pFrameRoot->nCount_12C++;         // Increment reference/instance count
+
+  // Return the new object
+  *ppOutFrameRoot = pFrameRoot;
+}
+
 
 // MtxStackStartMultLocal_4074EF at 0x4074EF
 // Creates a D3DX matrix stack, loads the scene root frame matrix,
@@ -203,10 +257,59 @@ void __cdecl hook_AttachChild_4055FD(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFram
   MtxStackStartMultLocal_4074EF();
 }
 
+// CHanaObj__NewMateT3EE_S184 at 0x40F720
+// Creates and initializes a new CHanaMateT3EE_S184 object (size 0x184 bytes)
+
+void __cdecl hook_CHanaObj__NewMateT3EE_S184_40F720(CHanaMateT3EE_S184 **ppOutMate)
+{
+  CHanaMateT3EE_S184 *pMate;
+
+  DebugLog("[HNH:SUB] %s\n", "CHanaObj__NewMateT3EE_S184_40F720");
+
+  // Allocate memory (0x184 bytes = 388 decimal)
+  pMate = (CHanaMateT3EE_S184 *)MemAlloc_40DEF7(0x184u);
+  memset(pMate, 0, sizeof(CHanaMateT3EE_S184));
+
+  // Set type identifier
+  pMate->dwType = 0x3EE;  // 1006 decimal
+
+  // Initialize D3D material to white diffuse/ambient, black specular/emissive
+  pMate->d3dMaterial_130.diffuse.r = 1.0f;
+  pMate->d3dMaterial_130.diffuse.g = 1.0f;
+  pMate->d3dMaterial_130.diffuse.b = 1.0f;
+  pMate->d3dMaterial_130.diffuse.a = 1.0f;
+
+  pMate->d3dMaterial_130.ambient.r = 1.0f;
+  pMate->d3dMaterial_130.ambient.g = 1.0f;
+  pMate->d3dMaterial_130.ambient.b = 1.0f;
+  pMate->d3dMaterial_130.ambient.a = 1.0f;
+
+  // Specular and emissive set to black (0)
+  *(DWORD *)&pMate->d3dMaterial_130.specular.r = 0;  // r,g = 0
+  *(DWORD *)&pMate->d3dMaterial_130.specular.b = 0;  // b,a = 0
+  *(DWORD *)&pMate->d3dMaterial_130.emissive.r = 0;  // r,g = 0
+  *(DWORD *)&pMate->d3dMaterial_130.emissive.b = 0;  // b,a = 0
+
+  pMate->d3dMaterial_130.power = 0.0f;
+
+  // Cache diffuse alpha and mark material as dirty
+  pMate->fDiffuseA = pMate->d3dMaterial_130.diffuse.a;
+  pMate->fMatDirty = 1;
+
+  // Increment reference count
+  CHanaObj__AddRef_40BFC3(pMate);
+
+  // Return the new object
+  *ppOutMate = pMate;
+}
+
 // Register hook if needed
 void register_CHanaObj__NewFrameT3EC_S354_404720() {
   hnh_Hook(0x404720, hook_CHanaObj__NewFrameT3EC_S354_404720, "CHanaObj__NewFrameT3EC_S354_404720");
   hnh_Hook(0x4055FD, hook_AttachChild_4055FD, "AttachChild_4055FD");
   hnh_Hook(0x4074EF, hook_MtxStackStartMultLocal_4074EF, "MtxStackStartMultLocal_4074EF");
   hnh_Hook(0x4075B0, hook_MtxStackRecursiveMulLocal_4075B0, "MtxStackRecursiveMulLocal_4075B0");
+
+  hnh_Hook(0x404908, hook_CHanaObj__NewFrameRootT3EC_S2D4_404908, "CHanaObj__NewFrameRootT3EC_S2D4_404908");
+  hnh_Hook(0x40F720, hook_CHanaObj__NewMateT3EE_S184_40F720, "CHanaObj__NewMateT3EE_S184_40F720");
 }
