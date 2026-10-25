@@ -53,6 +53,8 @@ void AssertHanaStructSize() {
   static_assert(sizeof(CD3DInitParam) == 0x34, "CD3DInitParam");
   static_assert(sizeof(CVideoModeDesc) ==0x18, "CVideoModeDesc");
   static_assert(sizeof(CDisplayConfig) == 0x10, "CDisplayConfig");
+  static_assert(sizeof(CBMPColor) == 0x8, "CBMPColor");
+  static_assert(sizeof(CBMPFile) == 0x10, "CBMPFile");
 
   DebugLog("[%s] %s\n", "INFO", "finished AssertHanaStructSize");
 }

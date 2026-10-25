@@ -46,12 +46,12 @@ extern int      &g_nObjectTableCount;
 extern int      &g_bDSInited_5185C4;
 extern BOOL     &g_bFogIsActive_4B3480;
 extern BOOL     &g_bSpecularEnable_4B3474;
-extern uint32_t &g_bAntiAliasEnable;
-extern uint32_t &g_bDitherEnable;
-extern uint32_t &g_bLightEnable_4B3484;
-extern uint32_t &g_bShadowEnable_518CA8;
+extern BOOL     &g_bAntiAliasEnable;
+extern BOOL     &g_bDitherEnable;
+extern BOOL     &g_bLightEnable_4B3484;
+extern BOOL     &g_bShadowEnable_518CA8;
 extern int      &g_nResolutionMode_518C80;
-extern uint32_t &g_nColorDepthMode_518C9C;
+extern uint32_t &g_nZBufDepthMode_518C9C;
 extern int      &g_nRenderHALMode_518CA0;
 extern uint32_t &g_nWidth2;
 extern uint32_t &g_fScreenScale_52F19C;
@@ -102,6 +102,9 @@ extern CHanaFrameT3EC_S354*& g_pCameraFrame;
 extern CHanaFrameT3EC_S354*& g_pLightFrame;
 //CHanaFrameT3EC_S354 * &g_pLightFrame = *(CHanaFrameT3EC_S354 * *)0x4D6CB0; // WRITABLE
 
+extern HWND& g_hWnd;
+extern HINSTANCE& g_hInstance_518CB0;
+extern BOOL& g_bRunGame;
 
 extern void (__cdecl * SetupDirPath_486630)(void);
 extern bool (__cdecl * CheckInstalledDirRoot_4869A7)(HWND hWnd);
@@ -159,3 +162,7 @@ extern void(__cdecl* CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354* pParent, 
 extern void(__cdecl* AttachChild_4055FD)(CHanaFrameRootT3EC_S2D4* pParent, CHanaFrameT3EC_S354* pChild);
 extern void(__cdecl* MtxStackStartMultLocal_4074EF)(void);
 extern void(__cdecl* MtxStackRecursiveMulLocal_4075B0)(CHanaFrameT3EC_S354* pFrame);
+
+extern WNDPROC WndProcTitleMenu_428C11;
+extern BOOL(__cdecl* FreeBmp_4211ED)(CBMPFile* pBMPFile);
+extern CBMPFile* (__cdecl* LoadBmp_420DF0)(LPCSTR lpFileName);

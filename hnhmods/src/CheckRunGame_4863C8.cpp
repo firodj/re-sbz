@@ -58,16 +58,13 @@ HINSTANCE &g_hInstance_518CB0 = *(HINSTANCE*)0x518CB0;
 HWND      &g_hWnd             = *(HWND*)0x518CAC;
 BOOL      &g_bRunGame         = *(BOOL*)0x4B3488;
 
-WNDPROC WndProcTitleMenu_428C11 = (WNDPROC)0x428C11;
-
-
 BOOL     &g_bSpecularEnable_4B3474 = *(BOOL*)0x4B3474;
-uint32_t &g_bAntiAliasEnable       = *(uint32_t *)0x4B347C; // WRITABLE
-uint32_t &g_bDitherEnable          = *(uint32_t *)0x4B3478; // WRITABLE
-uint32_t &g_bLightEnable_4B3484    = *(uint32_t *)0x4B3484; // WRITABLE
-uint32_t &g_bShadowEnable_518CA8   = *(uint32_t *)0x518CA8; // WRITABLE
+BOOL     &g_bAntiAliasEnable       = *(BOOL *)0x4B347C; // WRITABLE
+BOOL     &g_bDitherEnable          = *(BOOL *)0x4B3478; // WRITABLE
+BOOL     &g_bLightEnable_4B3484    = *(BOOL *)0x4B3484; // WRITABLE
+BOOL     &g_bShadowEnable_518CA8   = *(BOOL *)0x518CA8; // WRITABLE
 int      &g_nResolutionMode_518C80      = *(int *)0x518C80; // WRITABLE
-uint32_t &g_nColorDepthMode_518C9C = *(uint32_t *)0x518C9C; // WRITABLE
+uint32_t &g_nZBufDepthMode_518C9C = *(uint32_t *)0x518C9C; // WRITABLE
 int      &g_nRenderHALMode_518CA0       = *(int *)0x518CA0; // WRITABLE
 uint32_t &g_nWidth2                = *(uint32_t *)0x518C28; // WRITABLE
 uint32_t &g_fScreenScale_52F19C    = *(uint32_t *)0x52F19C; // WRITABLE
@@ -87,9 +84,9 @@ void (__cdecl * CHanaObj__NewLightT3EF)(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *p
 void (__cdecl * CHanaObj__AddObjItemRef_40B848)(LPCSTR szName, CHanaBase_S130 *pObj) = reinterpret_cast<void(__cdecl*)(LPCSTR szName, CHanaBase_S130 *pObj)>(0x40B848);
 void (__cdecl * AttachHanaObj_40BAB8)(CHanaBase_S130 *pParent, LPCSTR szName) = reinterpret_cast<void(__cdecl*)(CHanaBase_S130 *pParent, LPCSTR szName)>(0x40BAB8);
 D3DXMATRIX * (__cdecl * MatrixRotateCubeMapFace)(CHanaFrameT3EC_S354 *pFrame, int mode, D3DXVECTOR3 *pV, float angle) =
-  reinterpret_cast<D3DXMATRIX *(__cdecl*)(CHanaFrameT3EC_S354 *pFrame, int mode, D3DXVECTOR3 *pV, float angle)>(0x4070AB);
+reinterpret_cast<D3DXMATRIX *(__cdecl*)(CHanaFrameT3EC_S354 *pFrame, int mode, D3DXVECTOR3 *pV, float angle)>(0x4070AB);
 void (__cdecl * CalculateLocalRotationMatrix)( CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pSceneFrame, float *pXpos, float *pYpos, float *pZpos, float *pXYrot, float *pYXrot, float *pZXrot) =
-  reinterpret_cast<void(__cdecl*)( CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pSceneFrame, float *pXpos, float *pYpos, float *pZpos, float *pXYrot, float *pYXrot, float *pZXrot)>(0x407047);
+reinterpret_cast<void(__cdecl*)( CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pSceneFrame, float *pXpos, float *pYpos, float *pZpos, float *pXYrot, float *pYXrot, float *pZXrot)>(0x407047);
 
 // === FUNCTION IMPLEMENTATIONS ===
 
@@ -415,7 +412,7 @@ BOOL __cdecl hook_CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen)
   g_bLightEnable_4B3484 = szTeaConfigData[4];
   g_bShadowEnable_518CA8 = szTeaConfigData[5];
   g_nResolutionMode_518C80 = szTeaConfigData[6];
-  g_nColorDepthMode_518C9C = szTeaConfigData[7];
+  g_nZBufDepthMode_518C9C = szTeaConfigData[7];
   g_nRenderHALMode_518CA0 = 1;
   bRunGame = ShowTitleMenu_427DA8(hWnd, bFullScreen);
   if ( bRunGame > 0 )
@@ -428,7 +425,7 @@ BOOL __cdecl hook_CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen)
     szTeaConfigData[4] = g_bLightEnable_4B3484;
     szTeaConfigData[5] = g_bShadowEnable_518CA8;
     szTeaConfigData[6] = g_nResolutionMode_518C80;
-    szTeaConfigData[7] = g_nColorDepthMode_518C9C;
+    szTeaConfigData[7] = g_nZBufDepthMode_518C9C;
     szTeaConfigData[8] = g_nRenderHALMode_518CA0;
     wsprintfA(szTeaEx, "");
     CHanaObj__GetRealPath_486D9A(szTeaEx, 0x3E9);

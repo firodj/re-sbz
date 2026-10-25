@@ -54,6 +54,9 @@
     <ClCompile Include="src\CHanaObj__NewFrameT3EC_S354.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\WndProcTitleMenu.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

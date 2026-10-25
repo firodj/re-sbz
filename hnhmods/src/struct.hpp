@@ -559,6 +559,23 @@ struct CVideoModeWhiteItem
   int bpp;
 };
 
+struct CBMPColor // sizeof=0x8
+{
+  __int16 size;
+  __int16 count;
+  RGBQUAD colors[1];
+};
+
+
+struct CBMPFile  // sizeof=0x10
+{
+  BITMAPFILEHEADER *pBitmapFileHeader;
+  BITMAPINFOHEADER *pBitmapInfoHeader;
+  CBMPColor *pBMPColor;
+  LPBYTE pData;
+};
+
+
 #pragma pack(pop)
 
 void AssertHanaStructSize();
