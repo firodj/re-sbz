@@ -97,6 +97,7 @@ extern int& g_nObjectTableCapacity_4B009C;
 extern uint32_t& g_nLightningState;
 extern uint32_t& g_nLightningEnabled;
 extern __int64& g_bitsLightIndexes_4D6CB8;
+extern uint32_t &g_dwBytesPerPixel;
 
 extern uint32_t& g_bInited_4D6C6C;
 extern CHanaLightT3EF_S1A0*& g_pLight_4D6CE0;
@@ -117,7 +118,7 @@ extern void (__cdecl * SetupDirPath_486630)(void);
 extern bool (__cdecl * CheckInstalledDirRoot_4869A7)(HWND hWnd);
 extern BOOL(__cdecl* CDROM_VerifyDiscSignature)(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize);
 
-extern const char * (__cdecl*DDErrToString_423CE7)(DWORD hr);
+extern const char * (__cdecl*DSErrToString_423CE7)(DWORD hr);
 extern BOOL (__cdecl*IsFileExists_47E8EE)(CHAR* pszFilePath);
 
 extern HRESULT (__cdecl*SetFogEnable_40DFB0)(BOOL bFogEnable, BOOL bFogRangeEnable);

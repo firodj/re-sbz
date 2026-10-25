@@ -250,12 +250,12 @@ void hook_Renderer_InitializeTrigTablesAndPixelFormat()
   SetUiFont_419BCD(26, 26, &g_szFontFaceName);
 }
 
-// HanaDS_SetErrStr - convert a DirectSound error code (DSERR_*/HRESULT) to a human-readable message via DDErrToString_423CE7, cache the resulting message pointer in g_pDDErrStr, and return it. The message points into read-only data (the 'DirectSound ...' strings); DDErrToString_423CE7 returns 0 (NULL) for code 0 (no error). Called by HanaDS_Init on the failure path to record the last error.
+// HanaDS_SetErrStr - convert a DirectSound error code (DSERR_*/HRESULT) to a human-readable message via DSErrToString_423CE7, cache the resulting message pointer in g_pDDErrStr, and return it. The message points into read-only data (the 'DirectSound ...' strings); DSErrToString_423CE7 returns 0 (NULL) for code 0 (no error). Called by HanaDS_Init on the failure path to record the last error.
 const char *__cdecl hook_HanaDS_SetErrStr(DWORD hr)
 {
   DebugLog("[HNH:SUB] HanaDS_SetErrStr_423CCC\n");
 
-  g_pDDErrStr = (LPSTR)DDErrToString_423CE7(hr);
+  g_pDDErrStr = (LPSTR)DSErrToString_423CE7(hr);
   return g_pDDErrStr;
 }
 

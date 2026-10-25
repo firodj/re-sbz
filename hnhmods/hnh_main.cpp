@@ -82,7 +82,7 @@ void register_CheckInstalledDirRoot_4869A7();
 void register_MemAlloc_40DEF7();
 void register_SetFogEnable_40DFB0();
 void register_IsFileExists_47E8EE();
-void register_DDErrToString_423CE7();
+void register_DSErrToString_423CE7();
 void AssertHanaStructSize();
 void register_CHanaObj__Free_40C1E4();
 void register_MatrixLookAtLH_40C64A();
@@ -128,7 +128,7 @@ void InitHNH() {
 	register_MemAlloc_40DEF7();
 	register_SetFogEnable_40DFB0();
 	register_IsFileExists_47E8EE();
-	register_DDErrToString_423CE7();
+	register_DSErrToString_423CE7();
 	register_CHanaObj__Free_40C1E4();
 	register_CheckRunGame_4863C8();
 	register_ShowTitleMenu_427DA8();

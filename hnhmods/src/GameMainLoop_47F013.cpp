@@ -211,6 +211,76 @@ void __cdecl hook_GameMainLoop_47F013(void)
     ReleaseSoundEffects();
 }
 
+char * &g_szLastDDError_51836C = *(char * *)0x51836C; // WRITABLE
+
+int(__cdecl* BMP_DitherRGB24ToRGB565)(char, char, char, int, int) = reinterpret_cast<int(__cdecl*)(char, char, char, int, int)>(0x421BD5);
+void(__cdecl* BMP_Convert24bitTo16bitWithDither)(CBMPFile* pBMPFile) = reinterpret_cast<void(__cdecl*)(CBMPFile* pBMPFile)>(0x421FF4);
+HRESULT(__cdecl* GetDC_4188B4)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC) = reinterpret_cast<HRESULT(__cdecl*)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC)>(0x4188B4);
+char* (__cdecl* DDErrorString_41898E)(int hr) = reinterpret_cast<char* (__cdecl*)(int hr)>(0x41898E);
+
+LPDIRECTDRAWSURFACE7 __cdecl hook_GetSurfaceFromBmp_419DE5(LPCSTR lpFileName)
+{
+  CBMPFile *pBMPFile; // [esp+0h] [ebp-8Ch]
+  HDC hdc; // [esp+4h] [ebp-88h] BYREF
+  LPDIRECTDRAWSURFACE7 pDDSurface; // [esp+8h] [ebp-84h] BYREF
+  HRESULT hr; // [esp+Ch] [ebp-80h]
+  DDSURFACEDESC2 ddSurfaceDesc; // [esp+10h] [ebp-7Ch] BYREF
+
+  pBMPFile = LoadBmp_420DF0(lpFileName);
+  if ( !pBMPFile )
+    return 0;
+  if ( g_dwBytesPerPixel == 2 )
+    BMP_Convert24bitTo16bitWithDither(pBMPFile);
+  memset(&ddSurfaceDesc, 0, sizeof(ddSurfaceDesc));
+  ddSurfaceDesc.dwSize = 124;
+  ddSurfaceDesc.dwFlags = 7;
+  ddSurfaceDesc.ddsCaps.dwCaps = 2112;
+  ddSurfaceDesc.dwWidth = pBMPFile->pBitmapInfoHeader->biWidth;
+  ddSurfaceDesc.dwHeight = pBMPFile->pBitmapInfoHeader->biHeight;
+  hr = g_pDD_4D6C7C->CreateSurface(&ddSurfaceDesc, & pDDSurface, 0);
+  if ( hr )
+  {
+    FreeBmp_4211ED(pBMPFile);
+    g_szLastDDError_51836C = DDErrorString_41898E(hr);
+    return 0;
+  }
+  else
+  {
+    hr = GetDC_4188B4(pDDSurface, &hdc);
+    if ( hr )
+    {
+      if ( pDDSurface )
+      {
+        pDDSurface->Release();
+        pDDSurface = 0;
+      }
+      FreeBmp_4211ED(pBMPFile);
+      g_szLastDDError_51836C = DDErrorString_41898E(hr);
+      return 0;
+    }
+    else
+    {
+      StretchDIBits(
+        hdc,
+        0,
+        0,
+        pBMPFile->pBitmapInfoHeader->biWidth,
+        pBMPFile->pBitmapInfoHeader->biHeight,
+        0,
+        0,
+        pBMPFile->pBitmapInfoHeader->biWidth,
+        pBMPFile->pBitmapInfoHeader->biHeight,
+        pBMPFile->pData,
+        (BITMAPINFO*)pBMPFile->pBitmapInfoHeader,
+        0,
+        0xCC0020u);
+      FreeBmp_4211ED(pBMPFile);
+      pDDSurface->ReleaseDC(hdc);
+      return pDDSurface;
+    }
+  }
+}
+
 void register_GameMainLoop_47F013() {
     hnh_Hook(0x47F013, hook_GameMainLoop_47F013, "GameMainLoop_47F013");
 }
