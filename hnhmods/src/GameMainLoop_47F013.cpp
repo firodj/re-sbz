@@ -30,8 +30,8 @@
 LPDIRECTDRAWSURFACE7(__cdecl* GetSurfaceFromBmp_419DE5)(LPCSTR lpFileName) =
     reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(LPCSTR)>(0x419DE5);
 int (__cdecl*ConvertFrom640AsInt)(int n) = reinterpret_cast<int(__cdecl*)(int)>(0x47E6AF);
-void (__cdecl*StopAndRestartThread)(int bThreadType) =
-    reinterpret_cast<void(__cdecl*)(int)>(0x481AE4);
+void (__cdecl*StopAndRestartThread)(DWORD nThreadType) =
+    reinterpret_cast<void(__cdecl*)(DWORD)>(0x481AE4);
 void (__cdecl*ReleaseSoundEffects)(void) = reinterpret_cast<void(__cdecl*)()>(0x47EEEC);
 void (__cdecl*PlayVideoWith3DAudio_4791A3)(const char* szMoviePath, int bLoopFlags) =
     reinterpret_cast<void(__cdecl*)(const char*, int)>(0x4791A3);
@@ -342,16 +342,17 @@ int __cdecl hook_BMP_DitherRGB24ToRGB565(char b, char g, char r, int x, int y)
   return (r5 >> 3) | (4 * g6) | (b5 << 7);
 }
 
-int __cdecl hook_ConvertFrom640AsInt(int v)
+int __cdecl hook_ConvertFrom640AsInt(int nNum)
 {
   static int log_ConvertFrom640AsInt = 1;
   log_ConvertFrom640AsInt--;
   if (!log_ConvertFrom640AsInt) {
     DebugLog("[HNH:SUB] %s\n", "ConvertFrom640AsInt_47E6AF");
+    DebugLog("\tconvert from 640 as int => (%d * %d / 640)\n", g_nScreenScale_52F19C, nNum);
     log_ConvertFrom640AsInt = 1000;
   }
 
-  return g_fScreenScale_52F19C * v / 640;
+  return g_nScreenScale_52F19C * nNum / 640;
 }
 
 void register_GameMainLoop_47F013() {

@@ -98,7 +98,7 @@ extern int      &g_nResolutionMode_518C80;
 extern uint32_t &g_nZBufDepthMode_518C9C;
 extern int      &g_nRenderHALMode_518CA0;
 extern uint32_t &g_nWidth2;
-extern uint32_t &g_fScreenScale_52F19C;
+extern uint32_t &g_nScreenScale_52F19C;
 
 extern int (&g_arrZBufDepthCountPerDev_518C40)[16];
 extern int (&g_arrZBufDepthsPerDev_518828)[256];

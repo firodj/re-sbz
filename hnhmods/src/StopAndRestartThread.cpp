@@ -7,14 +7,36 @@
 HANDLE &g_hThread = *(HANDLE*)0x52F3B0;
 bool& g_bRequestThreadStop = *(bool*)0x52F3AC;
 
+CInputState *&g_pInputState1_52F3A4 = *(CInputState**) 0x52F3A4;
+CInputState *&g_pInputState2_52F3A8 = *(CInputState**) 0x52F3A8;
+CInputState *&g_pInputState_4C7354 = *(CInputState**) 0x4C7354;
+
+
+CInputState (&g_arrInputState1_52F1C0)[30] = *(CInputState (*)[30])0x52F1C0; // WRITABLE
+CInputState (&g_arrInputState2_52F2B0)[30] = *(CInputState (*)[30])0x52F2B0; // WRITABLE
+int &g_vkBtnRightAlt_4C7330 = *(int *)0x4C7330; // WRITABLE
+int &g_vkBtnLeftAlt_4C7334 = *(int *)0x4C7334; // WRITABLE
+int &g_vkBtnMidAlt_4C7338 = *(int *)0x4C7338; // WRITABLE
+int &g_vkKbdLeft_4C733C = *(int *)0x4C733C; // WRITABLE
+int &g_vkKbdRight_4C7340 = *(int *)0x4C7340; // WRITABLE
+int &g_vkKbdUp_4C7344 = *(int *)0x4C7344; // WRITABLE
+int &g_vkKbdDown_4C7348 = *(int *)0x4C7348; // WRITABLE
+uint32_t &g_vKey_4C734C = *(uint32_t *)0x4C734C; // WRITABLE
+
+int &g_nMouseX_52F1B8 = *(int*)0x52F1B8;
+int& g_nMouseY_52F3A0 = *(int*)0x52F3A0;
+
+bool& g_bThreadWait_52F3AD = *(bool*)0x52F3AD;
+bool& g_bThreadInWaiting_52F3AE = *(bool*)0x52F3AE;
+
 HANDLE(__cdecl* TerminateThreadGracefully)(HANDLE hThread)
 = reinterpret_cast<HANDLE(__cdecl*)(HANDLE hThread)>(0x481A35);
-HANDLE(__cdecl* CreateNewThread)(HANDLE hPrevThread, BOOL bThreadType)
-= reinterpret_cast<HANDLE(__cdecl *)(HANDLE hPrevThread, BOOL bThreadType)>(0x4818FD);
-DWORD(WINAPI* InputThread_Relative_481637)(LPVOID lpThreadParameter)
-= reinterpret_cast<DWORD(WINAPI *)(LPVOID lpThreadParameter)>(0x481637);
-DWORD(WINAPI* InputThread_Absolute_4817B1)(LPVOID lpThreadParameter)
-= reinterpret_cast<DWORD(WINAPI *)(LPVOID lpThreadParameter)>(0x4817B1);
+HANDLE(__cdecl* CreateNewThread)(HANDLE hPrevThread, DWORD nThreadType)
+= reinterpret_cast<HANDLE(__cdecl *)(HANDLE, DWORD)>(0x4818FD);
+void (WINAPI*  InputThread_Relative_481637)(LPVOID lpThreadParameter)
+= reinterpret_cast<void(WINAPI  *)(LPVOID lpThreadParameter)>(0x481637);
+void ( WINAPI*   InputThread_Absolute_4817B1)(LPVOID lpThreadParameter)
+= reinterpret_cast< void(WINAPI   *)(LPVOID lpThreadParameter)>(0x4817B1);
 bool(__cdecl*GetInputState_4811FA)(int* pOutX, int* pOutY, __int16* pOutBtn)
 = reinterpret_cast<bool(__cdecl*)(int* pOutX, int* pOutY, __int16* pOutBtn)>(0x4811FA);
 
@@ -30,13 +52,13 @@ bool(__cdecl*GetInputState_4811FA)(int* pOutX, int* pOutY, __int16* pOutBtn)
 //   1. Always: gracefully terminate current hThread
 //   2. If bThreadType != 0: create new thread of given type
 //   3. If bThreadType == 0: just sleep 10ms (wind-down)
-void __cdecl hook_StopAndRestartThread(int bThreadType)
+void __cdecl hook_StopAndRestartThread(DWORD nThreadType)
 {
   DebugLog("[HNH:SUB] %s\n", "StopAndRestartThread_481AE4");
 
   g_hThread = TerminateThreadGracefully(g_hThread); // Store terminated handle (NULL) back to hThread
-  if ( bThreadType )
-    g_hThread = CreateNewThread(g_hThread, bThreadType);// Store new thread handle in hThread
+  if ( nThreadType != 0 )
+    g_hThread = CreateNewThread(g_hThread, nThreadType);// Store new thread handle in hThread
   else
     Sleep(10u);                                 // Sleep 10ms to let terminated thread wind down
 }
@@ -47,7 +69,7 @@ HANDLE __cdecl hook_TerminateThreadGracefully(HANDLE hThread)
   int bTerminate; // [esp+4h] [ebp-8h]
   DWORD ExitCode; // [esp+8h] [ebp-4h] BYREF
 
-  DebugLog("[HNH:SUB] TerminateThreadGracefully_481A35");
+  DebugLog("[HNH:SUB] TerminateThreadGracefully_481A35\n");
 
   bTerminate = 1;
   g_bRequestThreadStop = 1;
@@ -74,24 +96,17 @@ HANDLE __cdecl hook_TerminateThreadGracefully(HANDLE hThread)
   return 0;
 }
 
-CInputState (&g_arrInputState1_52F1C0)[30] = *(CInputState (*)[30])0x52F1C0; // WRITABLE
-CInputState (&g_arrInputState2_52F2B0)[30] = *(CInputState (*)[30])0x52F2B0; // WRITABLE
-int &g_vkBtnRightAlt_4C7330 = *(int *)0x4C7330; // WRITABLE
-int &g_vkBtnLeftAlt_4C7334 = *(int *)0x4C7334; // WRITABLE
-int &g_vkBtnMidAlt_4C7338 = *(int *)0x4C7338; // WRITABLE
-int &g_vkKbdLeft_4C733C = *(int *)0x4C733C; // WRITABLE
-int &g_vkKbdRight_4C7340 = *(int *)0x4C7340; // WRITABLE
-int &g_vkKbdUp_4C7344 = *(int *)0x4C7344; // WRITABLE
-int &g_vkKbdDown_4C7348 = *(int *)0x4C7348; // WRITABLE
-uint32_t &g_vKey_4C734C = *(uint32_t *)0x4C734C; // WRITABLE
+LPVOID orig_CreateNewThread = NULL;
 
-HANDLE __cdecl hook_CreateNewThread(HANDLE hPrevThread, BOOL bThreadType)
+HANDLE __cdecl hook_CreateNewThread(HANDLE hPrevThread, DWORD nThreadType)
 {
   int i; // [esp+0h] [ebp-8h]
   DWORD ThreadId; // [esp+4h] [ebp-4h] BYREF
   HANDLE hThread; // [esp+10h] [ebp+8h]
 
   DebugLog("[HNH:SUB] %s\n", "CreateNewThread_4818FD");
+  DebugLog("\tcreate new thread 0x%x, %d\n", hPrevThread, nThreadType);
+  // return reinterpret_cast<HANDLE(__cdecl*)(HANDLE hPrevThread, BOOL bThreadType)>(orig_CreateNewThread)(hPrevThread, bThreadType);
 
   for ( i = 0; i < 30; ++i )
   {
@@ -110,20 +125,13 @@ HANDLE __cdecl hook_CreateNewThread(HANDLE hPrevThread, BOOL bThreadType)
   g_vkKbdUp_4C7344 = 38;
   g_vkKbdDown_4C7348 = 40;
   g_vKey_4C734C = 27;
-  if ( bThreadType )
-    hThread = CreateThread(0, 0, InputThread_Relative_481637, 0, 0, &ThreadId);
+  if ( nThreadType == 1 )
+    hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)InputThread_Relative_481637, 0, 0, &ThreadId);
   else
-    hThread = CreateThread(0, 0, InputThread_Absolute_4817B1, 0, 0, &ThreadId);
+    hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)InputThread_Absolute_4817B1, 0, 0, &ThreadId);
   SetThreadPriority(hThread, 2);
   return hThread;
 }
-
-CInputState *&g_pInputState1_52F3A4 = *(CInputState**) 0x52F3A4;
-CInputState *&g_pInputState2_52F3A8 = *(CInputState**) 0x52F3A8;
-CInputState *&g_pInputState_4C7354 = *(CInputState**) 0x4C7354;
-
-bool& g_bThreadWait_52F3AD = *(bool*)0x52F3AD;
-bool& g_bThreadInWaiting_52F3AE = *(bool*)0x52F3AE;
 
 // Mouse-look input thread (relative / cursor-pinned mode), ~120Hz (Sleep(8)/poll).
 // Per iteration: honors g_bThreadWait_52F3AD (busy-wait with g_bThreadInWaiting_52F3AE)
@@ -135,7 +143,7 @@ bool& g_bThreadInWaiting_52F3AE = *(bool*)0x52F3AE;
 // then sets true_6=1 (fresh-data flag); SetCursorPos(nCenterX,nCenterY) re-pins
 // the OS cursor to the virtual center so relative movement is unbounded.
 // nCenterX/Y = ConvertFrom640AsInt(320/240).
-void __stdcall hook_InputThread_Relative_481637(LPVOID lpThreadParameter)
+__noreturn void __stdcall  hook_InputThread_Relative_481637(LPVOID lpThreadParameter)
 {
   char bKbdMove; // al
   int nTmpY; // [esp+8h] [ebp-14h] BYREF
@@ -190,7 +198,7 @@ void __stdcall hook_InputThread_Relative_481637(LPVOID lpThreadParameter)
 }
 
 // Absolute / free-cursor input thread (used for menus & UI where absolute mouse position matters). Identical double-buffer ping-pong + GetInputState_4811FA poll as InputThread_Relative_481637, but WITHOUT the SetCursorPos re-pinning, so the OS cursor moves freely.
-void __stdcall hook_InputThread_Absolute_4817B1(LPVOID lpThreadParameter)
+__noreturn void __stdcall hook_InputThread_Absolute_4817B1(LPVOID lpThreadParameter)
 {
   char bKbdMove; // al
   int nTmpY; // [esp+8h] [ebp-Ch] BYREF
@@ -238,8 +246,6 @@ void __stdcall hook_InputThread_Absolute_4817B1(LPVOID lpThreadParameter)
     g_bThreadInWaiting_52F3AE = 0;
   }
 }
-int &g_nMouseX_52F1B8 = *(int*)0x52F1B8;
-int& g_nMouseY_52F3A0 = *(int*)0x52F3A0;
 
 // Poll the OS mouse once. GetCursorPos -> *pOutX/*pOutY (ptCursor). Build *pOutBtn as a button mask via GetAsyncKeyState: OR 1 = left button or keybind g_vkBtnLeftAlt_4C7334; OR 2 = right or g_vkBtnRightAlt_4C7330; OR 3 = middle or g_vkBtnMidAlt_4C7338. Keyboard-relative-mouse fallback: if the physical cursor did NOT move this frame (g_nMouseX_52F1B8==ptCursor.x && g_nMouseY_52F3A0==ptCursor.y), each of the 4 keybinds g_vkKbdLeft/Right/Up/Down (4C733C/340/344/348) nudges the virtual position by +/-9 and SetCursorPos applies it. Returns bKbdMove (1 if any keyboard nudge fired, else 0). Caches last-seen cursor in g_nMouseX_52F1B8/g_nMouseY_52F3A0.
 bool __cdecl hook_GetInputState_4811FA(int *pOutX, int *pOutY, __int16 *pOutBtn)
@@ -250,12 +256,18 @@ bool __cdecl hook_GetInputState_4811FA(int *pOutX, int *pOutY, __int16 *pOutBtn)
   POINT ptCursor; // [esp+0h] [ebp-Ch] BYREF
   bool bKbdMove; // [esp+8h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] %s\n", "GetInputState_4811FA");
+  static int log_GetInputState_4811FA = 1;
+  log_GetInputState_4811FA--;
+  if (!log_GetInputState_4811FA) {
+    DebugLog("[HNH:SUB] %s\n", "GetInputState_4811FA");
+    log_GetInputState_4811FA = 1000;
+  }
 
   bKbdMove = 0;
   Sleep(0);
   GetCursorPos(&ptCursor);
-  *(POINT *)pOutX = ptCursor;
+  *pOutX = ptCursor.x;
+  *pOutY = ptCursor.y;
   *pOutBtn = 0;
   if ( GetAsyncKeyState(VK_LBUTTON) >> 8 || GetAsyncKeyState(g_vkBtnLeftAlt_4C7334) >> 8 )
   {
@@ -307,7 +319,7 @@ bool __cdecl hook_GetInputState_4811FA(int *pOutX, int *pOutY, __int16 *pOutBtn)
 void register_StopAndRestartThread_481AE4() {
   hnh_Hook(0x481AE4, hook_StopAndRestartThread, "StopAndRestartThread_481AE4");
   hnh_Hook(0x481A35, hook_TerminateThreadGracefully, "TerminateThreadGracefully_481A35");
-  hnh_Hook(0x4818FD, hook_CreateNewThread, "CreateNewThread_4818FD");
+  orig_CreateNewThread = hnh_Hook(0x4818FD, hook_CreateNewThread, "CreateNewThread_4818FD");
   hnh_Hook(0x481637, hook_InputThread_Relative_481637, "InputThread_Relative_481637");
   hnh_Hook(0x4817B1, hook_InputThread_Absolute_4817B1, "InputThread_Absolute_4817B1");
   hnh_Hook(0x4811FA, hook_GetInputState_4811FA, "GetInputState_4811FA");

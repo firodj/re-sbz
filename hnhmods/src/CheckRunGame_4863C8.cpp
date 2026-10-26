@@ -67,7 +67,7 @@ int      &g_nResolutionMode_518C80      = *(int *)0x518C80; // WRITABLE
 uint32_t &g_nZBufDepthMode_518C9C = *(uint32_t *)0x518C9C; // WRITABLE
 int      &g_nRenderHALMode_518CA0       = *(int *)0x518CA0; // WRITABLE
 uint32_t &g_nWidth2                = *(uint32_t *)0x518C28; // WRITABLE
-uint32_t &g_fScreenScale_52F19C    = *(uint32_t *)0x52F19C; // WRITABLE
+uint32_t &g_nScreenScale_52F19C    = *(uint32_t *)0x52F19C; // WRITABLE
 
 // === GLOBAL FUNCTIONS ===
 
@@ -417,7 +417,7 @@ BOOL __cdecl hook_CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen)
   bRunGame = ShowTitleMenu_427DA8(hWnd, bFullScreen);
   if ( bRunGame > 0 )
   {
-    g_fScreenScale_52F19C = g_nWidth2;
+    g_nScreenScale_52F19C = g_nWidth2;
     szTeaConfigData[0] = g_bFogIsActive_4B3480;
     szTeaConfigData[1] = g_bSpecularEnable_4B3474;
     szTeaConfigData[2] = g_bAntiAliasEnable;
