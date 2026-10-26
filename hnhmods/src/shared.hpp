@@ -192,13 +192,11 @@ extern BOOL (__cdecl*IsFileExists_47E8EE)(CHAR* pszFilePath);
 extern void (__cdecl*GameMainLoop_47F013)(void);
 extern LPDIRECTDRAWSURFACE7(__cdecl* GetSurfaceFromBmp_419DE5)(LPCSTR lpFileName);
 extern HRESULT(__cdecl* GetDC_4188B4)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC);
+extern void(__cdecl* PlayVideoWith3DAudio_4791A3)(const char* szMoviePath, int bLoopFlags);
 
 extern int(__cdecl* ConvertFrom640AsInt)(int nNum);
-// ConvertFrom640AsFloat_47E6C6
 extern double(__cdecl*ConvertFrom640AsFloat)(float fNum);
-// ConvertFrom1024AsInt_47E680
 extern int(__cdecl* ConvertFrom1024AsInt)(int nNum);
-// ConvertFrom1024AsFloat_47E69B
 extern double(__cdecl* ConvertFrom1024AsFloat)(float fNum);
 
 // === DEFINED CHanaObj__NewFrameT3EC_S354.cpp ===

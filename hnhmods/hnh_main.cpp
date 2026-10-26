@@ -22,9 +22,6 @@ static WinMainFn origWinMain;
 
 int WINAPI hookWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
 
-typedef std::add_pointer_t<void __cdecl(const char*, int)> PlayVideoWith3DAudioFn;
-static PlayVideoWith3DAudioFn origPlayVideoWith3DAudio = nullptr;
-
 // WndProc
 static WNDPROC origWndProc;
 
@@ -72,10 +69,6 @@ bool CheckIsHNH() {
 	return false;
 }
 
-void __cdecl hookPlayVideoWith3DAudio(const char* szFileName, int flagsLoop) {
-	DebugLog("[HNH] PlayVideoWith3DAudio %s %d\n", szFileName, flagsLoop);
-}
-
 void register_WinMain_485CE0();
 void register_WndProcCheckSystem_485FC2();
 void register_CheckInstalledDirRoot_4869A7();
@@ -112,11 +105,6 @@ void InitHNH() {
 	//res = MH_CreateHook(pfnWndProc, reinterpret_cast<LPVOID>(hookWndProc), reinterpret_cast<LPVOID*>(&origWndProc));
 	//if (res == MH_OK) res = MH_EnableHook(pfnWndProc);
 	//DebugLog("[HNH] Hooked WndProc; %s\n", MH_StatusToString(res));
-
-	LPVOID pfnPlayVideoWith3DAudio = (LPVOID)0x4791A3;
-	res = MH_CreateHook(pfnPlayVideoWith3DAudio, reinterpret_cast<LPVOID>(hookPlayVideoWith3DAudio), reinterpret_cast<LPVOID*>(&origPlayVideoWith3DAudio));
-	if (res == MH_OK) res = MH_EnableHook(pfnPlayVideoWith3DAudio);
-	DebugLog("[HNH] Hooked PlayVideoWith3DAudio; %s\n", MH_StatusToString(res));
 
 	AssertHanaStructSize();
 	
