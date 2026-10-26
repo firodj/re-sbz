@@ -209,3 +209,10 @@ extern void(__cdecl* MtxStackRecursiveMulLocal_4075B0)(CHanaFrameT3EC_S354* pFra
 extern WNDPROC WndProcTitleMenu_428C11;
 extern BOOL(__cdecl* FreeBmp_4211ED)(CBMPFile* pBMPFile);
 extern CBMPFile* (__cdecl* LoadBmp_420DF0)(LPCSTR lpFileName);
+
+// === DEFINED StopAndRestartThread.cpp ===
+
+extern CInputState* (*GetInputState_481B37)(void);
+extern bool(__cdecl* GetCursorPos_4811FA)(int* pOutX, int* pOutY, __int16* pOutBtn);
+extern void(__cdecl* MutexThreadWait_4815EC)(bool bWait);
+
