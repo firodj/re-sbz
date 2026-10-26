@@ -88,6 +88,7 @@ void register_GameMainLoop_47F013();
 void register_StopAndRestartThread_481AE4();
 void register_LoadSoundEffects_47EB7F();
 void register_ReleaseSoundEffects_47EEEC();
+void register_LoadWav_422E7B();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -127,6 +128,7 @@ void InitHNH() {
 	register_StopAndRestartThread_481AE4();
 	register_LoadSoundEffects_47EB7F();
 	register_ReleaseSoundEffects_47EEEC();
+	register_LoadWav_422E7B();
 
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)

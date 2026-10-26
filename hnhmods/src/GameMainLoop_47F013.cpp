@@ -71,6 +71,9 @@ CHAR *g_pszSaveNameFmt_52F1AC = (CHAR*)0x52F1AC; // WRITABLE (never written)
 
 const char* &g_szLastDDError_51836C = *(const char* *)0x51836C; // WRITABLE
 
+char (&g_BayerDitherMatrix8x8)[] = *(char (*)[])0x4B23B0;
+
+
 // === FUNCTION ===
 void __cdecl hook_GameMainLoop_47F013(void)
 {
@@ -303,8 +306,6 @@ HRESULT __cdecl hook_GetDC_4188B4(LPDIRECTDRAWSURFACE7 pDDSurface, HDC *pDC)
   }
   return hResult;
 }
-
-char (&g_BayerDitherMatrix8x8)[] = *(char (*)[])0x4B23B0;
 
 int __cdecl hook_BMP_DitherRGB24ToRGB565(char b, char g, char r, int x, int y)
 {

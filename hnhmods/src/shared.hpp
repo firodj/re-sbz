@@ -33,6 +33,8 @@ extern LPDIRECT3D7             &g_pD3D_4D6C84;
 extern CObjItemRef_S208* &g_pObjectTable;
 extern int      &g_nObjectTableCount;
 extern int      &g_bDSInited_5185C4;
+extern LPDIRECTSOUND &g_ppDS;
+extern const char *(__cdecl*HanaDS_SetErrStr)(DWORD hr);
 extern uint32_t &g_dwBytesPerPixel;
 extern uint32_t &g_bInited_4D6C6C;
 extern CHanaLightT3EF_S1A0* &g_pLight_4D6CE0;
@@ -49,16 +51,15 @@ extern LRESULT (__stdcall*WndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM
 
 extern int  &g_nMemCnt_4D6CF0;
 extern char (&g_szDbgPrefix)[104];
+extern HANDLE& g_hHeapHandle;
+extern int &g_nHeapRefCount;
 
 extern int    (__cdecl*MemFree_40DF64)(void* pBuf);
 extern LPVOID (__cdecl*MemAlloc_40DEF7)(SIZE_T dwBytes);
 extern void   (__cdecl*PrintDebugError)(int hr);
 
-extern HRESULT (__cdecl*SetFogEnable_40DFB0)(BOOL bFogEnable, BOOL bFogRangeEnable);
-extern HRESULT (__cdecl*SetFogMode_40E02D)(int bFogTableEnable, DWORD dwFogMode);
-extern HRESULT (__cdecl*SetFogColor_40E0B4)(DWORD dwFogColor);
-extern HRESULT (__cdecl*SetFogRange_40E0E2)(DWORD dwFogStart, DWORD dwFogEnd);
-
+extern LPVOID(__cdecl* AllocMem)(SIZE_T size);
+extern BOOL(__cdecl* SafeFree)(LPVOID lpMem);
 
 // === DEFINED SetFogEnable.cpp ===
 
@@ -68,6 +69,11 @@ extern DWORD &g_dwFogMode_4B00C8;
 extern DWORD &g_dwFogTableEnable_4D6CF8;
 extern DWORD &g_dwFogColor_4B00CC;
 extern BOOL  &g_bFogIsActive_4B3480;
+
+extern HRESULT (__cdecl*SetFogEnable_40DFB0)(BOOL bFogEnable, BOOL bFogRangeEnable);
+extern HRESULT (__cdecl*SetFogMode_40E02D)(int bFogTableEnable, DWORD dwFogMode);
+extern HRESULT (__cdecl*SetFogColor_40E0B4)(DWORD dwFogColor);
+extern HRESULT (__cdecl*SetFogRange_40E0E2)(DWORD dwFogStart, DWORD dwFogEnd);
 
 // === DEFINED CheckInstalledDirRoot.cpp ===
 

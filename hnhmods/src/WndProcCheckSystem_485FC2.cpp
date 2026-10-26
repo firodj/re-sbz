@@ -15,8 +15,6 @@
 LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78 = *(LPDIRECT3DDEVICE7*)0x4D6C78;
 D3DDEVICEDESC7    &g_d3dDevDesc_4D6980 = *(D3DDEVICEDESC7 *)0x4D6980;
 
-HANDLE              &g_hHeapHandle   = *(HANDLE*)0x5187F0;
-int                 &g_nHeapRefCount = *(int*)0x5187F4;
 LPDIRECTSOUND       &g_ppDS          = *(LPDIRECTSOUND*)0x5185C0;
 DSCAPS              &g_dsCaps_518560 = *(DSCAPS*)0x518560;
 int                 &g_bDSInited_5185C4 = *(int*)0x5185C4;
