@@ -215,6 +215,20 @@ extern double(__cdecl*ConvertFrom640AsFloat)(float fNum);
 extern int(__cdecl* ConvertFrom1024AsInt)(int nNum);
 extern double(__cdecl* ConvertFrom1024AsFloat)(float fNum);
 
+extern BYTE &g_nAviVolumeIndex_530266;
+extern BYTE &g_sceneProgressFlag_530269;
+extern CSceneState &g_sceneState_52F7E0;
+
+// === DEFINED LoadSoundEffects.cpp ===
+
+extern LPDIRECTSOUNDBUFFER(__cdecl* LoadWav_422E7B)(LPSTR pszFileName);
+extern CSoundStruct_8 *(__cdecl*LoadWavToDS3DBuffer_42277E)(LPSTR pszFileName);
+
+// === DEFINED InGameMenu.cpp ===
+
+extern void (__cdecl*MainMenu_47DF0D)(void);
+extern int (__cdecl*InGameMenu_4799E2)(void);
+
 // === DEFINED CHanaObj__NewFrameT3EC_S354.cpp ===
 
 extern void(__cdecl* CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354* pParent, CHanaFrameT3EC_S354** ppOutFrame);

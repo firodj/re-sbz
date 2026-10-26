@@ -37,8 +37,7 @@ double(__cdecl* ConvertFrom1024AsFloat)(float fNum) = reinterpret_cast<double(__
 // ReleaseSoundEffects / LoadSoundEffects_47EB7F live in src/LoadSoundEffects_47EB7F.cpp (extern in shared.hpp)
 void (__cdecl*PlayVideoWith3DAudio_4791A3)(const char* szMoviePath, int bLoopFlags) =
     reinterpret_cast<void(__cdecl*)(const char*, int)>(0x4791A3);
-int (__cdecl*InGameMenu_4799E2)(void) = reinterpret_cast<int(__cdecl*)()>(0x4799E2);
-void (__cdecl*MainMenu_47DF0D)(void) = reinterpret_cast<void(__cdecl*)()>(0x47DF0D);
+// InGameMenu_4799E2 / MainMenu_47DF0D live in src/InGameMenu_4799E2.cpp (extern in shared.hpp)
 int (__cdecl*PlayOdsDialogueScene_477F90)(int nOdsIndex) =
     reinterpret_cast<int(__cdecl*)(int)>(0x477F90);
 int (__cdecl*PlayMapBattle_45BCAE)(int nStrIndex) =

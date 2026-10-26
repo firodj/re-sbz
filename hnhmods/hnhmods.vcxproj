@@ -221,6 +221,9 @@
     <ClCompile Include="src\LoadSoundEffects_47EB7F.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\InGameMenu_4799E2.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="user32hook.cpp" />
   </ItemGroup>
   <ItemGroup>
