@@ -4,6 +4,8 @@
 #include "console.hpp"
 #include "shared.hpp"
 
+// === GLOBAL VARIABLES ===
+
 HANDLE &g_hThread = *(HANDLE*)0x52F3B0;
 bool& g_bRequestThreadStop = *(bool*)0x52F3AC;
 
@@ -28,6 +30,10 @@ int& g_nMouseY_52F3A0 = *(int*)0x52F3A0;
 bool& g_bThreadWait_52F3AD = *(bool*)0x52F3AD;
 bool& g_bThreadInWaiting_52F3AE = *(bool*)0x52F3AE;
 
+// === GLOBAL FUNCTIONS ===
+
+void (__cdecl*StopAndRestartThread)(DWORD nThreadType) =
+reinterpret_cast<void(__cdecl*)(DWORD)>(0x481AE4);
 CInputState*(*GetInputState_481B37)(void) = reinterpret_cast<CInputState * (*)(void)>(0x481B37);
 void(__cdecl*MutexThreadWait_4815EC)(bool bWait) = reinterpret_cast<void(__cdecl*)(bool bWait)>(0x4815EC);
 

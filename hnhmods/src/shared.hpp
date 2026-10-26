@@ -192,7 +192,14 @@ extern BOOL (__cdecl*IsFileExists_47E8EE)(CHAR* pszFilePath);
 extern void (__cdecl*GameMainLoop_47F013)(void);
 extern LPDIRECTDRAWSURFACE7(__cdecl* GetSurfaceFromBmp_419DE5)(LPCSTR lpFileName);
 extern HRESULT(__cdecl* GetDC_4188B4)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC);
-extern int(__cdecl* ConvertFrom640AsInt)(int n);
+
+extern int(__cdecl* ConvertFrom640AsInt)(int nNum);
+// ConvertFrom640AsFloat_47E6C6
+extern double(__cdecl*ConvertFrom640AsFloat)(float fNum);
+// ConvertFrom1024AsInt_47E680
+extern int(__cdecl* ConvertFrom1024AsInt)(int nNum);
+// ConvertFrom1024AsFloat_47E69B
+extern double(__cdecl* ConvertFrom1024AsFloat)(float fNum);
 
 // === DEFINED CHanaObj__NewFrameT3EC_S354.cpp ===
 
@@ -215,4 +222,4 @@ extern CBMPFile* (__cdecl* LoadBmp_420DF0)(LPCSTR lpFileName);
 extern CInputState* (*GetInputState_481B37)(void);
 extern bool(__cdecl* GetCursorPos_4811FA)(int* pOutX, int* pOutY, __int16* pOutBtn);
 extern void(__cdecl* MutexThreadWait_4815EC)(bool bWait);
-
+extern void(__cdecl* StopAndRestartThread)(DWORD nThreadType);

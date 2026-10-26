@@ -29,9 +29,11 @@
 // === PINNED GAME FUNCTIONS ===
 LPDIRECTDRAWSURFACE7(__cdecl* GetSurfaceFromBmp_419DE5)(LPCSTR lpFileName) =
     reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(LPCSTR)>(0x419DE5);
-int (__cdecl*ConvertFrom640AsInt)(int n) = reinterpret_cast<int(__cdecl*)(int)>(0x47E6AF);
-void (__cdecl*StopAndRestartThread)(DWORD nThreadType) =
-    reinterpret_cast<void(__cdecl*)(DWORD)>(0x481AE4);
+int (__cdecl*ConvertFrom640AsInt)(int nNum) = reinterpret_cast<int(__cdecl*)(int)>(0x47E6AF);
+double(__cdecl*ConvertFrom640AsFloat)(float fNum) = reinterpret_cast<double(__cdecl*)(float fNum)>(0x47E6C6);
+int(__cdecl* ConvertFrom1024AsInt)(int nNum) = reinterpret_cast<int(__cdecl*)(int nNum)>(0x47E680);
+double(__cdecl* ConvertFrom1024AsFloat)(float fNum) = reinterpret_cast<double(__cdecl*)(float fNum)>(0x47E69B);
+
 void (__cdecl*ReleaseSoundEffects)(void) = reinterpret_cast<void(__cdecl*)()>(0x47EEEC);
 void (__cdecl*PlayVideoWith3DAudio_4791A3)(const char* szMoviePath, int bLoopFlags) =
     reinterpret_cast<void(__cdecl*)(const char*, int)>(0x4791A3);
@@ -355,10 +357,94 @@ int __cdecl hook_ConvertFrom640AsInt(int nNum)
   return g_nScreenScale_52F19C * nNum / 640;
 }
 
+double __cdecl hook_ConvertFrom640AsFloat(float fNum)
+{
+  static int log_ConvertFrom640AsFloat = 1;
+  log_ConvertFrom640AsFloat--;
+  if (!log_ConvertFrom640AsFloat) {
+    DebugLog("[HNH:SUB] %s\n", "ConvertFrom640AsFloat_47E6C6");
+    DebugLog("\tconvert from 640 as float => (%d.0 * %.2f / 640.0)\n", g_nScreenScale_52F19C, fNum);
+    log_ConvertFrom640AsFloat = 1000;
+  }
+
+  return (double)g_nScreenScale_52F19C * fNum / 640.0;
+}
+
+int __cdecl hook_ConvertFrom1024AsInt(int nNum)
+{
+  static int log_ConvertFrom1024AsInt = 1;
+  log_ConvertFrom1024AsInt--;
+  if (!log_ConvertFrom1024AsInt) {
+    DebugLog("[HNH:SUB] %s\n", "ConvertFrom1024AsInt_47E680");
+    DebugLog("\tconvert from 1024 as int => (%d * %d / 1024)\n", g_nScreenScale_52F19C, nNum);
+    log_ConvertFrom1024AsInt = 1000;
+  }
+
+  return g_nScreenScale_52F19C * nNum / 1024;
+}
+
+double __cdecl hook_ConvertFrom1024AsFloat(float fNum)
+{
+  static int log_ConvertFrom1024AsFloat = 1;
+  log_ConvertFrom1024AsFloat--;
+  if (!log_ConvertFrom1024AsFloat) {
+    DebugLog("[HNH:SUB] %s\n", "ConvertFrom1024AsFloat_47E69B");
+    DebugLog("\tconvert from 1024 as float => (%d.0 * %.2f / 1024.0)\n", g_nScreenScale_52F19C, fNum);
+    log_ConvertFrom1024AsFloat = 1000;
+  }
+
+  return (double)g_nScreenScale_52F19C * fNum / 1024.0;
+}
+
+void __cdecl hook_BMP_Convert24bitTo16bitWithDither(CBMPFile *pBMPFile)
+{
+  char *pSrcPixel; // [esp+0h] [ebp-20h]
+  int y; // [esp+8h] [ebp-18h]
+  int x; // [esp+Ch] [ebp-14h]
+  LONG nHeight; // [esp+10h] [ebp-10h]
+  LONG nWidth; // [esp+18h] [ebp-8h]
+  LPBYTE pDstPixel; // [esp+1Ch] [ebp-4h]
+
+  DebugLog("[HNH:SUB] %s\n", "BMP_Convert24bitTo16bitWithDither_421FF4");
+
+  if ( pBMPFile->pBitmapInfoHeader->biBitCount == 24 )
+  {
+    pBMPFile->pBitmapInfoHeader->biBitCount = 16;
+    pBMPFile->pBitmapInfoHeader->biPlanes = 1;
+    pBMPFile->pBitmapInfoHeader->biCompression = 0;
+    nWidth = pBMPFile->pBitmapInfoHeader->biWidth;
+    nHeight = pBMPFile->pBitmapInfoHeader->biHeight;
+    pBMPFile->pBitmapInfoHeader->biSizeImage = 2 * nHeight * nWidth;
+    pBMPFile->pBitmapFileHeader->bfSize = pBMPFile->pBitmapInfoHeader->biSizeImage + 54;
+    pBMPFile->pBitmapInfoHeader->biClrUsed = 0;
+    pBMPFile->pBitmapInfoHeader->biClrImportant = 0;
+    pSrcPixel = (char *)pBMPFile->pData;
+    pDstPixel = (LPBYTE)pSrcPixel;
+    for ( y = 0; y < nHeight; ++y )
+    {
+      for ( x = 0; x < nWidth; ++x )
+      {
+        *(_WORD *)&pDstPixel[2 * x + 2 * nWidth * y] = BMP_DitherRGB24ToRGB565(
+          *pSrcPixel,
+          pSrcPixel[1],
+          pSrcPixel[2],
+          x,
+          y);
+        pSrcPixel += 3;
+      }
+    }
+  }
+}
+
 void register_GameMainLoop_47F013() {
     hnh_Hook(0x47F013, hook_GameMainLoop_47F013, "GameMainLoop_47F013");
     hnh_Hook(0x419DE5, hook_GetSurfaceFromBmp_419DE5, "GetSurfaceFromBmp_419DE5");
     hnh_Hook(0x4188B4, hook_GetDC_4188B4, "GetDC_4188B4");
     hnh_Hook(0x421BD5, hook_BMP_DitherRGB24ToRGB565, "BMP_DitherRGB24ToRGB565");
+    hnh_Hook(0x421FF4, hook_BMP_Convert24bitTo16bitWithDither, "BMP_Convert24bitTo16bitWithDither");
+
     hnh_Hook(0x47E6AF, hook_ConvertFrom640AsInt, "ConvertFrom640AsInt_47E6AF");
+    hnh_Hook(0x47E6C6, hook_ConvertFrom640AsFloat, "ConvertFrom640AsFloat_47E6C6");
+    hnh_Hook(0x47E680, hook_ConvertFrom1024AsInt, "ConvertFrom1024AsInt_47E680");
+    hnh_Hook(0x47E69B, hook_ConvertFrom1024AsFloat, "ConvertFrom1024AsFloat_47E69B");
 }
