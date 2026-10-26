@@ -163,7 +163,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
     DWORD dwAntiAliasSaved, dwAntiAliasCur;
     int nMenuSelected, i;
     int mouseX, mouseY;
-    WORD nMouseBtn, nPrevMouseBtn;
+    WORD nMouseBtn = 0, nPrevMouseBtn;
 
     DebugLog("[HNH:SUB] InGameMenu_4799E2\n");
 

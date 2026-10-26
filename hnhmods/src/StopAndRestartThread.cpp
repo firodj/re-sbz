@@ -326,7 +326,12 @@ bool __cdecl hook_GetCursorPos_4811FA(int *pOutX, int *pOutY, __int16 *pOutBtn)
 // Return the published input-state block g_pInputState_4C7354 (a CInputState*). This pointer is double-buffered by the input thread(s): it alternates between two 0xE8-byte backing blocks each frame so the game/render thread always reads a coherent snapshot. First 8 bytes hold mouse input: mouseX_0, mouseY_2 (cursor in virtual-640 space), mouseBtn_4 (button mask), ok_5, true_6 (fresh-data flag).
 CInputState *hook_GetInputState_481B37()
 {
-  DebugLog("[HNH:SUB] %s\n", "GetInputState_481B37");
+  static int log_GetInputState_481B37 = 1;
+  log_GetInputState_481B37--;
+  if (!log_GetInputState_481B37) {
+    DebugLog("[HNH:SUB] %s\n", "GetInputState_481B37");
+    log_GetInputState_481B37 = 1000;
+  }
   return g_pInputState_4C7354;
 }
 
@@ -334,7 +339,12 @@ void __cdecl hook_MutexThreadWait_4815EC(bool bWait)
 {
   int i; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] %s\n", "MutexThreadWait_4815EC");
+  static int log_MutexThreadWait_4815EC = 1;
+  log_MutexThreadWait_4815EC--;
+  if (!log_MutexThreadWait_4815EC) {
+    DebugLog("[HNH:SUB] %s\n", "MutexThreadWait_4815EC");
+    log_MutexThreadWait_4815EC = 1000;
+  }
 
   i = 0;
   g_bThreadWait_52F3AD = bWait;

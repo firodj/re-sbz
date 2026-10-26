@@ -4,6 +4,7 @@
 #include <vector>
 #include "imgui.h"
 #include "console.hpp"
+#include "globals.hpp"
 
 #include <pybind11/embed.h>
 namespace py = pybind11;
@@ -43,6 +44,8 @@ void AddNotebookCell(size_t index) {
 void ExecuteCell(NotebookCell& cell) {
     if (cell.inputBuffer.empty()) return;
 
+    DebugLog("[Python] Execute %s\n", cell.inputBuffer.c_str());
+
     py::dict globalScope = py::globals();
 
     cell.outputs.clear();
@@ -63,7 +66,8 @@ void ExecuteCell(NotebookCell& cell) {
             py::exec(cell.inputBuffer, globalScope);
         }
 
-        if (isExpression && !result.is_none()) {
+        // isExpression && 
+        if (!result.is_none()) {
             globalScope["_"] = result;
             std::string repr_str = py::repr(result).cast<std::string>();
             cell.outputs.push_back(repr_str);
@@ -196,6 +200,8 @@ std::vector<std::string> FetchAutocompleteCandidates(const std::string& currentI
 
 // Standard ImGui text input callback wrapper
 int REPLTextCallback(ImGuiInputTextCallbackData* data) {
+    DebugLog("[Python] REPL callback\n");
+
     // 1. Handle Tab Key Completion
     if (data->EventFlag == ImGuiInputTextFlags_CallbackCompletion) {
         std::string currentInput(data->Buf, data->BufTextLen);
@@ -283,7 +289,12 @@ void DrawPythonREPL() {
     static char inputBuffer[256] = "";
     static bool scrollToBottom = false;
 
-    ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
+    if (globals::dockSpace.ready) {
+      ImGui::SetNextWindowDockID(globals::dockSpace.dock_bottom_id, ImGuiCond_Always);
+    }
+    else {
+      ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
+    }
     if (!ImGui::Begin("Python REPL")) {
         ImGui::End();
         return;
@@ -357,7 +368,13 @@ void DrawJupyterNotebookREPL() {
         AddNotebookCell(0);
     }
 
-    ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
+    if (globals::dockSpace.ready) {
+      ImGui::SetNextWindowDockID(globals::dockSpace.dock_bottom_id, ImGuiCond_Always);
+    }
+    else {
+      ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
+    }
+
     if (!ImGui::Begin("ImGui C++ Jupyter Notebook")) {
         ImGui::End();
         return;

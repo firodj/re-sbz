@@ -305,11 +305,11 @@ void __cdecl hook_CHanaObj__NewMateT3EE_S184_40F720(CHanaMateT3EE_S184 **ppOutMa
 
 // Register hook if needed
 void register_CHanaObj__NewFrameT3EC_S354_404720() {
-  hnh_Hook(0x404720, hook_CHanaObj__NewFrameT3EC_S354_404720, "CHanaObj__NewFrameT3EC_S354_404720");
-  hnh_Hook(0x4055FD, hook_AttachChild_4055FD, "AttachChild_4055FD");
   hnh_Hook(0x4074EF, hook_MtxStackStartMultLocal_4074EF, "MtxStackStartMultLocal_4074EF");
   hnh_Hook(0x4075B0, hook_MtxStackRecursiveMulLocal_4075B0, "MtxStackRecursiveMulLocal_4075B0");
-
-  hnh_Hook(0x404908, hook_CHanaObj__NewFrameRootT3EC_S2D4_404908, "CHanaObj__NewFrameRootT3EC_S2D4_404908");
-  hnh_Hook(0x40F720, hook_CHanaObj__NewMateT3EE_S184_40F720, "CHanaObj__NewMateT3EE_S184_40F720");
+  
+  //hnh_Hook(0x404720, hook_CHanaObj__NewFrameT3EC_S354_404720, "CHanaObj__NewFrameT3EC_S354_404720");
+  //hnh_Hook(0x4055FD, hook_AttachChild_4055FD, "AttachChild_4055FD");
+  //hnh_Hook(0x404908, hook_CHanaObj__NewFrameRootT3EC_S2D4_404908, "CHanaObj__NewFrameRootT3EC_S2D4_404908");
+  //hnh_Hook(0x40F720, hook_CHanaObj__NewMateT3EE_S184_40F720, "CHanaObj__NewMateT3EE_S184_40F720");
 }

@@ -731,7 +731,12 @@ static int TitleMenu_OnDestroy(HWND)
 LRESULT __stdcall hook_WndProcTitleMenu_428C11(HWND hWnd, unsigned int Msg, WPARAM wParam,
   LPARAM lParam)
 {
-  DebugLog("[HNH:SUB] hook_WndProcTitleMenu_428C11\n");
+  static int log_WndProcTitleMenu_428C11 = 1;
+  log_WndProcTitleMenu_428C11--;
+  if (!log_WndProcTitleMenu_428C11) {
+    DebugLog("[HNH:SUB] hook_WndProcTitleMenu_428C11\n");
+    log_WndProcTitleMenu_428C11 = 1000;
+  }
 
   g_hWnd = hWnd;
   if ( Msg > WM_PAINT ) // decompiler artifact of the original switch: WM_CLOSE / WM_TIMER

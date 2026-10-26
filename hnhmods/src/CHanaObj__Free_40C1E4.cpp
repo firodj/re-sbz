@@ -1208,12 +1208,13 @@ void register_CHanaObj__Free_40C1E4() {
   hnh_Hook(0x40C1E4, hook_CHanaObj__Free_40C1E4, "CHanaObj__Free_40C1E4");
   hnh_Hook(0x40BD4D, hook_CHanaObj__RemoveFromGlobalRef, "CHanaObj__RemoveFromGlobalRef_40BD4D");
   hnh_Hook(0x4058C3, hook_RemoveChild_4058C3, "RemoveChild_4058C3");
-  hnh_Hook(0x40F891, hook_ApplyMaterial, "ApplyMaterial_40F891");
-  hnh_Hook(0x40929C, hook_ApplyLightSettings, "ApplyLightSettings_40929C");
-  hnh_Hook(0x40922E, hook_SetupLightFromD3D, "SetupLightFromD3D_40922E");
   hnh_Hook(0x486D9A, hook_CHanaObj__GetRealPath_486D9A, "CHanaObj__GetRealPath_486D9A");
   hnh_Hook(0x40BFC3, hook_CHanaObj__AddRef_40BFC3, "CHanaObj__AddRef_40BFC3");
   hnh_Hook(0x401EDF, hook_UnlinkHanaAnimFromFrame, "UnlinkHanaAnimFromFrame_401EDF");
+  //hnh_Hook(0x40F891, hook_ApplyMaterial, "ApplyMaterial_40F891");
+  //hnh_Hook(0x40929C, hook_ApplyLightSettings, "ApplyLightSettings_40929C");
+  //hnh_Hook(0x40922E, hook_SetupLightFromD3D, "SetupLightFromD3D_40922E");
+
   //hnh_Hook(0x417A0C, hook_CHanaObj__FreeVertT3EA, "CHanaObj__FreeVertT3EA_417A0C");
   //hnh_Hook(0x416256, hook_CHanaObj__FreeTextureT3EB, "CHanaObj__FreeTextureT3EB_416256");
   //hnh_Hook(0x40536D, hook_Frame_FreeAttachedObject, "Frame_FreeAttachedObject_40536D");
