@@ -435,14 +435,13 @@ void __cdecl hook_BMP_Convert24bitTo16bitWithDither(CBMPFile *pBMPFile)
   }
 }
 
-
 LPVOID orig_PlayVideoWith3DAudio_4791A3 = NULL;
 
 void __cdecl hook_PlayVideoWith3DAudio_4791A3(const char* szMoviePath, int bLoopFlags) {
   DebugLog("[HNH:SUB] %s\n", "PlayVideoWith3DAudio_4791A3");
   DebugLog("\tplay video with 3d autdio %s %d\n", szMoviePath, bLoopFlags);
 
-  reinterpret_cast<void(__cdecl*)(const char* szMoviePath, int bLoopFlags)>(orig_PlayVideoWith3DAudio_4791A3)(szMoviePath, bLoopFlags);
+  // reinterpret_cast<void(__cdecl*)(const char* szMoviePath, int bLoopFlags)>(orig_PlayVideoWith3DAudio_4791A3)(szMoviePath, bLoopFlags);
 }
 
 void register_GameMainLoop_47F013() {
@@ -451,7 +450,7 @@ void register_GameMainLoop_47F013() {
     hnh_Hook(0x4188B4, hook_GetDC_4188B4, "GetDC_4188B4");
     hnh_Hook(0x421BD5, hook_BMP_DitherRGB24ToRGB565, "BMP_DitherRGB24ToRGB565");
     hnh_Hook(0x421FF4, hook_BMP_Convert24bitTo16bitWithDither, "BMP_Convert24bitTo16bitWithDither");
-    hnh_Hook(0x4791A3, hook_PlayVideoWith3DAudio_4791A3, "PlayVideoWith3DAudio_4791A3");
+    orig_PlayVideoWith3DAudio_4791A3 = hnh_Hook(0x4791A3, hook_PlayVideoWith3DAudio_4791A3, "PlayVideoWith3DAudio_4791A3");
     hnh_Hook(0x47E6AF, hook_ConvertFrom640AsInt, "ConvertFrom640AsInt_47E6AF");
     hnh_Hook(0x47E6C6, hook_ConvertFrom640AsFloat, "ConvertFrom640AsFloat_47E6C6");
     hnh_Hook(0x47E680, hook_ConvertFrom1024AsInt, "ConvertFrom1024AsInt_47E680");

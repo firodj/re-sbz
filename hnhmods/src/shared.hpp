@@ -29,12 +29,12 @@ extern LPDIRECTDRAWSURFACE7    &g_pBackBuffer_4D6C90;
 extern LPDIRECTDRAWSURFACE7    &g_pPrimaryBuffer_4D6C88;
 extern LPDIRECTDRAW7           &g_pDD_4D6C7C;
 extern LPDIRECT3D7             &g_pD3D_4D6C84;
+extern LPDIRECTSOUND           &g_ppDS;
+extern LPDIRECTSOUNDBUFFER     &g_pdsBuffer;
 
 extern CObjItemRef_S208* &g_pObjectTable;
-extern int      &g_nObjectTableCount;
-extern int      &g_bDSInited_5185C4;
-extern LPDIRECTSOUND &g_ppDS;
-extern const char *(__cdecl*HanaDS_SetErrStr)(DWORD hr);
+extern int &g_nObjectTableCount;
+extern int &g_bDSInited_5185C4;
 extern uint32_t &g_dwBytesPerPixel;
 extern uint32_t &g_bInited_4D6C6C;
 extern CHanaLightT3EF_S1A0* &g_pLight_4D6CE0;
@@ -43,6 +43,7 @@ extern CHanaFrameRootT3EC_S2D4* &g_pSceneFrame;
 extern CHanaFrameT3EC_S354*     &g_pCameraFrame;
 extern CHanaFrameT3EC_S354*     &g_pLightFrame;
 
+extern const char *(__cdecl*HanaDS_SetErrStr)(DWORD hr);
 extern void (__cdecl*SetUiFont_419BCD)(int nCharW, int nFontH, LPCSTR szFaceName);
 extern void (__cdecl*D3DDeinit)(void);
 extern LRESULT (__stdcall*WndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);

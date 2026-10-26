@@ -26,7 +26,6 @@ LPDIRECTSOUNDBUFFER(__cdecl* LoadWav_422E7B)(LPSTR pszFileName) =
     reinterpret_cast<LPDIRECTSOUNDBUFFER(__cdecl*)(LPSTR)>(0x422E7B);
 CSoundStruct_8 *(__cdecl*LoadWavToDS3DBuffer_42277E)(LPSTR pszFileName) =
     reinterpret_cast<CSoundStruct_8 *(__cdecl*)(LPSTR)>(0x42277E);
-
 LPDIRECTDRAWSURFACE7(__cdecl*LoadSoundEffects_47EB7F)(void) =
     reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)()>(0x47EB7F);
 void (__cdecl*ReleaseSoundEffects)(void) = reinterpret_cast<void(__cdecl*)()>(0x47EEEC);
@@ -224,14 +223,175 @@ LPDIRECTSOUNDBUFFER __cdecl hook_LoadWav_422E7B(LPSTR pszFileName)
     return pDsBufferOut;
 }
 
+// LoadWavToDS3DBuffer_42277E -- 3D-positioned variant of hook_LoadWav_422E7B
+// above (9 xrefs: RunDuelBattle, RunPracticeScene, ParseOdf3DON/ParseOds3DON,
+// LoadSoundEffects). Same mmio WAVE/"fmt "/"data" walk, but:
+//   * mmio opened MMIO_ALLOCBUF with a 512 KB I/O buffer (mmioSetBuffer)
+//   * the 18-byte format block comes from GlobalAlloc(GMEM_FIXED), not AllocMem
+//   * dwFlags = 0x92 = DSBCAPS_STATIC | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRL3D,
+//     and the 3D algorithm is NEGOTIATED by retrying CreateSoundBuffer:
+//     DS3DALG_HRTF_FULL -> DS3DALG_DEFAULT (zeroed GUID) -> DS3DALG_HRTF_LIGHT;
+//     only if all three attempts fail is it an error.
+//   * after Lock/mmioRead/Unlock it QueryInterfaces IDirectSound3DBuffer and
+//     returns a GlobalAlloc'd CSoundStruct_8 { pDSBuffer, pDS3DBuffer }.
+// The primary buffer's channel count (g_pdsBuffer->GetFormat) picks the 3D min
+// distance: mono -> 1499 (above the 500 max distance, i.e. distance
+// attenuation effectively disabled), stereo -> 0.1; max distance 500; mode
+// DS3DMODE_NORMAL, all applied immediately.
+CSoundStruct_8 *__cdecl hook_LoadWavToDS3DBuffer_42277E(LPSTR pszFileName)
+{
+    MMCKINFO ckParent;                    // [esp+3Ch] [ebp-54h] "WAVE" RIFF
+    MMCKINFO ckSubchunk;                  // [esp+0h]  [ebp-90h] "fmt " / "data"
+    WAVEFORMATEX wfxPrimary;              // [esp+28h] [ebp-68h] primary-mix format
+    DSBUFFERDESC dsbDesc;                 // [esp+5Ch] [ebp-34h]
+    HMMIO hmmio;                          // [esp+1Ch] [ebp-74h]
+    LPWAVEFORMATEX pwfx;                  // [esp+54h] [ebp-3Ch] GlobalAlloc'd
+    LPVOID pAudio1, pAudio2;              // [ebp-40h] / [ebp-70h] Lock() targets
+    DWORD cbAudio1, cbAudio2;             // [ebp-8h]  / [ebp-6Ch]
+    DWORD cbDataSize;                     // [esp+14h] [ebp-7Ch] "data" chunk size
+    IDirectSound3DBuffer *pDs3DBuffer;    // [esp+58h] [ebp-38h]
+    LPDIRECTSOUNDBUFFER pDsBuffer;        // [esp+8Ch] [ebp-4h]
+    CSoundStruct_8 *pSnd;                 // [esp+84h] [ebp-Ch]
+    HRESULT hr;
+
+    DebugLog("[HNH:SUB] LoadWavToDS3DBuffer_42277E\n");
+
+    pSnd = NULL;
+    if (!g_bDSInited_5185C4)
+        return NULL;
+
+    // primary mix format; its channel count steers the 3D min distance below.
+    // (The original reads HIWORD of the raw first dword == nChannels.)
+    g_pdsBuffer->GetFormat(&wfxPrimary, sizeof(WAVEFORMATEX), 0);
+
+    hmmio = mmioOpenA(pszFileName, NULL, MMIO_ALLOCBUF);
+    if (!hmmio)
+        return NULL;
+    mmioSetBuffer(hmmio, NULL, 0x80000, 0);                    // 512 KB I/O buffer
+
+    // descend into the "WAVE" chunk of the RIFF file
+    ckParent.fccType = mmioStringToFOURCCA("WAVE", 0);         // sz @0x4B2748
+    if (mmioDescend(hmmio, &ckParent, NULL, MMIO_FINDRIFF))
+    {
+        mmioClose(hmmio, 0);
+        return NULL;
+    }
+
+    // read the 18-byte WAVEFORMATEX out of "fmt " and require plain PCM
+    ckSubchunk.ckid = mmioStringToFOURCCA("fmt ", 0);          // aFmt @0x4B2750
+    if (mmioDescend(hmmio, &ckSubchunk, &ckParent, MMIO_FINDCHUNK))
+    {
+        mmioClose(hmmio, 0);
+        return NULL;
+    }
+    pwfx = (LPWAVEFORMATEX)GlobalAlloc(GMEM_FIXED, sizeof(WAVEFORMATEX));
+    if (!pwfx)
+    {
+        mmioClose(hmmio, 0);
+        return NULL;
+    }
+    if (mmioRead(hmmio, (HPSTR)pwfx, sizeof(WAVEFORMATEX)) != sizeof(WAVEFORMATEX)
+        || pwfx->wFormatTag != WAVE_FORMAT_PCM)
+    {
+        mmioClose(hmmio, 0);
+        GlobalFree(pwfx);
+        return NULL;
+    }
+    mmioAscend(hmmio, &ckSubchunk, 0);
+
+    // locate "data"; its chunk size drives the buffer allocation
+    ckSubchunk.ckid = mmioStringToFOURCCA("data", 0);          // aData @0x4B2758
+    if (mmioDescend(hmmio, &ckSubchunk, &ckParent, MMIO_FINDCHUNK))
+    {
+        mmioClose(hmmio, 0);
+        GlobalFree(pwfx);
+        return NULL;
+    }
+    cbDataSize = ckSubchunk.cksize;
+
+    memset(&dsbDesc, 0, sizeof(dsbDesc));
+    dsbDesc.dwSize = sizeof(DSBUFFERDESC);                      // 36
+    dsbDesc.dwFlags = DSBCAPS_STATIC | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRL3D;
+    dsbDesc.dwBufferBytes = cbDataSize;
+    dsbDesc.lpwfxFormat = pwfx;
+
+    // negotiate the 3D algorithm: HRTF_FULL -> DEFAULT -> HRTF_LIGHT
+    dsbDesc.guid3DAlgorithm = DS3DALG_HRTF_FULL;
+    hr = g_ppDS->CreateSoundBuffer(&dsbDesc, &pDsBuffer, NULL);
+    if (hr != S_OK)
+    {
+        dsbDesc.guid3DAlgorithm = DS3DALG_DEFAULT;
+        hr = g_ppDS->CreateSoundBuffer(&dsbDesc, &pDsBuffer, NULL);
+    }
+    if (hr != S_OK)
+    {
+        dsbDesc.guid3DAlgorithm = DS3DALG_HRTF_LIGHT;
+        hr = g_ppDS->CreateSoundBuffer(&dsbDesc, &pDsBuffer, NULL);
+    }
+    if (hr != S_OK)
+    {
+        HanaDS_SetErrStr(hr);
+        mmioClose(hmmio, 0);
+        GlobalFree(pwfx);
+        return NULL;
+    }
+    GlobalFree(pwfx);                                           // done with the format block
+
+    // stream the sample data through the Lock() write pair
+    hr = pDsBuffer->Lock(0, cbDataSize, &pAudio1, &cbAudio1, &pAudio2, &cbAudio2, 0);
+    if (hr != S_OK)
+    {
+        HanaDS_SetErrStr(hr);
+        mmioClose(hmmio, 0);
+        pDsBuffer->Release();
+        return NULL;
+    }
+    if (mmioRead(hmmio, (HPSTR)pAudio1, cbAudio1) != (LONG)cbAudio1
+        || (pAudio2 && mmioRead(hmmio, (HPSTR)pAudio2, cbAudio2) != (LONG)cbAudio2))
+    {
+        mmioClose(hmmio, 0);
+        pDsBuffer->Release();
+        return NULL;
+    }
+    mmioClose(hmmio, 0);
+    hr = pDsBuffer->Unlock(pAudio1, cbAudio1, pAudio2, cbAudio2);
+    if (hr != S_OK)
+    {
+        HanaDS_SetErrStr(hr);
+        pDsBuffer->Release();
+        return NULL;
+    }
+
+    // grab the 3D interface and wrap both in a CSoundStruct_8
+    hr = pDsBuffer->QueryInterface(IID_IDirectSound3DBuffer, (LPVOID *)&pDs3DBuffer);
+    if (hr != S_OK)
+    {
+        pDsBuffer->Release();
+        return NULL;
+    }
+    pSnd = (CSoundStruct_8 *)GlobalAlloc(GMEM_FIXED, sizeof(CSoundStruct_8));
+    if (!pSnd)
+    {
+        pDs3DBuffer->Release();
+        pDsBuffer->Release();
+        return NULL;
+    }
+
+    pDs3DBuffer->SetMode(DS3DMODE_NORMAL, DS3D_IMMEDIATE);
+    if (wfxPrimary.nChannels == 1)                              // mono primary mix
+        pDs3DBuffer->SetMinDistance(1499.0f, DS3D_IMMEDIATE);   // > max dist: flatten attenuation
+    else
+        pDs3DBuffer->SetMinDistance(0.1f, DS3D_IMMEDIATE);
+    pDs3DBuffer->SetMaxDistance(500.0f, DS3D_IMMEDIATE);
+
+    pSnd->pDSBuffer_0 = pDsBuffer;
+    pSnd->pDS3DBuffer_4 = pDs3DBuffer;
+    return pSnd;
+}
+
 void register_LoadSoundEffects_47EB7F() {
     hnh_Hook(0x47EB7F, hook_LoadSoundEffects_47EB7F, "LoadSoundEffects_47EB7F");
-}
-
-void register_ReleaseSoundEffects_47EEEC() {
     hnh_Hook(0x47EEEC, hook_ReleaseSoundEffects, "ReleaseSoundEffects_47EEEC");
-}
-
-void register_LoadWav_422E7B() {
     hnh_Hook(0x422E7B, hook_LoadWav_422E7B, "LoadWav_422E7B");
+    hnh_Hook(0x42277E, hook_LoadWavToDS3DBuffer_42277E, "LoadWavToDS3DBuffer_42277E");
 }
