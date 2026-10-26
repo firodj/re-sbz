@@ -57,6 +57,9 @@
     <ClCompile Include="src\StopAndRestartThread.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\LoadSoundEffects_47EB7F.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

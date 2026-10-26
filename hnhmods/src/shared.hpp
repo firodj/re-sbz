@@ -174,6 +174,7 @@ extern void (__cdecl*CHanaObj__Free_40C1E4)(CHanaBase_S130 *pObj);
 extern void (__cdecl*CHanaObj__GetRealPath_486D9A)(LPSTR szPathOut, int nPathCode);
 extern void (__cdecl*CHanaObj__AddRef_40BFC3)(CHanaBase_S130* pObj);
 extern void(__cdecl* RemoveChild_4058C3)(CHanaFrameRootT3EC_S2D4* pParent, CHanaFrameT3EC_S354* pChild);
+extern void(__cdecl* FreeSoundStruct_422C72)(CSoundStruct_8* pSound);
 
 // === CDROM_VerifyDiscSignature.cpp ===
 
@@ -190,6 +191,14 @@ extern BOOL (__cdecl*IsFileExists_47E8EE)(CHAR* pszFilePath);
 // === DEFINED GameMainLoop.cpp ===
 
 extern void (__cdecl*GameMainLoop_47F013)(void);
+extern LPDIRECTDRAWSURFACE7(__cdecl* GetSurfaceFromBmp_419DE5)(LPCSTR lpFileName);
+extern LPDIRECTDRAWSURFACE7(__cdecl*LoadSoundEffects_47EB7F)(void);
+extern void (__cdecl*ReleaseSoundEffects)(void);
+
+extern LPDIRECTSOUNDBUFFER (&g_arrUIEffectDSBuffer_52F168)[5];
+extern CSoundStruct_8 *(&g_arrFootstepSound_52F18C)[4];
+extern CSoundStruct_8 *(&g_arrFootstepSound_52F17C)[4];
+extern LPDIRECTDRAWSURFACE7 &g_pSurfaceDarkenBmp_52F1A8;
 extern LPDIRECTDRAWSURFACE7(__cdecl* GetSurfaceFromBmp_419DE5)(LPCSTR lpFileName);
 extern HRESULT(__cdecl* GetDC_4188B4)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC);
 extern void(__cdecl* PlayVideoWith3DAudio_4791A3)(const char* szMoviePath, int bLoopFlags);

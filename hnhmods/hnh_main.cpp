@@ -86,6 +86,8 @@ void register_CHanaObj__NewFrameT3EC_S354_404720();
 void register_WndProcTitleMenu_428C11();
 void register_GameMainLoop_47F013();
 void register_StopAndRestartThread_481AE4();
+void register_LoadSoundEffects_47EB7F();
+void register_ReleaseSoundEffects_47EEEC();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -123,6 +125,8 @@ void InitHNH() {
 	register_WndProcTitleMenu_428C11();
 	register_GameMainLoop_47F013();
 	register_StopAndRestartThread_481AE4();
+	register_LoadSoundEffects_47EB7F();
+	register_ReleaseSoundEffects_47EEEC();
 
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)

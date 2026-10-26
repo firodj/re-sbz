@@ -34,11 +34,9 @@ double(__cdecl*ConvertFrom640AsFloat)(float fNum) = reinterpret_cast<double(__cd
 int(__cdecl* ConvertFrom1024AsInt)(int nNum) = reinterpret_cast<int(__cdecl*)(int nNum)>(0x47E680);
 double(__cdecl* ConvertFrom1024AsFloat)(float fNum) = reinterpret_cast<double(__cdecl*)(float fNum)>(0x47E69B);
 
-void (__cdecl*ReleaseSoundEffects)(void) = reinterpret_cast<void(__cdecl*)()>(0x47EEEC);
+// ReleaseSoundEffects / LoadSoundEffects_47EB7F live in src/LoadSoundEffects_47EB7F.cpp (extern in shared.hpp)
 void (__cdecl*PlayVideoWith3DAudio_4791A3)(const char* szMoviePath, int bLoopFlags) =
     reinterpret_cast<void(__cdecl*)(const char*, int)>(0x4791A3);
-LPDIRECTDRAWSURFACE7(__cdecl*LoadSoundEffects_47EB7F)(void) =
-    reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)()>(0x47EB7F);
 int (__cdecl*InGameMenu_4799E2)(void) = reinterpret_cast<int(__cdecl*)()>(0x4799E2);
 void (__cdecl*MainMenu_47DF0D)(void) = reinterpret_cast<void(__cdecl*)()>(0x47DF0D);
 int (__cdecl*PlayOdsDialogueScene_477F90)(int nOdsIndex) =
@@ -57,8 +55,8 @@ HRESULT(__cdecl* GetDC_4188B4)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC) = rein
 
 // === PINNED GLOBALS ===
 LPDIRECTSOUNDBUFFER (&g_arrUIEffectDSBuffer_52F168)[5] = *(LPDIRECTSOUNDBUFFER(*)[5])0x52F168; // WRITABLE
-int  (&g_arrFootstepSound_52F17C)[4] = *(int(*)[4])0x52F17C; // WRITABLE
-int  (&g_arrFootstepSound_52F18C)[4] = *(int(*)[4])0x52F18C; // WRITABLE
+CSoundStruct_8 *(&g_arrFootstepSound_52F17C)[4] = *(CSoundStruct_8 *(*)[4])0x52F17C; // WRITABLE
+CSoundStruct_8 *(&g_arrFootstepSound_52F18C)[4] = *(CSoundStruct_8 *(*)[4])0x52F18C; // WRITABLE
 BYTE (&g_byData0Dat_530170)[256]     = *(BYTE(*)[256])0x530170; // WRITABLE
 BYTE &g_nAviVolumeIndex_530266       = *(BYTE*)0x530266; // WRITABLE
 BYTE &g_nAviFrameMultipler_530267    = *(BYTE*)0x530267; // WRITABLE
