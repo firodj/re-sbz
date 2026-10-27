@@ -215,7 +215,7 @@ BOOL WINAPI hookPeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wM
 		}
 		if (wm_input && ImGui::GetCurrentContext() != nullptr) {
 			ImGui_ImplWin32_WndProcHandler(lpMsg->hwnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
-			ImGuiIO& io = ImGui::GetIO();
+			// ImGuiIO& io = ImGui::GetIO();
 		}
 
 		if (logging) {
@@ -230,8 +230,8 @@ BOOL WINAPI hookPeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wM
 }
 
 SHORT WINAPI hookGetAsyncKeyState(int vKey) {
-	if (menu::isOpen) {
-		return 0;
+	if (menu::isInputOff) {
+			return 0;
 	}
 	return globals::oGetAsyncKeyState(vKey);
 }
