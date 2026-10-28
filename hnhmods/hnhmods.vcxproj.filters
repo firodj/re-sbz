@@ -63,6 +63,9 @@
     <ClCompile Include="src\InGameMenu_4799E2.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\MenuCharSelect.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

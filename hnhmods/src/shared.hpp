@@ -229,6 +229,32 @@ extern CSoundStruct_8 *(__cdecl*LoadWavToDS3DBuffer_42277E)(LPSTR pszFileName);
 
 extern void (__cdecl*MainMenu_47DF0D)(void);
 extern int (__cdecl*InGameMenu_4799E2)(void);
+extern int(__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
+  float fProgA, float fProgB, CSceneMenuState_9C pSceneFlags);
+
+extern void(__cdecl* DSBufferPlay)(LPDIRECTSOUNDBUFFER pDSBuf, int dwPlayFlags);
+extern BOOL(__cdecl*DoPeekMessages)(void);
+extern void(__cdecl*GetMouseBtn_45A41B)(LPWORD pBtnMouse);
+extern void(__cdecl*GetMouseXY_45A4D8)(DWORD *pXmouse, DWORD *pYmouse);
+extern LPDIRECTDRAWSURFACE7(__cdecl*LoadBmpScaled_4203B3)(LPCSTR lpFileName, int xRight, int yBottom);
+extern int(__cdecl*FlushD3DAndTouchSurface)(LPDIRECTDRAWSURFACE7 pSurface);
+extern void(__cdecl* SetPos_414A5D)(CHanaSpriteT3F6_S1FC *pSprite, float fX, float fY);
+extern int(__cdecl*DrawSprite2D)(CHanaSpriteT3F6_S1FC *pSprite);
+extern void(__cdecl*PresentFrame)(void);
+extern HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam);
+extern void(__cdecl* LoadBmpWithMask_413A5E)(CHanaSpriteT3F6_S1FC** ppOut, LPCSTR szBmpName, LPCSTR szMaskName);
+extern void(__cdecl* GetSurfaceWH)(LPDIRECTDRAWSURFACE7 pSurface, LPDWORD pWidth, LPDWORD pHeight);
+extern LPDIRECTDRAWSURFACE7(__cdecl* CreateTextureFromSurfaceWithAlphaMask)(
+  LPDIRECTDRAWSURFACE7 surface,
+  LPDIRECTDRAWSURFACE7 maskSurface);
+extern void(__cdecl* BltSurface)(LPDIRECTDRAWSURFACE7 pSurface, int left, int top, int right, int bottom, int fillColor);
+
+// === DEFINED MenuCharSelect.cpp ===
+
+extern int(__cdecl* MenuCharSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite);
+extern bool(__cdecl*IsMenuKeyPressed_481170)(void);
+extern HRESULT(__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF color);
+extern int(__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab);
 
 // === DEFINED CHanaObj__NewFrameT3EC_S354.cpp ===
 

@@ -44,23 +44,17 @@ void  (__cdecl*GetMouseBtn_45A41B)(LPWORD pBtnMouse) =
     reinterpret_cast<void(__cdecl*)(LPWORD)>(0x45A41B);
 void (__cdecl*GetMouseXY_45A4D8)(DWORD *pXmouse, DWORD *pYmouse) =
     reinterpret_cast<void(__cdecl*)(DWORD *, DWORD *)>(0x45A4D8);
+void  (__cdecl*BltSurface)(LPDIRECTDRAWSURFACE7 pSurface, int left, int top, int right, int bottom, int fillColor)
+= reinterpret_cast<void(__cdecl*)(LPDIRECTDRAWSURFACE7, int, int, int, int, int)>(0x419D89);
 
 int  (__cdecl*MenuMusicSelect)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
     reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47D163);
 int  (__cdecl*MenuGallery)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
     reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47AD8D);
-int  (__cdecl*MenuCharSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47A324);
-bool (__cdecl*IsMenuKeyPressed_481170)(void) = reinterpret_cast<bool(__cdecl*)()>(0x481170);
-HRESULT (__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF color) =
-    reinterpret_cast<HRESULT(__cdecl*)(LPDIRECTDRAWSURFACE7, COLORREF)>(0x4198E0);
-int  (__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab) =
-    reinterpret_cast<int(__cdecl*)(int, int)>(0x4703AE);
+// MenuCharSelect + its pins live in src/MenuCharSelect.cpp (extern in shared.hpp)
 struct IDirectDrawSurface7 *(__cdecl*PlayScreenFade)(int bisGo, COLORREF colorref,
     struct IDirectDrawSurface7 *pDdSurface, float fFade, char bFlags) =
     reinterpret_cast<struct IDirectDrawSurface7 *(__cdecl*)(int, COLORREF, struct IDirectDrawSurface7 *, float, char)>(0x4874DE);
-int  (__cdecl*BltSurface)(LPDIRECTDRAWSURFACE7 pSurface, int left, int top, int right, int bottom, int fillColor) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTDRAWSURFACE7, int, int, int, int, int)>(0x419D89);
 LPDIRECTDRAWSURFACE7(__cdecl*LoadBmpScaled_4203B3)(LPCSTR lpFileName, int xRight, int yBottom) =
     reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(LPCSTR, int, int)>(0x4203B3);
 int  (__cdecl*FlushD3DAndTouchSurface)(LPDIRECTDRAWSURFACE7 pSurface) =
@@ -731,6 +725,23 @@ void __cdecl hook_GetMouseXY_45A4D8(DWORD *pXmouse, DWORD *pYmouse)
   MutexThreadWait_4815EC(0);
 }
 
+void __cdecl hook_BltSurface(LPDIRECTDRAWSURFACE7 pSurface, int left, int top, int right, int bottom, int fillColor)
+{
+  DDBLTFX ddBltFx; // [esp+0h] [ebp-74h] BYREF
+  RECT rect; // [esp+64h] [ebp-10h] BYREF
+
+  DebugLog("[HNH:SUB] BltSurface_419D89\n");
+
+  memset(&ddBltFx, 0, sizeof(ddBltFx));
+  rect.left = left;
+  rect.top = top;
+  rect.right = right;
+  rect.bottom = bottom;
+  ddBltFx.dwSize = 100;
+  ddBltFx.dwFillColor = fillColor;
+  pSurface->Blt(&rect, 0, 0, DDBLT_COLORFILL|DDBLT_WAIT, &ddBltFx);
+}
+
 void register_InGameMenu_4799E2() {
     hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2");
     hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D");
@@ -741,5 +752,5 @@ void register_InGameMenu_4799E2() {
     hnh_Hook(0x43EA05, hook_CreateTextureFromSurfaceWithAlphaMask, "CreateTextureFromSurfaceWithAlphaMask_43EA05");
     hnh_Hook(0x45A41B, hook_GetMouseBtn_45A41B, "GetMouseBtn_45A41B");
     hnh_Hook(0x45A4D8, hook_GetMouseXY_45A4D8, "GetMouseXY_45A4D8");
-    hnh_Hook(0x47A324, hook_MenuCharSelect, "MenuCharSelect_47A324");
+    hnh_Hook(0x419D89, hook_BltSurface, "BltSurface_419D89");
 }
