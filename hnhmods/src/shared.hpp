@@ -253,8 +253,6 @@ extern int (__cdecl*InGameMenu_4799E2)(void);
 extern int(__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
   float fCurHP, float fMaxHP, CSceneState sceneState);
 extern HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam);
-extern LPDIRECTDRAWSURFACE7(__cdecl* PlayScreenFade)(int bisGo, COLORREF colorref,
-  LPDIRECTDRAWSURFACE7 pDdSurface, float fFade, char bFlags);
 
 // === DEFINED MenuCharSelect.cpp ===
 
@@ -262,6 +260,11 @@ extern int(__cdecl* MenuCharSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT
 extern bool(__cdecl*IsMenuKeyPressed_481170)(void);
 extern HRESULT(__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF color);
 extern int(__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab);
+
+// === DEFINED PlayScreenFade.cpp ===
+
+extern LPDIRECTDRAWSURFACE7(__cdecl* PlayScreenFade)(int bisGo, COLORREF colorref,
+  LPDIRECTDRAWSURFACE7 pDdSurface, float fFade, char bFlags);
 
 // === DEFINED CHanaObj__NewFrameT3EC_S354.cpp ===
 

@@ -66,6 +66,9 @@
     <ClCompile Include="src\MenuCharSelect.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\PlayScreenFade.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

@@ -73,9 +73,7 @@ int  (__cdecl*MenuMusicSelect)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1
 int  (__cdecl*MenuGallery)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
   reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47AD8D);
 // MenuCharSelect + its pins live in src/MenuCharSelect.cpp (extern in shared.hpp)
-LPDIRECTDRAWSURFACE7 (__cdecl*PlayScreenFade)(int bisGo, COLORREF colorref,
-  LPDIRECTDRAWSURFACE7 pDdSurface, float fFade, char bFlags) =
-  reinterpret_cast<LPDIRECTDRAWSURFACE7 (__cdecl*)(int, COLORREF, struct IDirectDrawSurface7 *, float, char)>(0x4874DE);
+// PlayScreenFade lives in src/PlayScreenFade.cpp (extern in shared.hpp)
 
 void (__cdecl*MainMenu_47DF0D)(void) = reinterpret_cast<void(__cdecl*)()>(0x47DF0D);
 int  (__cdecl*InGameMenu_4799E2)(void) = reinterpret_cast<int(__cdecl*)()>(0x4799E2);
