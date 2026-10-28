@@ -347,6 +347,7 @@ struct D2D_RECT_F
   FLOAT bottom;
 };
 
+#define D3DX_UPDATE_NOVSYNC (1<<0)
 
 LPVOID hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName);
 

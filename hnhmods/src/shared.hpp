@@ -170,6 +170,7 @@ extern D3DX_DEVICEDESC*& g_pDevicesDesc;
 
 extern BOOL(__cdecl* ShowTitleMenu_427DA8)(HWND hWnd, BOOL bFullScreen);
 extern void(__cdecl* D3DSetRenderStates_4276C0)(void);
+extern HRESULT(__cdecl* D3DInit_40A894)(CD3DInitParam* pDevParam);
 
 // === DEFINED CHanaObj__Free.cpp ===
 
@@ -236,7 +237,6 @@ extern LPDIRECTDRAWSURFACE7(__cdecl*LoadBmpScaled_4203B3)(LPCSTR lpFileName, int
 extern int(__cdecl*FlushD3DAndTouchSurface)(LPDIRECTDRAWSURFACE7 pSurface);
 extern void(__cdecl*CHanaSpriteT3F6__SetPos_414A5D)(CHanaSpriteT3F6_S1FC *pSprite, float fX, float fY);
 extern void(__cdecl*DrawSprite2D)(CHanaSpriteT3F6_S1FC *pSprite);
-
 extern void(__cdecl* LoadBmpWithMask_413A5E)(CHanaSpriteT3F6_S1FC** ppOut, LPCSTR szBmpName, LPCSTR szMaskName);
 extern void(__cdecl* GetSurfaceWH)(LPDIRECTDRAWSURFACE7 pSurface, LPDWORD pWidth, LPDWORD pHeight);
 extern LPDIRECTDRAWSURFACE7(__cdecl* CreateTextureFromSurfaceWithAlphaMask)(
@@ -244,14 +244,16 @@ extern LPDIRECTDRAWSURFACE7(__cdecl* CreateTextureFromSurfaceWithAlphaMask)(
   LPDIRECTDRAWSURFACE7 maskSurface);
 extern void(__cdecl* BltSurface)(LPDIRECTDRAWSURFACE7 pSurface, int left, int top, int right, int bottom, int fillColor);
 extern LPDIRECTDRAWSURFACE7(__cdecl* CreateSurfaceWH)(DWORD width, DWORD height);
+extern void(__cdecl* RecoverLostDevice)(void);
+extern void(__cdecl*PresentFrame)(void);
 
 extern void (__cdecl*MainMenu_47DF0D)(void);
 extern int (__cdecl*InGameMenu_4799E2)(void);
 extern int(__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
-  float fProgA, float fProgB, CSceneMenuState_9C pSceneFlags);
+  float fCurHP, float fMaxHP, CSceneState sceneState);
 
 
-extern void(__cdecl*PresentFrame)(void);
+
 extern HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam);
 
 

@@ -57,13 +57,15 @@ void (__cdecl*BltSurface)(LPDIRECTDRAWSURFACE7 pSurface, int left, int top, int 
   reinterpret_cast<void(__cdecl*)(LPDIRECTDRAWSURFACE7, int, int, int, int, int)>(0x419D89);
 LPDIRECTDRAWSURFACE7(__cdecl*CreateSurfaceWH)(DWORD width, DWORD height) =
   reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(DWORD width, DWORD height)>(0x418905);
+void(__cdecl*RecoverLostDevice)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x40BE03);
+void (__cdecl*PresentFrame)(void) = reinterpret_cast<void(__cdecl*)()>(0x40BF01);
 
 //void (__cdecl*nop_4863C3)(void) = reinterpret_cast<void(__cdecl*)()>(0x4863C3);
-void (__cdecl*PresentFrame)(void) = reinterpret_cast<void(__cdecl*)()>(0x40BF01);
+
 HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam) = reinterpret_cast<HRESULT(__cdecl*)(int)>(0x40CEEC);
 int  (__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
-    float fProgA, float fProgB, CSceneMenuState_9C pSceneFlags) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER, int, int, float, float, CSceneMenuState_9C)>(0x4655AB);
+    float fCurHP, float fMaxHP, CSceneState sceneState) =
+    reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER, int, int, float, float, CSceneState)>(0x4655AB);
 
 int  (__cdecl*MenuMusicSelect)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
 reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47D163);
@@ -265,7 +267,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
                 nMenuSelected = SystemMenu_4655AB(pBgmBuffer, -1000, 1,
                                                   g_sceneState_52F7E0.field_C0,
                                                   g_sceneState_52F7E0.field_C4,
-                                                  sceneScratch.menuState);
+                                                  sceneScratch);
                 g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 0);
                 StopAndRestartThread(2);
                 if (nMenuSelected == -1 || nMenuSelected == 2)
@@ -1044,7 +1046,7 @@ void __cdecl hook_DrawSprite2D(CHanaSpriteT3F6_S1FC *pSprite)
   static bool _debugged = true;
   if (_debugged) {
     _debugged = false;
-    DebugLog("[HNH:SUB] hook_DrawSprite2D_414191\n");
+    DebugLog("[HNH:SUB] DrawSprite2D_414191\n");
   }
 
   vec3Dest.x = pSprite->destWHZ_138.x;
@@ -1095,6 +1097,65 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_CreateSurfaceWH(DWORD width, DWORD height)
   return 0;
 }
 
+// RecoverLostDevice(): DDraw lost-cooperative-level recovery (called from
+//   PresentFrame on DDERR_SURFACELOST / DDERR_SURFACEBUSY).
+//   - TestCooperativeLevel(g_pDD):
+//       >= 0                   -> RestoreAllSurfaces(), done
+//       DDERR_WRONGMODE        -> full re-init
+//       DDERR_EXCLUSIVEMODEALREADYSET -> spin Sleep(0) re-testing until the
+//                                        exclusive owner (OS / screensaver) releases,
+//                                        then restore; re-init instead if wrong mode
+//   - re-init: sub_40AC7C() teardown (release D3D/DDraw/buffers/frames, D3DXUninitialize)
+//              + D3DInit(&g_D3DDevParams)
+void hook_RecoverLostDevice()
+{
+  HRESULT hr; // [esp+0h] [ebp-4h]
+  
+  DebugLog("[HNH:SUB] RecoverLostDevice_40BE03\n");
+
+  hr = g_pDD_4D6C7C->TestCooperativeLevel();
+
+  if (hr == DDERR_EXCLUSIVEMODEALREADYSET)
+  {
+    // Wait until exclusive mode is released or cooperative level changes
+    do
+    {
+      Sleep(0);
+      hr = g_pDD_4D6C7C->TestCooperativeLevel();
+    } while (hr == DDERR_EXCLUSIVEMODEALREADYSET);
+  }
+
+  if ( hr >= 0 )
+  {
+    // Device is fine or successfully restored
+    g_pDD_4D6C7C->RestoreAllSurfaces();
+  } else if ( hr == DDERR_WRONGMODE )
+  {
+    // Resolution or display mode changed out from under the app
+    D3DDeinit();
+    D3DInit_40A894(&g_D3DDevParams);
+  }
+}
+
+// PresentFrame(): end-of-frame commit, called at the end of every scene/menu.
+//   - if g_nObjCount: sub_40CEEC(0) -> reset the CHana object batch
+//     (g_nObjCount=0, clear cached g_pCurMatObj / g_pCurTexObj, dword_4D6CD8=0)
+//   - g_pRenderCtx->lpVtbl->UpdateFrame(g_pRenderCtx, 1): present/commit the frame
+//   - if DDERR_SURFACELOST / DDERR_SURFACEBUSY: sub_40BE03() device-loss recovery
+//     (TestCooperativeLevel -> RestoreAllSurfaces; exclusive-mode spin;
+//      wrong-mode -> sub_40AC7C + D3DInit re-init)
+void hook_PresentFrame()
+{
+  HRESULT hr; // [esp+0h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] PresentFrame_40BF01\n");
+
+  if ( g_nObjCount )
+    HanaVert_DrawBatch(0);
+  hr = g_pRenderCtx->UpdateFrame(D3DX_UPDATE_NOVSYNC);
+  if ( hr == DDERR_SURFACELOST || hr == DDERR_SURFACEBUSY )
+    RecoverLostDevice();
+}
 
 void register_InGameMenu_4799E2() {
     hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2");
@@ -1111,4 +1172,7 @@ void register_InGameMenu_4799E2() {
     hnh_Hook(0x414A5D, hook_CHanaSpriteT3F6__SetPos_414A5D, "CHanaSpriteT3F6__SetPos_414A5D");
     hnh_Hook(0x43BF6F, hook_FlushD3DAndTouchSurface, "FlushD3DAndTouchSurface_43BF6F");
     hnh_Hook(0x414191, hook_DrawSprite2D, "DrawSprite2D_414191");
+    hnh_Hook(0x418905, hook_CreateSurfaceWH, "CreateSurfaceWH_418905");
+    hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
+    hnh_Hook(0x40BF01, hook_PresentFrame, "PresentFrame_40BF01");
 }

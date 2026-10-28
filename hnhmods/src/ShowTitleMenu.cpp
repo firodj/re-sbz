@@ -31,7 +31,7 @@ D3DX_DEVICEDESC * &g_pDevicesDesc = *(D3DX_DEVICEDESC**)0x4D6CCC; // WRITABLE
 BOOL(__cdecl *ShowTitleMenu_427DA8)(HWND hWnd, BOOL bFullScreen) = (BOOL(__cdecl*)(HWND, BOOL))0x427DA8;
 void(__cdecl* DisplayConfig_Destroy)(CDisplayConfig* pDisplayConfig) = reinterpret_cast<void (__cdecl * )(CDisplayConfig *)>(0x427CC9);
 void (*D3DSetRenderStates_4276C0)(void) = reinterpret_cast<void(*)()>(0x4276C0);
-int (__cdecl*D3DInit_40A894)(CD3DInitParam *pDevParam) = reinterpret_cast<int(__cdecl*)(CD3DInitParam *)>(0x40A894);
+HRESULT (__cdecl*D3DInit_40A894)(CD3DInitParam *pDevParam) = reinterpret_cast<HRESULT(__cdecl*)(CD3DInitParam *)>(0x40A894);
 void (*AllocateDevicesDescArray)(void) = reinterpret_cast<void(*)(void)>(0x40AEFB);
 
 // === FUNCTION IMPLEMENTATIONS ===
