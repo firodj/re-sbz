@@ -13,6 +13,7 @@ void(__cdecl* MtxStackStartMultLocal_4074EF)(void) = reinterpret_cast<void(__cde
 void(__cdecl* MtxStackRecursiveMulLocal_4075B0)(CHanaFrameT3EC_S354* pFrame) = reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x4075B0);
 void(__cdecl* CHanaObj__NewFrameRootT3EC_S2D4)(CHanaFrameRootT3EC_S2D4 **ppOutFrameRoot) = reinterpret_cast<void(__cdecl*)(CHanaFrameRootT3EC_S2D4**)>(0x404908);
 void(__cdecl* CHanaObj__NewMateT3EE_S184)(CHanaMateT3EE_S184** ppOutMate) = reinterpret_cast<void(__cdecl*)(CHanaMateT3EE_S184**)>(0x40F720);
+void (__cdecl*CHanaObj__NewSprite3F6byWH)(CHanaSpriteT3F6_S1FC** ppOut, DWORD w, DWORD h) = reinterpret_cast<void (__cdecl*)(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWORD h)>(0x4133D0);
 
 
 // === FUNCITON HOOKS ===
@@ -303,6 +304,49 @@ void __cdecl hook_CHanaObj__NewMateT3EE_S184_40F720(CHanaMateT3EE_S184 **ppOutMa
   *ppOutMate = pMate;
 }
 
+void hook_CHanaObj__NewSprite3F6byWH(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWORD h)
+{
+  _D3DX_SURFACEFORMAT pixelformat; // [esp+8h] [ebp-14h] BYREF
+  DWORD flags; // [esp+Ch] [ebp-10h] BYREF
+  LPDIRECTDRAWSURFACE7 pSurf_v1; // [esp+10h] [ebp-Ch]
+  CHanaSpriteT3F6_S1FC *pSprite; // [esp+14h] [ebp-8h]
+  HRESULT hr; // [esp+18h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] CHanaObj__NewSprite3F6byWH_4133D0\n");
+
+  pixelformat = D3DX_SF_R8G8B8;
+  flags = 256;
+  pSprite = (CHanaSpriteT3F6_S1FC *)MemAlloc_40DEF7(0x1FCu);
+  memset(pSprite, 0, sizeof(CHanaSpriteT3F6_S1FC));
+  pSprite->base_0.dwType = 0x3F6;
+  hr = D3DXCreateTexture(g_pD3DDevice_4D6C78, &flags, &w, &h, &pixelformat, 0, &pSprite->pTexture_134, 0);
+  if ( hr < 0 )
+    PrintDebugError(hr);
+  pSurf_v1 = CreateSurfaceWH(16u, 0x10u);
+  BltSurface(pSurf_v1, 0, 0, 16, 16, 0);
+  D3DXLoadTextureFromSurface(g_pD3DDevice_4D6C78, pSprite->pTexture_134, 0xFFFFFFFF, pSurf_v1, 0, 0, D3DX_FT_POINT);
+  pSurf_v1->Release();
+  pSprite->ddSurfaceDesc_170.dwSize = 124;
+  pSprite->ddSurfaceDesc_170.dwFlags = 4102;
+  pSprite->pTexture_134->GetSurfaceDesc(&pSprite->ddSurfaceDesc_170);
+  pSprite->dwRGBBitCount_1EC = pSprite->ddSurfaceDesc_170.ddpfPixelFormat.dwRGBBitCount;
+  pSprite->dwWidth_1F0 = pSprite->ddSurfaceDesc_170.dwWidth;
+  pSprite->dwHeight_1F4 = pSprite->ddSurfaceDesc_170.dwHeight;
+  pSprite->lPitch_1F8 = pSprite->ddSurfaceDesc_170.lPitch;
+  pSprite->fAlpha_144 = 1.0;
+  pSprite->fScale_148 = 1.0;
+  pSprite->pCenter_158 = 0;
+  pSprite->fHalfWidth_150 = (float)(pSprite->dwWidth_1F0 / 2);
+  pSprite->fHalfHeight_154 = (float)(pSprite->dwHeight_1F4 / 2);
+  pSprite->pRect_16C = 0;
+  pSprite->rect_15C.top = 0;
+  pSprite->rect_15C.left = 0;
+  pSprite->rect_15C.bottom = pSprite->dwHeight_1F4;
+  pSprite->rect_15C.right = pSprite->dwWidth_1F0;
+  CHanaObj__AddRef_40BFC3(&pSprite->base_0);
+  *ppOut = pSprite;
+}
+
 // Register hook if needed
 void register_CHanaObj__NewFrameT3EC_S354_404720() {
   hnh_Hook(0x4074EF, hook_MtxStackStartMultLocal_4074EF, "MtxStackStartMultLocal_4074EF");
@@ -312,4 +356,5 @@ void register_CHanaObj__NewFrameT3EC_S354_404720() {
   //hnh_Hook(0x4055FD, hook_AttachChild_4055FD, "AttachChild_4055FD");
   //hnh_Hook(0x404908, hook_CHanaObj__NewFrameRootT3EC_S2D4_404908, "CHanaObj__NewFrameRootT3EC_S2D4_404908");
   //hnh_Hook(0x40F720, hook_CHanaObj__NewMateT3EE_S184_40F720, "CHanaObj__NewMateT3EE_S184_40F720");
+  hnh_Hook(0x4133D0, hook_CHanaObj__NewSprite3F6byWH, "CHanaObj__NewSprite3F6byWH_4133D0");
 }
