@@ -87,7 +87,7 @@ int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F
             StopAndRestartThread(0);
             memcpy(&sceneScratch, &g_sceneState_52F7E0, sizeof(sceneScratch));
             nResult = SystemMenu_4655AB(*ppBgmBuffer, -1000, 2, 666.0f, 666.0f,
-                                         sceneScratch.menuState);
+                                         sceneScratch);
             StopAndRestartThread(2);
             if (nResult >= 1)
                 break;

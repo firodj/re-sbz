@@ -54,6 +54,11 @@ HRESULT (__stdcall* D3DXDrawSpriteSimple)(LPDIRECTDRAWSURFACE7 pd3dTexture,
     LPDIRECT3DDEVICE7, const D3DXVECTOR3*,
     float, float, float,
     const D3DXVECTOR2*, const RECT *)>(0x4900CA);
+HRESULT (__stdcall*D3DXDrawSprite3D)(LPDIRECTDRAWSURFACE7 pd3dTexture,
+  LPDIRECT3DDEVICE7 pd3dDevice,const D3DXVECTOR4 quad[4],float alpha,
+  const RECT* pSourceRect)
+= reinterpret_cast<HRESULT(__stdcall*)(LPDIRECTDRAWSURFACE7,
+    LPDIRECT3DDEVICE7,const D3DXVECTOR4[4], float, const RECT*)>(0x4902CF);
 
 // === FUNCTION IMPLEMENATIONS ===
 

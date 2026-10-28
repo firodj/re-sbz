@@ -146,6 +146,10 @@ public:
   float x, y;
 };
 
+typedef struct D3DXVECTOR4 {
+  float x, y, z, w;
+} D3DXVECTOR4;
+
 typedef struct D3DXQUATERNION {
     float x, y, z, w;
 } D3DXQUATERNION;
@@ -383,6 +387,9 @@ extern HRESULT(__stdcall* D3DXDrawSpriteSimple)(LPDIRECTDRAWSURFACE7 pd3dTexture
   LPDIRECT3DDEVICE7 pd3dDevice, const D3DXVECTOR3* ppointDest,
   float alpha, float scale, float angleRad,
   const D3DXVECTOR2* pOffset, const RECT* pSourceRect);
+extern HRESULT(__stdcall* D3DXDrawSprite3D)(LPDIRECTDRAWSURFACE7 pd3dTexture,
+  LPDIRECT3DDEVICE7 pd3dDevice, const D3DXVECTOR4 quad[4], float alpha,
+  const RECT* pSourceRect);
 
 extern BOOL(__cdecl* DIMouseKeybInit_43AF33)(int bAcquire);
 extern BOOL(__cdecl* DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd);

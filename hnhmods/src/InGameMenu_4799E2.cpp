@@ -59,22 +59,25 @@ LPDIRECTDRAWSURFACE7(__cdecl*CreateSurfaceWH)(DWORD width, DWORD height) =
   reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(DWORD width, DWORD height)>(0x418905);
 void(__cdecl*RecoverLostDevice)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x40BE03);
 void (__cdecl*PresentFrame)(void) = reinterpret_cast<void(__cdecl*)()>(0x40BF01);
+void(__cdecl*DrawSpriteAtRect)(CHanaSpriteT3F6_S1FC* pSprite, D2D_RECT_F* rc) =
+  reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *pSprite, D2D_RECT_F *rc)>(0x4147ED);
 
 //void (__cdecl*nop_4863C3)(void) = reinterpret_cast<void(__cdecl*)()>(0x4863C3);
 
+void (__cdecl*CHanaObj__NewSprite3F6byWH)(CHanaSpriteT3F6_S1FC** ppOut, DWORD w, DWORD h) =
+  reinterpret_cast<void (__cdecl*)(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWORD h)>(0x4133D0);
 HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam) = reinterpret_cast<HRESULT(__cdecl*)(int)>(0x40CEEC);
 int  (__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
-    float fCurHP, float fMaxHP, CSceneState sceneState) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER, int, int, float, float, CSceneState)>(0x4655AB);
-
+  float fCurHP, float fMaxHP, CSceneState sceneState) =
+  reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER, int, int, float, float, CSceneState)>(0x4655AB);
 int  (__cdecl*MenuMusicSelect)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
-reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47D163);
+  reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47D163);
 int  (__cdecl*MenuGallery)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
-reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47AD8D);
+  reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47AD8D);
 // MenuCharSelect + its pins live in src/MenuCharSelect.cpp (extern in shared.hpp)
-struct IDirectDrawSurface7 *(__cdecl*PlayScreenFade)(int bisGo, COLORREF colorref,
-  struct IDirectDrawSurface7 *pDdSurface, float fFade, char bFlags) =
-  reinterpret_cast<struct IDirectDrawSurface7 *(__cdecl*)(int, COLORREF, struct IDirectDrawSurface7 *, float, char)>(0x4874DE);
+LPDIRECTDRAWSURFACE7 (__cdecl*PlayScreenFade)(int bisGo, COLORREF colorref,
+  LPDIRECTDRAWSURFACE7 pDdSurface, float fFade, char bFlags) =
+  reinterpret_cast<LPDIRECTDRAWSURFACE7 (__cdecl*)(int, COLORREF, struct IDirectDrawSurface7 *, float, char)>(0x4874DE);
 
 void (__cdecl*MainMenu_47DF0D)(void) = reinterpret_cast<void(__cdecl*)()>(0x47DF0D);
 int  (__cdecl*InGameMenu_4799E2)(void) = reinterpret_cast<int(__cdecl*)()>(0x4799E2);
@@ -752,12 +755,6 @@ void __cdecl hook_BltSurface(LPDIRECTDRAWSURFACE7 pSurface, int left, int top, i
   pSurface->Blt(&rect, 0, 0, DDBLT_COLORFILL|DDBLT_WAIT, &ddBltFx);
 }
 
-void (__cdecl*CHanaObj__NewSprite3F6byWH)(CHanaSpriteT3F6_S1FC** ppOut, DWORD w, DWORD h) =
-reinterpret_cast<void (__cdecl*)(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWORD h)>(0x4133D0);
-
-void(__cdecl*DrawSpriteAtRect)(CHanaSpriteT3F6_S1FC* pSprite, D2D_RECT_F* rc) =
-reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *pSprite, D2D_RECT_F *rc)>(0x4147ED);
-
 // LoadBmpScaled_4203B3(const char *szBmpPath, int nDestW, int nDestH)
 // 
 // Load a BMP file into a DirectDraw surface and return a surface sized exactly nDestW x
@@ -1157,6 +1154,54 @@ void hook_PresentFrame()
     RecoverLostDevice();
 }
 
+void __cdecl hook_DrawSpriteAtRect(CHanaSpriteT3F6_S1FC *pSprite, D2D_RECT_F *rc)
+{
+  int quadNums; // [esp+0h] [ebp-54h]
+  D3DXVECTOR4 *i; // [esp+8h] [ebp-4Ch]
+  DWORD dwSavedFog; // [esp+Ch] [ebp-48h] BYREF
+  HRESULT hr; // [esp+10h] [ebp-44h]
+  D3DXVECTOR4 quad[4]; // [esp+14h] [ebp-40h] BYREF
+
+  DebugLog("[HNH:SUB] DrawSpriteAtRect_4147ED\n");
+
+  quadNums = 4;
+  for ( i = quad; --quadNums >= 0; ++i )
+    ;
+  quad[0].x = rc->left;
+  quad[0].y = rc->top;
+  quad[0].z = 0.0;
+  quad[0].w = 0.0;
+  quad[1].x = rc->right;
+  quad[1].y = rc->top;
+  quad[1].z = 0.0;
+  quad[1].w = 0.0;
+  quad[2].x = rc->right;
+  quad[2].y = rc->bottom;
+  quad[2].z = 0.0;
+  quad[2].w = 0.0;
+  quad[3].x = rc->left;
+  quad[3].y = rc->bottom;
+  quad[3].z = 0.0;
+  quad[3].w = 0.0;
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_LIGHTING, 0);
+  g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_FOGENABLE, &dwSavedFog);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
+  g_pD3DDevice_4D6C78->SetTexture(0, pSprite->pTexture_134);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ALPHAARG1, 2);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ALPHAARG2, 0);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ALPHAOP, 4);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_COLORARG1, 2);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_COLORARG2, 0);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_COLOROP, 2);
+  g_pD3DDevice_4D6C78->SetTexture(1, 0);
+  g_pD3DDevice_4D6C78->SetTextureStageState(1, D3DTSS_ALPHAOP, 1);
+  g_pD3DDevice_4D6C78->SetTextureStageState(1, D3DTSS_COLOROP, 1);
+  hr = D3DXDrawSprite3D(pSprite->pTexture_134, g_pD3DDevice_4D6C78, quad, pSprite->fAlpha_144, pSprite->pRect_16C);
+  g_pCurMatObj = 0;
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, dwSavedFog);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_LIGHTING, 1);
+}
+
 void register_InGameMenu_4799E2() {
     hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2");
     hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D");
@@ -1175,4 +1220,5 @@ void register_InGameMenu_4799E2() {
     hnh_Hook(0x418905, hook_CreateSurfaceWH, "CreateSurfaceWH_418905");
     hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
     hnh_Hook(0x40BF01, hook_PresentFrame, "PresentFrame_40BF01");
+    hnh_Hook(0x4147ED, hook_DrawSpriteAtRect, "DrawSpriteAtRect_4147ED");
 }

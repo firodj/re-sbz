@@ -246,16 +246,15 @@ extern void(__cdecl* BltSurface)(LPDIRECTDRAWSURFACE7 pSurface, int left, int to
 extern LPDIRECTDRAWSURFACE7(__cdecl* CreateSurfaceWH)(DWORD width, DWORD height);
 extern void(__cdecl* RecoverLostDevice)(void);
 extern void(__cdecl*PresentFrame)(void);
+extern void(__cdecl* DrawSpriteAtRect)(CHanaSpriteT3F6_S1FC* pSprite, D2D_RECT_F* rc);
 
 extern void (__cdecl*MainMenu_47DF0D)(void);
 extern int (__cdecl*InGameMenu_4799E2)(void);
 extern int(__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
   float fCurHP, float fMaxHP, CSceneState sceneState);
-
-
-
 extern HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam);
-
+extern LPDIRECTDRAWSURFACE7(__cdecl* PlayScreenFade)(int bisGo, COLORREF colorref,
+  LPDIRECTDRAWSURFACE7 pDdSurface, float fFade, char bFlags);
 
 // === DEFINED MenuCharSelect.cpp ===
 
