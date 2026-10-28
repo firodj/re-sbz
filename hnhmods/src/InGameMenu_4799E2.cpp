@@ -27,11 +27,20 @@
 // so the clamp silently fails too; kept faithful).
 
 // === PINNED GAME FUNCTIONS ===
-int  (__cdecl*LoadBmpWithMask_413A5E)(CHanaSpriteT3F6_S1FC **pOut, LPCSTR szBmpName, LPCSTR szMaskName) =
-    reinterpret_cast<int(__cdecl*)(CHanaSpriteT3F6_S1FC **, LPCSTR, LPCSTR)>(0x413A5E);
+void  (__cdecl*LoadBmpWithMask_413A5E)(CHanaSpriteT3F6_S1FC **ppOut, LPCSTR szBmpName, LPCSTR szMaskName) =
+    reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC **, LPCSTR, LPCSTR)>(0x413A5E);
+void(__cdecl* GetSurfaceWH)(LPDIRECTDRAWSURFACE7 pSurface, LPDWORD pWidth, LPDWORD pHeight)
+= reinterpret_cast<void(__cdecl *)(LPDIRECTDRAWSURFACE7 pSurface, LPDWORD pWidth, LPDWORD pHeight)>(0x419A1A);
 void (__cdecl*DSBufferPlay)(LPDIRECTSOUNDBUFFER pDSBuf, int dwPlayFlags) =
     reinterpret_cast<void(__cdecl*)(LPDIRECTSOUNDBUFFER, int)>(0x423BAF);
 BOOL (__cdecl*DoPeekMessages)(void) = reinterpret_cast<BOOL(__cdecl*)()>(0x481550);
+LPDIRECTDRAWSURFACE7(__cdecl*CreateTextureFromSurfaceWithAlphaMask)(
+  LPDIRECTDRAWSURFACE7 surface,
+  LPDIRECTDRAWSURFACE7 maskSurface)
+  = reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(
+    LPDIRECTDRAWSURFACE7 surface,
+    LPDIRECTDRAWSURFACE7 maskSurface)>(0x43EA05);
+
 int  (__cdecl*GetMouseBtn_45A41B)(WORD *pBtnMouse) =
     reinterpret_cast<int(__cdecl*)(WORD *)>(0x45A41B);
 void (__cdecl*GetMouseXY_45A4D8)(DWORD *pXmouse, DWORD *pYmouse) =
@@ -347,7 +356,331 @@ int __cdecl hook_InGameMenu_4799E2(void)
     return nMenuSelected;
 }
 
+#define WM_YOMICHAR 0x108
+
+BOOL hook_DoPeekMessages()
+{
+  MSG Msg; // [esp+0h] [ebp-1Ch] BYREF
+
+  static bool _debugged = true;
+  if (_debugged) {
+    DebugLog("[HNH:SUB] DoPeekMessages_481550\n");
+    _debugged = false;
+  }
+
+  PeekMessageA(&Msg, 0, WM_KEYDOWN, WM_YOMICHAR, PM_REMOVE);
+  PeekMessageA(&Msg, 0, WM_MOUSEFIRST, WM_MBUTTONDBLCLK, PM_REMOVE);
+  PeekMessageA(&Msg, 0, 0, 0, PM_REMOVE);
+  PeekMessageA(&Msg, g_hwndParent, WM_KEYDOWN, WM_YOMICHAR, PM_REMOVE);
+  PeekMessageA(&Msg, g_hwndParent, WM_MOUSEFIRST, WM_MBUTTONDBLCLK, PM_REMOVE);
+
+  return PeekMessageA(&Msg, g_hwndParent, 0, 0, PM_REMOVE);
+}
+
+void hook_DSBufferPlay(LPDIRECTSOUNDBUFFER pDSBuf, int dwPlayFlags)
+{
+  int dwStatus; // [esp+0h] [ebp-4h] BYREF
+
+  static bool _debugged = true;
+  if (_debugged) {
+    DebugLog("[HNH:SUB] DSBufferPlay_00423BAF\n");
+    _debugged = false;
+  }
+
+  if ( g_bDSInited_5185C4 )
+  {
+    if ( pDSBuf->GetStatus((LPDWORD)&dwStatus) == S_OK )
+    {
+      pDSBuf->SetCurrentPosition(0);
+      pDSBuf->Play(0, 0, dwPlayFlags);
+    }
+  }
+}
+
+void __cdecl hook_GetSurfaceWH(LPDIRECTDRAWSURFACE7 pSurface, _DWORD *pWidth, _DWORD *pHeight)
+{
+  DDSURFACEDESC2 ddSurfacDesc; // [esp+0h] [ebp-7Ch] BYREF
+
+  DebugLog("[HNH:SUB] GetSurfaceWH_419A1A");
+
+  ddSurfacDesc.dwSize = sizeof(DDSURFACEDESC2); // = 124
+  pSurface->GetSurfaceDesc(&ddSurfacDesc);
+  *pWidth = ddSurfacDesc.dwWidth;
+  *pHeight = ddSurfacDesc.dwHeight;
+}
+
+void __cdecl hook_LoadBmpWithMask_413A5E(CHanaSpriteT3F6_S1FC **ppOut, LPCSTR szBmpName, LPCSTR szMaskName)
+{
+  CHAR szSpriteName[256]; // [esp+10h] [ebp-194h] BYREF
+  DWORD width; // [esp+110h] [ebp-94h] BYREF
+  CHanaSpriteT3F6_S1FC *pSprite; // [esp+114h] [ebp-90h]
+  DWORD height; // [esp+118h] [ebp-8Ch] BYREF
+  LPDIRECTDRAWSURFACE7 pSurfaceMask; // [esp+11Ch] [ebp-88h]
+  LPDIRECTDRAWSURFACE7 pTexture; // [esp+120h] [ebp-84h]
+  LPDIRECTDRAWSURFACE7 pSurfaceBmp; // [esp+124h] [ebp-80h]
+  DDSURFACEDESC2 ddSurfaceDesc; // [esp+128h] [ebp-7Ch] BYREF
+
+  DebugLog("[HNH:SUB] LoadBmpWithMask_413A5E\n");
+
+  pSprite = 0;
+  pTexture = 0;
+  pSurfaceBmp = GetSurfaceFromBmp_419DE5(szBmpName);
+  pSurfaceMask = GetSurfaceFromBmp_419DE5(szMaskName);
+  wsprintfA(szSpriteName, "%s & %s", szBmpName, szMaskName);
+  if ( pSurfaceBmp )
+  {
+    pTexture = CreateTextureFromSurfaceWithAlphaMask(pSurfaceBmp, pSurfaceMask);
+    GetSurfaceWH(pTexture, &width, &height);
+    pSprite = (CHanaSpriteT3F6_S1FC *)MemAlloc_40DEF7(0x1FCu);
+    memset(pSprite, 0, sizeof(CHanaSpriteT3F6_S1FC));
+    pSprite->base_0.dwType = 0x3F6;
+    pSprite->pTexture_134 = pTexture;
+    ddSurfaceDesc.dwSize = 124;
+    ddSurfaceDesc.dwFlags = 4102;
+    pTexture->GetSurfaceDesc( &ddSurfaceDesc);
+    pSprite->ddSurfaceDesc_170.dwSize = 124;
+    pSprite->ddSurfaceDesc_170.dwFlags = 4102;
+    pSprite->pTexture_134->GetSurfaceDesc(&pSprite->ddSurfaceDesc_170);
+    pSprite->dwRGBBitCount_1EC = pSprite->ddSurfaceDesc_170.ddpfPixelFormat.dwRGBBitCount;
+    pSprite->dwWidth_1F0 = pSprite->ddSurfaceDesc_170.dwWidth;
+    pSprite->dwHeight_1F4 = pSprite->ddSurfaceDesc_170.dwHeight;
+    pSprite->lPitch_1F8 = pSprite->ddSurfaceDesc_170.lPitch;
+    pSprite->fAlpha_144 = 1.0;
+    pSprite->fScale_148 = 1.0;
+    pSprite->pCenter_158 = 0;
+    pSprite->fHalfWidth_150 = (float)(width >> 1);
+    pSprite->fHalfHeight_154 = (float)(height >> 1);
+    pSprite->pRect_16C = 0;
+    pSprite->rect_15C.top = 0;
+    pSprite->rect_15C.left = 0;
+    pSprite->rect_15C.bottom = height;
+    pSprite->rect_15C.right = width;
+    CHanaObj__AddRef_40BFC3(&pSprite->base_0);
+    AttachHanaObj_40BAB8(&pSprite->base_0, szSpriteName);
+  }
+  else
+  {
+    *ppOut = 0;
+  }
+  if ( pSurfaceBmp )
+  {
+    pSurfaceBmp->Release();
+    pSurfaceBmp = 0;
+  }
+  if ( pSurfaceMask )
+  {
+    pSurfaceMask->Release();
+    pSurfaceMask = 0;
+  }
+  *ppOut = pSprite;
+}
+
+LPDIRECTDRAWSURFACE7 __cdecl hook_CreateTextureFromSurfaceWithAlphaMask(
+  LPDIRECTDRAWSURFACE7 surface,
+  LPDIRECTDRAWSURFACE7 maskSurface)
+{
+  WORD pixelARGB4_A; // [esp+0h] [ebp-158h]
+  WORD *pixelsARGB4_2A; // [esp+4h] [ebp-154h]
+  WORD *pixelsARGB4_1A; // [esp+8h] [ebp-150h]
+  WORD pixelRGB5; // [esp+Ch] [ebp-14Ch]
+  WORD *pixelsRGB5_2; // [esp+10h] [ebp-148h]
+  WORD *pixelsARGB4_1; // [esp+14h] [ebp-144h]
+  DWORD pixelARGB8; // [esp+18h] [ebp-140h]
+  DWORD *pixelsARGB8_2; // [esp+1Ch] [ebp-13Ch]
+  DWORD *pixelsARGB8_1; // [esp+20h] [ebp-138h]
+  LONG lPitch2; // [esp+24h] [ebp-134h]
+  LONG lPitch; // [esp+28h] [ebp-130h]
+  _D3DX_SURFACEFORMAT surfaceFormat2; // [esp+2Ch] [ebp-12Ch] BYREF
+  DDSURFACEDESC2 ddSurfaceDesc2; // [esp+30h] [ebp-128h] BYREF
+  DWORD nAntialias; // [esp+ACh] [ebp-ACh] BYREF
+  unsigned int j; // [esp+B0h] [ebp-A8h]
+  DDSURFACEDESC2 ddSurfaceDesc; // [esp+B4h] [ebp-A4h] BYREF
+  unsigned int i; // [esp+130h] [ebp-28h]
+  HRESULT hr; // [esp+134h] [ebp-24h]
+  _D3DX_SURFACEFORMAT surfaceFormat; // [esp+138h] [ebp-20h] BYREF
+  DWORD width; // [esp+13Ch] [ebp-1Ch] BYREF
+  DWORD dwRGBBitCount; // [esp+140h] [ebp-18h]
+  DWORD height; // [esp+144h] [ebp-14h] BYREF
+  DWORD flags; // [esp+148h] [ebp-10h] BYREF
+  LPDIRECTDRAWSURFACE7 texture; // [esp+14Ch] [ebp-Ch] BYREF
+  DWORD bDitherEnable; // [esp+150h] [ebp-8h] BYREF
+  LPDIRECTDRAWSURFACE7 texture2; // [esp+154h] [ebp-4h] BYREF
+
+  DebugLog("[HNH:SUB] CreateTextureFromSurfaceWithAlphaMask_43EA05\n");
+
+  surfaceFormat = D3DX_SF_A8R8G8B8;
+  texture = 0;
+  flags = 256;
+  dwRGBBitCount = g_ddPixFormat.dwRGBBitCount;
+  memset(&ddSurfaceDesc, 0, sizeof(ddSurfaceDesc));
+  memset(&ddSurfaceDesc2, 0, sizeof(ddSurfaceDesc2));
+  if ( !surface )
+    return 0;
+  if ( maskSurface )
+  {
+    g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_ANTIALIAS, &nAntialias);
+    g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_DITHERENABLE, &bDitherEnable);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 0);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DITHERENABLE, 0);
+    GetSurfaceWH(surface, &width, &height);
+    surfaceFormat = D3DX_SF_A8R8G8B8;
+    hr = D3DXCheckTextureRequirements(g_pD3DDevice_4D6C78, &flags, &width, &height, &surfaceFormat);
+    if ( hr != S_OK ) // hr
+    {
+      surfaceFormat = D3DX_SF_A4R4G4B4;
+      hr = D3DXCheckTextureRequirements(g_pD3DDevice_4D6C78, &flags, &width, &height, &surfaceFormat);
+    }
+    if ( hr == S_OK ) // !hr 
+    {
+      GetSurfaceWH(surface, &width, &height);
+      hr = D3DXCreateTexture(g_pD3DDevice_4D6C78, &flags, &width, &height, &surfaceFormat, 0, &texture, 0);
+      if ( hr != S_OK ) // hr
+      {
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, nAntialias);
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DITHERENABLE, bDitherEnable);
+        return 0;
+      }
+      D3DXLoadTextureFromSurface(g_pD3DDevice_4D6C78, texture, 0xFFFFFFFF, surface, 0, 0, D3DX_FT_DEFAULT);
+      if ( surfaceFormat == D3DX_SF_A8R8G8B8 )
+        surfaceFormat2 = D3DX_SF_A8R8G8B8;
+      else
+        surfaceFormat2 = D3DX_SF_R5G6B5;
+      GetSurfaceWH(surface, &width, &height);
+      hr = D3DXCheckTextureRequirements(g_pD3DDevice_4D6C78, &flags, &width, &height, &surfaceFormat2);
+      if ( hr != S_OK ) // hr
+      {
+        if ( surfaceFormat == D3DX_SF_A8R8G8B8 )
+          surfaceFormat2 = D3DX_SF_A8R8G8B8;
+        else
+          surfaceFormat2 = D3DX_SF_A4R4G4B4;
+      }
+      hr = D3DXCreateTexture(g_pD3DDevice_4D6C78, &flags, &width, &height, &surfaceFormat2, 0, &texture2, 0);
+      if ( hr == S_OK ) // !hr
+      {
+        D3DXLoadTextureFromSurface(g_pD3DDevice_4D6C78, texture2, 0xFFFFFFFF, maskSurface, 0, 0, D3DX_FT_DEFAULT);
+        GetSurfaceWH(texture, &width, &height);
+        ddSurfaceDesc.dwSize = 124;
+        ddSurfaceDesc.dwFlags = 2056;
+        texture->GetSurfaceDesc(&ddSurfaceDesc);
+        ddSurfaceDesc2.dwSize = 124;
+        ddSurfaceDesc2.dwFlags = 2056;
+        texture2->GetSurfaceDesc(&ddSurfaceDesc2);
+        lPitch = ddSurfaceDesc.lPitch;
+        lPitch2 = ddSurfaceDesc2.lPitch;
+        texture->Lock(0, &ddSurfaceDesc, 1, 0);
+        texture2->Lock(0, &ddSurfaceDesc2, 1, 0);
+        if ( surfaceFormat == D3DX_SF_A8R8G8B8 && surfaceFormat2 == D3DX_SF_A8R8G8B8 )
+        {
+          pixelsARGB8_1 = (DWORD *)ddSurfaceDesc.lpSurface;
+          pixelsARGB8_2 = (DWORD *)ddSurfaceDesc2.lpSurface;
+          for ( i = 0; i < height; ++i )
+          {
+            for ( j = 0; j < width; ++j )
+            {
+              pixelARGB8 = ((unsigned __int8)pixelsARGB8_2[j]
+                + ((pixelsARGB8_2[j] & 0xFF00) >> 8)
+                + ((pixelsARGB8_2[j] & 0xFF0000) >> 16))
+                / 3;
+              if ( pixelARGB8 > 0xFF )
+                pixelARGB8 = 255;
+              if ( pixelARGB8 < 0x11 )
+                pixelARGB8 = 0;
+              pixelsARGB8_1[j] &= 0xFFFFFFu;
+              pixelsARGB8_1[j] += pixelARGB8 << 24;
+            }
+            pixelsARGB8_1 += lPitch / 4;
+            pixelsARGB8_2 += lPitch2 / 4;
+          }
+        }
+        else if ( surfaceFormat == D3DX_SF_A4R4G4B4 && surfaceFormat2 == D3DX_SF_R5G6B5 )
+        {
+          pixelsARGB4_1 = (WORD *)ddSurfaceDesc.lpSurface;
+          pixelsRGB5_2 = (WORD *)ddSurfaceDesc2.lpSurface;
+          for ( i = 0; i < height; ++i )
+          {
+            for ( j = 0; j < width; ++j )
+            {
+              pixelRGB5 = (unsigned __int16)((pixelsRGB5_2[j] & 0x1F)
+                + ((pixelsRGB5_2[j] & 0x7E0) >> 5)
+                + ((pixelsRGB5_2[j] & 0xF800) >> 11))
+                / 3;
+              if ( pixelRGB5 > 0xFu )
+                pixelRGB5 = 15;
+              pixelsARGB4_1[j] &= 0xFFFu;
+              pixelsARGB4_1[j] += pixelRGB5 << 12;
+            }
+            pixelsARGB4_1 += lPitch / 2;
+            pixelsRGB5_2 += lPitch2 / 2;
+          }
+        }
+        else if ( surfaceFormat == D3DX_SF_A4R4G4B4 && surfaceFormat2 == D3DX_SF_A4R4G4B4 )
+        {
+          pixelsARGB4_1A = (WORD *)ddSurfaceDesc.lpSurface;
+          pixelsARGB4_2A = (WORD *)ddSurfaceDesc2.lpSurface;
+          for ( i = 0; i < height; ++i )
+          {
+            for ( j = 0; j < width; ++j )
+            {
+              pixelARGB4_A = (unsigned __int16)((pixelsARGB4_2A[j] & 0xF)
+                + ((pixelsARGB4_2A[j] & 0xF0) >> 4)
+                + ((pixelsARGB4_2A[j] & 0xF00) >> 8))
+                / 3;
+              if ( pixelARGB4_A > 0xFu )
+                pixelARGB4_A = 15;
+              pixelsARGB4_1A[j] &= 0xFFFu;
+              pixelsARGB4_1A[j] += pixelARGB4_A << 12;
+            }
+            pixelsARGB4_1A += lPitch / 2;
+            pixelsARGB4_2A += lPitch2 / 2;
+          }
+        }
+        texture->Unlock(0);
+        texture2->Unlock(0);
+        if ( texture2 )
+          texture2->Release();
+        texture2 = 0;
+      }
+    }
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, nAntialias);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DITHERENABLE, bDitherEnable);
+    return texture;
+  }
+  else
+  {
+    GetSurfaceWH(surface, &width, &height);
+    surfaceFormat = D3DX_SF_R8G8B8;
+    hr = D3DXCheckTextureRequirements(g_pD3DDevice_4D6C78, &flags, &width, &height, &surfaceFormat);
+    if ( hr != S_OK ) // hr
+    {
+      surfaceFormat = D3DX_SF_R5G6B5;
+      hr = D3DXCheckTextureRequirements(g_pD3DDevice_4D6C78, &flags, &width, &height, &surfaceFormat);
+    }
+    if ( hr != S_OK ) // hr
+    {
+      surfaceFormat = D3DX_SF_R5G5B5;
+      hr = D3DXCheckTextureRequirements(g_pD3DDevice_4D6C78, &flags, &width, &height, &surfaceFormat);
+    }
+    if ( hr != S_OK ) // hr
+      surfaceFormat = D3DX_SF_UNKNOWN;
+    hr = D3DXCreateTexture(g_pD3DDevice_4D6C78, &flags, &width, &height, &surfaceFormat, 0, &texture, 0);
+    if ( hr != S_OK ) // hr
+    {
+      return 0;
+    }
+    else
+    {
+      D3DXLoadTextureFromSurface(g_pD3DDevice_4D6C78, texture, 0xFFFFFFFF, surface, 0, 0, D3DX_FT_DEFAULT);
+      return texture;
+    }
+  }
+}
+
 void register_InGameMenu_4799E2() {
     hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2");
     hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D");
+    hnh_Hook(0x481550, hook_DoPeekMessages, "DoPeekMessages_481550");
+    hnh_Hook(0x423BAF, hook_DSBufferPlay, "DSBufferPlay_423BAF");
+    hnh_Hook(0x413A5E, hook_LoadBmpWithMask_413A5E, "LoadBmpWithMask_413A5E");
+    hnh_Hook(0x419A1A, hook_GetSurfaceWH, "GetSurfaceWH_419A1A");
+    hnh_Hook(0x43EA05, hook_CreateTextureFromSurfaceWithAlphaMask, "CreateTextureFromSurfaceWithAlphaMask_43EA05");
 }

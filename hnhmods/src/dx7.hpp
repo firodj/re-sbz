@@ -322,6 +322,14 @@ typedef enum _D3DX_SURFACEFORMAT {
   D3DX_SF_FORCEMAX  = (DWORD)(-1)
 } D3DX_SURFACEFORMAT;
 
+#define D3DX_DEFAULT ULONG_MAX
+
+typedef enum _D3DX_FILTERTYPE {
+  D3DX_FT_POINT    = 0x01,
+  D3DX_FT_LINEAR   = 0x02,
+  D3DX_FT_DEFAULT  = D3DX_DEFAULT
+} D3DX_FILTERTYPE;
+
 LPVOID hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName);
 
 extern HRESULT(*D3DXUninitialize)(void);
@@ -349,6 +357,9 @@ extern HRESULT(__stdcall* D3DXCreateContext)(unsigned int devIndex, unsigned int
 extern HRESULT(__stdcall* D3DXGetSurfaceFormat)(int devIndex, D3DX_VIDMODEDESC* pVidMode, unsigned int surfClassFlags, unsigned int which, D3DX_SURFACEFORMAT* pFormat);
 extern DWORD(__stdcall* D3DXGetMaxSurfaceFormats)(int devIndex, _DWORD* pVidMode, int surfClassFlags);
 extern HRESULT(__stdcall* D3DXCreateMatrixStack)(DWORD flags, LPD3DXMATRIXSTACK* ppStack);
+extern HRESULT(__stdcall* D3DXCreateTexture)(LPDIRECT3DDEVICE7 pd3dDevice, LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight, _D3DX_SURFACEFORMAT* pPixelFormat, LPDIRECTDRAWPALETTE pDDPal, LPDIRECTDRAWSURFACE7* ppDDSurf, LPDWORD pNumMipMaps);
+extern HRESULT(__stdcall* D3DXCheckTextureRequirements)(LPDIRECT3DDEVICE7 pd3dDevice, LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight, _D3DX_SURFACEFORMAT* pPixelFormat);
+extern HRESULT(__stdcall* D3DXLoadTextureFromSurface)(LPDIRECT3DDEVICE7 pd3dDevice, LPDIRECTDRAWSURFACE7 pTexture, DWORD mipMapLevel, LPDIRECTDRAWSURFACE7 pSurfaceSrc, LPRECT pSrcRect, LPRECT pDestRect, _D3DX_FILTERTYPE filterType);
 
 extern BOOL(__cdecl* DIMouseKeybInit_43AF33)(int bAcquire);
 extern BOOL(__cdecl* DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd);

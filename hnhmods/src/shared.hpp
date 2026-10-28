@@ -31,6 +31,7 @@ extern LPDIRECTDRAW7           &g_pDD_4D6C7C;
 extern LPDIRECT3D7             &g_pD3D_4D6C84;
 extern LPDIRECTSOUND           &g_ppDS;
 extern LPDIRECTSOUNDBUFFER     &g_pdsBuffer;
+extern DDPIXELFORMAT& g_ddPixFormat;
 
 extern CObjItemRef_S208* &g_pObjectTable;
 extern int &g_nObjectTableCount;
