@@ -230,6 +230,9 @@
     <ClCompile Include="src\PlayScreenFade.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\ParseODFContent_441A5D.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="user32hook.cpp" />
   </ItemGroup>
   <ItemGroup>

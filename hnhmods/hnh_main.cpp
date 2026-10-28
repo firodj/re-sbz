@@ -93,6 +93,7 @@ void register_LoadSoundEffects_47EB7F();
 void register_InGameMenu_4799E2();
 void register_MenuCharSelect_47A324();
 void register_PlayScreenFade_4874DE();
+void register_ParseODFContent_441A5D();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -134,6 +135,7 @@ void InitHNH() {
 	register_InGameMenu_4799E2();
 	register_MenuCharSelect_47A324();
 	register_PlayScreenFade_4874DE();
+	register_ParseODFContent_441A5D();
 
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)
