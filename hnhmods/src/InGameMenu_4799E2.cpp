@@ -40,17 +40,22 @@ LPDIRECTDRAWSURFACE7(__cdecl*CreateTextureFromSurfaceWithAlphaMask)(
   = reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(
     LPDIRECTDRAWSURFACE7 surface,
     LPDIRECTDRAWSURFACE7 maskSurface)>(0x43EA05);
-
-int  (__cdecl*GetMouseBtn_45A41B)(WORD *pBtnMouse) =
-    reinterpret_cast<int(__cdecl*)(WORD *)>(0x45A41B);
+void  (__cdecl*GetMouseBtn_45A41B)(LPWORD pBtnMouse) =
+    reinterpret_cast<void(__cdecl*)(LPWORD)>(0x45A41B);
 void (__cdecl*GetMouseXY_45A4D8)(DWORD *pXmouse, DWORD *pYmouse) =
     reinterpret_cast<void(__cdecl*)(DWORD *, DWORD *)>(0x45A4D8);
+
 int  (__cdecl*MenuMusicSelect)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
     reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47D163);
 int  (__cdecl*MenuGallery)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
     reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47AD8D);
-int  (__cdecl*MenuCharSelect)(LPDIRECTSOUNDBUFFER pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER, CHanaSpriteT3F6_S1FC *)>(0x47A324);
+int  (__cdecl*MenuCharSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite) =
+    reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47A324);
+bool (__cdecl*IsMenuKeyPressed_481170)(void) = reinterpret_cast<bool(__cdecl*)()>(0x481170);
+HRESULT (__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF color) =
+    reinterpret_cast<HRESULT(__cdecl*)(LPDIRECTDRAWSURFACE7, COLORREF)>(0x4198E0);
+int  (__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab) =
+    reinterpret_cast<int(__cdecl*)(int, int)>(0x4703AE);
 struct IDirectDrawSurface7 *(__cdecl*PlayScreenFade)(int bisGo, COLORREF colorref,
     struct IDirectDrawSurface7 *pDdSurface, float fFade, char bFlags) =
     reinterpret_cast<struct IDirectDrawSurface7 *(__cdecl*)(int, COLORREF, struct IDirectDrawSurface7 *, float, char)>(0x4874DE);
@@ -134,7 +139,7 @@ void __cdecl hook_MainMenu_47DF0D(void)
         else if (nMenuState == -2)
             nMenuState = MenuGallery(&pBgmBuffer, pMouseSprite);
         else if (nMenuState == -3)
-            nMenuState = MenuCharSelect(pBgmBuffer, pMouseSprite);
+            nMenuState = MenuCharSelect(&pBgmBuffer, pMouseSprite);
         else
             break;
     }
@@ -675,6 +680,57 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_CreateTextureFromSurfaceWithAlphaMask(
   }
 }
 
+void __cdecl hook_GetMouseBtn_45A41B(LPWORD pBtnMouse)
+{
+  __int16 btn2on; // [esp+0h] [ebp-14h]
+  int i; // [esp+4h] [ebp-10h]
+  __int16 btn1on; // [esp+8h] [ebp-Ch]
+  CInputState *inputState; // [esp+Ch] [ebp-8h]
+  int btn3on; // [esp+10h] [ebp-4h]
+
+  static bool _debugged = true;
+  if (_debugged) {
+    _debugged = false;
+    DebugLog("[HNH:SUB] GetMouseBtn_45A41B\n");
+  }
+
+  btn1on = 0;
+  btn2on = 0;
+  btn3on = 0;
+  MutexThreadWait_4815EC(1);
+  inputState = GetInputState_481B37();
+  for ( i = 0; i < 5; ++i )
+  {
+    if ( btn3on )
+      inputState[i].mouseBtn_4 = 0;
+    if ( inputState[i].mouseBtn_4 == 1 )
+      btn1on = 1;
+    if ( inputState[i].mouseBtn_4 == 2 )
+      btn2on = 2;
+    if ( inputState[i].mouseBtn_4 == 3 )
+      btn3on = 3;
+  }
+  MutexThreadWait_4815EC(0);
+  *pBtnMouse = btn3on | btn2on | btn1on;
+}
+
+void __cdecl hook_GetMouseXY_45A4D8(DWORD *pXmouse, DWORD *pYmouse)
+{
+  CInputState *InputState_481B37; // eax
+
+  static bool _debugged = true;
+  if (_debugged) {
+    _debugged = false;
+    DebugLog("[HNH:SUB] GetMouseXY_45A4D8\n");
+
+  }
+  MutexThreadWait_4815EC(1);
+  InputState_481B37 = GetInputState_481B37();
+  *pXmouse = InputState_481B37->mouseX_0;
+  *pYmouse = InputState_481B37->mouseY_2;
+  MutexThreadWait_4815EC(0);
+}
+
 void register_InGameMenu_4799E2() {
     hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2");
     hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D");
@@ -683,4 +739,7 @@ void register_InGameMenu_4799E2() {
     hnh_Hook(0x413A5E, hook_LoadBmpWithMask_413A5E, "LoadBmpWithMask_413A5E");
     hnh_Hook(0x419A1A, hook_GetSurfaceWH, "GetSurfaceWH_419A1A");
     hnh_Hook(0x43EA05, hook_CreateTextureFromSurfaceWithAlphaMask, "CreateTextureFromSurfaceWithAlphaMask_43EA05");
+    hnh_Hook(0x45A41B, hook_GetMouseBtn_45A41B, "GetMouseBtn_45A41B");
+    hnh_Hook(0x45A4D8, hook_GetMouseXY_45A4D8, "GetMouseXY_45A4D8");
+    hnh_Hook(0x47A324, hook_MenuCharSelect, "MenuCharSelect_47A324");
 }
