@@ -137,6 +137,15 @@ public:
     }
 };
 
+class D3DXVECTOR2 {
+public:
+  D3DXVECTOR2() : x(0), y(0) {};
+  D3DXVECTOR2(float _x, float _y) {
+    x = _x, y = _y;
+  };
+  float x, y;
+};
+
 typedef struct D3DXQUATERNION {
     float x, y, z, w;
 } D3DXQUATERNION;
@@ -330,6 +339,15 @@ typedef enum _D3DX_FILTERTYPE {
   D3DX_FT_DEFAULT  = D3DX_DEFAULT
 } D3DX_FILTERTYPE;
 
+struct D2D_RECT_F
+{
+  FLOAT left;
+  FLOAT top;
+  FLOAT right;
+  FLOAT bottom;
+};
+
+
 LPVOID hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName);
 
 extern HRESULT(*D3DXUninitialize)(void);
@@ -360,6 +378,10 @@ extern HRESULT(__stdcall* D3DXCreateMatrixStack)(DWORD flags, LPD3DXMATRIXSTACK*
 extern HRESULT(__stdcall* D3DXCreateTexture)(LPDIRECT3DDEVICE7 pd3dDevice, LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight, _D3DX_SURFACEFORMAT* pPixelFormat, LPDIRECTDRAWPALETTE pDDPal, LPDIRECTDRAWSURFACE7* ppDDSurf, LPDWORD pNumMipMaps);
 extern HRESULT(__stdcall* D3DXCheckTextureRequirements)(LPDIRECT3DDEVICE7 pd3dDevice, LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight, _D3DX_SURFACEFORMAT* pPixelFormat);
 extern HRESULT(__stdcall* D3DXLoadTextureFromSurface)(LPDIRECT3DDEVICE7 pd3dDevice, LPDIRECTDRAWSURFACE7 pTexture, DWORD mipMapLevel, LPDIRECTDRAWSURFACE7 pSurfaceSrc, LPRECT pSrcRect, LPRECT pDestRect, _D3DX_FILTERTYPE filterType);
+extern HRESULT(__stdcall* D3DXDrawSpriteSimple)(LPDIRECTDRAWSURFACE7 pd3dTexture,
+  LPDIRECT3DDEVICE7 pd3dDevice, const D3DXVECTOR3* ppointDest,
+  float alpha, float scale, float angleRad,
+  const D3DXVECTOR2* pOffset, const RECT* pSourceRect);
 
 extern BOOL(__cdecl* DIMouseKeybInit_43AF33)(int bAcquire);
 extern BOOL(__cdecl* DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd);

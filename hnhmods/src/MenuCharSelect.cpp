@@ -190,7 +190,7 @@ int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F
             g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);  // D3DBLEND_INVSRCALPHA
             if (pMouseSprite)
             {
-                SetPos_414A5D(pMouseSprite, (float)(xmouse + 16), (float)(ymouse + 16));
+                CHanaSpriteT3F6__SetPos_414A5D(pMouseSprite, (float)(xmouse + 16), (float)(ymouse + 16));
                 DrawSprite2D(pMouseSprite);
             }
             g_pD3DDevice_4D6C78->EndScene();

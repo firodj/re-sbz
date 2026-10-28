@@ -46,7 +46,14 @@ HRESULT(__stdcall*D3DXCheckTextureRequirements)(LPDIRECT3DDEVICE7 pd3dDevice, LP
 = reinterpret_cast<HRESULT(__stdcall*)(LPDIRECT3DDEVICE7 pd3dDevice, LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight, _D3DX_SURFACEFORMAT* pPixelFormat)>(0x48DD5B);
 HRESULT(__stdcall* D3DXLoadTextureFromSurface)(LPDIRECT3DDEVICE7 pd3dDevice, LPDIRECTDRAWSURFACE7 pTexture, DWORD mipMapLevel, LPDIRECTDRAWSURFACE7 pSurfaceSrc, LPRECT pSrcRect, LPRECT pDestRect, _D3DX_FILTERTYPE filterType)
 = reinterpret_cast<HRESULT(__stdcall*)(LPDIRECT3DDEVICE7 pd3dDevice, LPDIRECTDRAWSURFACE7 pTexture, DWORD mipMapLevel, LPDIRECTDRAWSURFACE7 pSurfaceSrc, LPRECT pSrcRect, LPRECT pDestRect, _D3DX_FILTERTYPE filterType)>(0x48FCAE);
-
+HRESULT (__stdcall* D3DXDrawSpriteSimple)(LPDIRECTDRAWSURFACE7 pd3dTexture,
+  LPDIRECT3DDEVICE7 pd3dDevice, const D3DXVECTOR3* ppointDest,
+  float alpha, float scale, float angleRad,
+  const D3DXVECTOR2* pOffset, const RECT* pSourceRect)
+= reinterpret_cast<HRESULT (__stdcall*)(LPDIRECTDRAWSURFACE7,
+    LPDIRECT3DDEVICE7, const D3DXVECTOR3*,
+    float, float, float,
+    const D3DXVECTOR2*, const RECT *)>(0x4900CA);
 
 // === FUNCTION IMPLEMENATIONS ===
 

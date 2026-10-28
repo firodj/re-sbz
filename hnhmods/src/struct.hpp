@@ -368,10 +368,10 @@ struct CHanaSpriteT3F6_S1FC
   D3DXVECTOR3 destWHZ_138;
   float fAlpha_144;
   float fScale_148;
-  int fRotation_14C;
+  float fRotation_14C;
   float fHalfWidth_150;
   float fHalfHeight_154;
-  int pCenter_158;
+  D3DXVECTOR2 *pCenter_158;
   struct tagRECT rect_15C;
   LPRECT pRect_16C;
   DDSURFACEDESC2 ddSurfaceDesc_170;

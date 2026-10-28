@@ -27,48 +27,52 @@
 // so the clamp silently fails too; kept faithful).
 
 // === PINNED GAME FUNCTIONS ===
-void  (__cdecl*LoadBmpWithMask_413A5E)(CHanaSpriteT3F6_S1FC **ppOut, LPCSTR szBmpName, LPCSTR szMaskName) =
-    reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC **, LPCSTR, LPCSTR)>(0x413A5E);
-void(__cdecl* GetSurfaceWH)(LPDIRECTDRAWSURFACE7 pSurface, LPDWORD pWidth, LPDWORD pHeight)
-= reinterpret_cast<void(__cdecl *)(LPDIRECTDRAWSURFACE7 pSurface, LPDWORD pWidth, LPDWORD pHeight)>(0x419A1A);
+
 void (__cdecl*DSBufferPlay)(LPDIRECTSOUNDBUFFER pDSBuf, int dwPlayFlags) =
-    reinterpret_cast<void(__cdecl*)(LPDIRECTSOUNDBUFFER, int)>(0x423BAF);
+  reinterpret_cast<void(__cdecl*)(LPDIRECTSOUNDBUFFER, int)>(0x423BAF);
 BOOL (__cdecl*DoPeekMessages)(void) = reinterpret_cast<BOOL(__cdecl*)()>(0x481550);
+void (__cdecl*GetMouseBtn_45A41B)(LPWORD pBtnMouse) =
+  reinterpret_cast<void(__cdecl*)(LPWORD)>(0x45A41B);
+void (__cdecl*GetMouseXY_45A4D8)(DWORD *pXmouse, DWORD *pYmouse) =
+  reinterpret_cast<void(__cdecl*)(DWORD *, DWORD *)>(0x45A4D8);
+LPDIRECTDRAWSURFACE7(__cdecl*LoadBmpScaled_4203B3)(LPCSTR lpFileName, int xRight, int yBottom) =
+  reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(LPCSTR, int, int)>(0x4203B3);
+int  (__cdecl*FlushD3DAndTouchSurface)(LPDIRECTDRAWSURFACE7 pSurface) =
+  reinterpret_cast<int(__cdecl*)(LPDIRECTDRAWSURFACE7)>(0x43BF6F);
+void(__cdecl*CHanaSpriteT3F6__SetPos_414A5D)(CHanaSpriteT3F6_S1FC *pSprite, float fX, float fY) =
+  reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *, float, float)>(0x414A5D);
+void (__cdecl*DrawSprite2D)(CHanaSpriteT3F6_S1FC *pSprite) =
+  reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *)>(0x414191);
+void  (__cdecl*LoadBmpWithMask_413A5E)(CHanaSpriteT3F6_S1FC **ppOut, LPCSTR szBmpName, LPCSTR szMaskName) =
+  reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC **, LPCSTR, LPCSTR)>(0x413A5E);
+void(__cdecl* GetSurfaceWH)(LPDIRECTDRAWSURFACE7 pSurface, LPDWORD pWidth, LPDWORD pHeight) =
+  reinterpret_cast<void(__cdecl *)(LPDIRECTDRAWSURFACE7 pSurface, LPDWORD pWidth, LPDWORD pHeight)>(0x419A1A);
 LPDIRECTDRAWSURFACE7(__cdecl*CreateTextureFromSurfaceWithAlphaMask)(
   LPDIRECTDRAWSURFACE7 surface,
   LPDIRECTDRAWSURFACE7 maskSurface)
   = reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(
     LPDIRECTDRAWSURFACE7 surface,
     LPDIRECTDRAWSURFACE7 maskSurface)>(0x43EA05);
-void  (__cdecl*GetMouseBtn_45A41B)(LPWORD pBtnMouse) =
-    reinterpret_cast<void(__cdecl*)(LPWORD)>(0x45A41B);
-void (__cdecl*GetMouseXY_45A4D8)(DWORD *pXmouse, DWORD *pYmouse) =
-    reinterpret_cast<void(__cdecl*)(DWORD *, DWORD *)>(0x45A4D8);
-void  (__cdecl*BltSurface)(LPDIRECTDRAWSURFACE7 pSurface, int left, int top, int right, int bottom, int fillColor)
-= reinterpret_cast<void(__cdecl*)(LPDIRECTDRAWSURFACE7, int, int, int, int, int)>(0x419D89);
+void (__cdecl*BltSurface)(LPDIRECTDRAWSURFACE7 pSurface, int left, int top, int right, int bottom, int fillColor) =
+  reinterpret_cast<void(__cdecl*)(LPDIRECTDRAWSURFACE7, int, int, int, int, int)>(0x419D89);
+LPDIRECTDRAWSURFACE7(__cdecl*CreateSurfaceWH)(DWORD width, DWORD height) =
+  reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(DWORD width, DWORD height)>(0x418905);
 
-int  (__cdecl*MenuMusicSelect)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47D163);
-int  (__cdecl*MenuGallery)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47AD8D);
-// MenuCharSelect + its pins live in src/MenuCharSelect.cpp (extern in shared.hpp)
-struct IDirectDrawSurface7 *(__cdecl*PlayScreenFade)(int bisGo, COLORREF colorref,
-    struct IDirectDrawSurface7 *pDdSurface, float fFade, char bFlags) =
-    reinterpret_cast<struct IDirectDrawSurface7 *(__cdecl*)(int, COLORREF, struct IDirectDrawSurface7 *, float, char)>(0x4874DE);
-LPDIRECTDRAWSURFACE7(__cdecl*LoadBmpScaled_4203B3)(LPCSTR lpFileName, int xRight, int yBottom) =
-    reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(LPCSTR, int, int)>(0x4203B3);
-int  (__cdecl*FlushD3DAndTouchSurface)(LPDIRECTDRAWSURFACE7 pSurface) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTDRAWSURFACE7)>(0x43BF6F);
-void(__cdecl* SetPos_414A5D)(CHanaSpriteT3F6_S1FC *pSprite, float fX, float fY) =
-    reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *, float, float)>(0x414A5D);
-int  (__cdecl*DrawSprite2D)(CHanaSpriteT3F6_S1FC *pSprite) =
-    reinterpret_cast<int(__cdecl*)(CHanaSpriteT3F6_S1FC *)>(0x414191);
 //void (__cdecl*nop_4863C3)(void) = reinterpret_cast<void(__cdecl*)()>(0x4863C3);
 void (__cdecl*PresentFrame)(void) = reinterpret_cast<void(__cdecl*)()>(0x40BF01);
 HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam) = reinterpret_cast<HRESULT(__cdecl*)(int)>(0x40CEEC);
 int  (__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
     float fProgA, float fProgB, CSceneMenuState_9C pSceneFlags) =
     reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER, int, int, float, float, CSceneMenuState_9C)>(0x4655AB);
+
+int  (__cdecl*MenuMusicSelect)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
+reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47D163);
+int  (__cdecl*MenuGallery)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
+reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47AD8D);
+// MenuCharSelect + its pins live in src/MenuCharSelect.cpp (extern in shared.hpp)
+struct IDirectDrawSurface7 *(__cdecl*PlayScreenFade)(int bisGo, COLORREF colorref,
+  struct IDirectDrawSurface7 *pDdSurface, float fFade, char bFlags) =
+  reinterpret_cast<struct IDirectDrawSurface7 *(__cdecl*)(int, COLORREF, struct IDirectDrawSurface7 *, float, char)>(0x4874DE);
 
 void (__cdecl*MainMenu_47DF0D)(void) = reinterpret_cast<void(__cdecl*)()>(0x47DF0D);
 int  (__cdecl*InGameMenu_4799E2)(void) = reinterpret_cast<int(__cdecl*)()>(0x4799E2);
@@ -314,7 +318,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
             g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);  // D3DBLEND_INVSRCALPHA
             if (pMouseSprite)
             {
-                SetPos_414A5D(pMouseSprite, (float)(mouseX + 16), (float)(mouseY + 16));
+                CHanaSpriteT3F6__SetPos_414A5D(pMouseSprite, (float)(mouseX + 16), (float)(mouseY + 16));
                 DrawSprite2D(pMouseSprite);
             }
             g_pD3DDevice_4D6C78->EndScene();
@@ -716,8 +720,8 @@ void __cdecl hook_GetMouseXY_45A4D8(DWORD *pXmouse, DWORD *pYmouse)
   if (_debugged) {
     _debugged = false;
     DebugLog("[HNH:SUB] GetMouseXY_45A4D8\n");
-
   }
+
   MutexThreadWait_4815EC(1);
   InputState_481B37 = GetInputState_481B37();
   *pXmouse = InputState_481B37->mouseX_0;
@@ -730,7 +734,11 @@ void __cdecl hook_BltSurface(LPDIRECTDRAWSURFACE7 pSurface, int left, int top, i
   DDBLTFX ddBltFx; // [esp+0h] [ebp-74h] BYREF
   RECT rect; // [esp+64h] [ebp-10h] BYREF
 
-  DebugLog("[HNH:SUB] BltSurface_419D89\n");
+  static bool _debugged = true;
+  if (_debugged) {
+    _debugged = false;
+    DebugLog("[HNH:SUB] BltSurface_419D89\n");
+  }
 
   memset(&ddBltFx, 0, sizeof(ddBltFx));
   rect.left = left;
@@ -741,6 +749,352 @@ void __cdecl hook_BltSurface(LPDIRECTDRAWSURFACE7 pSurface, int left, int top, i
   ddBltFx.dwFillColor = fillColor;
   pSurface->Blt(&rect, 0, 0, DDBLT_COLORFILL|DDBLT_WAIT, &ddBltFx);
 }
+
+void (__cdecl*CHanaObj__NewSprite3F6byWH)(CHanaSpriteT3F6_S1FC** ppOut, DWORD w, DWORD h) =
+reinterpret_cast<void (__cdecl*)(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWORD h)>(0x4133D0);
+
+void(__cdecl*DrawSpriteAtRect)(CHanaSpriteT3F6_S1FC* pSprite, D2D_RECT_F* rc) =
+reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *pSprite, D2D_RECT_F *rc)>(0x4147ED);
+
+// LoadBmpScaled_4203B3(const char *szBmpPath, int nDestW, int nDestH)
+// 
+// Load a BMP file into a DirectDraw surface and return a surface sized exactly nDestW x
+// nDestH, scaling the image if needed. The scale pass is tiled because D3D7 cannot cheaply
+// scale-blit large surfaces:
+//   1. GetSurfaceFromBmp_419DE5(szBmpPath) loads the BMP; GetSurfaceWH reads its native
+//      width/height (nBmpW, nBmpH).
+//   2. If it is already nDestW x nDestH, the BMP surface is returned as-is.
+//   3. Otherwise create the destination surface (CreateSurfaceWH nDestW,nDestH) and a
+//      255x255 staging surface. Save a set of render/texture-stage states, then:
+//        - grab the render target; walk the source in 254px steps (nTileX/nTileY);
+//        - for each 255x255 tile, DDBLTFast into the staging surface,
+//          D3DXLoadTextureFromSurface into a CHanaSpriteT3F6 texture, and draw the tile at
+//          its proportional destination rect fDestTile with DrawSpriteAtRect (BeginScene/EndScene).
+//        - copy the composited render target into the destination via DDBLTFast(0x10000, WAIT).
+//   4. Restore all saved states, release the BMP/staging surfaces and sprite, return
+//      pDestSurf.
+// NOTE: nDestW/nDestH are the destination dimensions (the decompiler's default xRight/yBottom
+// are actually target width/height, not a RECT).
+LPDIRECTDRAWSURFACE7 __cdecl hook_LoadBmpScaled_4203B3(LPCSTR szBmpPath, DWORD nDestW, DWORD nDestH)
+{
+  D2D_RECT_F fTileDst; // [esp+40h] [ebp-17Ch] BYREF
+  DWORD dwSavedTexAddr; // [esp+50h] [ebp-16Ch] BYREF
+  DWORD nRtH; // [esp+54h] [ebp-168h] BYREF
+  DWORD dwSavedAntialias; // [esp+58h] [ebp-164h] BYREF
+  DWORD nRtW; // [esp+5Ch] [ebp-160h] BYREF
+  LPDIRECTDRAWSURFACE7 pRtSurf; // [esp+60h] [ebp-15Ch] BYREF
+  DWORD nTileY; // [esp+64h] [ebp-158h]
+  DWORD nSpriteH; // [esp+68h] [ebp-154h] BYREF
+  DWORD dwSavedFog; // [esp+6Ch] [ebp-150h] BYREF
+  DWORD nBmpW; // [esp+70h] [ebp-14Ch] BYREF
+  DWORD nTileX; // [esp+74h] [ebp-148h]
+  DWORD nSpriteW; // [esp+78h] [ebp-144h] BYREF
+  LPDIRECTDRAWSURFACE7 pStageSurf; // [esp+7Ch] [ebp-140h]
+  LPDIRECTDRAWSURFACE7 pDestSurf; // [esp+80h] [ebp-13Ch]
+  DWORD nBmpH; // [esp+84h] [ebp-138h] BYREF
+  DWORD dwSavedTexAniso; // [esp+88h] [ebp-134h] BYREF
+  LPDIRECTDRAWSURFACE7 pBmpSurf; // [esp+8Ch] [ebp-130h]
+  DWORD dwSavedDither; // [esp+90h] [ebp-12Ch] BYREF
+  CHanaSpriteT3F6_S1FC *pSprite; // [esp+94h] [ebp-128h] BYREF
+  struct tagRECT rcTileAbs; // [esp+98h] [ebp-124h] BYREF
+  DWORD dwSavedMinFilter; // [esp+A8h] [ebp-114h] BYREF
+  D3DDEVICEDESC7 devCaps; // [esp+ACh] [ebp-110h] BYREF
+  DWORD dwSavedMagFilter; // [esp+198h] [ebp-24h] BYREF
+  tagRECT rcRegion; // [esp+19Ch] [ebp-20h] BYREF
+  struct tagRECT rcFull; // [esp+1ACh] [ebp-10h] BYREF
+
+  DebugLog("[HNH:SUB] LoadBmpScaled_4203B3\n");
+
+  pBmpSurf = 0;
+  pDestSurf = 0;
+  pStageSurf = 0;
+  pRtSurf = 0;
+  g_pRenderCtx->Clear(D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER);
+  pBmpSurf = GetSurfaceFromBmp_419DE5(szBmpPath);
+  if ( !pBmpSurf )
+    return 0;
+  GetSurfaceWH(pBmpSurf, &nBmpW, &nBmpH);
+  if ( nBmpW == nDestW && nBmpH == nDestH )
+    return pBmpSurf;
+  pDestSurf = CreateSurfaceWH(nDestW, nDestH);
+  if ( !pDestSurf )
+    return pBmpSurf;
+  pStageSurf = CreateSurfaceWH(255u, 255u);
+  if ( pStageSurf )
+  {
+    BltSurface(pStageSurf, 0, 0, 255, 255, 0);
+    if ( g_pD3DDevice_4D6C78->GetCaps(&devCaps) >= 0 )
+    {
+      g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_FOGENABLE, &dwSavedFog);
+      g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_ANTIALIAS, &dwSavedAntialias);
+      g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_DITHERENABLE, &dwSavedDither);
+      g_pD3DDevice_4D6C78->GetTextureStageState(0, D3DTSS_MINFILTER, &dwSavedMinFilter);
+      g_pD3DDevice_4D6C78->GetTextureStageState(0, D3DTSS_MAGFILTER, &dwSavedMagFilter);
+      g_pD3DDevice_4D6C78->GetTextureStageState(
+        0,
+        D3DTSS_MAXANISOTROPY,
+        &dwSavedTexAniso);
+      g_pD3DDevice_4D6C78->GetTextureStageState(0, D3DTSS_ADDRESS, &dwSavedTexAddr);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 0);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 0);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DITHERENABLE, 1);
+      g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MINFILTER, 2);
+      g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MAGFILTER, 2);
+      g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ADDRESS, 3);
+      GetSurfaceWH(pBmpSurf, &nBmpW, &nBmpH);
+      SetRect(&rcRegion, 0, 0, nDestW, nDestH);
+      SetRect(&rcFull, 0, 0, nBmpW, nBmpH);
+      CHanaObj__NewSprite3F6byWH(&pSprite, 255, 255);
+      GetSurfaceWH(pSprite->pTexture_134, &nSpriteW, &nSpriteH);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZENABLE, 0);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZVISIBLE, 0);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_LIGHTING, 0);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
+      if ( g_pD3DDevice_4D6C78->GetRenderTarget(&pRtSurf) )
+      {
+        if ( pBmpSurf )
+        {
+          pBmpSurf->Release();
+          pBmpSurf = 0;
+        }
+        if ( pStageSurf )
+        {
+          pStageSurf->Release();
+          pStageSurf = 0;
+        }
+        if ( pSprite )
+        {
+          CHanaObj__Free_40C1E4(&pSprite->base_0);
+          pSprite = 0;
+        }
+      }
+      else
+      {
+        FlushD3DAndTouchSurface(pRtSurf);
+        GetSurfaceWH(pRtSurf, &nRtW, &nRtH);
+        BltSurface(pRtSurf, 0, 0, nRtW, nRtH, 0);
+        Sleep(1u);
+        for ( nTileX = 0; nTileX < nBmpW; nTileX += 254 )
+        {
+          for ( nTileY = 0; nTileY < nBmpH; nTileY += 254 )
+          {
+            SetRect(&rcFull, 0, 0, 255, 255);
+            SetRect(&rcRegion, nTileX, nTileY, nTileX + 255, nTileY + 255);
+            SetRect(&rcTileAbs, nTileX, nTileY, nTileX + 255, nTileY + 255);
+            if ( rcRegion.left < nBmpW && rcRegion.top < nBmpH )
+            {
+              if ( rcRegion.right > nBmpW )
+                rcRegion.right = nBmpW;
+              if ( rcRegion.bottom > nBmpH )
+                rcRegion.bottom = nBmpH;
+              BltSurface(pStageSurf, 0, 0, 255, 255, 0);
+              if ( !pStageSurf->BltFast(0, 0, pBmpSurf, &rcRegion, 16)
+                && !D3DXLoadTextureFromSurface(
+                  g_pD3DDevice_4D6C78,
+                  pSprite->pTexture_134,
+                  0xFFFFFFFF,
+                  pStageSurf,
+                  0,
+                  0,
+                  D3DX_FT_POINT) )
+              {
+                fTileDst.left = (double)(nDestW * rcTileAbs.left) / (double)(unsigned int)nBmpW;
+                fTileDst.top = (double)(nDestH * rcTileAbs.top) / (double)(unsigned int)nBmpH;
+                fTileDst.right = (double)(nDestW * rcTileAbs.right) / (double)(unsigned int)nBmpW;
+                fTileDst.bottom = (double)(nDestH * rcTileAbs.bottom) / (double)(unsigned int)nBmpH;
+                if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+                {
+                  DrawSpriteAtRect(pSprite, &fTileDst);
+                  g_pD3DDevice_4D6C78->EndScene();
+                }
+                FlushD3DAndTouchSurface(pRtSurf);
+              }
+            }
+          }
+        }
+        SetRect(&rcRegion, 0, 0, nDestW, nDestH);
+        pDestSurf->BltFast(0, 0, pRtSurf, &rcRegion, 16);
+        BltSurface(pRtSurf, 0, 0, nRtW, nRtH, 0);
+      }
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, dwSavedFog);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, dwSavedAntialias);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 1);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DITHERENABLE, dwSavedDither);
+      g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MINFILTER, dwSavedMinFilter);
+      g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MAGFILTER, dwSavedMagFilter);
+      g_pD3DDevice_4D6C78->SetTextureStageState(
+        0,
+        D3DTSS_MAXANISOTROPY,
+        dwSavedTexAniso);
+      g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ADDRESS, dwSavedTexAddr);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZVISIBLE, 1);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_LIGHTING, 1);
+      if ( pBmpSurf )
+      {
+        pBmpSurf->Release();
+        pBmpSurf = 0;
+      }
+      if ( pStageSurf )
+      {
+        pStageSurf->Release();
+        pStageSurf = 0;
+      }
+      if ( pSprite )
+      {
+        CHanaObj__Free_40C1E4(&pSprite->base_0);
+        pSprite = 0;
+      }
+      return pDestSurf;
+    }
+    else
+    {
+      if ( pBmpSurf )
+      {
+        pBmpSurf->Release();
+        pBmpSurf = 0;
+      }
+      if ( pDestSurf )
+      {
+        pDestSurf->Release();
+        pDestSurf = 0;
+      }
+      if ( pStageSurf )
+      {
+        pStageSurf->Release();
+        pStageSurf = 0;
+      }
+      return pBmpSurf;
+    }
+  }
+  else
+  {
+    if ( pDestSurf )
+    {
+      pDestSurf->Release();
+      pDestSurf = 0;
+    }
+    return pBmpSurf;
+  }
+}
+
+// CHanaSpriteT3F6::SetPos(pSprite, nPosX, nPosY)
+// Sets the sprite's screen position: destWHZ_138 dword0 (0x138) = nPosX, dword1 (0x13C) = nPosY.
+// Returns nPosY in eax. Callers pass ConvertFrom640AsInt/Float() virtual-unit coords.
+void __cdecl hook_CHanaSpriteT3F6__SetPos_414A5D(CHanaSpriteT3F6_S1FC *pSprite, float fPosX, float fPosY)
+{
+  static bool _debugged = true;
+  if (_debugged) {
+    _debugged = false;
+    DebugLog("[HNH:SUB] CHanaSpriteT3F6__SetPos_414A5D\n");
+  }
+
+  pSprite->destWHZ_138.x = fPosX;
+  pSprite->destWHZ_138.y = fPosY;
+}
+
+void __cdecl hook_FlushD3DAndTouchSurface(LPDIRECTDRAWSURFACE7 pSurface)
+{
+  HRESULT hr; // [esp+0h] [ebp-80h]
+  DDSURFACEDESC2 ddSurfaceDesc; // [esp+4h] [ebp-7Ch] BYREF
+
+  static bool _debugged = true;
+  if (_debugged) {
+    _debugged = false;
+    DebugLog("[HNH:SUB] FlushD3DAndTouchSurface_43BF6F\n");
+  }
+
+  hr = g_pD3DDevice_4D6C78->BeginScene();
+  g_pD3DDevice_4D6C78->DrawPrimitive(D3DPT_TRIANGLEFAN, D3DFVF_TLVERTEX, 0, 0, 1);
+  if ( !hr )
+    g_pD3DDevice_4D6C78->EndScene();
+  ddSurfaceDesc.dwSize = 124;
+  pSurface->Lock(0, &ddSurfaceDesc, 1, 0);
+  pSurface->Unlock(0);
+}
+
+// DrawSprite2D - Draw a CHanaSpriteT3F6 in screen space at its own size
+// // Uses sub_4900CA (vendored D3DXDrawSpriteSimple; 2D counterpart of D3DXDrawSprite3D_4902CF)
+// // 
+// // Arguments:
+// //   pSprite: sprite; reads pTexture_134, destWHZ_138 (w/h/z), fAlpha_144,
+// //            fScale_148, fRotation_14C, pCenter_158, pRect_16C (src rect)
+// // 
+// // Behavior:
+// //   1. SetTexture(stage 0, pSprite->pTexture_134)
+// //   2. Texture stage: COLOROP/ALPHAOP = BLEND on DIFFUSE (plain textured quad)
+// //   3. Lighting off, fog off (restored afterwards)
+// //   4. sub_4900CA(pTexture, device, {w,h,0}, fAlpha, fScale, fRotation,
+// //                 pCenter, pSrcRect) -> textured 4-vertex triangle fan
+// //   5. Clear dword_4D6CA4 (write-only D3D bookkeeping flag, also cleared
+// //      by sibling helpers sub_413F78/sub_414344/DrawSpriteLTRB/DrawSpriteAtRect)
+// //   6. Lighting back on; returns D3D result
+// // 
+// // Size setters: sub_414A5D (-> destWHZ_138), scale setter: sub_414B09 (-> fScale_148)
+// // Sibling: sub_413F78 = same draw but centered on the viewport; sub_414344 = 3D version
+void __cdecl hook_DrawSprite2D(CHanaSpriteT3F6_S1FC *pSprite)
+{
+  DWORD dwSavedFog; // [esp+0h] [ebp-14h] BYREF
+  HRESULT hr; // [esp+4h] [ebp-10h]
+  D3DXVECTOR3 vec3Dest; // [esp+8h] [ebp-Ch] BYREF
+
+  static bool _debugged = true;
+  if (_debugged) {
+    _debugged = false;
+    DebugLog("[HNH:SUB] hook_DrawSprite2D_414191\n");
+  }
+
+  vec3Dest.x = pSprite->destWHZ_138.x;
+  vec3Dest.y = pSprite->destWHZ_138.y;
+  vec3Dest.z = 0.0;
+  g_pD3DDevice_4D6C78->SetTexture(0, pSprite->pTexture_134);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ALPHAARG1, 2);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ALPHAARG2, 0);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ALPHAOP, 4);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_COLORARG1, 2);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_COLORARG2, 0);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_COLOROP, 4);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_LIGHTING, 0);
+  g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_FOGENABLE, &dwSavedFog);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
+  hr = D3DXDrawSpriteSimple(
+    pSprite->pTexture_134,
+    g_pD3DDevice_4D6C78,
+    &vec3Dest,
+    pSprite->fAlpha_144,
+    pSprite->fScale_148,
+    pSprite->fRotation_14C,
+    pSprite->pCenter_158,
+    pSprite->pRect_16C);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, dwSavedFog);
+  g_pCurMatObj = 0;
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_LIGHTING, 1);
+}
+
+LPDIRECTDRAWSURFACE7 __cdecl hook_CreateSurfaceWH(DWORD width, DWORD height)
+{
+  LPDIRECTDRAWSURFACE7 pSurface; // [esp+0h] [ebp-84h] BYREF
+  int hr; // [esp+4h] [ebp-80h]
+  DDSURFACEDESC2 ddSurfaceDesc; // [esp+8h] [ebp-7Ch] BYREF
+
+  DebugLog("[HNH:SUB] CreateSurfaceWH_418905");
+
+  memset(&ddSurfaceDesc, 0, sizeof(ddSurfaceDesc));
+  ddSurfaceDesc.dwSize = 124;
+  ddSurfaceDesc.dwFlags = 7;
+  ddSurfaceDesc.dwWidth = width;
+  ddSurfaceDesc.dwHeight = height;
+  ddSurfaceDesc.ddsCaps.dwCaps = 0x840;
+  hr = g_pDD_4D6C7C->CreateSurface(&ddSurfaceDesc, &pSurface, 0);
+  if ( !hr )
+    return pSurface;
+  g_szLastDDError_51836C = DDErrToString_41898E(hr);
+  return 0;
+}
+
 
 void register_InGameMenu_4799E2() {
     hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2");
@@ -753,4 +1107,8 @@ void register_InGameMenu_4799E2() {
     hnh_Hook(0x45A41B, hook_GetMouseBtn_45A41B, "GetMouseBtn_45A41B");
     hnh_Hook(0x45A4D8, hook_GetMouseXY_45A4D8, "GetMouseXY_45A4D8");
     hnh_Hook(0x419D89, hook_BltSurface, "BltSurface_419D89");
+    hnh_Hook(0x4203B3, hook_LoadBmpScaled_4203B3, "LoadBmpScaled_4203B3");
+    hnh_Hook(0x414A5D, hook_CHanaSpriteT3F6__SetPos_414A5D, "CHanaSpriteT3F6__SetPos_414A5D");
+    hnh_Hook(0x43BF6F, hook_FlushD3DAndTouchSurface, "FlushD3DAndTouchSurface_43BF6F");
+    hnh_Hook(0x414191, hook_DrawSprite2D, "DrawSprite2D_414191");
 }
