@@ -41,6 +41,10 @@ Used in class constructor with thiscall (ecx) to auto create instnace struct typ
 
 Auto rename the func name `tod_` prefix instead `sub_` for vmethods, in vtable data.
 
+## tools/gen_current.py
+
+Update `hnhmods/CURRENT.md` to reach `hnhmods/GOALS.md`.
+
 # Notes
 
 Done! Renamed sub_695F00 → EnsureTrailingSlash.

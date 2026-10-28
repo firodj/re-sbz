@@ -23,7 +23,7 @@ def get_callees(func_ea):
     # Iterate over all items in the function
     for head in idautils.FuncItems(func_ea):
         # Decode instruction
-            
+        insn = idaapi.insn_t()
         if idaapi.decode_insn(insn, head) == 0:
             continue
         if ida_idp.is_call_insn(insn):
@@ -148,6 +148,7 @@ def list_sub_functions(start_ea, visited=None, depth=0, path_last=[], is_last=Tr
     
     if name.startswith("_"): return []
     if name in skip_func: return []
+    if name.startswith("D3DX"): return []
     
     lines = []
     # If the function name starts with "sub_", we add it to our lines
