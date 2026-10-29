@@ -194,7 +194,7 @@ struct CHanaFrameT3EC_S354: public CHanaFrameRootT3EC_S2D4
     int gap314[16];
 };
 
-struct CHanaSubObj_S78
+struct CHanaAnimKeyT3F0_S78 // was CHanaSubObj_S78
 {
     float t_0;
     float x_4;
@@ -215,12 +215,12 @@ struct CHanaAnimT3F0_S240: public CHanaBase_S130
     CHanaFrameT3EC_S354 *pHanaFram_130;
     float fResolution_134;
     int nCount_138;
-    CHanaSubObj_S78 *arroS78_13C;
+    CHanaAnimKeyT3F0_S78 *arroS78_13C;
     int field_140;
     int field_144;
     int field_148;
-    CHanaSubObj_S78 objS78_14C;
-    CHanaSubObj_S78 objS78_1C4;
+    CHanaAnimKeyT3F0_S78 objS78_14C;
+    CHanaAnimKeyT3F0_S78 objS78_1C4;
     float float_23C;
 };
 

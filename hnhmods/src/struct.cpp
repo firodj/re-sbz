@@ -22,7 +22,7 @@ void AssertHanaStructSize() {
   static_assert(sizeof(CHanaMateAnimT3F7_S148) == 0x148, "CHanaMateAnimT3F7_S148");
   static_assert(sizeof(CHanaMateT3EE_S184) == 0x184, "CHanaMateT3EE_S184");
   static_assert(sizeof(CHanaFrameT3EC_S354) == 0x354, "CHanaFrameT3EC_S354");
-  static_assert(sizeof(CHanaSubObj_S78) == 0x78, "CHanaSubObj_S78");
+  static_assert(sizeof(CHanaAnimKeyT3F0_S78) == 0x78, "CHanaAnimKeyT3F0_S78");
   static_assert(sizeof(CHanaAnimT3F0_S240) == 0x240, "CHanaAnimT3F0_S240");
   static_assert(sizeof(CHanaMeshT3F5_S138) == 0x138, "CHanaMeshT3F5_S138");
 

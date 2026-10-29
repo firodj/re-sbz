@@ -407,7 +407,7 @@ CHanaFrameT3EC_S354 *__cdecl hook_ParseOdfFRAM_44106A(LPBYTE *ppBuf,
 // hook_ParseODFContent_441A5D above plus the ODS/OdsEx parsers). Layout:
 //   [DWORD nBytes][nKeys = nBytes/56 keys of 56 bytes each]
 // Each on-disk key is a CHanaSubObj_S38 (t, pos, scale, quat) expanded into a
-// 120-byte CHanaSubObj_S78 key (t, x/y/z, sx/sy/sz, quat, b_2C/b_30/b_34 = 1,
+// 120-byte CHanaAnimKeyT3F0_S78 key (t, x/y/z, sx/sy/sz, quat, b_2C/b_30/b_34 = 1,
 // matrix slot); the key array is allocated with one extra sentinel slot and
 // fResolution set to 1e8. After copying: HanaAnim_GetDuration (return value
 // ignored), BakeKeyframesT3F0, then -- only when a current frame is given --
@@ -431,14 +431,14 @@ BOOL __cdecl hook_ParseOdfANIM_4414EB(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAni
 
     CHanaObj__NewAnimT3F0(&pAnimT3F0);
     MemFree_40DF64(pAnimT3F0->arroS78_13C);  // drop the default key array
-    pAnimT3F0->arroS78_13C = (CHanaSubObj_S78 *)MemAlloc_40DEF7(120 * (nCount + 1)); // +1 sentinel
+    pAnimT3F0->arroS78_13C = (CHanaAnimKeyT3F0_S78 *)MemAlloc_40DEF7(120 * (nCount + 1)); // +1 sentinel
     pAnimT3F0->fResolution_134 = 100000000.0f;
     pAnimT3F0->nCount_138 = nCount;
 
     for (i = 0; i < nCount; ++i)
     {
         CHanaSubObj_S38 *pKey = (CHanaSubObj_S38 *)pBuf;   // 56-byte on-disk key
-        CHanaSubObj_S78 *pOutKey = &pAnimT3F0->arroS78_13C[i];
+        CHanaAnimKeyT3F0_S78 *pOutKey = &pAnimT3F0->arroS78_13C[i];
 
         pOutKey->t_0 = pKey->t;
         pOutKey->quart_1C = pKey->quat;
@@ -871,13 +871,13 @@ void __cdecl hook_AssignLigthtToFrame_40539D(CHanaFrameT3EC_S354 *pHanaT3EC, CHa
 int __cdecl hook_CHanaObj__NewAnimT3F0(CHanaAnimT3F0_S240 **ppOut)
 {
   CHanaAnimT3F0_S240 *pOut; // edi
-  CHanaSubObj_S78 *arroS78_13C; // eax
+  CHanaAnimKeyT3F0_S78 *arroS78_13C; // eax
   DebugLog("[HNH:SUB] CHanaObj__NewAnimT3F0_401CD0\n");
   pOut = (CHanaAnimT3F0_S240 *)MemAlloc_40DEF7(0x240u);
   memset(pOut, 0, sizeof(CHanaAnimT3F0_S240));
   pOut->dwType = 0x3F0;
   pOut->nCount_138 = 1;
-  pOut->arroS78_13C = (CHanaSubObj_S78 *)MemAlloc_40DEF7(0x78u);
+  pOut->arroS78_13C = (CHanaAnimKeyT3F0_S78 *)MemAlloc_40DEF7(0x78u);
   pOut->arroS78_13C->b_34 = 1;
   arroS78_13C = pOut->arroS78_13C;
   arroS78_13C->quart_1C.z = 0.0;
@@ -920,11 +920,11 @@ void __cdecl hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(CHanaAnimT3F0_S240 *pH
   float b; // [esp+0h] [ebp-50h]
   float v2; // [esp+Ch] [ebp-44h]
   float dt_v3; // [esp+10h] [ebp-40h]
-  CHanaSubObj_S78 *pobjS78_v4; // [esp+14h] [ebp-3Ch]
-  CHanaSubObj_S78 *pobjS78_v2; // [esp+14h] [ebp-3Ch]
-  CHanaSubObj_S78 *pobjS78_v6; // [esp+14h] [ebp-3Ch]
-  CHanaSubObj_S78 *arroS78_13C; // [esp+18h] [ebp-38h]
-  CHanaSubObj_S78 *v8; // [esp+18h] [ebp-38h]
+  CHanaAnimKeyT3F0_S78 *pobjS78_v4; // [esp+14h] [ebp-3Ch]
+  CHanaAnimKeyT3F0_S78 *pobjS78_v2; // [esp+14h] [ebp-3Ch]
+  CHanaAnimKeyT3F0_S78 *pobjS78_v6; // [esp+14h] [ebp-3Ch]
+  CHanaAnimKeyT3F0_S78 *arroS78_13C; // [esp+18h] [ebp-38h]
+  CHanaAnimKeyT3F0_S78 *v8; // [esp+18h] [ebp-38h]
   unsigned int k; // [esp+1Ch] [ebp-34h]
   unsigned int ii; // [esp+1Ch] [ebp-34h]
   unsigned int mm; // [esp+1Ch] [ebp-34h]
@@ -935,9 +935,9 @@ void __cdecl hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(CHanaAnimT3F0_S240 *pH
   unsigned int j; // [esp+24h] [ebp-2Ch]
   unsigned int n; // [esp+24h] [ebp-2Ch]
   unsigned int kk; // [esp+24h] [ebp-2Ch]
-  CHanaSubObj_S78 *pobjS78_v19; // [esp+28h] [ebp-28h]
-  CHanaSubObj_S78 *pobjS78_v20; // [esp+28h] [ebp-28h]
-  CHanaSubObj_S78 *pobjS78_v21; // [esp+28h] [ebp-28h]
+  CHanaAnimKeyT3F0_S78 *pobjS78_v19; // [esp+28h] [ebp-28h]
+  CHanaAnimKeyT3F0_S78 *pobjS78_v20; // [esp+28h] [ebp-28h]
+  CHanaAnimKeyT3F0_S78 *pobjS78_v21; // [esp+28h] [ebp-28h]
   float sx_v22; // [esp+2Ch] [ebp-24h]
   float x_v23; // [esp+2Ch] [ebp-24h]
   float sy_v24; // [esp+30h] [ebp-20h]
