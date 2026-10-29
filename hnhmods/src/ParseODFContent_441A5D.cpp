@@ -83,6 +83,7 @@ void (__cdecl * ApplyQTS_4035B1)( D3DXMATRIX *pOut, D3DXQUATERNION *pQ, float x,
     D3DXQUATERNION *pQ, float x, float y, float z, float sx, float sy, float sz)>(0x4035B1);
 void (__cdecl * ConfigureLight)( CHanaLightT3EF_S1A0 *pHanaLight, float posX, float posY, float posZ, float dirX, float dirY, float dirZ) = reinterpret_cast<void(__cdecl*)( CHanaLightT3EF_S1A0 *pHanaLight, float posX, float posY, float posZ, float dirX, float dirY, float dirZ)>(0x409510);
 void (__cdecl * HanaFrame_GetCenterPosition_408C3E)( CHanaFrameRootT3EC_S2D4 *pFrame, CHanaFrameRootT3EC_S2D4 *pRelFrame, float *pOutX, float *pOutY, float *pOutZ) = reinterpret_cast<void(__cdecl*)( CHanaFrameRootT3EC_S2D4 *pFrame, CHanaFrameRootT3EC_S2D4 *pRelFrame, float *pOutX, float *pOutY, float *pOutZ)>(0x408C3E); 
+BOOL (__cdecl * GetSoundBufferAverageLevel)(LPDIRECTSOUNDBUFFER pDSBuffer, float *pfPlayPos) = reinterpret_cast<BOOL(__cdecl*)(LPDIRECTSOUNDBUFFER pDSBuffer, float *pfPlayPos)>(0x4248F2);
 
 // === FUNCTIONS ===
 
@@ -1260,6 +1261,96 @@ void __cdecl hook_HanaFrame_GetCenterPosition_408C3E(
   }
 }
 
+BOOL __cdecl hook_GetSoundBufferAverageLevel(LPDIRECTSOUNDBUFFER pDSBuffer, float *pfPlayPos)
+{
+  double pSample; // st7
+  int wBitsPerSample; // [esp+Ch] [ebp-5Ch]
+  __int16 *ppvAudioPtr2; // [esp+10h] [ebp-58h] BYREF
+  int i; // [esp+14h] [ebp-54h]
+  WAVEFORMATEX waveFormat; // [esp+18h] [ebp-50h] BYREF
+  void *pvAudioPtr1; // [esp+2Ch] [ebp-3Ch]
+  int nChannels; // [esp+30h] [ebp-38h]
+  signed int pdwAudioBytes1; // [esp+34h] [ebp-34h] BYREF
+  signed int pdwAudioBytes2; // [esp+38h] [ebp-30h] BYREF
+  DSBCAPS dsBufCaps; // [esp+3Ch] [ebp-2Ch] BYREF
+  DWORD curPlayCursor; // [esp+50h] [ebp-18h] BYREF
+  DWORD v15; // [esp+54h] [ebp-14h]
+  __int16 *ppvAudioPtr1; // [esp+58h] [ebp-10h] BYREF
+  void *pvAudioPtr2; // [esp+5Ch] [ebp-Ch]
+  int totalSampleLevels; // [esp+60h] [ebp-8h]
+  DWORD sampleBlokSize; // [esp+64h] [ebp-4h]
+
+  DebugLog("[HNH:SUB] GetSoundBufferAverageLevel_4248F2\n");
+
+  totalSampleLevels = 0;
+  if ( !g_bDSInited_5185C4 )
+    return 0;
+  *pfPlayPos = 0.0;
+  if ( !pDSBuffer )
+    return 0;
+  if ( pDSBuffer->GetStatus(&g_dwDSStatus_5185C8) != S_OK || (g_dwDSStatus_5185C8 & 1) == 0 )
+    return 0;
+  memset(&waveFormat, 0, sizeof(waveFormat));
+  pDSBuffer->GetFormat(&waveFormat, 18, 0);
+  pDSBuffer->GetFormat(&waveFormat, 18, 0);
+  wBitsPerSample = waveFormat.wBitsPerSample;
+  v15 = waveFormat.nSamplesPerSec / 1000;
+  nChannels = waveFormat.nChannels;
+  sampleBlokSize = waveFormat.nChannels * waveFormat.wBitsPerSample / 8 * (waveFormat.nSamplesPerSec / 1000);
+  dsBufCaps.dwSize = 20;
+  pDSBuffer->GetCaps(&dsBufCaps);
+  pDSBuffer->GetCurrentPosition(&curPlayCursor, 0);
+  curPlayCursor -= sampleBlokSize >> 1;
+  if ( (curPlayCursor & 0x80000000) != 0 )
+    curPlayCursor = 0;
+  if ( curPlayCursor > dsBufCaps.dwBufferBytes - sampleBlokSize )
+    return 0;
+  if ( pDSBuffer->Lock(
+    curPlayCursor,
+    sampleBlokSize,
+    (LPVOID *)&ppvAudioPtr1,
+    (LPDWORD)&pdwAudioBytes1,
+    (LPVOID *)&ppvAudioPtr2,
+    (LPDWORD)&pdwAudioBytes2,
+    DSBLOCK_FROMWRITECURSOR) )
+  {
+    return 0;
+  }
+  totalSampleLevels = 0;
+  pvAudioPtr1 = ppvAudioPtr1;
+  pvAudioPtr2 = ppvAudioPtr2;
+  if ( wBitsPerSample / 8 == 1 )                // 8-bit audio
+  {
+    for ( i = 0; i < pdwAudioBytes1; ++i )
+    {
+      totalSampleLevels += abs(*(char *)ppvAudioPtr1);
+      ppvAudioPtr1 = (__int16 *)((char *)ppvAudioPtr1 + 1);
+    }
+    for ( i = 0; i < pdwAudioBytes2; ++i )
+    {
+      totalSampleLevels += abs(*(char *)ppvAudioPtr2);
+      ppvAudioPtr2 = (__int16 *)((char *)ppvAudioPtr2 + 1);
+    }
+  }
+  else                                          // 16-bit audio
+  {
+    pdwAudioBytes1 = (unsigned int)pdwAudioBytes1 >> 1;
+    pdwAudioBytes2 = (unsigned int)pdwAudioBytes2 >> 1;
+    for ( i = 0; i < pdwAudioBytes1; ++i )
+      totalSampleLevels += abs(*ppvAudioPtr1++);
+    for ( i = 0; i < pdwAudioBytes2; ++i )
+      totalSampleLevels += abs(*ppvAudioPtr2++);
+  }
+  pDSBuffer->Unlock(pvAudioPtr1, 0, pvAudioPtr2, 0);
+  *pfPlayPos = (double)totalSampleLevels / (double)(unsigned int)pdwAudioBytes1;
+  if ( wBitsPerSample / 8 == 1 )
+    pSample = *pfPlayPos / 128.0;
+  else
+    pSample = *pfPlayPos / 32767.0;
+  *pfPlayPos = pSample;
+  return 1;
+}
+
 void register_ParseODFContent_441A5D() {
     // [OK] hnh_Hook(0x441A5D, hook_ParseODFContent_441A5D, "ParseODFContent_441A5D");
     hnh_Hook(0x44106A, hook_ParseOdfFRAM_44106A, "ParseOdfFRAM_44106A"); // [OK]
@@ -1277,4 +1368,5 @@ void register_ParseODFContent_441A5D() {
     // [OK] hnh_Hook(0x4035B1, hook_ApplyQTS_4035B1, "ApplyQTS_4035B1");
     // [OK] hnh_Hook(0x403C15, hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15, "CHanaAnimSetT3F1__AddAnimT3F0_403C15");
     // [OK] hnh_Hook(0x408C3E, hook_HanaFrame_GetCenterPosition_408C3E, "HanaFrame_GetCenterPosition_408C3E");
+    hnh_Hook(0x4248F2, hook_GetSoundBufferAverageLevel, "GetSoundBufferAverageLevel_4248F2");
 }

@@ -249,6 +249,7 @@ extern int (__cdecl*InGameMenu_4799E2)(void);
 extern int(__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
   float fCurHP, float fMaxHP, CSceneState sceneState);
 extern HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam);
+extern DWORD& g_dwDSStatus_5185C8;
 
 // === DEFINED MenuCharSelect.cpp ===
 
@@ -269,6 +270,7 @@ extern void(__cdecl*AssignLigthtToFrame_40539D)(CHanaFrameT3EC_S354 *pHanaT3EC, 
 extern void (__cdecl * ApplyQTS_4035B1)( D3DXMATRIX *pOut, D3DXQUATERNION *pQ, float x, float y, float z, float sx, float sy, float sz);
 extern void (__cdecl * ConfigureLight)( CHanaLightT3EF_S1A0 *pHanaLight, float posX, float posY, float posZ, float dirX, float dirY, float dirZ);
 extern void (__cdecl * HanaFrame_GetCenterPosition_408C3E)( CHanaFrameRootT3EC_S2D4 *pFrame, CHanaFrameRootT3EC_S2D4 *pRelFrame, float *pOutX, float *pOutY, float *pOutZ);
+extern BOOL(__cdecl* GetSoundBufferAverageLevel)(LPDIRECTSOUNDBUFFER pDSBuffer, float* pfPlayPos);
 
 // === DEFINED ParseODS.cpp ===
 
