@@ -15,7 +15,7 @@
 //   SIZE [4][DWORD n]         object count -> five parallel arrays allocated
 //                             (frames, animsets, sek bodies, sizes, item props)
 //
-// SECTION 2 (per object, until "„Çµ„Ç¶„É≥„Éâ" aJpSound@0x4C73F0 / terminator /
+// SECTION 2 (per object, until "ÉTÉEÉìÉh" aJpSound@0x4C73F0 / terminator /
 //            EYESANIM):
 //   NAME [4][name]            ParseODFFile_441F19 on the ODF-dir (1005) path;
 //                             frame + animset registered by name (nIndex++)
@@ -25,7 +25,7 @@
 //                             item-prop table; sek header linked to the animset
 //                             and frame (AddRef on both), PlayAnim(0) started
 //
-// SECTION 3 (camera/light, until "„Çµ„Ç¶„É≥„Éâ" / terminator):
+// SECTION 3 (camera/light, until "ÉTÉEÉìÉh" / terminator):
 //   EYESANIM                  anim applied to g_pCameraFrame (eye tracking)
 //   EYE2                      first frame whose NAME contains "eye" (case-
 //                             insensitive, scanning up to len-6): the frame is
@@ -183,10 +183,10 @@ int __cdecl hook_ParseODS_483932(LPBYTE pBuf, CHanaSceneT458_S504 *pScene)
                                         pScene->refsFrames_134[nIndex - 1]);
             }
         }
-        // Shift-JIS "„Çµ„Ç¶„É≥„Éâ" (aJpSound @0x4C73F0) / "„Éï„Ç°„Ç§„É´„ÅØÁµÇ‰∫Ü"
+        // Shift-JIS "ÉTÉEÉìÉh" (aJpSound @0x4C73F0) / "ÉtÉ@ÉCÉãÇÕèIóπ"
         // (@0x4B416C) / EYESANIM end this section
-        if (!memcmp(pBuf, "\x83\x54\x83\x45\x83\x93\x83\x68", 8)
-            || !memcmp(pBuf, "\x83\x74\x83\x40\x83\x43\x83\x8B\x82\xCD\x8F\x49\x97\xB9", 14)
+        if (!memcmp(pBuf, "ÉTÉEÉìÉh", 8)
+            || !memcmp(pBuf, "ÉtÉ@ÉCÉãÇÕèIóπ", 14)
             || !memcmp(pBuf, "EYESANIM", 8))
             break;
         ++pBuf;
@@ -252,8 +252,8 @@ int __cdecl hook_ParseODS_483932(LPBYTE pBuf, CHanaSceneT458_S504 *pScene)
             else
                 break;
         }
-        if (!memcmp(pBuf, "\x83\x54\x83\x45\x83\x93\x83\x68", 8)
-            || !memcmp(pBuf, "\x83\x74\x83\x40\x83\x43\x83\x8B\x82\xCD\x8F\x49\x97\xB9", 14))
+        if (!memcmp(pBuf, "ÉTÉEÉìÉh", 8)
+            || !memcmp(pBuf, "ÉtÉ@ÉCÉãÇÕèIóπ", 14))
             break;
         ++pBuf;
     }
@@ -279,7 +279,7 @@ int __cdecl hook_ParseODS_483932(LPBYTE pBuf, CHanaSceneT458_S504 *pScene)
                 }
             }
         }
-        if (!memcmp(pBuf, "\x83\x74\x83\x40\x83\x43\x83\x8B\x82\xCD\x8F\x49\x97\xB9", 14))
+        if (!memcmp(pBuf, "ÉtÉ@ÉCÉãÇÕèIóπ", 14))
             break;
         ++pBuf;
     }
