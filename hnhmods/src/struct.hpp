@@ -196,31 +196,31 @@ struct CHanaFrameT3EC_S354: public CHanaFrameRootT3EC_S2D4
 
 struct CHanaAnimKeyT3F0_S78 // was CHanaSubObj_S78
 {
-    float t_0;
-    float x_4;
-    float y_8;
-    float z_C;
-    float sx_10;
-    float sy_14;
-    float sz_18;
-    D3DXQUATERNION quart_1C;
-    int b_2C;
-    int b_30;
-    int b_34;
-    D3DXMATRIX mat4x4_38;
+  float fTime; // t_0
+  float fPosX; // x_4
+  float fPosY; // y_8
+  float fPosZ; // z_C
+  float fScaleX; // sx_10
+  float fScaleY; // sy_14
+  float fScaleZ; // sz_18
+  D3DXQUATERNION quatRot; // quart_1C
+  int bKeyPos;   // b_2C
+  int bKeyScale; // b_30
+  int bKeyRot;   // b_34
+  D3DXMATRIX matLocal; // mat4x4_38
 };
 
 struct CHanaAnimT3F0_S240: public CHanaBase_S130
 {
     CHanaFrameT3EC_S354 *pHanaFram_130;
-    float fResolution_134;
-    int nCount_138;
-    CHanaAnimKeyT3F0_S78 *arroS78_13C;
+    float fDuration_134; // fResolution_134
+    int   nKeyCount_138; // nCount_138
+    CHanaAnimKeyT3F0_S78* arrKeys_13C; // arroS78_13C
     int field_140;
     int field_144;
     int field_148;
-    CHanaAnimKeyT3F0_S78 objS78_14C;
-    CHanaAnimKeyT3F0_S78 objS78_1C4;
+    CHanaAnimKeyT3F0_S78 keyCur_14C;  // objS78_14C
+    CHanaAnimKeyT3F0_S78 keyPrev_1C4; // objS78_1C4
     float float_23C;
 };
 

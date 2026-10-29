@@ -407,7 +407,7 @@ CHanaFrameT3EC_S354 *__cdecl hook_ParseOdfFRAM_44106A(LPBYTE *ppBuf,
 // hook_ParseODFContent_441A5D above plus the ODS/OdsEx parsers). Layout:
 //   [DWORD nBytes][nKeys = nBytes/56 keys of 56 bytes each]
 // Each on-disk key is a CHanaSubObj_S38 (t, pos, scale, quat) expanded into a
-// 120-byte CHanaAnimKeyT3F0_S78 key (t, x/y/z, sx/sy/sz, quat, b_2C/b_30/b_34 = 1,
+// 120-byte CHanaAnimKeyT3F0_S78 key (t, x/y/z, sx/sy/sz, quat, bKeyPos/b_30/bKeyRot = 1,
 // matrix slot); the key array is allocated with one extra sentinel slot and
 // fResolution set to 1e8. After copying: HanaAnim_GetDuration (return value
 // ignored), BakeKeyframesT3F0, then -- only when a current frame is given --
@@ -416,66 +416,66 @@ CHanaFrameT3EC_S354 *__cdecl hook_ParseOdfFRAM_44106A(LPBYTE *ppBuf,
 // seeked to 1.0. The temp anim object is freed afterwards, as everywhere in
 // this parser. Always returns TRUE.
 BOOL __cdecl hook_ParseOdfANIM_4414EB(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAnimSetT3F1,
-                                      CHanaFrameT3EC_S354 *pCurrentFramT3EC)
+  CHanaFrameT3EC_S354 *pCurrentFramT3EC)
 {
-    CHanaAnimT3F0_S240 *pAnimT3F0;           // [esp+0h] [ebp-118h]
-    CHAR pszAnimName[256];                   // [esp+4h] [ebp-114h]
-    DWORD *pBuf;                             // [esp+10Ch] [ebp-Ch]
-    DWORD i, nCount;                         // [ebp-14h] / [ebp-4h]
+  CHanaAnimT3F0_S240 *pAnimT3F0;           // [esp+0h] [ebp-118h]
+  CHAR pszAnimName[256];                   // [esp+4h] [ebp-114h]
+  DWORD *pBuf;                             // [esp+10Ch] [ebp-Ch]
+  DWORD i, nCount;                         // [ebp-14h] / [ebp-4h]
 
-    DebugLog("[HNH:SUB] ParseOdfANIM_4414EB\n");
+  DebugLog("[HNH:SUB] ParseOdfANIM_4414EB\n");
 
-    pBuf = (DWORD *)*ppBuf;
+  pBuf = (DWORD *)*ppBuf;
+  pAnimT3F0 = NULL;
+  nCount = *pBuf++ / 56;                   // 56 bytes per on-disk key
+
+  CHanaObj__NewAnimT3F0(&pAnimT3F0);
+  MemFree_40DF64(pAnimT3F0->arrKeys_13C);  // drop the default key array
+  pAnimT3F0->arrKeys_13C = (CHanaAnimKeyT3F0_S78 *)MemAlloc_40DEF7(120 * (nCount + 1)); // +1 sentinel
+  pAnimT3F0->fDuration_134 = 100000000.0f;
+  pAnimT3F0->nKeyCount_138 = nCount;
+
+  for (i = 0; i < nCount; ++i)
+  {
+    CHanaSubObj_S38 *pKey = (CHanaSubObj_S38 *)pBuf;   // 56-byte on-disk key
+    CHanaAnimKeyT3F0_S78 *pOutKey = &pAnimT3F0->arrKeys_13C[i];
+
+    pOutKey->fTime = pKey->t;
+    pOutKey->quatRot = pKey->quat;
+    pOutKey->fScaleX = pKey->scale.x;
+    pOutKey->fScaleY = pKey->scale.y;
+    pOutKey->fScaleZ = pKey->scale.z;
+    pOutKey->fPosX = pKey->pos.x;
+    pOutKey->fPosY = pKey->pos.y;
+    pOutKey->fPosZ = pKey->pos.z;
+    pOutKey->bKeyPos = 1;
+    pOutKey->bKeyScale = 1;
+    pOutKey->bKeyRot = 1;
+    pBuf += 14;                          // 14 dwords = 56 bytes
+  }
+
+  HanaAnim_GetDuration(pAnimT3F0);         // return value ignored
+  CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(pAnimT3F0);
+
+  if (pCurrentFramT3EC)
+  {
+    HanaFrame_GetFrameName(pCurrentFramT3EC, pszAnimName);
+    wsprintfA(pszAnimName, "%s_Animation", pszAnimName);
+    AttachHanaObj_40BAB8((CHanaBase_S130 *)pAnimT3F0, pszAnimName);
+    HanaAnim_LinkFrame(pAnimT3F0, pCurrentFramT3EC);
+    InterpolateHanaAnimFrame(pAnimT3F0, 0.0f);
+    CHanaAnimSetT3F1__AddAnimT3F0_403C15(pAnimSetT3F1, pAnimT3F0);
+    CHanaAnimSetT3F1__SetTime_403D61(pAnimSetT3F1, 1.0f);
+    Sleep(0);
+  }
+
+  if (pAnimT3F0)
+  {
+    CHanaObj__Free_40C1E4((CHanaBase_S130 *)pAnimT3F0);
     pAnimT3F0 = NULL;
-    nCount = *pBuf++ / 56;                   // 56 bytes per on-disk key
-
-    CHanaObj__NewAnimT3F0(&pAnimT3F0);
-    MemFree_40DF64(pAnimT3F0->arroS78_13C);  // drop the default key array
-    pAnimT3F0->arroS78_13C = (CHanaAnimKeyT3F0_S78 *)MemAlloc_40DEF7(120 * (nCount + 1)); // +1 sentinel
-    pAnimT3F0->fResolution_134 = 100000000.0f;
-    pAnimT3F0->nCount_138 = nCount;
-
-    for (i = 0; i < nCount; ++i)
-    {
-        CHanaSubObj_S38 *pKey = (CHanaSubObj_S38 *)pBuf;   // 56-byte on-disk key
-        CHanaAnimKeyT3F0_S78 *pOutKey = &pAnimT3F0->arroS78_13C[i];
-
-        pOutKey->t_0 = pKey->t;
-        pOutKey->quart_1C = pKey->quat;
-        pOutKey->sx_10 = pKey->scale.x;
-        pOutKey->sy_14 = pKey->scale.y;
-        pOutKey->sz_18 = pKey->scale.z;
-        pOutKey->x_4 = pKey->pos.x;
-        pOutKey->y_8 = pKey->pos.y;
-        pOutKey->z_C = pKey->pos.z;
-        pOutKey->b_2C = 1;
-        pOutKey->b_30 = 1;
-        pOutKey->b_34 = 1;
-        pBuf += 14;                          // 14 dwords = 56 bytes
-    }
-
-    HanaAnim_GetDuration(pAnimT3F0);         // return value ignored
-    CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(pAnimT3F0);
-
-    if (pCurrentFramT3EC)
-    {
-        HanaFrame_GetFrameName(pCurrentFramT3EC, pszAnimName);
-        wsprintfA(pszAnimName, "%s_Animation", pszAnimName);
-        AttachHanaObj_40BAB8((CHanaBase_S130 *)pAnimT3F0, pszAnimName);
-        HanaAnim_LinkFrame(pAnimT3F0, pCurrentFramT3EC);
-        InterpolateHanaAnimFrame(pAnimT3F0, 0.0f);
-        CHanaAnimSetT3F1__AddAnimT3F0_403C15(pAnimSetT3F1, pAnimT3F0);
-        CHanaAnimSetT3F1__SetTime_403D61(pAnimSetT3F1, 1.0f);
-        Sleep(0);
-    }
-
-    if (pAnimT3F0)
-    {
-        CHanaObj__Free_40C1E4((CHanaBase_S130 *)pAnimT3F0);
-        pAnimT3F0 = NULL;
-    }
-    *ppBuf = (LPBYTE)pBuf;
-    return TRUE;
+  }
+  *ppBuf = (LPBYTE)pBuf;
+  return TRUE;
 }
 
 // ParseOdfMESH_44068C -- mesh tag; xrefs: the MESH dispatch in
@@ -491,72 +491,72 @@ BOOL __cdecl hook_ParseOdfANIM_4414EB(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAni
 // the Shift-JIS terminator (escape-encoded below to stay codepage-safe).
 // Returns 1; *ppOut receives the mesh.
 int __cdecl hook_ParseOdfMESH_44068C(LPBYTE *ppBuf, CHanaMeshT3F5_S138 **ppOut,
-                                     CHanaAnimSetT3F1_S150 *pAnimSetT3F1,
-                                     CHanaFrameT3EC_S354 *pRootFrameT3EC)
+  CHanaAnimSetT3F1_S150 *pAnimSetT3F1,
+  CHanaFrameT3EC_S354 *pRootFrameT3EC)
 {
-    CHanaMeshT3F5_S138 *pMeshT3F5;          // [esp+104h] [ebp-18h]
-    CHanaVertT3EA_S1FC *pVertT3EA;          // [esp+108h] [ebp-14h]
-    CHAR szMeshName[256];                   // [esp+4h] [ebp-118h]
-    LPBYTE pBuf;                            // [esp+110h] [ebp-Ch]
-    unsigned int nVertCount, nVertIndex, nHeaderSize;
-    int nRand1, nRand2, nRand3;
-    BOOL bStopped = FALSE;
+  CHanaMeshT3F5_S138 *pMeshT3F5;          // [esp+104h] [ebp-18h]
+  CHanaVertT3EA_S1FC *pVertT3EA;          // [esp+108h] [ebp-14h]
+  CHAR szMeshName[256];                   // [esp+4h] [ebp-118h]
+  LPBYTE pBuf;                            // [esp+110h] [ebp-Ch]
+  unsigned int nVertCount, nVertIndex, nHeaderSize;
+  int nRand1, nRand2, nRand3;
+  BOOL bStopped = FALSE;
 
-    DebugLog("[HNH:SUB] ParseOdfMESH_44068C\n");
+  DebugLog("[HNH:SUB] ParseOdfMESH_44068C\n");
 
-    pBuf = *ppBuf;
-    pVertT3EA = NULL;
-    pMeshT3F5 = NULL;
-    nVertIndex = 0;
-    nHeaderSize = *(unsigned int *)pBuf;    // header size -- read, never used
-    pBuf += 4;
-    nVertCount = *(unsigned int *)pBuf;
-    pBuf += 4;
-    wsprintfA(szMeshName, "%s", (const char *)pBuf);
-    pBuf += lstrlenA(szMeshName) + 1;
+  pBuf = *ppBuf;
+  pVertT3EA = NULL;
+  pMeshT3F5 = NULL;
+  nVertIndex = 0;
+  nHeaderSize = *(unsigned int *)pBuf;    // header size -- read, never used
+  pBuf += 4;
+  nVertCount = *(unsigned int *)pBuf;
+  pBuf += 4;
+  wsprintfA(szMeshName, "%s", (const char *)pBuf);
+  pBuf += lstrlenA(szMeshName) + 1;
 
-    CHanaObj__NewMeshT3F5(&pMeshT3F5);
-    AttachHanaObj_40BAB8((CHanaBase_S130 *)pMeshT3F5, szMeshName);
+  CHanaObj__NewMeshT3F5(&pMeshT3F5);
+  AttachHanaObj_40BAB8((CHanaBase_S130 *)pMeshT3F5, szMeshName);
 
-    do
+  do
+  {
+    while (memcmp(pBuf, "VERT", 4))     // scan for the next VERT
     {
-        while (memcmp(pBuf, "VERT", 4))     // scan for the next VERT
-        {
-            if (!memcmp(pBuf, "ANIM", 4) || !memcmp(pBuf, "FRAM", 4)
-                || !memcmp(pBuf, "MESH", 4) || !memcmp(pBuf, "MORP", 4)
-                // Shift-JIS @0x4B416C: "ファイルは終了" ("file ends")
-                || !memcmp(pBuf, "\x83\x74\x83\x40\x83\x43\x83\x8B\x82\xCD\x8F\x49\x97\xB9", 14))
-            {
-                bStopped = TRUE;
-                break;
-            }
-            ++pBuf;
-        }
-        if (bStopped)
-            break;
+      if (!memcmp(pBuf, "ANIM", 4) || !memcmp(pBuf, "FRAM", 4)
+        || !memcmp(pBuf, "MESH", 4) || !memcmp(pBuf, "MORP", 4)
+        // Shift-JIS @0x4B416C: "ファイルは終了" ("file ends")
+        || !memcmp(pBuf, "\x83\x74\x83\x40\x83\x43\x83\x8B\x82\xCD\x8F\x49\x97\xB9", 14))
+      {
+        bStopped = TRUE;
+        break;
+      }
+      ++pBuf;
+    }
+    if (bStopped)
+      break;
 
-        pBuf += 4;
-        ParseVERT_440288(&pBuf, &pVertT3EA, pAnimSetT3F1, pRootFrameT3EC);
-        HanaMesh_AddVertexReference(pMeshT3F5, pVertT3EA);
-        if (!pVertT3EA->szName_8[0])        // give unnamed verts a unique name
-        {
-            nRand1 = rand();                // three rand() calls, printed in
-            nRand2 = rand();                // reverse call order (3rd, 2nd, 1st)
-            nRand3 = rand();
-            wsprintfA(pVertT3EA->szName_8, "%d_%s_vertex%03d%03d%03d",
-                      nVertIndex, pMeshT3F5->szName_8, nRand3, nRand2, nRand1);
-        }
-        if (pVertT3EA)
-        {
-            CHanaObj__Free_40C1E4((CHanaBase_S130 *)pVertT3EA);
-            pVertT3EA = NULL;
-        }
-        ++nVertIndex;
-    } while (nVertCount > nVertIndex);
+    pBuf += 4;
+    ParseVERT_440288(&pBuf, &pVertT3EA, pAnimSetT3F1, pRootFrameT3EC);
+    HanaMesh_AddVertexReference(pMeshT3F5, pVertT3EA);
+    if (!pVertT3EA->szName_8[0])        // give unnamed verts a unique name
+    {
+      nRand1 = rand();                // three rand() calls, printed in
+      nRand2 = rand();                // reverse call order (3rd, 2nd, 1st)
+      nRand3 = rand();
+      wsprintfA(pVertT3EA->szName_8, "%d_%s_vertex%03d%03d%03d",
+        nVertIndex, pMeshT3F5->szName_8, nRand3, nRand2, nRand1);
+    }
+    if (pVertT3EA)
+    {
+      CHanaObj__Free_40C1E4((CHanaBase_S130 *)pVertT3EA);
+      pVertT3EA = NULL;
+    }
+    ++nVertIndex;
+  } while (nVertCount > nVertIndex);
 
-    *ppBuf = pBuf;
-    *ppOut = pMeshT3F5;
-    return 1;
+  *ppBuf = pBuf;
+  *ppOut = pMeshT3F5;
+  return 1;
 }
 
 // ParseOdfMORP_440896 -- morph tag; only xref is the MORP dispatch in
@@ -587,182 +587,182 @@ int __cdecl hook_ParseOdfMESH_44068C(LPBYTE *ppBuf, CHanaMeshT3F5_S138 **ppOut,
 // at the scan cursor. The terminator is escape-encoded to stay codepage-safe.
 // Returns 1; *ppOut receives the morph.
 int __cdecl hook_ParseOdfMORP_440896(LPBYTE *ppBuf, CHanaMorpT457_S40C **ppOut,
-                                     CHanaAnimSetT3F1_S150 *pAnimSetT3F1,
-                                     CHanaFrameT3EC_S354 *pRootFrameT3EC)
+  CHanaAnimSetT3F1_S150 *pAnimSetT3F1,
+  CHanaFrameT3EC_S354 *pRootFrameT3EC)
 {
-    CHanaVertT3EA_S1FC *pVertT3EA;          // [esp+Ch] [ebp-230h]
-    CHanaMeshT3F5_S138 *pMeshT3F5;          // [esp+230h] [ebp-Ch]
-    CHanaMorpT457_S40C *pMorpT457;          // [esp+118h] [ebp-124h]
-    CHAR szMorpName[256];                   // [esp+14h] [ebp-228h]
-    CHAR szSubObjName[256];                 // [esp+120h] [ebp-11Ch]
-    DWORD arrHdr[5];                        // ParM 20-byte record
-    CHanaSubObj_S2C *parrS2C;
-    LPBYTE pBuf, pScan;                     // [ebp-14h] / [ebp-10h] (Buf1)
-    DWORD nCount, nParMCount;
-    int i, j;
-    unsigned int k, idx;
+  CHanaVertT3EA_S1FC *pVertT3EA;          // [esp+Ch] [ebp-230h]
+  CHanaMeshT3F5_S138 *pMeshT3F5;          // [esp+230h] [ebp-Ch]
+  CHanaMorpT457_S40C *pMorpT457;          // [esp+118h] [ebp-124h]
+  CHAR szMorpName[256];                   // [esp+14h] [ebp-228h]
+  CHAR szSubObjName[256];                 // [esp+120h] [ebp-11Ch]
+  DWORD arrHdr[5];                        // ParM 20-byte record
+  CHanaSubObj_S2C *parrS2C;
+  LPBYTE pBuf, pScan;                     // [ebp-14h] / [ebp-10h] (Buf1)
+  DWORD nCount, nParMCount;
+  int i, j;
+  unsigned int k, idx;
 
-    DebugLog("[HNH:SUB] ParseOdfMORP_440896\n");
+  DebugLog("[HNH:SUB] ParseOdfMORP_440896\n");
 
-    pBuf = *ppBuf;
-    pMorpT457 = NULL;
-    pVertT3EA = NULL;
+  pBuf = *ppBuf;
+  pMorpT457 = NULL;
+  pVertT3EA = NULL;
+  pMeshT3F5 = NULL;
+
+  pBuf += 8;                              // [DWORD][DWORD]: read, never used
+  wsprintfA(szMorpName, "%s", (const char *)pBuf);
+  pBuf += lstrlenA(szMorpName) + 1;
+
+  // embedded MESH within 50 bytes
+  for (idx = 0; idx < 50; ++idx)
+  {
+    if (!memcmp(pBuf, "MESH", 4))
+    {
+      pBuf += 4;
+      ParseOdfMESH_44068C(&pBuf, &pMeshT3F5, pAnimSetT3F1, pRootFrameT3EC);
+      break;
+    }
+    ++pBuf;
+  }
+  CHanaObj__NewMorpT457(&pMorpT457, pMeshT3F5);
+  if (pMeshT3F5)
+  {
+    CHanaObj__Free_40C1E4((CHanaBase_S130 *)pMeshT3F5);
     pMeshT3F5 = NULL;
+  }
+  AttachHanaObj_40BAB8((CHanaBase_S130 *)pMorpT457, szMorpName);
 
-    pBuf += 8;                              // [DWORD][DWORD]: read, never used
-    wsprintfA(szMorpName, "%s", (const char *)pBuf);
-    pBuf += lstrlenA(szMorpName) + 1;
-
-    // embedded MESH within 50 bytes
-    for (idx = 0; idx < 50; ++idx)
+  // MPPL: vertex palette within 25 bytes
+  pScan = pBuf;
+  for (i = 0; i < 25; ++i)
+  {
+    if (!memcmp(pScan, "MPPL", 4))
     {
-        if (!memcmp(pBuf, "MESH", 4))
-        {
-            pBuf += 4;
-            ParseOdfMESH_44068C(&pBuf, &pMeshT3F5, pAnimSetT3F1, pRootFrameT3EC);
-            break;
-        }
-        ++pBuf;
+      pBuf = pScan;
+      break;
     }
-    CHanaObj__NewMorpT457(&pMorpT457, pMeshT3F5);
-    if (pMeshT3F5)
-    {
-        CHanaObj__Free_40C1E4((CHanaBase_S130 *)pMeshT3F5);
-        pMeshT3F5 = NULL;
-    }
-    AttachHanaObj_40BAB8((CHanaBase_S130 *)pMorpT457, szMorpName);
-
-    // MPPL: vertex palette within 25 bytes
+    ++pScan;
+  }
+  if (!memcmp(pBuf, "MPPL", 4))
+  {
+    pBuf += 4;
+    nCount = *(DWORD *)pBuf;
+    pBuf += 4;
     pScan = pBuf;
-    for (i = 0; i < 25; ++i)
+    for (idx = 0; idx < nCount; ++idx)
     {
-        if (!memcmp(pScan, "MPPL", 4))
-        {
-            pBuf = pScan;
-            break;
-        }
+      for (j = 0; j < 20 && memcmp(pScan, "VERT", 4); ++j)
         ++pScan;
-    }
-    if (!memcmp(pBuf, "MPPL", 4))
-    {
-        pBuf += 4;
-        nCount = *(DWORD *)pBuf;
-        pBuf += 4;
+      if (!memcmp(pScan, "VERT", 4))
+      {
+        pBuf += 4;                  // skips from pBuf, NOT pScan
+        ParseVERT_440288(&pBuf, &pVertT3EA, pAnimSetT3F1, pRootFrameT3EC);
+        HanaMorp_AddVertexRef(pMorpT457, pVertT3EA);
+        if (pVertT3EA)
+        {
+          CHanaObj__Free_40C1E4((CHanaBase_S130 *)pVertT3EA);
+          pVertT3EA = NULL;
+        }
         pScan = pBuf;
-        for (idx = 0; idx < nCount; ++idx)
-        {
-            for (j = 0; j < 20 && memcmp(pScan, "VERT", 4); ++j)
-                ++pScan;
-            if (!memcmp(pScan, "VERT", 4))
-            {
-                pBuf += 4;                  // skips from pBuf, NOT pScan
-                ParseVERT_440288(&pBuf, &pVertT3EA, pAnimSetT3F1, pRootFrameT3EC);
-                HanaMorp_AddVertexRef(pMorpT457, pVertT3EA);
-                if (pVertT3EA)
-                {
-                    CHanaObj__Free_40C1E4((CHanaBase_S130 *)pVertT3EA);
-                    pVertT3EA = NULL;
-                }
-                pScan = pBuf;
-            }
-            else
-            {
-                // stop tags tested at pBuf (not the scan cursor) -- original
-                if (!memcmp(pBuf, "Mkey", 4) || !memcmp(pBuf, "FRAM", 4)
-                    || !memcmp(pBuf, "MESH", 4) || !memcmp(pBuf, "MORP", 4)
-                    // Shift-JIS @0x4B416C: "ファイルは終了" ("file ends")
-                    || !memcmp(pBuf, "\x83\x74\x83\x40\x83\x43\x83\x8B\x82\xCD\x8F\x49\x97\xB9", 14))
-                    break;
-                ++pBuf;
-            }
-        }
+      }
+      else
+      {
+        // stop tags tested at pBuf (not the scan cursor) -- original
+        if (!memcmp(pBuf, "Mkey", 4) || !memcmp(pBuf, "FRAM", 4)
+          || !memcmp(pBuf, "MESH", 4) || !memcmp(pBuf, "MORP", 4)
+          // Shift-JIS @0x4B416C: "ファイルは終了" ("file ends")
+          || !memcmp(pBuf, "\x83\x74\x83\x40\x83\x43\x83\x8B\x82\xCD\x8F\x49\x97\xB9", 14))
+          break;
+        ++pBuf;
+      }
     }
+  }
 
-    // Mkey tracks: one per mesh vertex (scan window 50 bytes each)
-    pScan = pBuf;
-    for (idx = 0; idx < pMorpT457->pMeshT3F5_138->nCountVertT3EA_130; ++idx)
-    {
-        for (k = 0; k < 50 && memcmp("Mkey", pScan, 4); ++k)
-            ++pScan;
-        if (k != 50)
-        {
-            pScan += 4;
-            pMorpT457->arrMKeyT3EASize_348[idx] = *(int *)pScan;
-            pScan += 4;
-            pBuf = pScan;
-            if (pMorpT457->arrMKeyT3EASize_348[idx])
-            {
-                pMorpT457->arrMKeyT3EA_34C[idx] = (CHanaVector2 *)MemAlloc_40DEF7(
-                    8 * pMorpT457->arrMKeyT3EASize_348[idx] + 80);
-                for (k = 0; k < (unsigned int)pMorpT457->arrMKeyT3EASize_348[idx]; ++k)
-                {
-                    pMorpT457->arrMKeyT3EA_34C[idx][k].x = *(int *)pBuf;
-                    pBuf += 4;
-                    pMorpT457->arrMKeyT3EA_34C[idx][k].y = *(int *)pBuf;
-                    pBuf += 4;
-                }
-            }
-            pScan = pBuf;
-        }
-    }
-
-    // ParM: sub-object table within 50 bytes
-    pScan = pBuf;
-    for (k = 0; k < 50 && memcmp("ParM", pScan, 4); ++k)
-        ++pScan;
+  // Mkey tracks: one per mesh vertex (scan window 50 bytes each)
+  pScan = pBuf;
+  for (idx = 0; idx < pMorpT457->pMeshT3F5_138->nCountVertT3EA_130; ++idx)
+  {
+    for (k = 0; k < 50 && memcmp("Mkey", pScan, 4); ++k)
+      ++pScan;
     if (k != 50)
     {
-        pScan += 4;
-        nParMCount = *(DWORD *)pScan;
-        pScan += 4;
-        pBuf = pScan;
-        for (idx = 0; idx < nParMCount; ++idx)
+      pScan += 4;
+      pMorpT457->arrMKeyT3EASize_348[idx] = *(int *)pScan;
+      pScan += 4;
+      pBuf = pScan;
+      if (pMorpT457->arrMKeyT3EASize_348[idx])
+      {
+        pMorpT457->arrMKeyT3EA_34C[idx] = (CHanaVector2 *)MemAlloc_40DEF7(
+          8 * pMorpT457->arrMKeyT3EASize_348[idx] + 80);
+        for (k = 0; k < (unsigned int)pMorpT457->arrMKeyT3EASize_348[idx]; ++k)
         {
-            memcpy(arrHdr, pBuf, 20);       // {field_0, field_4, field_8, field_C, nCount_10}
-            pBuf += 20;
-            wsprintfA(szSubObjName, "%s", (const char *)pBuf);
-            pBuf += lstrlenA(szSubObjName) + 1;
-            if ((int)arrHdr[4] <= 0)
-                break;
-            parrS2C = (CHanaSubObj_S2C *)MemAlloc_40DEF7(44 * arrHdr[4] + 128);
-            memcpy(parrS2C, pBuf, 44 * arrHdr[4]);
-            HanaMorp_InitSubObject(pMorpT457, 0,
-                                   (int)arrHdr[1],          // field_4
-                                   (int)arrHdr[0],          // field_0
-                                   (int)arrHdr[2],          // field_8
-                                   (int)arrHdr[3],          // field_C
-                                   parrS2C, (int)arrHdr[4], // nCount_10
-                                   szSubObjName, (int)idx);
-            pBuf += 44 * arrHdr[4];
+          pMorpT457->arrMKeyT3EA_34C[idx][k].x = *(int *)pBuf;
+          pBuf += 4;
+          pMorpT457->arrMKeyT3EA_34C[idx][k].y = *(int *)pBuf;
+          pBuf += 4;
         }
+      }
+      pScan = pBuf;
     }
+  }
 
-    // PAKU: ease/timing block within 25 bytes
-    pScan = pBuf;
-    for (k = 0; k < 0x19 && memcmp("PAKU", pScan, 4); ++k)
-        ++pScan;
-    if (!memcmp("PAKU", pScan, 4))
+  // ParM: sub-object table within 50 bytes
+  pScan = pBuf;
+  for (k = 0; k < 50 && memcmp("ParM", pScan, 4); ++k)
+    ++pScan;
+  if (k != 50)
+  {
+    pScan += 4;
+    nParMCount = *(DWORD *)pScan;
+    pScan += 4;
+    pBuf = pScan;
+    for (idx = 0; idx < nParMCount; ++idx)
     {
-        pScan += 4;
-        pBuf = pScan;
-        pMorpT457->dwEaseEnabled_358 = *(int *)pBuf;   pBuf += 4;
-        pMorpT457->fEaseFrom_35C    = *(int *)pBuf;    pBuf += 4;
-        pMorpT457->fEaseTo_360      = *(int *)pBuf;    pBuf += 4;
-        pMorpT457->nTimeState_36C   = *(int *)pBuf;    pBuf += 4;
-        pMorpT457->fTimeFrom_370    = *(int *)pBuf;    pBuf += 4;
-        pMorpT457->fTimeTo_374      = *(int *)pBuf;    pBuf += 4;
-        pMorpT457->fEaseProgress_384 = 0;
-        pMorpT457->dwClockStart_380 = 0;
-        if (memcmp("Mani", pBuf, 4))       // optional 7th dword unless "Mani"
-        {
-            pMorpT457->fEaseRate_388 = *(int *)pBuf;
-            pBuf += 4;
-        }
+      memcpy(arrHdr, pBuf, 20);       // {field_0, field_4, field_8, field_C, nCount_10}
+      pBuf += 20;
+      wsprintfA(szSubObjName, "%s", (const char *)pBuf);
+      pBuf += lstrlenA(szSubObjName) + 1;
+      if ((int)arrHdr[4] <= 0)
+        break;
+      parrS2C = (CHanaSubObj_S2C *)MemAlloc_40DEF7(44 * arrHdr[4] + 128);
+      memcpy(parrS2C, pBuf, 44 * arrHdr[4]);
+      HanaMorp_InitSubObject(pMorpT457, 0,
+        (int)arrHdr[1],          // field_4
+        (int)arrHdr[0],          // field_0
+        (int)arrHdr[2],          // field_8
+        (int)arrHdr[3],          // field_C
+        parrS2C, (int)arrHdr[4], // nCount_10
+        szSubObjName, (int)idx);
+      pBuf += 44 * arrHdr[4];
     }
+  }
 
-    *ppBuf = pBuf;
-    *ppOut = pMorpT457;
-    return 1;
+  // PAKU: ease/timing block within 25 bytes
+  pScan = pBuf;
+  for (k = 0; k < 0x19 && memcmp("PAKU", pScan, 4); ++k)
+    ++pScan;
+  if (!memcmp("PAKU", pScan, 4))
+  {
+    pScan += 4;
+    pBuf = pScan;
+    pMorpT457->dwEaseEnabled_358 = *(int *)pBuf;   pBuf += 4;
+    pMorpT457->fEaseFrom_35C    = *(int *)pBuf;    pBuf += 4;
+    pMorpT457->fEaseTo_360      = *(int *)pBuf;    pBuf += 4;
+    pMorpT457->nTimeState_36C   = *(int *)pBuf;    pBuf += 4;
+    pMorpT457->fTimeFrom_370    = *(int *)pBuf;    pBuf += 4;
+    pMorpT457->fTimeTo_374      = *(int *)pBuf;    pBuf += 4;
+    pMorpT457->fEaseProgress_384 = 0;
+    pMorpT457->dwClockStart_380 = 0;
+    if (memcmp("Mani", pBuf, 4))       // optional 7th dword unless "Mani"
+    {
+      pMorpT457->fEaseRate_388 = *(int *)pBuf;
+      pBuf += 4;
+    }
+  }
+
+  *ppBuf = pBuf;
+  *ppOut = pMorpT457;
+  return 1;
 }
 
 // ParseOdf3DON_44189C -- 3DON tag: the anim set's table of spatialized 3D
@@ -779,77 +779,77 @@ int __cdecl hook_ParseOdfMORP_440896(LPBYTE *ppBuf, CHanaMorpT457_S40C **ppOut,
 // frame tree (HanaFrame_FindByName). So a 3DON entry pins a looping 3D sound
 // to a named frame of the object. Returns 1.
 int __cdecl hook_ParseOdf3DON_44189C(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pHanaT3F1,
-                                     CHanaFrameT3EC_S354 *pHanaRootT3EC_v1)
+  CHanaFrameT3EC_S354 *pHanaRootT3EC_v1)
 {
-    LPBYTE pBuf, pWavName, pFrameName;      // one reused scan cursor [ebp-8h]
-    unsigned int i;
+  LPBYTE pBuf, pWavName, pFrameName;      // one reused scan cursor [ebp-8h]
+  unsigned int i;
 
-    DebugLog("[HNH:SUB] ParseOdf3DON_44189C\n");
+  DebugLog("[HNH:SUB] ParseOdf3DON_44189C\n");
 
-    pBuf = *ppBuf + 4;                      // skip the tag-size dword
-    pHanaT3F1->nCount_148 = *(int *)pBuf;
+  pBuf = *ppBuf + 4;                      // skip the tag-size dword
+  pHanaT3F1->nCount_148 = *(int *)pBuf;
+  pBuf += 4;
+  pHanaT3F1->arroS118_14C = (CHanaObj_S118 *)MemAlloc_40DEF7(
+    280 * pHanaT3F1->nCount_148 + 128);
+
+  for (i = 0; i < (unsigned int)pHanaT3F1->nCount_148; ++i)
+  {
+    pHanaT3F1->arroS118_14C[i].flt_104  = *(float *)pBuf;
     pBuf += 4;
-    pHanaT3F1->arroS118_14C = (CHanaObj_S118 *)MemAlloc_40DEF7(
-        280 * pHanaT3F1->nCount_148 + 128);
+    pHanaT3F1->arroS118_14C[i].flt_108  = *(float *)pBuf;
+    pBuf += 4;
+    pHanaT3F1->arroS118_14C[i].field_10C = *(int *)pBuf;
+    pBuf += 4;
 
-    for (i = 0; i < (unsigned int)pHanaT3F1->nCount_148; ++i)
-    {
-        pHanaT3F1->arroS118_14C[i].flt_104  = *(float *)pBuf;
-        pBuf += 4;
-        pHanaT3F1->arroS118_14C[i].flt_108  = *(float *)pBuf;
-        pBuf += 4;
-        pHanaT3F1->arroS118_14C[i].field_10C = *(int *)pBuf;
-        pBuf += 4;
+    pWavName = pBuf;                    // ASCIIZ wav name
+    memcpy(pHanaT3F1->arroS118_14C[i].sz_name_4, pWavName,
+      lstrlenA((LPCSTR)pWavName) + 1);
+    pFrameName = pWavName + lstrlenA((LPCSTR)pWavName) + 1;   // ASCIIZ frame name
 
-        pWavName = pBuf;                    // ASCIIZ wav name
-        memcpy(pHanaT3F1->arroS118_14C[i].sz_name_4, pWavName,
-               lstrlenA((LPCSTR)pWavName) + 1);
-        pFrameName = pWavName + lstrlenA((LPCSTR)pWavName) + 1;   // ASCIIZ frame name
+    pHanaT3F1->arroS118_14C[i].pSnd_0 =
+      LoadWavToDS3DBuffer_42277E(pHanaT3F1->arroS118_14C[i].sz_name_4);
+    pHanaT3F1->arroS118_14C[i].pFrame_114 =
+      HanaFrame_FindByName((LPCSTR)pFrameName, pHanaRootT3EC_v1);
 
-        pHanaT3F1->arroS118_14C[i].pSnd_0 =
-            LoadWavToDS3DBuffer_42277E(pHanaT3F1->arroS118_14C[i].sz_name_4);
-        pHanaT3F1->arroS118_14C[i].pFrame_114 =
-            HanaFrame_FindByName((LPCSTR)pFrameName, pHanaRootT3EC_v1);
-
-        pBuf = pFrameName + lstrlenA((LPCSTR)pFrameName) + 1;
-    }
-    *ppBuf = pBuf;
-    return 1;
+    pBuf = pFrameName + lstrlenA((LPCSTR)pFrameName) + 1;
+  }
+  *ppBuf = pBuf;
+  return 1;
 }
 
 void __cdecl hook_ConfigureLight(
-        CHanaLightT3EF_S1A0 *pHanaLight,
-        float posX,
-        float posY,
-        float posZ,
-        float dirX,
-        float dirY,
-        float dirZ)
+  CHanaLightT3EF_S1A0 *pHanaLight,
+  float posX,
+  float posY,
+  float posZ,
+  float dirX,
+  float dirY,
+  float dirZ)
 {
   DebugLog("[HNH:SUB] ConfigureLight_409510\n");
   switch ( pHanaLight->d3dLight_134.dltType )
   {
-    case D3DLIGHT_DIRECTIONAL:
-      pHanaLight->d3dLight_134.dvDirection.x = -dirX;
-      pHanaLight->d3dLight_134.dvDirection.y = -dirY;
-      pHanaLight->d3dLight_134.dvDirection.z = dirZ;
-      ApplyLightSettings(pHanaLight);
-      break;
-    case D3DLIGHT_POINT:
-      pHanaLight->d3dLight_134.dvPosition.x = posX;
-      pHanaLight->d3dLight_134.dvPosition.y = posY;
-      pHanaLight->d3dLight_134.dvPosition.z = posZ;
-      ApplyLightSettings(pHanaLight);
-      break;
-    case D3DLIGHT_SPOT:
-      pHanaLight->d3dLight_134.dvDirection.x = -dirX;
-      pHanaLight->d3dLight_134.dvDirection.y = -dirY;
-      pHanaLight->d3dLight_134.dvDirection.z = dirZ;
-      pHanaLight->d3dLight_134.dvPosition.x = posX;
-      pHanaLight->d3dLight_134.dvPosition.y = posY;
-      pHanaLight->d3dLight_134.dvPosition.z = posZ;
-      ApplyLightSettings(pHanaLight);
-      break;
+  case D3DLIGHT_DIRECTIONAL:
+    pHanaLight->d3dLight_134.dvDirection.x = -dirX;
+    pHanaLight->d3dLight_134.dvDirection.y = -dirY;
+    pHanaLight->d3dLight_134.dvDirection.z = dirZ;
+    ApplyLightSettings(pHanaLight);
+    break;
+  case D3DLIGHT_POINT:
+    pHanaLight->d3dLight_134.dvPosition.x = posX;
+    pHanaLight->d3dLight_134.dvPosition.y = posY;
+    pHanaLight->d3dLight_134.dvPosition.z = posZ;
+    ApplyLightSettings(pHanaLight);
+    break;
+  case D3DLIGHT_SPOT:
+    pHanaLight->d3dLight_134.dvDirection.x = -dirX;
+    pHanaLight->d3dLight_134.dvDirection.y = -dirY;
+    pHanaLight->d3dLight_134.dvDirection.z = dirZ;
+    pHanaLight->d3dLight_134.dvPosition.x = posX;
+    pHanaLight->d3dLight_134.dvPosition.y = posY;
+    pHanaLight->d3dLight_134.dvPosition.z = posZ;
+    ApplyLightSettings(pHanaLight);
+    break;
   }
 }
 
@@ -871,38 +871,38 @@ void __cdecl hook_AssignLigthtToFrame_40539D(CHanaFrameT3EC_S354 *pHanaT3EC, CHa
 int __cdecl hook_CHanaObj__NewAnimT3F0(CHanaAnimT3F0_S240 **ppOut)
 {
   CHanaAnimT3F0_S240 *pOut; // edi
-  CHanaAnimKeyT3F0_S78 *arroS78_13C; // eax
+  CHanaAnimKeyT3F0_S78 *arrKeys_13C; // eax
   DebugLog("[HNH:SUB] CHanaObj__NewAnimT3F0_401CD0\n");
   pOut = (CHanaAnimT3F0_S240 *)MemAlloc_40DEF7(0x240u);
   memset(pOut, 0, sizeof(CHanaAnimT3F0_S240));
   pOut->dwType = 0x3F0;
-  pOut->nCount_138 = 1;
-  pOut->arroS78_13C = (CHanaAnimKeyT3F0_S78 *)MemAlloc_40DEF7(0x78u);
-  pOut->arroS78_13C->b_34 = 1;
-  arroS78_13C = pOut->arroS78_13C;
-  arroS78_13C->quart_1C.z = 0.0;
-  arroS78_13C->quart_1C.y = 0.0;
-  arroS78_13C->quart_1C.x = 0.0;
-  arroS78_13C->quart_1C.w = 1.0;
-  pOut->arroS78_13C->quart_1C.w = pOut->arroS78_13C->quart_1C.w * -1.0;
-  pOut->arroS78_13C->b_2C = 1;
-  pOut->arroS78_13C->x_4 = 0.0;
-  pOut->arroS78_13C->y_8 = 0.0;
-  pOut->arroS78_13C->z_C = 0.0;
-  pOut->arroS78_13C->b_30 = 1;
-  pOut->arroS78_13C->sx_10 = 1.0;
-  pOut->arroS78_13C->sy_14 = 1.0;
-  pOut->arroS78_13C->sz_18 = 1.0;
-  pOut->fResolution_134 = 0.0;
+  pOut->nKeyCount_138 = 1;
+  pOut->arrKeys_13C = (CHanaAnimKeyT3F0_S78 *)MemAlloc_40DEF7(0x78u);
+  pOut->arrKeys_13C->bKeyRot = 1;
+  arrKeys_13C = pOut->arrKeys_13C;
+  arrKeys_13C->quatRot.z = 0.0;
+  arrKeys_13C->quatRot.y = 0.0;
+  arrKeys_13C->quatRot.x = 0.0;
+  arrKeys_13C->quatRot.w = 1.0;
+  pOut->arrKeys_13C->quatRot.w = pOut->arrKeys_13C->quatRot.w * -1.0;
+  pOut->arrKeys_13C->bKeyPos = 1;
+  pOut->arrKeys_13C->fPosX = 0.0;
+  pOut->arrKeys_13C->fPosY = 0.0;
+  pOut->arrKeys_13C->fPosZ = 0.0;
+  pOut->arrKeys_13C->bKeyScale = 1;
+  pOut->arrKeys_13C->fScaleX = 1.0;
+  pOut->arrKeys_13C->fScaleY = 1.0;
+  pOut->arrKeys_13C->fScaleZ = 1.0;
+  pOut->fDuration_134 = 0.0;
   CHanaObj__AddRef_40BFC3(pOut);
   *ppOut = pOut;
-  pOut->objS78_14C.quart_1C = pOut->arroS78_13C->quart_1C;
-  pOut->objS78_14C.x_4 = pOut->arroS78_13C->x_4;
-  pOut->objS78_14C.y_8 = pOut->arroS78_13C->y_8;
-  pOut->objS78_14C.z_C = pOut->arroS78_13C->z_C;
-  pOut->objS78_14C.sx_10 = pOut->arroS78_13C->sx_10;
-  pOut->objS78_14C.sy_14 = pOut->arroS78_13C->sy_14;
-  pOut->objS78_14C.sz_18 = pOut->arroS78_13C->sz_18;
+  pOut->keyCur_14C.quatRot = pOut->arrKeys_13C->quatRot;
+  pOut->keyCur_14C.fPosX = pOut->arrKeys_13C->fPosX;
+  pOut->keyCur_14C.fPosY = pOut->arrKeys_13C->fPosY;
+  pOut->keyCur_14C.fPosZ = pOut->arrKeys_13C->fPosZ;
+  pOut->keyCur_14C.fScaleX = pOut->arrKeys_13C->fScaleX;
+  pOut->keyCur_14C.fScaleY = pOut->arrKeys_13C->fScaleY;
+  pOut->keyCur_14C.fScaleZ = pOut->arrKeys_13C->fScaleZ;
   return 0;
 }
 
@@ -910,8 +910,8 @@ int __cdecl hook_HanaAnim_GetDuration(CHanaAnimT3F0_S240 *pHanaAnimT3F0)
 {
   int result; // eax
   DebugLog("[HNH:SUB] hook_HanaAnim_GetDuration_004039C9\n");
-  result = LODWORD(pHanaAnimT3F0->arroS78_13C[pHanaAnimT3F0->nCount_138 - 1].t_0);
-  LODWORD(pHanaAnimT3F0->fResolution_134) = result;
+  result = LODWORD(pHanaAnimT3F0->arrKeys_13C[pHanaAnimT3F0->nKeyCount_138 - 1].fTime);
+  LODWORD(pHanaAnimT3F0->fDuration_134) = result;
   return result;
 }
 
@@ -923,8 +923,8 @@ void __cdecl hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(CHanaAnimT3F0_S240 *pH
   CHanaAnimKeyT3F0_S78 *pobjS78_v4; // [esp+14h] [ebp-3Ch]
   CHanaAnimKeyT3F0_S78 *pobjS78_v2; // [esp+14h] [ebp-3Ch]
   CHanaAnimKeyT3F0_S78 *pobjS78_v6; // [esp+14h] [ebp-3Ch]
-  CHanaAnimKeyT3F0_S78 *arroS78_13C; // [esp+18h] [ebp-38h]
-  CHanaAnimKeyT3F0_S78 *v8; // [esp+18h] [ebp-38h]
+  CHanaAnimKeyT3F0_S78 *arrKeys_13C; // [esp+18h] [ebp-38h]
+  CHanaAnimKeyT3F0_S78 *pKeyFirst; // [esp+18h] [ebp-38h]
   unsigned int k; // [esp+1Ch] [ebp-34h]
   unsigned int ii; // [esp+1Ch] [ebp-34h]
   unsigned int mm; // [esp+1Ch] [ebp-34h]
@@ -950,178 +950,178 @@ void __cdecl hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(CHanaAnimT3F0_S240 *pH
   float y_v32; // [esp+3Ch] [ebp-14h]
   float sz_v32; // [esp+40h] [ebp-10h]
   float z_v34; // [esp+40h] [ebp-10h]
-  float sx_10; // [esp+44h] [ebp-Ch]
-  float x_4; // [esp+44h] [ebp-Ch]
-  float sy_14; // [esp+48h] [ebp-8h]
-  float y_8; // [esp+48h] [ebp-8h]
-  float sz_18; // [esp+4Ch] [ebp-4h]
-  float z_C; // [esp+4Ch] [ebp-4h]
+  float fScaleX; // [esp+44h] [ebp-Ch]
+  float fPosX; // [esp+44h] [ebp-Ch]
+  float fScaleY; // [esp+48h] [ebp-8h]
+  float fPosY; // [esp+48h] [ebp-8h]
+  float fScaleZ; // [esp+4Ch] [ebp-4h]
+  float fPosZ; // [esp+4Ch] [ebp-4h]
   DebugLog("[HNH:SUB] CHanaAnimT3F0__BakeKeyframesT3F0_402D0E\n");
-  arroS78_13C = pHanaAnimT3F0->arroS78_13C;
-  pobjS78_v19 = arroS78_13C;
+  arrKeys_13C = pHanaAnimT3F0->arrKeys_13C;
+  pobjS78_v19 = arrKeys_13C;
   pobjS78_v4 = 0;
-  for ( i = 0; i < pHanaAnimT3F0->nCount_138; ++i )
+  for ( i = 0; i < pHanaAnimT3F0->nKeyCount_138; ++i )
   {
-    if ( arroS78_13C[i].b_34 == 1 )
+    if ( arrKeys_13C[i].bKeyRot == 1 )
     {
-      pobjS78_v19 = &arroS78_13C[i];
+      pobjS78_v19 = &arrKeys_13C[i];
       pobjS78_v4 = 0;
     }
     else
     {
-      for ( j = i + 1; j < pHanaAnimT3F0->nCount_138; ++j )
+      for ( j = i + 1; j < pHanaAnimT3F0->nKeyCount_138; ++j )
       {
-        if ( arroS78_13C[j].b_34 == 1 )
+        if ( arrKeys_13C[j].bKeyRot == 1 )
         {
-          pobjS78_v4 = &arroS78_13C[j];
+          pobjS78_v4 = &arrKeys_13C[j];
           break;
         }
       }
-      if ( j >= pHanaAnimT3F0->nCount_138 )
-        pobjS78_v4 = arroS78_13C;
+      if ( j >= pHanaAnimT3F0->nKeyCount_138 )
+        pobjS78_v4 = arrKeys_13C;
       for ( k = i; k < j; ++k )
       {
-        if ( pobjS78_v4->t_0 - pobjS78_v19->t_0 == 0.0 )
+        if ( pobjS78_v4->fTime - pobjS78_v19->fTime == 0.0 )
         {
-          arroS78_13C[k].quart_1C = pobjS78_v19->quart_1C;
+          arrKeys_13C[k].quatRot = pobjS78_v19->quatRot;
         }
         else
         {
-          b = (arroS78_13C[k].t_0 - pobjS78_v19->t_0) / (pobjS78_v4->t_0 - pobjS78_v19->t_0);
-          D3DXQuaternionSlerp(&arroS78_13C[k].quart_1C, &pobjS78_v19->quart_1C, &pobjS78_v4->quart_1C, b);
+          b = (arrKeys_13C[k].fTime - pobjS78_v19->fTime) / (pobjS78_v4->fTime - pobjS78_v19->fTime);
+          D3DXQuaternionSlerp(&arrKeys_13C[k].quatRot, &pobjS78_v19->quatRot, &pobjS78_v4->quatRot, b);
         }
       }
     }
   }
-  pobjS78_v20 = arroS78_13C;
+  pobjS78_v20 = arrKeys_13C;
   pobjS78_v2 = 0;
-  for ( m = 0; m < pHanaAnimT3F0->nCount_138; ++m )
+  for ( m = 0; m < pHanaAnimT3F0->nKeyCount_138; ++m )
   {
-    if ( arroS78_13C[m].b_30 == 1 )
+    if ( arrKeys_13C[m].bKeyScale == 1 )
     {
-      pobjS78_v20 = &arroS78_13C[m];
+      pobjS78_v20 = &arrKeys_13C[m];
       pobjS78_v2 = 0;
     }
     else
     {
-      for ( n = m + 1; n < pHanaAnimT3F0->nCount_138; ++n )
+      for ( n = m + 1; n < pHanaAnimT3F0->nKeyCount_138; ++n )
       {
-        if ( arroS78_13C[n].b_30 == 1 )
+        if ( arrKeys_13C[n].bKeyScale == 1 )
         {
-          pobjS78_v2 = &arroS78_13C[n];
+          pobjS78_v2 = &arrKeys_13C[n];
           break;
         }
       }
-      if ( n >= pHanaAnimT3F0->nCount_138 )
-        pobjS78_v2 = arroS78_13C;
-      sx_10 = pobjS78_v20->sx_10;
-      sy_14 = pobjS78_v20->sy_14;
-      sz_18 = pobjS78_v20->sz_18;
-      sx_v22 = pobjS78_v2->sx_10;
-      sy_v24 = pobjS78_v2->sy_14;
-      sz_v26 = pobjS78_v2->sz_18;
+      if ( n >= pHanaAnimT3F0->nKeyCount_138 )
+        pobjS78_v2 = arrKeys_13C;
+      fScaleX = pobjS78_v20->fScaleX;
+      fScaleY = pobjS78_v20->fScaleY;
+      fScaleZ = pobjS78_v20->fScaleZ;
+      sx_v22 = pobjS78_v2->fScaleX;
+      sy_v24 = pobjS78_v2->fScaleY;
+      sz_v26 = pobjS78_v2->fScaleZ;
       for ( ii = m; ii < n; ++ii )
       {
-        if ( pobjS78_v2->t_0 - pobjS78_v20->t_0 == 0.0 )
+        if ( pobjS78_v2->fTime - pobjS78_v20->fTime == 0.0 )
         {
-          arroS78_13C[ii].sx_10 = sx_10;
-          arroS78_13C[ii].sy_14 = sy_14;
-          arroS78_13C[ii].sz_18 = sz_18;
+          arrKeys_13C[ii].fScaleX = fScaleX;
+          arrKeys_13C[ii].fScaleY = fScaleY;
+          arrKeys_13C[ii].fScaleZ = fScaleZ;
         }
         else
         {
-          dt_v3 = (arroS78_13C[ii].t_0 - pobjS78_v20->t_0) / (pobjS78_v2->t_0 - pobjS78_v20->t_0);
-          sx_v28 = (sx_v22 - sx_10) * dt_v3 + sx_10;
-          sy_v30 = (sy_v24 - sy_14) * dt_v3 + sy_14;
-          sz_v32 = (sz_v26 - sz_18) * dt_v3 + sz_18;
-          arroS78_13C[ii].sx_10 = sx_v28;
-          arroS78_13C[ii].sy_14 = sy_v30;
-          arroS78_13C[ii].sz_18 = sz_v32;
+          dt_v3 = (arrKeys_13C[ii].fTime - pobjS78_v20->fTime) / (pobjS78_v2->fTime - pobjS78_v20->fTime);
+          sx_v28 = (sx_v22 - fScaleX) * dt_v3 + fScaleX;
+          sy_v30 = (sy_v24 - fScaleY) * dt_v3 + fScaleY;
+          sz_v32 = (sz_v26 - fScaleZ) * dt_v3 + fScaleZ;
+          arrKeys_13C[ii].fScaleX = sx_v28;
+          arrKeys_13C[ii].fScaleY = sy_v30;
+          arrKeys_13C[ii].fScaleZ = sz_v32;
         }
       }
     }
   }
-  pobjS78_v21 = arroS78_13C;
+  pobjS78_v21 = arrKeys_13C;
   pobjS78_v6 = 0;
-  for ( jj = 0; jj < pHanaAnimT3F0->nCount_138; ++jj )
+  for ( jj = 0; jj < pHanaAnimT3F0->nKeyCount_138; ++jj )
   {
-    if ( arroS78_13C[jj].b_2C == 1 )
+    if ( arrKeys_13C[jj].bKeyPos == 1 )
     {
-      pobjS78_v21 = &arroS78_13C[jj];
+      pobjS78_v21 = &arrKeys_13C[jj];
       pobjS78_v6 = 0;
     }
     else
     {
-      for ( kk = jj + 1; kk < pHanaAnimT3F0->nCount_138; ++kk )
+      for ( kk = jj + 1; kk < pHanaAnimT3F0->nKeyCount_138; ++kk )
       {
-        if ( arroS78_13C[kk].b_2C == 1 )
+        if ( arrKeys_13C[kk].bKeyPos == 1 )
         {
-          pobjS78_v6 = &arroS78_13C[kk];
+          pobjS78_v6 = &arrKeys_13C[kk];
           break;
         }
       }
-      if ( kk >= pHanaAnimT3F0->nCount_138 )
-        pobjS78_v6 = arroS78_13C;
-      x_4 = pobjS78_v21->x_4;
-      y_8 = pobjS78_v21->y_8;
-      z_C = pobjS78_v21->z_C;
-      x_v23 = pobjS78_v6->x_4;
-      y_v25 = pobjS78_v6->y_8;
-      z_v27 = pobjS78_v6->z_C;
+      if ( kk >= pHanaAnimT3F0->nKeyCount_138 )
+        pobjS78_v6 = arrKeys_13C;
+      fPosX = pobjS78_v21->fPosX;
+      fPosY = pobjS78_v21->fPosY;
+      fPosZ = pobjS78_v21->fPosZ;
+      x_v23 = pobjS78_v6->fPosX;
+      y_v25 = pobjS78_v6->fPosY;
+      z_v27 = pobjS78_v6->fPosZ;
       for ( mm = jj; mm < kk; ++mm )
       {
-        if ( pobjS78_v6->t_0 - pobjS78_v21->t_0 == 0.0 )
+        if ( pobjS78_v6->fTime - pobjS78_v21->fTime == 0.0 )
         {
-          arroS78_13C[mm].x_4 = x_4;
-          arroS78_13C[mm].y_8 = y_8;
-          arroS78_13C[mm].z_C = z_C;
+          arrKeys_13C[mm].fPosX = fPosX;
+          arrKeys_13C[mm].fPosY = fPosY;
+          arrKeys_13C[mm].fPosZ = fPosZ;
         }
         else
         {
-          v2 = (arroS78_13C[mm].t_0 - pobjS78_v21->t_0) / (pobjS78_v6->t_0 - pobjS78_v21->t_0);
-          x_v30 = (x_v23 - x_4) * v2 + x_4;
-          y_v32 = (y_v25 - y_8) * v2 + y_8;
-          z_v34 = (z_v27 - z_C) * v2 + z_C;
-          arroS78_13C[mm].x_4 = x_v30;
-          arroS78_13C[mm].y_8 = y_v32;
-          arroS78_13C[mm].z_C = z_v34;
+          v2 = (arrKeys_13C[mm].fTime - pobjS78_v21->fTime) / (pobjS78_v6->fTime - pobjS78_v21->fTime);
+          x_v30 = (x_v23 - fPosX) * v2 + fPosX;
+          y_v32 = (y_v25 - fPosY) * v2 + fPosY;
+          z_v34 = (z_v27 - fPosZ) * v2 + fPosZ;
+          arrKeys_13C[mm].fPosX = x_v30;
+          arrKeys_13C[mm].fPosY = y_v32;
+          arrKeys_13C[mm].fPosZ = z_v34;
         }
       }
     }
   }
-  v8 = pHanaAnimT3F0->arroS78_13C;
-  for ( nn = 0; nn < pHanaAnimT3F0->nCount_138; ++nn )
+  pKeyFirst = pHanaAnimT3F0->arrKeys_13C;
+  for ( nn = 0; nn < pHanaAnimT3F0->nKeyCount_138; ++nn )
     ApplyQTS_4035B1(
-      &v8[nn].mat4x4_38,
-      &v8[nn].quart_1C,
-      v8[nn].x_4,
-      v8[nn].y_8,
-      v8[nn].z_C,
-      v8[nn].sx_10,
-      v8[nn].sy_14,
-      v8[nn].sz_18);
-  memcpy(&pHanaAnimT3F0->objS78_1C4, &pHanaAnimT3F0->objS78_14C, sizeof(pHanaAnimT3F0->objS78_1C4));
-  pHanaAnimT3F0->objS78_14C.t_0 = 0.0;
-  pHanaAnimT3F0->objS78_1C4.t_0 = 0.0;
-  pHanaAnimT3F0->objS78_14C.x_4 = v8->x_4;
-  pHanaAnimT3F0->objS78_1C4.x_4 = pHanaAnimT3F0->objS78_14C.x_4;
-  pHanaAnimT3F0->objS78_14C.y_8 = v8->y_8;
-  pHanaAnimT3F0->objS78_1C4.y_8 = pHanaAnimT3F0->objS78_14C.y_8;
-  pHanaAnimT3F0->objS78_14C.z_C = v8->z_C;
-  pHanaAnimT3F0->objS78_1C4.z_C = pHanaAnimT3F0->objS78_14C.z_C;
-  pHanaAnimT3F0->objS78_14C.sx_10 = v8->sx_10;
-  pHanaAnimT3F0->objS78_1C4.sx_10 = pHanaAnimT3F0->objS78_14C.sx_10;
-  pHanaAnimT3F0->objS78_14C.sy_14 = v8->sy_14;
-  pHanaAnimT3F0->objS78_1C4.sy_14 = pHanaAnimT3F0->objS78_14C.sy_14;
-  pHanaAnimT3F0->objS78_14C.sz_18 = v8->sz_18;
-  pHanaAnimT3F0->objS78_1C4.sz_18 = pHanaAnimT3F0->objS78_14C.sz_18;
-  pHanaAnimT3F0->objS78_14C.quart_1C = v8->quart_1C;
-  pHanaAnimT3F0->objS78_1C4.quart_1C = pHanaAnimT3F0->objS78_14C.quart_1C;
-  qmemcpy(&pHanaAnimT3F0->objS78_14C.mat4x4_38, &v8->mat4x4_38, sizeof(pHanaAnimT3F0->objS78_14C.mat4x4_38));
+      &pKeyFirst[nn].matLocal,
+      &pKeyFirst[nn].quatRot,
+      pKeyFirst[nn].fPosX,
+      pKeyFirst[nn].fPosY,
+      pKeyFirst[nn].fPosZ,
+      pKeyFirst[nn].fScaleX,
+      pKeyFirst[nn].fScaleY,
+      pKeyFirst[nn].fScaleZ);
+  memcpy(&pHanaAnimT3F0->keyPrev_1C4, &pHanaAnimT3F0->keyCur_14C, sizeof(pHanaAnimT3F0->keyPrev_1C4));
+  pHanaAnimT3F0->keyCur_14C.fTime = 0.0;
+  pHanaAnimT3F0->keyPrev_1C4.fTime = 0.0;
+  pHanaAnimT3F0->keyCur_14C.fPosX = pKeyFirst->fPosX;
+  pHanaAnimT3F0->keyPrev_1C4.fPosX = pHanaAnimT3F0->keyCur_14C.fPosX;
+  pHanaAnimT3F0->keyCur_14C.fPosY = pKeyFirst->fPosY;
+  pHanaAnimT3F0->keyPrev_1C4.fPosY = pHanaAnimT3F0->keyCur_14C.fPosY;
+  pHanaAnimT3F0->keyCur_14C.fPosZ = pKeyFirst->fPosZ;
+  pHanaAnimT3F0->keyPrev_1C4.fPosZ = pHanaAnimT3F0->keyCur_14C.fPosZ;
+  pHanaAnimT3F0->keyCur_14C.fScaleX = pKeyFirst->fScaleX;
+  pHanaAnimT3F0->keyPrev_1C4.fScaleX = pHanaAnimT3F0->keyCur_14C.fScaleX;
+  pHanaAnimT3F0->keyCur_14C.fScaleY = pKeyFirst->fScaleY;
+  pHanaAnimT3F0->keyPrev_1C4.fScaleY = pHanaAnimT3F0->keyCur_14C.fScaleY;
+  pHanaAnimT3F0->keyCur_14C.fScaleZ = pKeyFirst->fScaleZ;
+  pHanaAnimT3F0->keyPrev_1C4.fScaleZ = pHanaAnimT3F0->keyCur_14C.fScaleZ;
+  pHanaAnimT3F0->keyCur_14C.quatRot = pKeyFirst->quatRot;
+  pHanaAnimT3F0->keyPrev_1C4.quatRot = pHanaAnimT3F0->keyCur_14C.quatRot;
+  qmemcpy(&pHanaAnimT3F0->keyCur_14C.matLocal, &pKeyFirst->matLocal, sizeof(pHanaAnimT3F0->keyCur_14C.matLocal));
   qmemcpy(
-    &pHanaAnimT3F0->objS78_1C4.mat4x4_38,
-    &pHanaAnimT3F0->objS78_14C.mat4x4_38,
-    sizeof(pHanaAnimT3F0->objS78_1C4.mat4x4_38));
+    &pHanaAnimT3F0->keyPrev_1C4.matLocal,
+    &pHanaAnimT3F0->keyCur_14C.matLocal,
+    sizeof(pHanaAnimT3F0->keyPrev_1C4.matLocal));
 }
 
 void __cdecl hook_HanaFrame_GetFrameName(CHanaFrameT3EC_S354 *pFrame, char *pOutName)
@@ -1145,14 +1145,14 @@ void __cdecl hook_HanaAnim_LinkFrame(CHanaAnimT3F0_S240 *pAnim, CHanaFrameT3EC_S
 }
 
 void __cdecl hook_ApplyQTS_4035B1(
-        D3DXMATRIX *pOut,
-        D3DXQUATERNION *pQ,
-        float x,
-        float y,
-        float z,
-        float sx,
-        float sy,
-        float sz)
+  D3DXMATRIX *pOut,
+  D3DXQUATERNION *pQ,
+  float x,
+  float y,
+  float z,
+  float sx,
+  float sy,
+  float sz)
 {
   D3DXMATRIX pM1; // [esp+0h] [ebp-C0h] BYREF
   D3DXMATRIX pM2; // [esp+40h] [ebp-80h] BYREF
@@ -1177,7 +1177,7 @@ bool __cdecl hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15(CHanaAnimSetT3F1_S150 *pA
   }
   ++pAnimSet->nAnimCount_134;                   // 2. Grow count
   if ( pAnimSet->refsAnimT3F0_138 )             // 3. (Re)allocate the pointer array
-                                                //    existing array → realloc+copy
+    //    existing array → realloc+copy
   {
     pOldAnimRefs = pAnimSet->refsAnimT3F0_138;
     pAnimSet->refsAnimT3F0_138 = (CHanaAnimT3F0_S240 **)MemAlloc_40DEF7(4 * pAnimSet->nAnimCount_134);
@@ -1191,8 +1191,8 @@ bool __cdecl hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15(CHanaAnimSetT3F1_S150 *pA
   pAnimSet->refsAnimT3F0_138[pAnimSet->nAnimCount_134 - 1] = pAnim;// 4. Append the new anim at the tail
   CHanaObj__AddRef_40BFC3(pAnim);               //  5. Take ownership: refcount++ and bake keyframes
   CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(pAnim);// slerp/lerp fill + build matrices
-  if ( pAnimSet->fRes_13C < (double)pAnim->fResolution_134 )// 6. Track maximum animation resolution across the set
-    pAnimSet->fRes_13C = pAnim->fResolution_134;
+  if ( pAnimSet->fRes_13C < (double)pAnim->fDuration_134 )// 6. Track maximum animation resolution across the set
+    pAnimSet->fRes_13C = pAnim->fDuration_134;
   return 1;
 }
 

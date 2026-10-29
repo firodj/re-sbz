@@ -353,8 +353,8 @@ void __cdecl hook_CHanaObj__FreeAnimT3F0(CHanaAnimT3F0_S240 *pAnim)
   if ( pAnim->nCount_12C <= 1 )
   {
     UnlinkHanaAnimFromFrame(pAnim);
-    if ( pAnim->arroS78_13C )
-      MemFree_40DF64(pAnim->arroS78_13C);
+    if ( pAnim->arrKeys_13C )
+      MemFree_40DF64(pAnim->arrKeys_13C);
     CHanaObj__RemoveFromGlobalRef(pAnim);
     MemFree_40DF64(pAnim);
   }
