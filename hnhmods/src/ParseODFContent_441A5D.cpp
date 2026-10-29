@@ -7,7 +7,6 @@
 int (__cdecl*ParseODFContent_441A5D)(LPBYTE pBuf1, CHanaFrameT3EC_S354 *pRootFrameT3EC,
     CHanaAnimSetT3F1_S150 *pAnimSetT3F1) =
     reinterpret_cast<int(__cdecl*)(LPBYTE, CHanaFrameT3EC_S354 *, CHanaAnimSetT3F1_S150 *)>(0x441A5D);
-
 CHanaFrameT3EC_S354 *(__cdecl*ParseOdfFRAM_44106A)(LPBYTE *ppBuf,
     CHanaFrameT3EC_S354 *pRootFrameT3EC, void **ppParentList, int nIndex) =
     reinterpret_cast<CHanaFrameT3EC_S354 *(__cdecl*)(LPBYTE *, CHanaFrameT3EC_S354 *,
@@ -79,6 +78,11 @@ D3DXMATRIX *(__cdecl*MtxMult_4069DD)(CHanaFrameT3EC_S354 *pChildFrame,
     CHanaFrameT3EC_S354 *pParentFrame, float x, float y, float z) =
     reinterpret_cast<D3DXMATRIX *(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *,
       float, float, float)>(0x4069DD);
+void (__cdecl * ApplyQTS_4035B1)( D3DXMATRIX *pOut, D3DXQUATERNION *pQ, float x, float y, float z, float sx, float sy, float sz) =
+  reinterpret_cast<void(__cdecl*)( D3DXMATRIX *pOut, 
+    D3DXQUATERNION *pQ, float x, float y, float z, float sx, float sy, float sz)>(0x4035B1);
+void (__cdecl * ConfigureLight)( CHanaLightT3EF_S1A0 *pHanaLight, float posX, float posY, float posZ, float dirX, float dirY, float dirZ) = reinterpret_cast<void(__cdecl*)( CHanaLightT3EF_S1A0 *pHanaLight, float posX, float posY, float posZ, float dirX, float dirY, float dirZ)>(0x409510);
+void (__cdecl * HanaFrame_GetCenterPosition_408C3E)( CHanaFrameRootT3EC_S2D4 *pFrame, CHanaFrameRootT3EC_S2D4 *pRelFrame, float *pOutX, float *pOutY, float *pOutZ) = reinterpret_cast<void(__cdecl*)( CHanaFrameRootT3EC_S2D4 *pFrame, CHanaFrameRootT3EC_S2D4 *pRelFrame, float *pOutX, float *pOutY, float *pOutZ)>(0x408C3E); 
 
 // === FUNCTIONS ===
 
@@ -813,6 +817,422 @@ int __cdecl hook_ParseOdf3DON_44189C(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pHana
     return 1;
 }
 
+void __cdecl hook_ConfigureLight(
+        CHanaLightT3EF_S1A0 *pHanaLight,
+        float posX,
+        float posY,
+        float posZ,
+        float dirX,
+        float dirY,
+        float dirZ)
+{
+  DebugLog("[HNH:SUB] ConfigureLight_409510\n");
+  switch ( pHanaLight->d3dLight_134.dltType )
+  {
+    case D3DLIGHT_DIRECTIONAL:
+      pHanaLight->d3dLight_134.dvDirection.x = -dirX;
+      pHanaLight->d3dLight_134.dvDirection.y = -dirY;
+      pHanaLight->d3dLight_134.dvDirection.z = dirZ;
+      ApplyLightSettings(pHanaLight);
+      break;
+    case D3DLIGHT_POINT:
+      pHanaLight->d3dLight_134.dvPosition.x = posX;
+      pHanaLight->d3dLight_134.dvPosition.y = posY;
+      pHanaLight->d3dLight_134.dvPosition.z = posZ;
+      ApplyLightSettings(pHanaLight);
+      break;
+    case D3DLIGHT_SPOT:
+      pHanaLight->d3dLight_134.dvDirection.x = -dirX;
+      pHanaLight->d3dLight_134.dvDirection.y = -dirY;
+      pHanaLight->d3dLight_134.dvDirection.z = dirZ;
+      pHanaLight->d3dLight_134.dvPosition.x = posX;
+      pHanaLight->d3dLight_134.dvPosition.y = posY;
+      pHanaLight->d3dLight_134.dvPosition.z = posZ;
+      ApplyLightSettings(pHanaLight);
+      break;
+  }
+}
+
+void __cdecl hook_AssignLigthtToFrame_40539D(CHanaFrameT3EC_S354 *pHanaT3EC, CHanaLightT3EF_S1A0 *pHanaLight)
+{
+  D3DXMATRIX mat_v3; // [esp+8h] [ebp-40h] BYREF
+  DebugLog("[HNH:SUB] AssignLigthtToFrame_40539D\n");
+  if ( pHanaLight )
+  {
+    pHanaT3EC->pHanaLight_210 = pHanaLight;
+    pHanaLight->pHanaT3EC_19C = pHanaT3EC;
+    pHanaT3EC->bHasLight_214 = 1;
+    qmemcpy(&mat_v3, &pHanaT3EC->mat4x4_after, sizeof(mat_v3));
+    ConfigureLight(pHanaT3EC->pHanaLight_210, mat_v3._41, mat_v3._42, mat_v3._43, mat_v3._13, mat_v3._23, mat_v3._33);
+    CHanaObj__AddRef_40BFC3(pHanaLight);
+  }
+}
+
+int __cdecl hook_CHanaObj__NewAnimT3F0(CHanaAnimT3F0_S240 **ppOut)
+{
+  CHanaAnimT3F0_S240 *pOut; // edi
+  CHanaSubObj_S78 *arroS78_13C; // eax
+  DebugLog("[HNH:SUB] CHanaObj__NewAnimT3F0_401CD0\n");
+  pOut = (CHanaAnimT3F0_S240 *)MemAlloc_40DEF7(0x240u);
+  memset(pOut, 0, sizeof(CHanaAnimT3F0_S240));
+  pOut->dwType = 0x3F0;
+  pOut->nCount_138 = 1;
+  pOut->arroS78_13C = (CHanaSubObj_S78 *)MemAlloc_40DEF7(0x78u);
+  pOut->arroS78_13C->b_34 = 1;
+  arroS78_13C = pOut->arroS78_13C;
+  arroS78_13C->quart_1C.z = 0.0;
+  arroS78_13C->quart_1C.y = 0.0;
+  arroS78_13C->quart_1C.x = 0.0;
+  arroS78_13C->quart_1C.w = 1.0;
+  pOut->arroS78_13C->quart_1C.w = pOut->arroS78_13C->quart_1C.w * -1.0;
+  pOut->arroS78_13C->b_2C = 1;
+  pOut->arroS78_13C->x_4 = 0.0;
+  pOut->arroS78_13C->y_8 = 0.0;
+  pOut->arroS78_13C->z_C = 0.0;
+  pOut->arroS78_13C->b_30 = 1;
+  pOut->arroS78_13C->sx_10 = 1.0;
+  pOut->arroS78_13C->sy_14 = 1.0;
+  pOut->arroS78_13C->sz_18 = 1.0;
+  pOut->fResolution_134 = 0.0;
+  CHanaObj__AddRef_40BFC3(pOut);
+  *ppOut = pOut;
+  pOut->objS78_14C.quart_1C = pOut->arroS78_13C->quart_1C;
+  pOut->objS78_14C.x_4 = pOut->arroS78_13C->x_4;
+  pOut->objS78_14C.y_8 = pOut->arroS78_13C->y_8;
+  pOut->objS78_14C.z_C = pOut->arroS78_13C->z_C;
+  pOut->objS78_14C.sx_10 = pOut->arroS78_13C->sx_10;
+  pOut->objS78_14C.sy_14 = pOut->arroS78_13C->sy_14;
+  pOut->objS78_14C.sz_18 = pOut->arroS78_13C->sz_18;
+  return 0;
+}
+
+int __cdecl hook_HanaAnim_GetDuration(CHanaAnimT3F0_S240 *pHanaAnimT3F0)
+{
+  int result; // eax
+  DebugLog("[HNH:SUB] hook_HanaAnim_GetDuration_004039C9\n");
+  result = LODWORD(pHanaAnimT3F0->arroS78_13C[pHanaAnimT3F0->nCount_138 - 1].t_0);
+  LODWORD(pHanaAnimT3F0->fResolution_134) = result;
+  return result;
+}
+
+void __cdecl hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(CHanaAnimT3F0_S240 *pHanaAnimT3F0)
+{
+  float b; // [esp+0h] [ebp-50h]
+  float v2; // [esp+Ch] [ebp-44h]
+  float dt_v3; // [esp+10h] [ebp-40h]
+  CHanaSubObj_S78 *pobjS78_v4; // [esp+14h] [ebp-3Ch]
+  CHanaSubObj_S78 *pobjS78_v2; // [esp+14h] [ebp-3Ch]
+  CHanaSubObj_S78 *pobjS78_v6; // [esp+14h] [ebp-3Ch]
+  CHanaSubObj_S78 *arroS78_13C; // [esp+18h] [ebp-38h]
+  CHanaSubObj_S78 *v8; // [esp+18h] [ebp-38h]
+  unsigned int k; // [esp+1Ch] [ebp-34h]
+  unsigned int ii; // [esp+1Ch] [ebp-34h]
+  unsigned int mm; // [esp+1Ch] [ebp-34h]
+  unsigned int i; // [esp+20h] [ebp-30h]
+  unsigned int m; // [esp+20h] [ebp-30h]
+  unsigned int jj; // [esp+20h] [ebp-30h]
+  unsigned int nn; // [esp+20h] [ebp-30h]
+  unsigned int j; // [esp+24h] [ebp-2Ch]
+  unsigned int n; // [esp+24h] [ebp-2Ch]
+  unsigned int kk; // [esp+24h] [ebp-2Ch]
+  CHanaSubObj_S78 *pobjS78_v19; // [esp+28h] [ebp-28h]
+  CHanaSubObj_S78 *pobjS78_v20; // [esp+28h] [ebp-28h]
+  CHanaSubObj_S78 *pobjS78_v21; // [esp+28h] [ebp-28h]
+  float sx_v22; // [esp+2Ch] [ebp-24h]
+  float x_v23; // [esp+2Ch] [ebp-24h]
+  float sy_v24; // [esp+30h] [ebp-20h]
+  float y_v25; // [esp+30h] [ebp-20h]
+  float sz_v26; // [esp+34h] [ebp-1Ch]
+  float z_v27; // [esp+34h] [ebp-1Ch]
+  float sx_v28; // [esp+38h] [ebp-18h]
+  float x_v30; // [esp+38h] [ebp-18h]
+  float sy_v30; // [esp+3Ch] [ebp-14h]
+  float y_v32; // [esp+3Ch] [ebp-14h]
+  float sz_v32; // [esp+40h] [ebp-10h]
+  float z_v34; // [esp+40h] [ebp-10h]
+  float sx_10; // [esp+44h] [ebp-Ch]
+  float x_4; // [esp+44h] [ebp-Ch]
+  float sy_14; // [esp+48h] [ebp-8h]
+  float y_8; // [esp+48h] [ebp-8h]
+  float sz_18; // [esp+4Ch] [ebp-4h]
+  float z_C; // [esp+4Ch] [ebp-4h]
+  DebugLog("[HNH:SUB] CHanaAnimT3F0__BakeKeyframesT3F0_402D0E\n");
+  arroS78_13C = pHanaAnimT3F0->arroS78_13C;
+  pobjS78_v19 = arroS78_13C;
+  pobjS78_v4 = 0;
+  for ( i = 0; i < pHanaAnimT3F0->nCount_138; ++i )
+  {
+    if ( arroS78_13C[i].b_34 == 1 )
+    {
+      pobjS78_v19 = &arroS78_13C[i];
+      pobjS78_v4 = 0;
+    }
+    else
+    {
+      for ( j = i + 1; j < pHanaAnimT3F0->nCount_138; ++j )
+      {
+        if ( arroS78_13C[j].b_34 == 1 )
+        {
+          pobjS78_v4 = &arroS78_13C[j];
+          break;
+        }
+      }
+      if ( j >= pHanaAnimT3F0->nCount_138 )
+        pobjS78_v4 = arroS78_13C;
+      for ( k = i; k < j; ++k )
+      {
+        if ( pobjS78_v4->t_0 - pobjS78_v19->t_0 == 0.0 )
+        {
+          arroS78_13C[k].quart_1C = pobjS78_v19->quart_1C;
+        }
+        else
+        {
+          b = (arroS78_13C[k].t_0 - pobjS78_v19->t_0) / (pobjS78_v4->t_0 - pobjS78_v19->t_0);
+          D3DXQuaternionSlerp(&arroS78_13C[k].quart_1C, &pobjS78_v19->quart_1C, &pobjS78_v4->quart_1C, b);
+        }
+      }
+    }
+  }
+  pobjS78_v20 = arroS78_13C;
+  pobjS78_v2 = 0;
+  for ( m = 0; m < pHanaAnimT3F0->nCount_138; ++m )
+  {
+    if ( arroS78_13C[m].b_30 == 1 )
+    {
+      pobjS78_v20 = &arroS78_13C[m];
+      pobjS78_v2 = 0;
+    }
+    else
+    {
+      for ( n = m + 1; n < pHanaAnimT3F0->nCount_138; ++n )
+      {
+        if ( arroS78_13C[n].b_30 == 1 )
+        {
+          pobjS78_v2 = &arroS78_13C[n];
+          break;
+        }
+      }
+      if ( n >= pHanaAnimT3F0->nCount_138 )
+        pobjS78_v2 = arroS78_13C;
+      sx_10 = pobjS78_v20->sx_10;
+      sy_14 = pobjS78_v20->sy_14;
+      sz_18 = pobjS78_v20->sz_18;
+      sx_v22 = pobjS78_v2->sx_10;
+      sy_v24 = pobjS78_v2->sy_14;
+      sz_v26 = pobjS78_v2->sz_18;
+      for ( ii = m; ii < n; ++ii )
+      {
+        if ( pobjS78_v2->t_0 - pobjS78_v20->t_0 == 0.0 )
+        {
+          arroS78_13C[ii].sx_10 = sx_10;
+          arroS78_13C[ii].sy_14 = sy_14;
+          arroS78_13C[ii].sz_18 = sz_18;
+        }
+        else
+        {
+          dt_v3 = (arroS78_13C[ii].t_0 - pobjS78_v20->t_0) / (pobjS78_v2->t_0 - pobjS78_v20->t_0);
+          sx_v28 = (sx_v22 - sx_10) * dt_v3 + sx_10;
+          sy_v30 = (sy_v24 - sy_14) * dt_v3 + sy_14;
+          sz_v32 = (sz_v26 - sz_18) * dt_v3 + sz_18;
+          arroS78_13C[ii].sx_10 = sx_v28;
+          arroS78_13C[ii].sy_14 = sy_v30;
+          arroS78_13C[ii].sz_18 = sz_v32;
+        }
+      }
+    }
+  }
+  pobjS78_v21 = arroS78_13C;
+  pobjS78_v6 = 0;
+  for ( jj = 0; jj < pHanaAnimT3F0->nCount_138; ++jj )
+  {
+    if ( arroS78_13C[jj].b_2C == 1 )
+    {
+      pobjS78_v21 = &arroS78_13C[jj];
+      pobjS78_v6 = 0;
+    }
+    else
+    {
+      for ( kk = jj + 1; kk < pHanaAnimT3F0->nCount_138; ++kk )
+      {
+        if ( arroS78_13C[kk].b_2C == 1 )
+        {
+          pobjS78_v6 = &arroS78_13C[kk];
+          break;
+        }
+      }
+      if ( kk >= pHanaAnimT3F0->nCount_138 )
+        pobjS78_v6 = arroS78_13C;
+      x_4 = pobjS78_v21->x_4;
+      y_8 = pobjS78_v21->y_8;
+      z_C = pobjS78_v21->z_C;
+      x_v23 = pobjS78_v6->x_4;
+      y_v25 = pobjS78_v6->y_8;
+      z_v27 = pobjS78_v6->z_C;
+      for ( mm = jj; mm < kk; ++mm )
+      {
+        if ( pobjS78_v6->t_0 - pobjS78_v21->t_0 == 0.0 )
+        {
+          arroS78_13C[mm].x_4 = x_4;
+          arroS78_13C[mm].y_8 = y_8;
+          arroS78_13C[mm].z_C = z_C;
+        }
+        else
+        {
+          v2 = (arroS78_13C[mm].t_0 - pobjS78_v21->t_0) / (pobjS78_v6->t_0 - pobjS78_v21->t_0);
+          x_v30 = (x_v23 - x_4) * v2 + x_4;
+          y_v32 = (y_v25 - y_8) * v2 + y_8;
+          z_v34 = (z_v27 - z_C) * v2 + z_C;
+          arroS78_13C[mm].x_4 = x_v30;
+          arroS78_13C[mm].y_8 = y_v32;
+          arroS78_13C[mm].z_C = z_v34;
+        }
+      }
+    }
+  }
+  v8 = pHanaAnimT3F0->arroS78_13C;
+  for ( nn = 0; nn < pHanaAnimT3F0->nCount_138; ++nn )
+    ApplyQTS_4035B1(
+      &v8[nn].mat4x4_38,
+      &v8[nn].quart_1C,
+      v8[nn].x_4,
+      v8[nn].y_8,
+      v8[nn].z_C,
+      v8[nn].sx_10,
+      v8[nn].sy_14,
+      v8[nn].sz_18);
+  memcpy(&pHanaAnimT3F0->objS78_1C4, &pHanaAnimT3F0->objS78_14C, sizeof(pHanaAnimT3F0->objS78_1C4));
+  pHanaAnimT3F0->objS78_14C.t_0 = 0.0;
+  pHanaAnimT3F0->objS78_1C4.t_0 = 0.0;
+  pHanaAnimT3F0->objS78_14C.x_4 = v8->x_4;
+  pHanaAnimT3F0->objS78_1C4.x_4 = pHanaAnimT3F0->objS78_14C.x_4;
+  pHanaAnimT3F0->objS78_14C.y_8 = v8->y_8;
+  pHanaAnimT3F0->objS78_1C4.y_8 = pHanaAnimT3F0->objS78_14C.y_8;
+  pHanaAnimT3F0->objS78_14C.z_C = v8->z_C;
+  pHanaAnimT3F0->objS78_1C4.z_C = pHanaAnimT3F0->objS78_14C.z_C;
+  pHanaAnimT3F0->objS78_14C.sx_10 = v8->sx_10;
+  pHanaAnimT3F0->objS78_1C4.sx_10 = pHanaAnimT3F0->objS78_14C.sx_10;
+  pHanaAnimT3F0->objS78_14C.sy_14 = v8->sy_14;
+  pHanaAnimT3F0->objS78_1C4.sy_14 = pHanaAnimT3F0->objS78_14C.sy_14;
+  pHanaAnimT3F0->objS78_14C.sz_18 = v8->sz_18;
+  pHanaAnimT3F0->objS78_1C4.sz_18 = pHanaAnimT3F0->objS78_14C.sz_18;
+  pHanaAnimT3F0->objS78_14C.quart_1C = v8->quart_1C;
+  pHanaAnimT3F0->objS78_1C4.quart_1C = pHanaAnimT3F0->objS78_14C.quart_1C;
+  qmemcpy(&pHanaAnimT3F0->objS78_14C.mat4x4_38, &v8->mat4x4_38, sizeof(pHanaAnimT3F0->objS78_14C.mat4x4_38));
+  qmemcpy(
+    &pHanaAnimT3F0->objS78_1C4.mat4x4_38,
+    &pHanaAnimT3F0->objS78_14C.mat4x4_38,
+    sizeof(pHanaAnimT3F0->objS78_1C4.mat4x4_38));
+}
+
+void __cdecl hook_HanaFrame_GetFrameName(CHanaFrameT3EC_S354 *pFrame, char *pOutName)
+{
+  DebugLog("[HNH:SUB] HanaFrame_GetFrameName_40BA89\n");
+  if ( pFrame )
+  {
+    if ( pOutName )
+      strcpy(pOutName, pFrame->szName_8);
+  }
+}
+
+void __cdecl hook_HanaAnim_LinkFrame(CHanaAnimT3F0_S240 *pAnim, CHanaFrameT3EC_S354 *pFrame)
+{
+  DebugLog("[HNH:SUB] HanaAnim_LinkFrame_401FBD\n");
+  if ( pFrame )
+  {
+    pAnim->pHanaFram_130 = pFrame;
+    pFrame->pHanaAnim_2C0 = pAnim;
+  }
+}
+
+void __cdecl hook_ApplyQTS_4035B1(
+        D3DXMATRIX *pOut,
+        D3DXQUATERNION *pQ,
+        float x,
+        float y,
+        float z,
+        float sx,
+        float sy,
+        float sz)
+{
+  D3DXMATRIX pM1; // [esp+0h] [ebp-C0h] BYREF
+  D3DXMATRIX pM2; // [esp+40h] [ebp-80h] BYREF
+  D3DXMATRIX pM3; // [esp+80h] [ebp-40h] BYREF
+  DebugLog("[HNH:SUB] ApplyQTS_4035B1\n");
+  D3DXMatrixRotationQuaternion(&pM2, pQ);
+  D3DXMatrixTranslation(&pM3, x, y, z);
+  D3DXMatrixScaling(&pM1, sx, sy, sz);
+  D3DXMatrixMultiply(pOut, &pM1, &pM2);
+  D3DXMatrixMultiply(pOut, pOut, &pM3);
+}
+
+bool __cdecl hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15(CHanaAnimSetT3F1_S150 *pAnimSet, CHanaAnimT3F0_S240 *pAnim)
+{
+  CHanaAnimT3F0_S240 **pOldAnimRefs; // [esp+14h] [ebp-8h]
+  unsigned int i; // [esp+18h] [ebp-4h]
+  DebugLog("[HNH:SUB] CHanaAnimSetT3F1__AddAnimT3F0_403C15\n");
+  for ( i = 0; i < pAnimSet->nAnimCount_134; ++i )// 1. Duplicate check ? O(n) linear scan
+  {
+    if ( pAnimSet->refsAnimT3F0_138[i] == pAnim )
+      return 0;                                 // <- already present
+  }
+  ++pAnimSet->nAnimCount_134;                   // 2. Grow count
+  if ( pAnimSet->refsAnimT3F0_138 )             // 3. (Re)allocate the pointer array
+                                                //    existing array ¨ realloc+copy
+  {
+    pOldAnimRefs = pAnimSet->refsAnimT3F0_138;
+    pAnimSet->refsAnimT3F0_138 = (CHanaAnimT3F0_S240 **)MemAlloc_40DEF7(4 * pAnimSet->nAnimCount_134);
+    qmemcpy(pAnimSet->refsAnimT3F0_138, pOldAnimRefs, 4 * ((unsigned int)(4 * pAnimSet->nAnimCount_134 - 4) >> 2));// copy old (count-1) entries
+    MemFree_40DF64(pOldAnimRefs);
+  }
+  else                                          // first entry ¨ alloc 4 bytes
+  {
+    pAnimSet->refsAnimT3F0_138 = (CHanaAnimT3F0_S240 **)MemAlloc_40DEF7(4u);
+  }
+  pAnimSet->refsAnimT3F0_138[pAnimSet->nAnimCount_134 - 1] = pAnim;// 4. Append the new anim at the tail
+  CHanaObj__AddRef_40BFC3(pAnim);               //  5. Take ownership: refcount++ and bake keyframes
+  CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(pAnim);// slerp/lerp fill + build matrices
+  if ( pAnimSet->fRes_13C < (double)pAnim->fResolution_134 )// 6. Track maximum animation resolution across the set
+    pAnimSet->fRes_13C = pAnim->fResolution_134;
+  return 1;
+}
+
+// HanaFrame_GetCenterPosition - returns pFrame's vertCenter_2B4 expressed in pRelFrame's space. If pRelFrame is g_pSceneFrame: out = Translate(center)*mat4x4_after. Otherwise also premultiplies by the inverse of pRelFrame->mat4x4_after. Writes x/y/z into px/py/pz; zeroes them when pFrame is NULL.
+void __cdecl hook_HanaFrame_GetCenterPosition_408C3E(
+        CHanaFrameRootT3EC_S2D4 *pFrame,
+        CHanaFrameRootT3EC_S2D4 *pRelFrame,
+        float *pOutX,
+        float *pOutY,
+        float *pOutZ)
+{
+  D3DXMATRIX pOut; // [esp+0h] [ebp-80h] BYREF
+  D3DXMATRIX pM1; // [esp+40h] [ebp-40h] BYREF
+  DebugLog("[HNH:SUB] HanaFrame_GetCenterPosition_408C3E\n");
+  if ( pFrame )
+  {
+    if ( pRelFrame == g_pSceneFrame )
+    {
+      D3DXMatrixTranslation(&pOut, pFrame->vertCenter_2B4.x, pFrame->vertCenter_2B4.y, pFrame->vertCenter_2B4.z);
+      D3DXMatrixMultiply(&pOut, &pOut, &pFrame->mat4x4_after);
+    }
+    else
+    {
+      D3DXMatrixTranslation(&pOut, pFrame->vertCenter_2B4.x, pFrame->vertCenter_2B4.y, pFrame->vertCenter_2B4.z);
+      D3DXMatrixMultiply(&pM1, &pOut, &pFrame->mat4x4_after);
+      D3DXMatrixInverse(&pOut, 0, &pRelFrame->mat4x4_after);
+      D3DXMatrixMultiply(&pOut, &pM1, &pOut);
+    }
+    *pOutX = pOut._41;
+    *pOutY = pOut._42;
+    *pOutZ = pOut._43;
+  }
+  else
+  {
+    *pOutZ = 0.0;
+    *pOutY = 0.0;
+    *pOutX = 0.0;
+  }
+}
+
 void register_ParseODFContent_441A5D() {
     // [OK] hnh_Hook(0x441A5D, hook_ParseODFContent_441A5D, "ParseODFContent_441A5D");
     hnh_Hook(0x44106A, hook_ParseOdfFRAM_44106A, "ParseOdfFRAM_44106A"); // [OK]
@@ -820,4 +1240,14 @@ void register_ParseODFContent_441A5D() {
     hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C"); // [OK]
     hnh_Hook(0x440896, hook_ParseOdfMORP_440896, "ParseOdfMORP_440896"); // [OK]
     hnh_Hook(0x44189C, hook_ParseOdf3DON_44189C, "ParseOdf3DON_44189C"); // [OK]
+    hnh_Hook(0x409510, hook_ConfigureLight,"ConfigureLight_409510");
+    hnh_Hook(0x40539D, hook_AssignLigthtToFrame_40539D, "AssignLigthtToFrame_40539D");
+    hnh_Hook(0x401CD0, hook_CHanaObj__NewAnimT3F0,"CHanaObj__NewAnimT3F0_401CD0");
+    hnh_Hook(0x4039C9, hook_HanaAnim_GetDuration, "HanaAnim_GetDuration_004039C9");
+    hnh_Hook(0x402D0E, hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E, "CHanaAnimT3F0__BakeKeyframesT3F0_402D0E");
+    hnh_Hook(0x40BA89, hook_HanaFrame_GetFrameName, "HanaFrame_GetFrameName_40BA89");
+    hnh_Hook(0x401FBD, hook_HanaAnim_LinkFrame, "HanaAnim_LinkFrame_401FBD");
+    hnh_Hook(0x4035B1, hook_ApplyQTS_4035B1, "ApplyQTS_4035B1");
+    hnh_Hook(0x403C15, hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15, "CHanaAnimSetT3F1__AddAnimT3F0_403C15");
+    hnh_Hook(0x408C3E, hook_HanaFrame_GetCenterPosition_408C3E, "HanaFrame_GetCenterPosition_408C3E");
 }

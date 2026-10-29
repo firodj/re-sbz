@@ -390,6 +390,8 @@ extern HRESULT(__stdcall* D3DXDrawSpriteSimple)(LPDIRECTDRAWSURFACE7 pd3dTexture
 extern HRESULT(__stdcall* D3DXDrawSprite3D)(LPDIRECTDRAWSURFACE7 pd3dTexture,
   LPDIRECT3DDEVICE7 pd3dDevice, const D3DXVECTOR4 quad[4], float alpha,
   const RECT* pSourceRect);
-
-extern BOOL(__cdecl* DIMouseKeybInit_43AF33)(int bAcquire);
-extern BOOL(__cdecl* DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd);
+extern D3DXQUATERNION* (__stdcall*D3DXQuaternionSlerp)(D3DXQUATERNION* pOut,
+  const D3DXQUATERNION* pQ1, const D3DXQUATERNION* pQ2, float t);
+extern D3DXMATRIX* (__stdcall*D3DXMatrixRotationQuaternion)(D3DXMATRIX* pOut, const D3DXQUATERNION* pQ);
+extern D3DXMATRIX* (__stdcall*D3DXMatrixTranslation)(D3DXMATRIX* pOut,  float x,  float y, float z);
+extern D3DXMATRIX* (__stdcall*D3DXMatrixScaling)(D3DXMATRIX* pOut,  float sx,  float sy, float sz);

@@ -59,6 +59,19 @@ HRESULT (__stdcall*D3DXDrawSprite3D)(LPDIRECTDRAWSURFACE7 pd3dTexture,
   const RECT* pSourceRect)
 = reinterpret_cast<HRESULT(__stdcall*)(LPDIRECTDRAWSURFACE7,
     LPDIRECT3DDEVICE7,const D3DXVECTOR4[4], float, const RECT*)>(0x4902CF);
+D3DXQUATERNION* (__stdcall*D3DXQuaternionSlerp)(D3DXQUATERNION* pOut,
+  const D3DXQUATERNION* pQ1, const D3DXQUATERNION* pQ2, float t)
+= reinterpret_cast<D3DXQUATERNION*(__stdcall*)(D3DXQUATERNION*,
+  const D3DXQUATERNION*, const D3DXQUATERNION*, float)>(0x48B0D0);
+D3DXMATRIX* (__stdcall*D3DXMatrixRotationQuaternion)(D3DXMATRIX* pOut,
+  const D3DXQUATERNION* pQ) = reinterpret_cast<D3DXMATRIX* (__stdcall*)(D3DXMATRIX* pOut,
+  const D3DXQUATERNION* pQ)>(0x48ACCC);
+D3DXMATRIX* (__stdcall*D3DXMatrixTranslation)(D3DXMATRIX* pOut,  float x,  float y,
+  float z) = reinterpret_cast<D3DXMATRIX* (__stdcall*)(D3DXMATRIX* pOut,  float x,  float y,
+  float z)>(0x48A9C8); 
+D3DXMATRIX* (__stdcall*D3DXMatrixScaling)(D3DXMATRIX* pOut,  float sx,  float sy,
+  float sz) = reinterpret_cast<D3DXMATRIX* (__stdcall*)(D3DXMATRIX* pOut,  float sx,  float sy,
+  float sz)>(0x48A968); 
 
 // === FUNCTION IMPLEMENATIONS ===
 
