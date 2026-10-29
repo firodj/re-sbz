@@ -826,7 +826,12 @@ void __cdecl hook_ConfigureLight(
   float dirY,
   float dirZ)
 {
-  DebugLog("[HNH:SUB] ConfigureLight_409510\n");
+  static bool _debugged = true;
+  if (_debugged) {
+    _debugged = false;
+    DebugLog("[HNH:SUB] ConfigureLight_409510\n");
+  }
+
   switch ( pHanaLight->d3dLight_134.dltType )
   {
   case D3DLIGHT_DIRECTIONAL:
@@ -909,7 +914,7 @@ int __cdecl hook_CHanaObj__NewAnimT3F0(CHanaAnimT3F0_S240 **ppOut)
 int __cdecl hook_HanaAnim_GetDuration(CHanaAnimT3F0_S240 *pHanaAnimT3F0)
 {
   int result; // eax
-  DebugLog("[HNH:SUB] hook_HanaAnim_GetDuration_004039C9\n");
+  DebugLog("[HNH:SUB] HanaAnim_GetDuration_004039C9\n");
   result = LODWORD(pHanaAnimT3F0->arrKeys_13C[pHanaAnimT3F0->nKeyCount_138 - 1].fTime);
   LODWORD(pHanaAnimT3F0->fDuration_134) = result;
   return result;
@@ -1126,7 +1131,12 @@ void __cdecl hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(CHanaAnimT3F0_S240 *pH
 
 void __cdecl hook_HanaFrame_GetFrameName(CHanaFrameT3EC_S354 *pFrame, char *pOutName)
 {
-  DebugLog("[HNH:SUB] HanaFrame_GetFrameName_40BA89\n");
+  static bool _debugged = true;
+  if (_debugged) {
+    _debugged = false;
+    DebugLog("[HNH:SUB] HanaFrame_GetFrameName_40BA89\n");
+  }
+
   if ( pFrame )
   {
     if ( pOutName )
@@ -1136,7 +1146,12 @@ void __cdecl hook_HanaFrame_GetFrameName(CHanaFrameT3EC_S354 *pFrame, char *pOut
 
 void __cdecl hook_HanaAnim_LinkFrame(CHanaAnimT3F0_S240 *pAnim, CHanaFrameT3EC_S354 *pFrame)
 {
-  DebugLog("[HNH:SUB] HanaAnim_LinkFrame_401FBD\n");
+  static bool _debugged = true;
+  if (_debugged) {
+    _debugged = false;
+    DebugLog("[HNH:SUB] HanaAnim_LinkFrame_401FBD\n");
+  }
+
   if ( pFrame )
   {
     pAnim->pHanaFram_130 = pFrame;
@@ -1157,7 +1172,13 @@ void __cdecl hook_ApplyQTS_4035B1(
   D3DXMATRIX pM1; // [esp+0h] [ebp-C0h] BYREF
   D3DXMATRIX pM2; // [esp+40h] [ebp-80h] BYREF
   D3DXMATRIX pM3; // [esp+80h] [ebp-40h] BYREF
-  DebugLog("[HNH:SUB] ApplyQTS_4035B1\n");
+
+  static bool _debugged = true;
+  if (_debugged) {
+    _debugged = false;
+    DebugLog("[HNH:SUB] ApplyQTS_4035B1\n");
+  }
+
   D3DXMatrixRotationQuaternion(&pM2, pQ);
   D3DXMatrixTranslation(&pM3, x, y, z);
   D3DXMatrixScaling(&pM1, sx, sy, sz);
@@ -1206,7 +1227,13 @@ void __cdecl hook_HanaFrame_GetCenterPosition_408C3E(
 {
   D3DXMATRIX pOut; // [esp+0h] [ebp-80h] BYREF
   D3DXMATRIX pM1; // [esp+40h] [ebp-40h] BYREF
-  DebugLog("[HNH:SUB] HanaFrame_GetCenterPosition_408C3E\n");
+
+  static bool _debugged = true;
+  if (_debugged) {
+    _debugged = false;
+    DebugLog("[HNH:SUB] HanaFrame_GetCenterPosition_408C3E\n");
+  }
+
   if ( pFrame )
   {
     if ( pRelFrame == g_pSceneFrame )
@@ -1240,14 +1267,14 @@ void register_ParseODFContent_441A5D() {
     hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C"); // [OK]
     hnh_Hook(0x440896, hook_ParseOdfMORP_440896, "ParseOdfMORP_440896"); // [OK]
     hnh_Hook(0x44189C, hook_ParseOdf3DON_44189C, "ParseOdf3DON_44189C"); // [OK]
-    hnh_Hook(0x409510, hook_ConfigureLight,"ConfigureLight_409510");
-    hnh_Hook(0x40539D, hook_AssignLigthtToFrame_40539D, "AssignLigthtToFrame_40539D");
-    hnh_Hook(0x401CD0, hook_CHanaObj__NewAnimT3F0,"CHanaObj__NewAnimT3F0_401CD0");
-    hnh_Hook(0x4039C9, hook_HanaAnim_GetDuration, "HanaAnim_GetDuration_004039C9");
-    hnh_Hook(0x402D0E, hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E, "CHanaAnimT3F0__BakeKeyframesT3F0_402D0E");
-    hnh_Hook(0x40BA89, hook_HanaFrame_GetFrameName, "HanaFrame_GetFrameName_40BA89");
-    hnh_Hook(0x401FBD, hook_HanaAnim_LinkFrame, "HanaAnim_LinkFrame_401FBD");
-    hnh_Hook(0x4035B1, hook_ApplyQTS_4035B1, "ApplyQTS_4035B1");
-    hnh_Hook(0x403C15, hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15, "CHanaAnimSetT3F1__AddAnimT3F0_403C15");
-    hnh_Hook(0x408C3E, hook_HanaFrame_GetCenterPosition_408C3E, "HanaFrame_GetCenterPosition_408C3E");
+    // [OK] hnh_Hook(0x409510, hook_ConfigureLight,"ConfigureLight_409510");
+    // [OK] hnh_Hook(0x40539D, hook_AssignLigthtToFrame_40539D, "AssignLigthtToFrame_40539D");
+    // [OK] hnh_Hook(0x401CD0, hook_CHanaObj__NewAnimT3F0,"CHanaObj__NewAnimT3F0_401CD0");
+    // [OK] hnh_Hook(0x4039C9, hook_HanaAnim_GetDuration, "HanaAnim_GetDuration_004039C9");
+    // [OK] hnh_Hook(0x402D0E, hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E, "CHanaAnimT3F0__BakeKeyframesT3F0_402D0E");
+    // [OK] hnh_Hook(0x40BA89, hook_HanaFrame_GetFrameName, "HanaFrame_GetFrameName_40BA89");
+    // [OK] hnh_Hook(0x401FBD, hook_HanaAnim_LinkFrame, "HanaAnim_LinkFrame_401FBD");
+    // [OK] hnh_Hook(0x4035B1, hook_ApplyQTS_4035B1, "ApplyQTS_4035B1");
+    // [OK] hnh_Hook(0x403C15, hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15, "CHanaAnimSetT3F1__AddAnimT3F0_403C15");
+    // [OK] hnh_Hook(0x408C3E, hook_HanaFrame_GetCenterPosition_408C3E, "HanaFrame_GetCenterPosition_408C3E");
 }

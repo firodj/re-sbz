@@ -437,9 +437,7 @@ void __cdecl hook_BMP_Convert24bitTo16bitWithDither(CBMPFile *pBMPFile)
 LPVOID orig_PlayVideoWith3DAudio_4791A3 = NULL;
 
 void __cdecl hook_PlayVideoWith3DAudio_4791A3(const char* szMoviePath, int bLoopFlags) {
-  DebugLog("[HNH:SUB] %s\n", "PlayVideoWith3DAudio_4791A3");
-  DebugLog("\tplay video with 3d autdio %s %d\n", szMoviePath, bLoopFlags);
-
+  DebugLog("[HNH:SUB] %s path=%s loop=%d\n", "PlayVideoWith3DAudio_4791A3", szMoviePath, bLoopFlags);
   // reinterpret_cast<void(__cdecl*)(const char* szMoviePath, int bLoopFlags)>(orig_PlayVideoWith3DAudio_4791A3)(szMoviePath, bLoopFlags);
 }
 
