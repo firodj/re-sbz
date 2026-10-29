@@ -405,7 +405,7 @@ void __cdecl hook_GetSurfaceWH(LPDIRECTDRAWSURFACE7 pSurface, _DWORD *pWidth, _D
 {
   DDSURFACEDESC2 ddSurfacDesc; // [esp+0h] [ebp-7Ch] BYREF
 
-  DebugLog("[HNH:SUB] GetSurfaceWH_419A1A");
+  DebugLog("[HNH:SUB] GetSurfaceWH_419A1A\n");
 
   ddSurfacDesc.dwSize = sizeof(DDSURFACEDESC2); // = 124
   pSurface->GetSurfaceDesc(&ddSurfacDesc);
@@ -1075,7 +1075,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_CreateSurfaceWH(DWORD width, DWORD height)
   int hr; // [esp+4h] [ebp-80h]
   DDSURFACEDESC2 ddSurfaceDesc; // [esp+8h] [ebp-7Ch] BYREF
 
-  DebugLog("[HNH:SUB] CreateSurfaceWH_418905");
+  DebugLog("[HNH:SUB] CreateSurfaceWH_418905\n");
 
   memset(&ddSurfaceDesc, 0, sizeof(ddSurfaceDesc));
   ddSurfaceDesc.dwSize = 124;
@@ -1199,22 +1199,22 @@ void __cdecl hook_DrawSpriteAtRect(CHanaSpriteT3F6_S1FC *pSprite, D2D_RECT_F *rc
 }
 
 void register_InGameMenu_4799E2() {
-    hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2");
+    // [OK] hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2");
     hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D");
-    hnh_Hook(0x481550, hook_DoPeekMessages, "DoPeekMessages_481550");
-    hnh_Hook(0x423BAF, hook_DSBufferPlay, "DSBufferPlay_423BAF");
-    hnh_Hook(0x413A5E, hook_LoadBmpWithMask_413A5E, "LoadBmpWithMask_413A5E");
-    hnh_Hook(0x419A1A, hook_GetSurfaceWH, "GetSurfaceWH_419A1A");
-    hnh_Hook(0x43EA05, hook_CreateTextureFromSurfaceWithAlphaMask, "CreateTextureFromSurfaceWithAlphaMask_43EA05");
-    hnh_Hook(0x45A41B, hook_GetMouseBtn_45A41B, "GetMouseBtn_45A41B");
-    hnh_Hook(0x45A4D8, hook_GetMouseXY_45A4D8, "GetMouseXY_45A4D8");
-    hnh_Hook(0x419D89, hook_BltSurface, "BltSurface_419D89");
-    hnh_Hook(0x4203B3, hook_LoadBmpScaled_4203B3, "LoadBmpScaled_4203B3");
-    hnh_Hook(0x414A5D, hook_CHanaSpriteT3F6__SetPos_414A5D, "CHanaSpriteT3F6__SetPos_414A5D");
-    hnh_Hook(0x43BF6F, hook_FlushD3DAndTouchSurface, "FlushD3DAndTouchSurface_43BF6F");
-    hnh_Hook(0x414191, hook_DrawSprite2D, "DrawSprite2D_414191");
-    hnh_Hook(0x418905, hook_CreateSurfaceWH, "CreateSurfaceWH_418905");
+    // [OK] hnh_Hook(0x481550, hook_DoPeekMessages, "DoPeekMessages_481550");
+    // [OK] hnh_Hook(0x423BAF, hook_DSBufferPlay, "DSBufferPlay_423BAF");
+    // [OK] hnh_Hook(0x413A5E, hook_LoadBmpWithMask_413A5E, "LoadBmpWithMask_413A5E");
+    // [OK] hnh_Hook(0x419A1A, hook_GetSurfaceWH, "GetSurfaceWH_419A1A");
+    // [OK] hnh_Hook(0x43EA05, hook_CreateTextureFromSurfaceWithAlphaMask, "CreateTextureFromSurfaceWithAlphaMask_43EA05");
+    // [OK] hnh_Hook(0x45A41B, hook_GetMouseBtn_45A41B, "GetMouseBtn_45A41B");
+    // [OK] hnh_Hook(0x45A4D8, hook_GetMouseXY_45A4D8, "GetMouseXY_45A4D8");
+    // [OK] hnh_Hook(0x419D89, hook_BltSurface, "BltSurface_419D89");
+    // [OK] hnh_Hook(0x4203B3, hook_LoadBmpScaled_4203B3, "LoadBmpScaled_4203B3");
+    // [OK] hnh_Hook(0x414A5D, hook_CHanaSpriteT3F6__SetPos_414A5D, "CHanaSpriteT3F6__SetPos_414A5D");
+    // [OK] hnh_Hook(0x43BF6F, hook_FlushD3DAndTouchSurface, "FlushD3DAndTouchSurface_43BF6F");
+    // [OK] hnh_Hook(0x414191, hook_DrawSprite2D, "DrawSprite2D_414191");
+    // [OK] hnh_Hook(0x418905, hook_CreateSurfaceWH, "CreateSurfaceWH_418905");
     hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
-    hnh_Hook(0x40BF01, hook_PresentFrame, "PresentFrame_40BF01");
-    hnh_Hook(0x4147ED, hook_DrawSpriteAtRect, "DrawSpriteAtRect_4147ED");
+    // [OK] hnh_Hook(0x40BF01, hook_PresentFrame, "PresentFrame_40BF01");
+    // [OK] hnh_Hook(0x4147ED, hook_DrawSpriteAtRect, "DrawSpriteAtRect_4147ED");
 }

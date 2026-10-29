@@ -268,8 +268,6 @@ D3DXMATRIX *__cdecl hook_D3DXMatrixIdentity(D3DXMATRIX *pOut)
   return result;
 }
 
-LPVOID orig_D3DXMatrixMultiply = NULL;
-
 D3DXMATRIX *__stdcall hook_D3DXMatrixMultiply(D3DXMATRIX *pOut, const D3DXMATRIX *pM1, const D3DXMATRIX *pM2)
 {
   if (!pOut || !pM1 || !pM2)
@@ -398,8 +396,6 @@ HRESULT __cdecl hook_MatrixLookAtLH(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, c
   return S_OK;
 }
 
-LPVOID orig_D3DXMatrixInverse = NULL;
-
 D3DXMATRIX* WINAPI hook_D3DXMatrixInverse(D3DXMATRIX *pOut, float *pfDeterminant, const D3DXMATRIX *pM)
 {
   if (!pOut || !pM)
@@ -501,17 +497,15 @@ LPVOID hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName) {
 }
 
 void register_MatrixLookAtLH_40C64A() {
-  hnh_Hook(0x40C64A, hook_MatrixLookAtLH, "MatrixLookAtLH_40C64A");
-  hnh_Hook(0x48A1EC, hook_D3DXVec3Normalize, "D3DXVec3Normalize_48A1EC");
-  hnh_Hook(0x48ABB3, hook_D3DXMatrixRotationAxis, "D3DXMatrixRotationAxis_48ABB3");
-  hnh_Hook(0x40E3C0, hook_Vec3LengthSq, "Vec3LengthSq_40E3C0");
-  hnh_Hook(0x40E420, hook_Vec3Set, "hook_Vec3Set_40E420");
-  hnh_Hook(0x40E3F0, hook_Vec3Dot, "Vec3Dot_40E3F0");
-  hnh_Hook(0x40DDF3, hook_DegreesToRadians, "DegreesToRadians_40DDF3");
-  hnh_Hook(0x40CB94, hook_MatrixPerspectiveFovLH, "MatrixPerspectiveFovLH_40CB94");
-  hnh_Hook(0x40E450, hook_D3DXMatrixIdentity, "D3DXMatrixIdentity_40E450");
-
-  orig_D3DXMatrixMultiply = hnh_Hook(0x48A4BC, hook_D3DXMatrixMultiply, "D3DXMatrixMultiply_48A4BC");
-  orig_D3DXMatrixInverse = hnh_Hook(0x48A5BD, hook_D3DXMatrixInverse, "D3DXMatrixInverse_48A5BD");
-
+  // [OK] hnh_Hook(0x40C64A, hook_MatrixLookAtLH, "MatrixLookAtLH_40C64A");
+  // [OK] hnh_Hook(0x48A1EC, hook_D3DXVec3Normalize, "D3DXVec3Normalize_48A1EC");
+  // [OK] hnh_Hook(0x48ABB3, hook_D3DXMatrixRotationAxis, "D3DXMatrixRotationAxis_48ABB3");
+  // [OK] hnh_Hook(0x40E3C0, hook_Vec3LengthSq, "Vec3LengthSq_40E3C0");
+  // [OK] hnh_Hook(0x40E420, hook_Vec3Set, "hook_Vec3Set_40E420");
+  // [OK] hnh_Hook(0x40E3F0, hook_Vec3Dot, "Vec3Dot_40E3F0");
+  // [OK} hnh_Hook(0x40DDF3, hook_DegreesToRadians, "DegreesToRadians_40DDF3");
+  // [OK] hnh_Hook(0x40CB94, hook_MatrixPerspectiveFovLH, "MatrixPerspectiveFovLH_40CB94");
+  // [OK] hnh_Hook(0x40E450, hook_D3DXMatrixIdentity, "D3DXMatrixIdentity_40E450");
+  // [OK] hnh_Hook(0x48A4BC, hook_D3DXMatrixMultiply, "D3DXMatrixMultiply_48A4BC");
+  // [OK] hnh_Hook(0x48A5BD, hook_D3DXMatrixInverse, "D3DXMatrixInverse_48A5BD");
 }

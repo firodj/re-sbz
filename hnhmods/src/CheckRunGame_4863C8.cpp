@@ -887,18 +887,18 @@ void __cdecl hook_CalculateLocalRotationMatrix(
 }
 
 void register_CheckRunGame_4863C8() {
-  hnh_Hook(0x4863C8, hook_CheckRunGame_4863C8, "CheckRunGame_4863C8");
-  //hnh_Hook(0x47E858, hook_ReadFileToBuffer, "ReadFileToBuffer_47E858");
-  //hnh_Hook(0x47E7F2, hook_WriteBufferToFile, "WriteBufferToFile_47E7F2");
-  //hnh_Hook(0x4278FF, hook_DisplayConfig_Init, "DisplayConfig_Init_4278FF");
-  //hnh_Hook(0x427F8C, hook_DisplayConfig_ProcessDriverDesc, "DisplayConfig_ProcessDriverDesc_427F8C");
-  //hnh_Hook(0x427C51, hook_IsVideoModeSupported, "IsVideoModeSupported_427C51");
-  //hnh_Hook(0x428927, hook_ShowTitleMenuWnd_428927, "ShowTitleMenuWnd_428927");
-  //hnh_Hook(0x40DD71, hook_SetLightingState, "SetLightingState_40DD71");
-  //hnh_Hook(0x40AF60, hook_D3DInitBuffers_40AF60, "D3DInitBuffers_40AF60");
-  //hnh_Hook(0x408F00, hook_CHanaObj__NewLightT3EF, "CHanaObj__NewLightT3EF");
-  //hnh_Hook(0x40B848, hook_CHanaObj__AddObjItemRef_40B848, "CHanaObj__AddObjItemRef_40B848");
-  //hnh_Hook(0x40BAB8, hook_AttachHanaObj_40BAB8, "AttachHanaObj_40BAB8");
-  //hnh_Hook(0x4070AB, hook_MatrixRotateCubeMapFace, "MatrixRotateCubeMapFace");
-  //hnh_Hook(0x407047, hook_CalculateLocalRotationMatrix, "CalculateLocalRotationMatrix");
+  // [OK] hnh_Hook(0x4863C8, hook_CheckRunGame_4863C8, "CheckRunGame_4863C8");
+  // [OK] hnh_Hook(0x47E858, hook_ReadFileToBuffer, "ReadFileToBuffer_47E858");
+  // [OK] hnh_Hook(0x47E7F2, hook_WriteBufferToFile, "WriteBufferToFile_47E7F2");
+  // [OK] hnh_Hook(0x4278FF, hook_DisplayConfig_Init, "DisplayConfig_Init_4278FF");
+  // [OK] hnh_Hook(0x427F8C, hook_DisplayConfig_ProcessDriverDesc, "DisplayConfig_ProcessDriverDesc_427F8C");
+  // [OK] hnh_Hook(0x427C51, hook_IsVideoModeSupported, "IsVideoModeSupported_427C51");
+  // [OK] hnh_Hook(0x428927, hook_ShowTitleMenuWnd_428927, "ShowTitleMenuWnd_428927");
+  // [OK] hnh_Hook(0x40DD71, hook_SetLightingState, "SetLightingState_40DD71");
+  // [OK] hnh_Hook(0x40AF60, hook_D3DInitBuffers_40AF60, "D3DInitBuffers_40AF60");
+  // [OK] hnh_Hook(0x408F00, hook_CHanaObj__NewLightT3EF, "CHanaObj__NewLightT3EF");
+  // [OK] hnh_Hook(0x40B848, hook_CHanaObj__AddObjItemRef_40B848, "CHanaObj__AddObjItemRef_40B848");
+  // [OK] hnh_Hook(0x40BAB8, hook_AttachHanaObj_40BAB8, "AttachHanaObj_40BAB8");
+  // [OK] hnh_Hook(0x4070AB, hook_MatrixRotateCubeMapFace, "MatrixRotateCubeMapFace");
+  // [OK] hnh_Hook(0x407047, hook_CalculateLocalRotationMatrix, "CalculateLocalRotationMatrix");
 } 

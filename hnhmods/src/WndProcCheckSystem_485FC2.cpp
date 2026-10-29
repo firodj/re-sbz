@@ -558,17 +558,17 @@ LRESULT __stdcall hook_WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wPa
 // ---
 
 void register_WndProcCheckSystem_485FC2() {
-  hnh_Hook(0x485FC2, hook_WndProcCheckSystem_485FC2, "WndProcCheckSystem_485FC2");
-  //hnh_Hook(0x40AC7C, hook_D3DDeinit, "D3DDeinit_40AC7C");
-  //hnh_Hook(0x418620, hook_Renderer_InitializeTrigTablesAndPixelFormat, "Renderer_InitializeTrigTablesAndPixelFormat_418620");
-  //hnh_Hook(0x423CCC, hook_HanaDS_SetErrStr, "HanaDS_SetErrStr_423CCC");
-  //hnh_Hook(0x427520, hook_HanaHeap_Create, "HanaHeap_Create_427520");
-  //hnh_Hook(0x424886, hook_HanaDS_InitHeap, "HanaDS_InitHeap_424886");
-  //hnh_Hook(0x422D50, hook_HanaDS_Init, "HanaDS_Init_422D50");
-  //hnh_Hook(0x427551, hook_HanaHeap_Destroy, "HanaHeap_Destroy_427551");
-  //hnh_Hook(0x42489D, hook_HanaDS_DestroyHeap, "HanaDS_DestroyHeap_42489D");
-  //hnh_Hook(0x422E14, hook_HanaDS_Shutdown, "HanaDS_Shutdown_422E14");
-  //hnh_Hook(0x422690, hook_HanaDS_Create3DListener, "HanaDS_Create3DListener_422690");
-  //hnh_Hook(0x419BCD, hook_SetUiFont_419BCD, "SetUiFont_419BCD");
-  //hnh_Hook(0x41888E, hook_Renderer_CleanupFont, "Renderer_CleanupFont_41888E");
+  // [OK] hnh_Hook(0x485FC2, hook_WndProcCheckSystem_485FC2, "WndProcCheckSystem_485FC2");
+  // [OK] hnh_Hook(0x40AC7C, hook_D3DDeinit, "D3DDeinit_40AC7C");
+  // [OK] hnh_Hook(0x418620, hook_Renderer_InitializeTrigTablesAndPixelFormat, "Renderer_InitializeTrigTablesAndPixelFormat_418620");
+  hnh_Hook(0x423CCC, hook_HanaDS_SetErrStr, "HanaDS_SetErrStr_423CCC");
+  // [OK] hnh_Hook(0x427520, hook_HanaHeap_Create, "HanaHeap_Create_427520");
+  // [OK] hnh_Hook(0x424886, hook_HanaDS_InitHeap, "HanaDS_InitHeap_424886");
+  // [OK] hnh_Hook(0x422D50, hook_HanaDS_Init, "HanaDS_Init_422D50");
+  // [OK] hnh_Hook(0x427551, hook_HanaHeap_Destroy, "HanaHeap_Destroy_427551");
+  // [OK] hnh_Hook(0x42489D, hook_HanaDS_DestroyHeap, "HanaDS_DestroyHeap_42489D");
+  // [OK] hnh_Hook(0x422E14, hook_HanaDS_Shutdown, "HanaDS_Shutdown_422E14");
+  // [OK] hnh_Hook(0x422690, hook_HanaDS_Create3DListener, "HanaDS_Create3DListener_422690");
+  // [OK] hnh_Hook(0x419BCD, hook_SetUiFont_419BCD, "SetUiFont_419BCD");
+  // [OK] hnh_Hook(0x41888E, hook_Renderer_CleanupFont, "Renderer_CleanupFont_41888E");
 }

@@ -172,7 +172,7 @@ void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 0);
     while (!bDone)
     {
-        fTimeAlpha = (float)(GetFrameTime() * 2.1);
+        fTimeAlpha = (float)(GetFrameTime() * 2.1 * 5); // default 2.1
         if (fTimeAlpha < 0.01f)
             fTimeAlpha = 0.01f;
         if (bFadeOut == 0)
@@ -219,8 +219,8 @@ void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
             g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
             g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZVISIBLE, 0);
             g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
-            g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);   // D3DBLEND_SRCALPHA
-            g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);  // D3DBLEND_INVSRCALPHA
+            g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+            g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
             DrawSpriteLTRB(pColorSprite, left, top, right, bottom);
             DrawSpriteLTRB(pDarkenSprite, -100, -100, right2, bottom2);
 
@@ -228,8 +228,8 @@ void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
             g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
             g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZVISIBLE, 0);
             g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
-            g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);   // D3DBLEND_SRCALPHA
-            g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 2);  // D3DBLEND_ONE
+            g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+            g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 2);
             DrawSpriteLTRB(pColorSprite, left, top, right, bottom);
             DrawSpriteLTRB(pDarkenSprite, -100, -100, right2, bottom2);
             g_pD3DDevice_4D6C78->EndScene();
@@ -262,5 +262,5 @@ void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
 }
 
 void register_PlayScreenFade_4874DE() {
-    hnh_Hook(0x4874DE, hook_PlayScreenFade, "PlayScreenFade_4874DE");
+    hnh_Hook(0x4874DE, hook_PlayScreenFade, "PlayScreenFade_4874DE"); // [OK]
 }

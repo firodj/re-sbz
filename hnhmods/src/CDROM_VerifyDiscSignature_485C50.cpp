@@ -221,7 +221,7 @@ BOOL __cdecl hook_CDROM_VerifyDiscSignature(int chDriveLetter, const char* szExp
 }
 
 void register_CDROM_VerifyDiscSignature_485C50() {
-  hnh_Hook(0x485C50, hook_CDROM_VerifyDiscSignature, "CDROM_VerifyDiscSignature_485C50");
-  hnh_Hook(0x4858D0, hook_CDROM_VerifyNT, "CDROM_VerifyNT_4858D0");
-  hnh_Hook(0x485A2A, hook_CDROM_GetDriveFileSystemType, "CDROM_GetDriveFileSystemType_485A2A");
+  // [OK] hnh_Hook(0x485C50, hook_CDROM_VerifyDiscSignature, "CDROM_VerifyDiscSignature_485C50");
+  hnh_Hook(0x4858D0, hook_CDROM_VerifyNT, "CDROM_VerifyNT_4858D0"); // [OK]
+  // [OK] hnh_Hook(0x485A2A, hook_CDROM_GetDriveFileSystemType, "CDROM_GetDriveFileSystemType_485A2A");
 }

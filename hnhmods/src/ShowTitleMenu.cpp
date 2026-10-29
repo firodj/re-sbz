@@ -336,9 +336,9 @@ int __cdecl hook_D3DInit_40A894(CD3DInitParam *pDevParam)
 
 // Register hook if needed
 void register_ShowTitleMenu_427DA8() {
-    hnh_Hook(0x427DA8, hook_ShowTitleMenu_427DA8, "ShowTitleMenu_427DA8");
-    hnh_Hook(0x40A894, hook_D3DInit_40A894, "D3DInit_40A894");
-    hnh_Hook(0x427CC9, hook_DisplayConfig_Destroy, "DisplayConfig_Destroy_427CC9");
-    hnh_Hook(0x4276C0, hook_D3DSetRenderStates_4276C0, "D3DSetRenderStates_4276C0");
-    hnh_Hook(0x40AEFB, hook_AllocateDevicesDescArray, "AllocateDevicesDescArray_40AEFB");
+    // [OK] hnh_Hook(0x427DA8, hook_ShowTitleMenu_427DA8, "ShowTitleMenu_427DA8");
+    // [OK] hnh_Hook(0x40A894, hook_D3DInit_40A894, "D3DInit_40A894");
+    // [OK] hnh_Hook(0x427CC9, hook_DisplayConfig_Destroy, "DisplayConfig_Destroy_427CC9");
+    // [OK] hnh_Hook(0x4276C0, hook_D3DSetRenderStates_4276C0, "D3DSetRenderStates_4276C0");
+    // [OK] hnh_Hook(0x40AEFB, hook_AllocateDevicesDescArray, "AllocateDevicesDescArray_40AEFB");
 }

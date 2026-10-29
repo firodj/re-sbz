@@ -21,9 +21,6 @@
     <ClCompile Include="src\SetFogEnable_40DFB0.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\IsFileExists_47E8EE.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\CDROM_VerifyDiscSignature_485C50.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -70,6 +67,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\ParseODFContent_441A5D.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ParseODS_483932.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

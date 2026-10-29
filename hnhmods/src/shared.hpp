@@ -92,8 +92,8 @@ extern CHAR (&g_szSEPath)[256];
 extern CHAR (&g_szDATAPath)[256];
 
 extern void (__cdecl * SetupDirPath_486630)(void);
-
 extern bool (__cdecl * CheckInstalledDirRoot_4869A7)(HWND hWnd);
+extern BOOL (__cdecl*IsFileExists_47E8EE)(CHAR* pszFilePath);
 
 // === DEFINED CheckRunGame.cpp ===
 
@@ -193,10 +193,6 @@ extern BOOL(__cdecl* CDROM_VerifyDiscSignature)(int chDriveLetter, const char* s
 extern const char * (__cdecl*DSErrToString_423CE7)(HRESULT hr);
 extern const char* (__cdecl* DDErrToString_41898E)(HRESULT hr);
 
-// === DEFINED IsFileExists.cpp ===
-
-extern BOOL (__cdecl*IsFileExists_47E8EE)(CHAR* pszFilePath);
-
 // === DEFINED GameMainLoop.cpp ===
 
 extern void (__cdecl*GameMainLoop_47F013)(void);
@@ -265,6 +261,15 @@ extern int(__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab);
 
 extern LPDIRECTDRAWSURFACE7(__cdecl* PlayScreenFade)(int bisGo, COLORREF colorref,
   LPDIRECTDRAWSURFACE7 pDdSurface, float fFade, char bFlags);
+
+// === DEFINED ParseODFContent.cpp ===
+
+extern int(__cdecl*ParseOdfANIM_4414EB)(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAnimSetT3F1, CHanaFrameT3EC_S354 *pCurrentFramT3EC);
+extern void(__cdecl*AssignLigthtToFrame_40539D)(CHanaFrameT3EC_S354 *pHanaT3EC, CHanaLightT3EF_S1A0 *pHanaLight);
+
+// === DEFINED ParseODS.cpp ===
+
+extern int(__cdecl*ParseODS_483932)(LPBYTE pBuf, CHanaSceneT458_S504 *pScene);
 
 // === DEFINED CHanaObj__NewFrameT3EC_S354.cpp ===
 

@@ -290,7 +290,7 @@ CHanaFrameT3EC_S354 *__cdecl hook_ParseOdfFRAM_44106A(LPBYTE *ppBuf,
     pBuf += nSize;
 
     // create the frame, or adopt the camera for the magic name
-    if (!memcmp(szName, "CameraFrame", 0xB))
+    if (!memcmp(szName, "CameraFrame", 11u))
     {
         pFrame = g_pCameraFrame;
         AttachChild_4055FD(pRootFrameT3EC, g_pCameraFrame);
@@ -806,10 +806,11 @@ int __cdecl hook_ParseOdf3DON_44189C(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pHana
 }
 
 void register_ParseODFContent_441A5D() {
-    hnh_Hook(0x441A5D, hook_ParseODFContent_441A5D, "ParseODFContent_441A5D");
-    hnh_Hook(0x44106A, hook_ParseOdfFRAM_44106A, "ParseOdfFRAM_44106A");
-    hnh_Hook(0x4414EB, hook_ParseOdfANIM_4414EB, "ParseOdfANIM_4414EB");
-    hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C");
-    hnh_Hook(0x440896, hook_ParseOdfMORP_440896, "ParseOdfMORP_440896");
-    hnh_Hook(0x44189C, hook_ParseOdf3DON_44189C, "ParseOdf3DON_44189C");
+    // [!] hnh_Hook(0x441A5D, hook_ParseODFContent_441A5D, "ParseODFContent_441A5D");
+    
+    hnh_Hook(0x44106A, hook_ParseOdfFRAM_44106A, "ParseOdfFRAM_44106A"); // [OK]
+    hnh_Hook(0x4414EB, hook_ParseOdfANIM_4414EB, "ParseOdfANIM_4414EB"); // [OK]
+    hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C"); // [OK]
+    hnh_Hook(0x440896, hook_ParseOdfMORP_440896, "ParseOdfMORP_440896"); // [OK]
+    hnh_Hook(0x44189C, hook_ParseOdf3DON_44189C, "ParseOdf3DON_44189C"); // [OK]
 }

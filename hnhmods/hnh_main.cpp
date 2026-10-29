@@ -77,7 +77,6 @@ void register_WndProcCheckSystem_485FC2();
 void register_CheckInstalledDirRoot_4869A7();
 void register_MemAlloc_40DEF7();
 void register_SetFogEnable_40DFB0();
-void register_IsFileExists_47E8EE();
 void register_DSErrToString_423CE7();
 void AssertHanaStructSize();
 void register_CHanaObj__Free_40C1E4();
@@ -94,6 +93,7 @@ void register_InGameMenu_4799E2();
 void register_MenuCharSelect_47A324();
 void register_PlayScreenFade_4874DE();
 void register_ParseODFContent_441A5D();
+void register_ParseODS_483932();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -116,13 +116,13 @@ void InitHNH() {
 
 	AssertHanaStructSize();
 	
+	register_WinMain_485CE0();
 	register_MatrixLookAtLH_40C64A();
 	register_WndProcCheckSystem_485FC2();
 	register_CDROM_VerifyDiscSignature_485C50();
 	register_CheckInstalledDirRoot_4869A7();
 	register_MemAlloc_40DEF7();
 	register_SetFogEnable_40DFB0();
-	register_IsFileExists_47E8EE();
 	register_DSErrToString_423CE7();
 	register_CHanaObj__Free_40C1E4();
 	register_CheckRunGame_4863C8();
@@ -136,6 +136,7 @@ void InitHNH() {
 	register_MenuCharSelect_47A324();
 	register_PlayScreenFade_4874DE();
 	register_ParseODFContent_441A5D();
+	register_ParseODS_483932();
 
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)

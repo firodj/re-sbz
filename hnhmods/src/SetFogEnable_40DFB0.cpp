@@ -92,8 +92,8 @@ HRESULT __cdecl hook_SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
 }
 
 void register_SetFogEnable_40DFB0() {
-  hnh_Hook(0x40DFB0, hook_SetFogEnable_40DFB0, "SetFogEnable_40DFB0");
-  hnh_Hook(0x40E02D, hook_SetFogMode_40E02D, "SetFogMode_40E02D");
-  hnh_Hook(0x40E0B4, hook_SetFogColor_40E0B4, "SetFogColor_40E0B4");
-  hnh_Hook(0x40E0E2, hook_SetFogRange_40E0E2, "SetFogRange_40E0E2");
+  // [OK] hnh_Hook(0x40DFB0, hook_SetFogEnable_40DFB0, "SetFogEnable_40DFB0");
+  // [OK] hnh_Hook(0x40E02D, hook_SetFogMode_40E02D, "SetFogMode_40E02D");
+  // [OK] hnh_Hook(0x40E0B4, hook_SetFogColor_40E0B4, "SetFogColor_40E0B4");
+  // [OK] hnh_Hook(0x40E0E2, hook_SetFogRange_40E0E2, "SetFogRange_40E0E2");
 }
