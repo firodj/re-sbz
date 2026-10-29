@@ -3,24 +3,6 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-// ParseODFContent_441A5D -- content pass of the ODF (3D object/scene) parser;
-// called only by ParseODFFile_441F19 after the header pass. Walks the tag
-// stream, keeping the most recent frame as "current":
-//   FRAM  ParseOdfFRAM_44106A  new frame; also grows the parallel parent-name
-//                              list (one 256-char entry per frame); consecutive
-//                              FRAMs chain onto it
-//   MESH  ParseOdfMESH_44068C  mesh for the current frame; CalcFrameBound then
-//                              frees the temp mesh (typed as morp in the call)
-//   MORP  ParseOdfMORP_440896  morph, same treatment
-//   ANIM  ParseOdfANIM_4414EB  frame animation for the current frame
-//   3DON  ParseOdf3DON_44189C  nested 3D object off the temp root
-// An unknown tag breaks the dispatch loop; the scan then steps one byte at a
-// time until the Shift-JIS terminator below (or a FRAM re-enters dispatch).
-// Afterwards every parsed frame is re-parented: the entry in the parent-name
-// list is looked up among ALL frames by szName_8 -> AttachChild + MtxMult;
-// unnamed or unmatched frames attach to the caller's root frame instead.
-// Always returns 1.
-
 // === PINNED GAME FUNCTIONS ===
 int (__cdecl*ParseODFContent_441A5D)(LPBYTE pBuf1, CHanaFrameT3EC_S354 *pRootFrameT3EC,
     CHanaAnimSetT3F1_S150 *pAnimSetT3F1) =
@@ -99,147 +81,173 @@ D3DXMATRIX *(__cdecl*MtxMult_4069DD)(CHanaFrameT3EC_S354 *pChildFrame,
       float, float, float)>(0x4069DD);
 
 // === FUNCTIONS ===
-int __cdecl hook_ParseODFContent_441A5D(LPBYTE pBuf1, CHanaFrameT3EC_S354 *pRootFrameT3EC,
-                                        CHanaAnimSetT3F1_S150 *pAnimSetT3F1)
+
+typedef char String256[256];
+
+// ParseODFContent_441A5D -- content pass of the ODF (3D object/scene) parser;
+// called only by ParseODFFile_441F19 after the header pass. Walks the tag
+// stream, keeping the most recent frame as "current":
+//   FRAM  ParseOdfFRAM_44106A  new frame; also grows the parallel parent-name
+//                              list (one 256-char entry per frame); consecutive
+//                              FRAMs chain onto it
+//   MESH  ParseOdfMESH_44068C  mesh for the current frame; CalcFrameBound then
+//                              frees the temp mesh (typed as morp in the call)
+//   MORP  ParseOdfMORP_440896  morph, same treatment
+//   ANIM  ParseOdfANIM_4414EB  frame animation for the current frame
+//   3DON  ParseOdf3DON_44189C  nested 3D object off the temp root
+// An unknown tag breaks the dispatch loop; the scan then steps one byte at a
+// time until the Shift-JIS terminator below (or a FRAM re-enters dispatch).
+// Afterwards every parsed frame is re-parented: the entry in the parent-name
+// list is looked up among ALL frames by szName_8 -> AttachChild + MtxMult;
+// unnamed or unmatched frames attach to the caller's root frame instead.
+// Always returns 1.
+
+BOOL __cdecl hook_ParseODFContent_441A5D(
+  LPBYTE pBuf1,
+  CHanaFrameT3EC_S354 *pRootFrameT3EC,
+  CHanaAnimSetT3F1_S150 *pAnimSetT3F1)
 {
-    CHanaFrameT3EC_S354 *pParentFrame;          // [esp+0h] [ebp-3Ch]
-    CHanaFrameT3EC_S354 *pChild;                // [esp+4h] [ebp-38h]
-    CHAR (*pParentList)[256];                   // [esp+8h] [ebp-34h] parent names
-    int nFramIndex = 0, nMeshIndex = 0, nMorpIndex = 0;
-    unsigned int iParent, iChild, nFramesCount; // [ebp-24h] / [ebp-20h] / [ebp-8h]
-    CHanaMeshT3F5_S138 *pMeshT3F5;              // [esp+1Ch] [ebp-20h]
-    CHanaFrameT3EC_S354 *pCurrentFrame;         // [esp+24h] [ebp-18h]
-    CHanaFrameArrayT3ED_S138 *pChildFramesEnum; // [esp+2Ch] [ebp-10h]
-    CHanaFrameT3EC_S354 *pRootFrameT3EC_v1;     // [esp+30h] [ebp-Ch] temp root
-    CHanaMorpT457_S40C *pMorpT457;              // [esp+38h] [ebp-4h]
+  CHanaFrameT3EC_S354 *pParentFrame; // [esp+0h] [ebp-3Ch] BYREF
+  CHanaFrameT3EC_S354 *pChild; // [esp+4h] [ebp-38h] BYREF
+  String256 *pParentList; // [esp+8h] [ebp-34h] BYREF
+  int nFramIndex; // [esp+10h] [ebp-2Ch]
+  int nMorpIndex; // [esp+14h] [ebp-28h]
+  unsigned int iParent; // [esp+18h] [ebp-24h]
+  CHanaMeshT3F5_S138 *pMeshT3F5; // [esp+1Ch] [ebp-20h] BYREF
+  unsigned int iChild; // [esp+20h] [ebp-1Ch]
+  CHanaFrameT3EC_S354 *pCurrentFrame; // [esp+24h] [ebp-18h]
+  int nMeshIndex; // [esp+28h] [ebp-14h]
+  CHanaFrameArrayT3ED_S138 *pChildFramesEnum; // [esp+2Ch] [ebp-10h] BYREF
+  CHanaFrameT3EC_S354 *pRootFrameT3EC_v1; // [esp+30h] [ebp-Ch] BYREF
+  unsigned int nFramesCount; // [esp+34h] [ebp-8h]
+  CHanaMorpT457_S40C *pMorpT457; // [esp+38h] [ebp-4h] BYREF
 
-    DebugLog("[HNH:SUB] ParseODFContent_441A5D\n");
+  DebugLog("[HNH:SUB] ParseODFContent_441A5D\n");
 
-    pMeshT3F5 = NULL;
-    pMorpT457 = NULL;
-    pRootFrameT3EC_v1 = NULL;
-    pParentList = (CHAR (*)[256])MemAlloc_40DEF7(0x200);
-    MtxStackStartMultLocal_4074EF();
-    CHanaObj__NewFrameT3EC_S354(NULL, &pRootFrameT3EC_v1);
-    pCurrentFrame = NULL;
-
-    for (;;)
+  nMeshIndex = 0;
+  nMorpIndex = 0;
+  nFramIndex = 0;
+  pMeshT3F5 = 0;
+  pMorpT457 = 0;
+  pRootFrameT3EC_v1 = 0;
+  pParentList = (String256 *)MemAlloc_40DEF7(0x200u);
+  MtxStackStartMultLocal_4074EF();
+  CHanaObj__NewFrameT3EC_S354(0, &pRootFrameT3EC_v1);
+  pCurrentFrame = 0;
+  for ( ;; )
+  {
+    for ( ;; )                                 // is 'FRAM'
     {
-        for (;;)                                  // tag dispatch
+      while ( !memcmp(pBuf1, "FRAM", 4u) )
+      {
+        pBuf1 += 4;
+        pCurrentFrame = ParseOdfFRAM_44106A(&pBuf1, pRootFrameT3EC_v1, (void **)&pParentList, ++nFramIndex);
+      }
+      if ( !pCurrentFrame )
+        break;
+      if ( !memcmp(pBuf1, "MESH", 4u) )         // is 'MESH'
+      {
+        pBuf1 += 4;
+        ++nMeshIndex;
+        ParseOdfMESH_44068C(&pBuf1, &pMeshT3F5, pAnimSetT3F1, pRootFrameT3EC_v1);
+        CalcFrameBound_404B80(pCurrentFrame, (CHanaMorpT457_S40C *)pMeshT3F5);
+        if ( pMeshT3F5 )
         {
-            while (!memcmp(pBuf1, "FRAM", 4))
-            {
-                pBuf1 += 4;
-                pCurrentFrame = ParseOdfFRAM_44106A(&pBuf1, pRootFrameT3EC_v1,
-                                                     (void **)&pParentList, ++nFramIndex);
-            }
-            if (!pCurrentFrame)
-                break;
-            if (!memcmp(pBuf1, "MESH", 4))
-            {
-                pBuf1 += 4;
-                ++nMeshIndex;                     // counter kept, never read
-                ParseOdfMESH_44068C(&pBuf1, &pMeshT3F5, pAnimSetT3F1, pRootFrameT3EC_v1);
-                CalcFrameBound_404B80(pCurrentFrame, (CHanaMorpT457_S40C *)pMeshT3F5);
-                if (pMeshT3F5)
-                {
-                    CHanaObj__Free_40C1E4((CHanaBase_S130 *)pMeshT3F5);
-                    pMeshT3F5 = NULL;
-                }
-            }
-            else if (!memcmp(pBuf1, "MORP", 4))
-            {
-                pBuf1 += 4;
-                ++nMorpIndex;
-                ParseOdfMORP_440896(&pBuf1, &pMorpT457, pAnimSetT3F1, pRootFrameT3EC_v1);
-                CalcFrameBound_404B80(pCurrentFrame, pMorpT457);
-                if (pMorpT457)
-                {
-                    CHanaObj__Free_40C1E4((CHanaBase_S130 *)pMorpT457);
-                    pMorpT457 = NULL;
-                }
-            }
-            else if (!memcmp(pBuf1, "ANIM", 4))
-            {
-                pBuf1 += 4;
-                ParseOdfANIM_4414EB(&pBuf1, pAnimSetT3F1, pCurrentFrame);
-            }
-            else if (!memcmp(pBuf1, "3DON", 4))
-            {
-                pBuf1 += 4;
-                ParseOdf3DON_44189C(&pBuf1, pAnimSetT3F1, pRootFrameT3EC_v1);
-            }
-            else
-                break;                            // unknown tag
+          CHanaObj__Free_40C1E4(pMeshT3F5);
+          pMeshT3F5 = 0;
         }
-
-        // Shift-JIS @0x4B416C: "繝輔ぃ繧､繝ｫ縺ｯ邨ゆｺ�" ("file ends"); escape-encoded
-        // so this file stays codepage-safe (14 bytes = 7 double-byte chars)
-        if (!memcmp(pBuf1, "\x83\x74\x83\x40\x83\x43\x83\x8B\x82\xCD\x8F\x49\x97\xB9", 14))
-            break;
-        ++pBuf1;                                  // rescan from the next byte
-    }
-
-    // re-parent: match each frame's recorded parent name against all frames;
-    // unnamed or unmatched frames go to the caller's root
-    pChildFramesEnum = NULL;
-    CHanaObj__NewFrameArrayT3EDFromChildT3EC(pRootFrameT3EC_v1, &pChildFramesEnum);
-    nFramesCount = (unsigned int)CHanaObj__GetFramesCountT3ED_408E75(pChildFramesEnum);
-    for (iChild = 0; iChild < nFramesCount; ++iChild)
-    {
-        BOOL bFoundParent = FALSE;
-
-        pChild = NULL;
-        CHanaObj__GetFrameAtIndexT3ED(pChildFramesEnum, iChild, &pChild);
-        if (pParentList[iChild][0])
+      }
+      else if ( !memcmp(pBuf1, "MORP", 4u) )    // is 'MORP'
+      {
+        pBuf1 += 4;
+        ++nMorpIndex;
+        ParseOdfMORP_440896(&pBuf1, &pMorpT457, pAnimSetT3F1, pRootFrameT3EC_v1);
+        CalcFrameBound_404B80(pCurrentFrame, pMorpT457);
+        if ( pMorpT457 )
         {
-            for (iParent = 0; iParent < nFramesCount; ++iParent)
-            {
-                pParentFrame = NULL;
-                CHanaObj__GetFrameAtIndexT3ED(pChildFramesEnum, iParent, &pParentFrame);
-                if (!lstrcmpA(pParentList[iChild], pParentFrame->szName_8))
-                {
-                    AttachChild_4055FD(pParentFrame, pChild);
-                    MtxMult_4069DD(pChild, pParentFrame, 0.0f, 0.0f, 0.0f);
-                    bFoundParent = TRUE;          // original encodes this as iParent = -1
-                }
-                if (pParentFrame)
-                {
-                    CHanaObj__Free_40C1E4((CHanaBase_S130 *)pParentFrame);
-                    pParentFrame = NULL;
-                }
-                if (bFoundParent)
-                    break;
-            }
+          CHanaObj__Free_40C1E4(pMorpT457);
+          pMorpT457 = 0;
         }
-        if (!bFoundParent)
+      }
+      else if ( !memcmp(pBuf1, "ANIM", 4u) )    // is 'ANIM'
+      {
+        pBuf1 += 4;
+        ParseOdfANIM_4414EB(&pBuf1, pAnimSetT3F1, pCurrentFrame);
+      }
+      else if ( !memcmp(pBuf1, "3DON", 4u) )        // is '3DON'
+      {
+        ParseOdf3DON_44189C(&pBuf1, pAnimSetT3F1, pRootFrameT3EC_v1);
+      } else
+        break;
+    }
+    if ( !memcmp(pBuf1, "ファイルは終了", 14u) )
+      break;
+    ++pBuf1;
+  }
+
+  // re-parent: match each frame's recorded parent name against all frames;
+  // unnamed or unmatched frames go to the caller's root
+    
+  pChildFramesEnum = 0;
+  CHanaObj__NewFrameArrayT3EDFromChildT3EC(pRootFrameT3EC_v1, &pChildFramesEnum);
+  nFramesCount = CHanaObj__GetFramesCountT3ED_408E75(pChildFramesEnum);
+  for ( iChild = 0; iChild < nFramesCount; ++iChild )
+  {
+    BOOL bFoundParent = FALSE;
+    pChild = 0;
+    CHanaObj__GetFrameAtIndexT3ED(pChildFramesEnum, iChild, &pChild);
+    if ( pParentList[iChild][0] )
+    { 
+      pParentFrame = 0;
+      for ( iParent = 0; iParent < nFramesCount; ++iParent )
+      {
+        CHanaObj__GetFrameAtIndexT3ED(pChildFramesEnum, iParent, &pParentFrame);
+        if ( !lstrcmpA(pParentList[iChild], pParentFrame->szName_8) )
         {
-            AttachChild_4055FD(pRootFrameT3EC, pChild);
-            MtxMult_4069DD(pChild, pRootFrameT3EC, 0.0f, 0.0f, 0.0f);
+          AttachChild_4055FD(pParentFrame, pChild);
+          MtxMult_4069DD(pChild, pParentFrame, 0.0, 0.0, 0.0);
+
+          bFoundParent = TRUE; // original encodes this as iParent = -1
         }
-        if (pChild)
+        if ( pParentFrame )
         {
-            CHanaObj__Free_40C1E4((CHanaBase_S130 *)pChild);
-            pChild = NULL;
+          CHanaObj__Free_40C1E4(pParentFrame);
+          pParentFrame = 0;
         }
+        if (bFoundParent)
+          break;
+      }
+    }
+    
+    if ( !bFoundParent )
+    {
+      AttachChild_4055FD(pRootFrameT3EC, pChild);
+      MtxMult_4069DD(pChild, pRootFrameT3EC, 0.0, 0.0, 0.0);
     }
 
-    if (pChildFramesEnum)
+    if ( pChild )
     {
-        CHanaObj__Free_40C1E4((CHanaBase_S130 *)pChildFramesEnum);
-        pChildFramesEnum = NULL;
+      CHanaObj__Free_40C1E4(pChild);
+      pChild = 0;
     }
-    if (pRootFrameT3EC_v1)
-    {
-        CHanaObj__Free_40C1E4((CHanaBase_S130 *)pRootFrameT3EC_v1);
-        pRootFrameT3EC_v1 = NULL;
-    }
-    if (pParentList)
-    {
-        MemFree_40DF64(pParentList);
-        pParentList = NULL;
-    }
-    return 1;
+  }
+  
+  if ( pChildFramesEnum )
+  {
+    CHanaObj__Free_40C1E4(pChildFramesEnum);
+    pChildFramesEnum = 0;
+  }
+  if ( pRootFrameT3EC_v1 )
+  {
+    CHanaObj__Free_40C1E4(pRootFrameT3EC_v1);
+    pRootFrameT3EC_v1 = 0;
+  }
+  if ( pParentList )
+  {
+    MemFree_40DF64(pParentList);
+    pParentList = 0;
+  }
+  return TRUE;
 }
 
 // ParseOdfFRAM_44106A -- parse one FRAM block; only xref is the FRAM dispatch
@@ -512,7 +520,7 @@ int __cdecl hook_ParseOdfMESH_44068C(LPBYTE *ppBuf, CHanaMeshT3F5_S138 **ppOut,
         {
             if (!memcmp(pBuf, "ANIM", 4) || !memcmp(pBuf, "FRAM", 4)
                 || !memcmp(pBuf, "MESH", 4) || !memcmp(pBuf, "MORP", 4)
-                // Shift-JIS @0x4B416C: "繝輔ぃ繧､繝ｫ縺ｯ邨ゆｺ�" ("file ends")
+                // Shift-JIS @0x4B416C: "ファイルは終了" ("file ends")
                 || !memcmp(pBuf, "\x83\x74\x83\x40\x83\x43\x83\x8B\x82\xCD\x8F\x49\x97\xB9", 14))
             {
                 bStopped = TRUE;
@@ -658,7 +666,7 @@ int __cdecl hook_ParseOdfMORP_440896(LPBYTE *ppBuf, CHanaMorpT457_S40C **ppOut,
                 // stop tags tested at pBuf (not the scan cursor) -- original
                 if (!memcmp(pBuf, "Mkey", 4) || !memcmp(pBuf, "FRAM", 4)
                     || !memcmp(pBuf, "MESH", 4) || !memcmp(pBuf, "MORP", 4)
-                    // Shift-JIS @0x4B416C: "繝輔ぃ繧､繝ｫ縺ｯ邨ゆｺ�" ("file ends")
+                    // Shift-JIS @0x4B416C: "ファイルは終了" ("file ends")
                     || !memcmp(pBuf, "\x83\x74\x83\x40\x83\x43\x83\x8B\x82\xCD\x8F\x49\x97\xB9", 14))
                     break;
                 ++pBuf;
@@ -806,8 +814,7 @@ int __cdecl hook_ParseOdf3DON_44189C(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pHana
 }
 
 void register_ParseODFContent_441A5D() {
-    // [!] hnh_Hook(0x441A5D, hook_ParseODFContent_441A5D, "ParseODFContent_441A5D");
-    
+    // [OK] hnh_Hook(0x441A5D, hook_ParseODFContent_441A5D, "ParseODFContent_441A5D");
     hnh_Hook(0x44106A, hook_ParseOdfFRAM_44106A, "ParseOdfFRAM_44106A"); // [OK]
     hnh_Hook(0x4414EB, hook_ParseOdfANIM_4414EB, "ParseOdfANIM_4414EB"); // [OK]
     hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C"); // [OK]
