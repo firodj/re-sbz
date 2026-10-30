@@ -390,8 +390,10 @@ CSoundStruct_8 *__cdecl hook_LoadWavToDS3DBuffer_42277E(LPSTR pszFileName)
 }
 
 void register_LoadSoundEffects_47EB7F() {
-    // [OK] hnh_Hook(0x47EB7F, hook_LoadSoundEffects_47EB7F, "LoadSoundEffects_47EB7F");
-    // [OK] hnh_Hook(0x47EEEC, hook_ReleaseSoundEffects, "ReleaseSoundEffects_47EEEC");
-    // [OK] hnh_Hook(0x422E7B, hook_LoadWav_422E7B, "LoadWav_422E7B");
-    // [OK] hnh_Hook(0x42277E, hook_LoadWavToDS3DBuffer_42277E, "LoadWavToDS3DBuffer_42277E");
+  hnh_HookOff();
+  hnh_Hook(0x47EB7F, hook_LoadSoundEffects_47EB7F, "LoadSoundEffects_47EB7F"); // [OK] 
+  hnh_Hook(0x47EEEC, hook_ReleaseSoundEffects, "ReleaseSoundEffects_47EEEC"); // [OK] 
+  hnh_Hook(0x422E7B, hook_LoadWav_422E7B, "LoadWav_422E7B"); // [OK] 
+  hnh_Hook(0x42277E, hook_LoadWavToDS3DBuffer_42277E, "LoadWavToDS3DBuffer_42277E"); // [OK] 
+  hnh_HookOn();
 }

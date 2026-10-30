@@ -184,15 +184,18 @@ int __cdecl hook_MemFree_40DF64(void *pBuf)
 }
 
 void register_MemAlloc_40DEF7() {
-  // [OK] hnh_Hook(0x40DEF7, hook_MemAlloc_40DEF7, "MemAlloc_40DEF7");
-  // [OK] hnh_Hook(0x40DF64, hook_MemFree_40DF64, "MemFree_40DF64");
   hnh_Hook(0x40A813, hook_PrintDebugError, "PrintDebugError_40A813");
 
   g_nMinD3DPrintfLevel_534388 = -1;
 
   hnh_Hook(0x490AC6, hook_D3DXDprintf, "D3DXDprintf_490AC6");
-  // [OK] hnh_Hook(0x4248A7, hook_AllocMem, "AllocMem_4248A7");
-  // [OK] hnh_Hook(0x4248D2, hook_SafeFree, "SafeFree_4248D2");
-  // [OK] hnh_Hook(0x427591, hook_HeapAllocRef, "HeapAllocRef_427591");
-  // [OK] hnh_Hook(0x4275DF, hook_HeapFreeRef, "HeapFreeRef_4275DF");
+
+  hnh_HookOff();
+  hnh_Hook(0x40DEF7, hook_MemAlloc_40DEF7, "MemAlloc_40DEF7"); // [OK] 
+  hnh_Hook(0x40DF64, hook_MemFree_40DF64, "MemFree_40DF64"); // [OK] 
+  hnh_Hook(0x4248A7, hook_AllocMem, "AllocMem_4248A7"); // [OK] 
+  hnh_Hook(0x4248D2, hook_SafeFree, "SafeFree_4248D2"); // [OK] 
+  hnh_Hook(0x427591, hook_HeapAllocRef, "HeapAllocRef_427591"); // [OK] 
+  hnh_Hook(0x4275DF, hook_HeapFreeRef, "HeapFreeRef_4275DF"); // [OK] 
+  hnh_HookOn();
 }

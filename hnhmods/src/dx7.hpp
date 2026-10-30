@@ -354,6 +354,8 @@ struct D2D_RECT_F
 #define D3DX_UPDATE_NOVSYNC (1<<0)
 
 LPVOID hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName);
+void hnh_HookOn();
+void hnh_HookOff();
 
 extern HRESULT(*D3DXUninitialize)(void);
 extern HRESULT (*D3DXInitialize)(void); 

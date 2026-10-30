@@ -317,5 +317,8 @@ void __cdecl hook_ReadStrFile_483567(CHanaSceneT458_S504 *pScene, const char *sz
 
 void register_ParseODS_483932() {
     hnh_Hook(0x483932, hook_ParseODS_483932, "ParseODS_483932"); // [OK]
-    // [OK] hnh_Hook(0x483567, hook_ReadStrFile_483567, "ReadStrFile_483567");
+
+    hnh_HookOff();
+    hnh_Hook(0x483567, hook_ReadStrFile_483567, "ReadStrFile_483567"); // [OK] 
+    hnh_HookOn();
 }

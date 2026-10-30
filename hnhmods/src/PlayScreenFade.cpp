@@ -1027,14 +1027,12 @@ void __cdecl hook_HanaMorpT457_Interp(CHanaMorpT457_S40C *pMorpT457, float fMorp
   D3DVERTEX *pVtxBuf; // [esp+1Ch] [ebp-1FCh] BYREF
   unsigned int nSrcIdx; // [esp+20h] [ebp-1F8h]
   int j; // [esp+24h] [ebp-1F4h]
-  int v5; // [esp+28h] [ebp-1F0h]
+ 
   float fParams[10]; // [esp+2Ch] [ebp-1ECh] BYREF
   DWORD dwNumVerts; // [esp+54h] [ebp-1C4h] BYREF
   unsigned int nBufs; // [esp+58h] [ebp-1C0h]
-  CHanaVertT3EA_S1FC *pVtxObjs[1]; // [esp+5Ch] [ebp-1BCh]
-  int bBlendGate0; // [esp+60h] [ebp-1B8h]
-  int bBlendGate1; // [esp+64h] [ebp-1B4h]
-  _BYTE v12[28]; // [esp+68h] [ebp-1B0h] BYREF
+  CHanaVertT3EA_S1FC *pVtxObjs[10]; // [esp+5Ch] [ebp-1BCh]
+
   int i; // [esp+84h] [ebp-194h]
   D3DVERTEX *pVtxBufs[100]; // [esp+88h] [ebp-190h] BYREF
 
@@ -1043,14 +1041,11 @@ void __cdecl hook_HanaMorpT457_Interp(CHanaMorpT457_S40C *pMorpT457, float fMorp
   for ( i = 0; i < pMorpT457->pMeshT3F5_138->nCountVertT3EA_130; ++i )
   {
     nBufs = 1;
-    v5 = 0;
+    
     nSrcIdx = 0;
     dwNumVerts = 0;
     memset(fParams, 0, sizeof(fParams));
-    pVtxObjs[0] = 0;
-    bBlendGate0 = 0;
-    bBlendGate1 = 0;
-    memset(v12, 0, sizeof(v12));
+    memset(pVtxObjs, 0, sizeof(pVtxObjs));
     for ( j = 1; j < pMorpT457->arrMKeyT3EASize_348[i]; ++j )
     {
       if ( (double)(unsigned int)pMorpT457->arrMKeyT3EA_34C[i][j].nParam > fMorpParam )
@@ -1065,7 +1060,7 @@ void __cdecl hook_HanaMorpT457_Interp(CHanaMorpT457_S40C *pMorpT457, float fMorp
         fParams[nBufs] = (float)(unsigned int)pMorpT457->arrMKeyT3EA_34C[i][j].nParam;
         pVtxBufs[nBufs] = pVtxBuf;
         pVtxObjs[nBufs++] = pMorpT457->refsVertT3EA_13C[nSrcIdx];
-        if ( bBlendGate0 && bBlendGate1 )
+        if ( pVtxObjs[1] && pVtxObjs[2] )
         {
           CHanaObj__LockVtxBufT3EA_418544(pMorpT457->pMeshT3F5_138->refsVertT3EA[i], &dwNumVerts, (LPVOID *)&pVtxBuf);
           fParams[0] = fMorpParam;
@@ -1277,36 +1272,38 @@ D3DVERTEX *__cdecl hook_HanaVert_Transform(D3DVERTEX *pOutVtx, D3DXMATRIX *pM, D
 
 void register_PlayScreenFade_4874DE() {
   hnh_Hook(0x4874DE, hook_PlayScreenFade, "PlayScreenFade_4874DE"); // [OK]
-
-  // [OK] hnh_Hook(0x47E78F, hook_GetTimerScaleFactor,           "GetTimerScaleFactor_47E78F");
-  // [OK] hnh_Hook(0x47E782, hook_SetTimerScaleFactor,           "SetTimerScaleFactor_47E782");
-  // [OK] hnh_Hook(0x41973F, hook_RGBToSurfaceFormat,            "RGBToSurfaceFormat_41973F");
-  // [OK] hnh_Hook(0x4137D1, hook_CHanaObj__NewSpriteT3F6bySurf, "CHanaObj__NewSpriteT3F6bySurf_4137D1");
-  // [OK] hnh_Hook(0x413D78, hook_CHanaObj__ReplaceTexture3F6,   "CHanaObj__ReplaceTexture3F6_413D78");
-  // [OK] hnh_Hook(0x414589, hook_DrawSpriteLTRB,                "DrawSpriteLTRB_414589");
-  // [OK] hnh_Hook(0x414ABA, hook_CHanaObj__SetAlpha3F6,         "CHanaObj__SetAlpha3F6_414ABA");
-  // [OK] hnh_Hook(0x419D16, hook_BltFastWH,                     "BltFastWH_419D16");
   hnh_Hook(0x4874A5, hook_RenderFlush_4874A5,            "RenderFlush_4874A5");
-  // [OK] hnh_Hook(0x40BF4F, hook_RenderClear_40BF4F,            "RenderClear_40BF4F");
-  // [OK] hnh_Hook(0x47E768, hook_FrameTimer_BeginFrame,         "FrameTimer_BeginFrame_47E768");
-  // [OK] hnh_Hook(0x47E7D5, hook_FrameTimer_EndFrame,           "FrameTimer_EndFrame_47E7D5");
-  // [OK] hnh_Hook(0x406AB1, hook_HanaFrame_GetRelPosition,      "HanaFrame_GetRelPosition_406AB1");
-  // [OK] hnh_Hook(0x40773F, hook_HanaFrame_BuildMatrixStack,    "HanaFrame_BuildMatrixStack_40773F");
-  // [OK] hnh_Hook(0x40BBF4, hook_CHanaObj__GetType_40BBF4,      "CHanaObj__GetType_40BBF4");
-  // [OK] hnh_Hook(0x433569, hook_HanaMorpT457_Animate,          "HanaMorpT457_Animate_433569");
-  // [OK] hnh_Hook(0x418544, hook_CHanaObj__LockVtxBufT3EA_418544,   "CHanaObj__LockVtxBufT3EA_418544");
-  // [OK] hnh_Hook(0x41858E, hook_CHanaObj__UnlockVrxBufT3EA_41858E, "CHanaObj__UnlockVrxBufT3EA_41858E");
-  // [OK] hnh_Hook(0x417F88, hook_CalculateVertexSize, "CalculateVertexSize_417F88");
-  // [OK] hnh_Hook(0x47E79A, hook_GetFrameTime, "GetFrameTime_47E79A");
   hnh_Hook(0x43F3F7, hook_SelfBltDC,    "SelfBltDC_43F3F7");
-  // [OK] hnh_Hook(0x407800, hook_HanaFrame_PushNode,     "HanaFrame_PushNode_407800");
-  // [OK] hnh_Hook(0x405BB4, hook_SetInversTransf_405BB4, "SetInversTransf_405BB4");
-  // [OK] hnh_Hook(0x405C06, hook_HanaFrame_Draw,         "HanaFrame_Draw_405C06");
-  // [OK] hnh_Hook(0x4339B2, hook_HanaFrame_PreDraw,      "HanaFrame_PreDraw");
-  // [OK] hnh_Hook(0x43383A, hook_HanaMorp_ApplyTree,     "HanaMorp_ApplyTree_43383A");
-  // [OK] hnh_Hook(0x433916, hook_HanaMorp_ApplySubTree,  "HanaMorp_ApplySubTree_433916");
-  // [!] hnh_Hook(0x43315F, hook_HanaMorpT457_Interp,    "HanaMorpT457_Interp_43315F");
-  // [OK] hnh_Hook(0x432DB0, hook_HanaVert_BlendMorph,    "HanaVert_BlendMorph_432DB0");
-  // [OK] hnh_Hook(0x4365B9, hook_HanaMorpT457_ApplySubs, "HanaMorpT457_ApplySubs_4365B9");
-  // [OK] hnh_Hook(0x4363EE, hook_HanaVert_Transform,     "HanaVert_Transform_4363EE");
+
+  hnh_HookOff();
+  hnh_Hook(0x47E78F, hook_GetTimerScaleFactor,           "GetTimerScaleFactor_47E78F"); // [OK] 
+  hnh_Hook(0x47E782, hook_SetTimerScaleFactor,           "SetTimerScaleFactor_47E782"); // [OK] 
+  hnh_Hook(0x41973F, hook_RGBToSurfaceFormat,            "RGBToSurfaceFormat_41973F"); // [OK] 
+  hnh_Hook(0x4137D1, hook_CHanaObj__NewSpriteT3F6bySurf, "CHanaObj__NewSpriteT3F6bySurf_4137D1"); // [OK] 
+  hnh_Hook(0x413D78, hook_CHanaObj__ReplaceTexture3F6,   "CHanaObj__ReplaceTexture3F6_413D78"); // [OK] 
+  hnh_Hook(0x414589, hook_DrawSpriteLTRB,                "DrawSpriteLTRB_414589"); // [OK] 
+  hnh_Hook(0x414ABA, hook_CHanaObj__SetAlpha3F6,         "CHanaObj__SetAlpha3F6_414ABA"); // [OK] 
+  hnh_Hook(0x419D16, hook_BltFastWH,                     "BltFastWH_419D16"); // [OK] 
+  hnh_Hook(0x40BF4F, hook_RenderClear_40BF4F,            "RenderClear_40BF4F"); // [OK] 
+  hnh_Hook(0x47E768, hook_FrameTimer_BeginFrame,         "FrameTimer_BeginFrame_47E768"); // [OK] 
+  hnh_Hook(0x47E7D5, hook_FrameTimer_EndFrame,           "FrameTimer_EndFrame_47E7D5"); // [OK] 
+  hnh_Hook(0x406AB1, hook_HanaFrame_GetRelPosition,      "HanaFrame_GetRelPosition_406AB1"); // [OK] 
+  hnh_Hook(0x40773F, hook_HanaFrame_BuildMatrixStack,    "HanaFrame_BuildMatrixStack_40773F"); // [OK] 
+  hnh_Hook(0x40BBF4, hook_CHanaObj__GetType_40BBF4,      "CHanaObj__GetType_40BBF4"); // [OK] 
+  hnh_Hook(0x433569, hook_HanaMorpT457_Animate,          "HanaMorpT457_Animate_433569"); // [OK] 
+  hnh_Hook(0x418544, hook_CHanaObj__LockVtxBufT3EA_418544,   "CHanaObj__LockVtxBufT3EA_418544"); // [OK] 
+  hnh_Hook(0x41858E, hook_CHanaObj__UnlockVrxBufT3EA_41858E, "CHanaObj__UnlockVrxBufT3EA_41858E"); // [OK] 
+  hnh_Hook(0x417F88, hook_CalculateVertexSize, "CalculateVertexSize_417F88"); // [OK] 
+  hnh_Hook(0x47E79A, hook_GetFrameTime, "GetFrameTime_47E79A"); // [OK] 
+  hnh_Hook(0x407800, hook_HanaFrame_PushNode,     "HanaFrame_PushNode_407800"); // [OK] 
+  hnh_Hook(0x405BB4, hook_SetInversTransf_405BB4, "SetInversTransf_405BB4"); // [OK] 
+  hnh_Hook(0x405C06, hook_HanaFrame_Draw,         "HanaFrame_Draw_405C06"); // [OK] 
+  hnh_Hook(0x4339B2, hook_HanaFrame_PreDraw,      "HanaFrame_PreDraw"); // [OK] 
+  hnh_Hook(0x43383A, hook_HanaMorp_ApplyTree,     "HanaMorp_ApplyTree_43383A"); // [OK] 
+  hnh_Hook(0x433916, hook_HanaMorp_ApplySubTree,  "HanaMorp_ApplySubTree_433916"); // [OK] 
+  hnh_Hook(0x43315F, hook_HanaMorpT457_Interp,    "HanaMorpT457_Interp_43315F"); // [OK] 
+  hnh_Hook(0x432DB0, hook_HanaVert_BlendMorph,    "HanaVert_BlendMorph_432DB0"); // [OK] 
+  hnh_Hook(0x4365B9, hook_HanaMorpT457_ApplySubs, "HanaMorpT457_ApplySubs_4365B9"); // [OK] 
+  hnh_Hook(0x4363EE, hook_HanaVert_Transform,     "HanaVert_Transform_4363EE"); // [OK] 
+  hnh_HookOn();
 }

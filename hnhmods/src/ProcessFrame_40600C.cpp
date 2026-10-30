@@ -240,5 +240,5 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
 }
 
 void register_ProcessFrame_40600C() {
-    hnh_Hook(0x40600C, hook_ProcessFrame, "ProcessFrame_40600C");
+    hnh_Hook(0x40600C, hook_ProcessFrame, "ProcessFrame_40600C"); // [OK]
 }

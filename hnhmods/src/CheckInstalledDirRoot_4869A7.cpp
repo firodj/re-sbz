@@ -224,7 +224,9 @@ BOOL __cdecl hook_IsFileExists_47E8EE(CHAR *pszFilePath)
 
 
 void register_CheckInstalledDirRoot_4869A7() {
-    // [OK] hnh_Hook(0x4869A7, hook_CheckInstalledDirRoot_4869A7, "CheckInstalledDirRoot_4869A7");
-    // [OK] hnh_Hook(0x486630, hook_SetupDirPath_486630, "SetupDirPath_486630");
-    // [OK] hnh_Hook(0x47E8EE, hook_IsFileExists_47E8EE, "IsFileExists_47E8EE");
+  hnh_HookOff();
+  hnh_Hook(0x4869A7, hook_CheckInstalledDirRoot_4869A7, "CheckInstalledDirRoot_4869A7"); // [OK] 
+  hnh_Hook(0x486630, hook_SetupDirPath_486630, "SetupDirPath_486630"); // [OK] 
+  hnh_Hook(0x47E8EE, hook_IsFileExists_47E8EE, "IsFileExists_47E8EE"); // [OK] 
+  hnh_HookOn();
 }
