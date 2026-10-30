@@ -64,12 +64,14 @@ void (* HanaFrame_BuildMatrixStack)() = reinterpret_cast<void(*)()>(0x40773F);
 void (__cdecl * CHanaObj__LockVtxBufT3EA_418544)(CHanaVertT3EA_S1FC *pVert, DWORD *pNumVertices, LPVOID *ppData) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert, DWORD *pNumVertices, LPVOID *ppData)>(0x418544);
 void (__cdecl * CHanaObj__UnlockVrxBufT3EA_41858E)(CHanaVertT3EA_S1FC *pVert) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert)>(0x41858E);
 unsigned int (* CalculateVertexSize)(DWORD fvf) = reinterpret_cast<unsigned int(*)(DWORD fvf)>(0x417F88); 
-
 HRESULT(__cdecl* HanaFrame_PushNode)(CHanaFrameT3EC_S354* pFrame) =
   reinterpret_cast<HRESULT(__cdecl*)(CHanaFrameT3EC_S354* pFrame)>(0x407800);
 void (__cdecl * HanaMorpT457_Animate)(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim) =
   reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim)>(0x433569);
 int(__cdecl*CHanaObj__GetType_40BBF4)(CHanaBase_S130* pObj) = reinterpret_cast<int(__cdecl*)(CHanaBase_S130*)>(0x40BBF4);
+void(__cdecl*SetInversTransf_405BB4)(D3DXMATRIX* pM) = reinterpret_cast<void(__cdecl*)(D3DXMATRIX * pM)>(0x405BB4);
+void(__cdecl*ProcessFrame)(CHanaFrameT3EC_S354* pChildFrame, int nAmbient, DWORD* qwBitLightEnables) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 * pChildFrame, int nAmbient, DWORD * qwBitLightEnables)>(0x40600C);
+void(__cdecl*HanaFrame_PreDraw)(CHanaFrameT3EC_S354* pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*)>(0x4339B2);
 
 // === GLOBAL VARIABLES ===
 
@@ -79,6 +81,10 @@ DWORD& g_timerLast = *(DWORD*)0x52F1A4;
 
 LPD3DXMATRIXSTACK& g_pMatrixStack_4CD77C = *(LPD3DXMATRIXSTACK*)0x4CD77C;
 int (&g_texCoordSizeLUT_4A8368)[4] = *(int(*)[4])0x4A8368; // READ-ONLY
+
+uint32_t &g_fCurFrameIsScene = *(uint32_t *)0x4CD770; // WRITABLE
+CHanaFrameT3EC_S354 * &g_pCurFrame = *(CHanaFrameT3EC_S354 * *)0x4CD774; // WRITABLE
+
 
 // === FUNCTIONS ===
 
@@ -548,6 +554,68 @@ unsigned int hook_CalculateVertexSize(DWORD fvf)
   return vertexSize;
 }
 
+void __cdecl hook_SelfBltDC(LPDIRECTDRAWSURFACE7 pDDSurf)
+{
+  HDC hdc; // [esp+0h] [ebp-Ch] BYREF
+  DWORD w; // [esp+4h] [ebp-8h] BYREF
+  DWORD h; // [esp+8h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] SelfBltDC_43F3F7");
+  
+  if ( pDDSurf )
+  {
+    GetSurfaceWH(pDDSurf, &w, &h);
+    pDDSurf->GetDC(&hdc);
+    BitBlt(hdc, 0, 0, w, h, hdc, 0, 0, 0x330008u);
+    pDDSurf->ReleaseDC(hdc);
+  }
+}
+
+void __cdecl hook_SetInversTransf_405BB4(D3DXMATRIX *pM)
+{
+  ONCELOG("[HNH:SUB] SetInversTransf_405BB4");
+
+  D3DXMatrixInverse(&g_mat4x4View_4D4780, 0, pM);
+  g_pD3DDevice_4D6C78->SetTransform(D3DTRANSFORMSTATE_VIEW, (LPD3DMATRIX) & g_mat4x4View_4D4780);
+}
+
+void __cdecl hook_HanaFrame_PushNode(CHanaFrameT3EC_S354 *pFrame)
+{
+  D3DXMATRIX *pTopMat; // eax
+  D3DXMATRIX fTopMat; // [esp+8h] [ebp-48h] BYREF
+  unsigned int i; // [esp+48h] [ebp-8h]
+  CHanaNode *pFirstChildNode; // [esp+4Ch] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] HanaFrame_PushNode_407800");
+
+  g_pMatrixStack_4CD77C->Push();
+  g_pMatrixStack_4CD77C->MultMatrixLocal(& pFrame->mat4x4_fmrx);
+  if ( pFrame->pHanaLight_210 )
+  {
+    qmemcpy(&fTopMat, g_pMatrixStack_4CD77C->GetTop(), sizeof(fTopMat));
+    ConfigureLight(pFrame->pHanaLight_210, fTopMat._41, fTopMat._42, fTopMat._43, fTopMat._13, fTopMat._23, fTopMat._33);
+  }
+  if ( pFrame == g_pCameraFrame )
+  {
+    pTopMat = g_pMatrixStack_4CD77C->GetTop();
+    SetInversTransf_405BB4(pTopMat);
+    g_pMatrixStack_4CD77C->Pop();
+  }
+  else
+  {
+    if ( pFrame->nCountChild )
+    {
+      pFirstChildNode = pFrame->pFirstChildNode;
+      for ( i = 0; i < pFrame->nCountChild; ++i )
+      {
+        HanaFrame_PushNode(pFirstChildNode->pData);
+        pFirstChildNode = pFirstChildNode->pNext;
+      }
+    }
+    g_pMatrixStack_4CD77C->Pop();
+  }
+}
+
 void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
                                  LPDIRECTDRAWSURFACE7 pDdSurface, float fTimeScale, char bFlush)
 {
@@ -749,6 +817,127 @@ void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, dwAntiAliasSaved);
 }
 
+// HanaFrame_Draw - per-frame render/dispatch entry (thin wrapper sub_405BE1 sets g_fRendering=1 around it).
+// 1) DS3D listener: CommitDeferredSettings; orient/position it to the camera relative to the scene (CalculateLocalRotationMatrix->SetOrientation, sub_406AB1->SetPosition).
+// 2) g_pCurFrame = pFrame; g_fCurFrameIsScene = (pFrame==g_pSceneFrame). sub_40773F() builds/pushes the world-matrix stack for all scene children.
+// 3) If the frame's skip-draw flag (*(pFrame+304)) is 0: prep the frame (sub_4339B2), save D3DRS_AMBIENT, then for each scene child frame:
+//    - reset the light mask; when g_dwLightningState, disable all 0x40 lights;
+//    - set per-frame fog (FOGENABLE/COLOR/START/END from bHasFog/dwFogColor/fFogStart/fFogEnd) or disable fog;
+//    - position & enable the frame's CHanaLight (sub_409510 positions by dltType, sub_40929C does SetLight+LightEnable / ambient), set its bit in bitLightEnables;
+//    - run the object updater sub_40600C(child, {bitLightEnables, ambient}) and restore ambient.
+// Returns ambient-restore HRESULT. g_pCurFrame/g_fCurFrameIsScene/g_fRendering are read by sub_40600C.
+void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
+{
+  DWORD nAmbient; // [esp+8h] [ebp-7Ch] BYREF
+  D3DXMATRIX posX; // [esp+Ch] [ebp-78h] BYREF
+  D3DVALUE pZXrot; // [esp+4Ch] [ebp-38h] BYREF
+  D3DVALUE pZpos; // [esp+50h] [ebp-34h] BYREF
+  D3DVALUE pYXrot; // [esp+54h] [ebp-30h] BYREF
+  D3DVALUE pYpos; // [esp+58h] [ebp-2Ch] BYREF
+  D3DVALUE pXYrot; // [esp+5Ch] [ebp-28h] BYREF
+  D3DVALUE pXpos; // [esp+60h] [ebp-24h] BYREF
+  DWORD qwBitLightEnables[2]; // [esp+64h] [ebp-20h] BYREF
+  DWORD dwAmbientSaved; // [esp+6Ch] [ebp-18h] BYREF
+  DWORD j; // [esp+70h] [ebp-14h]
+  unsigned int i; // [esp+74h] [ebp-10h]
+  CHanaFrameT3EC_S354 *pChildFrame; // [esp+78h] [ebp-Ch]
+  int v14; // [esp+7Ch] [ebp-8h]
+  CHanaNode *pFirstChildNode; // [esp+80h] [ebp-4h]
+
+  qwBitLightEnables[0] = 0;
+  qwBitLightEnables[1] = 0;
+  pChildFrame = 0;
+  if ( g_pds3DListener )
+  {
+    g_pds3DListener->CommitDeferredSettings();
+    CalculateLocalRotationMatrix(
+      g_pCameraFrame,
+      (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+      &pXpos,
+      &pYpos,
+      &pZpos,
+      &pXYrot,
+      &pYXrot,
+      &pZXrot);
+    g_pds3DListener->SetOrientation(pXpos, pYpos, pZpos, pXYrot, pYXrot, pZXrot, 1u);
+    HanaFrame_GetRelPosition(g_pCameraFrame, g_pSceneFrame, &pXpos, &pYpos, &pZpos);
+    g_pds3DListener->SetPosition(pXpos, pYpos, pZpos, 1u);
+  }
+  g_fCurFrameIsScene = 0;
+  g_pCurFrame = pFrame;
+  HanaFrame_BuildMatrixStack();
+  if ( g_pSceneFrame == g_pCurFrame )
+    g_fCurFrameIsScene = 1;
+  if ( !g_pCurFrame->bFlagAlpha_130 )
+  {
+    HanaFrame_PreDraw(pFrame);
+    g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_AMBIENT, &dwAmbientSaved);
+    if ( g_pSceneFrame->nCountChild )
+    {
+      pFirstChildNode = g_pSceneFrame->pFirstChildNode;
+      for ( i = 0; i < g_pSceneFrame->nCountChild; ++i )
+      {
+        v14 = 0;
+        qwBitLightEnables[0] = 0;
+        qwBitLightEnables[1] = 0;
+        pChildFrame = pFirstChildNode->pData;
+        if ( pChildFrame )
+        {
+          if ( g_nLightningEnabled )
+          {
+            for ( j = 0; j < 64; ++j )
+              g_pD3DDevice_4D6C78->LightEnable(j, 0);
+          }
+          if ( pChildFrame->bHasFog == 1 )
+          {
+            g_pD3DDevice_4D6C78->SetRenderState(
+              D3DRENDERSTATE_FOGENABLE,
+              g_dwFogEnable_4D6CF4);
+            g_pD3DDevice_4D6C78->SetRenderState(
+              D3DRENDERSTATE_FOGCOLOR,
+              pChildFrame->dwFogColor);
+            g_pD3DDevice_4D6C78->SetRenderState(
+              D3DRENDERSTATE_FOGTABLESTART,
+              LODWORD(pChildFrame->fFogStart));
+            g_pD3DDevice_4D6C78->SetRenderState(
+              D3DRENDERSTATE_FOGTABLEEND,
+              LODWORD(pChildFrame->fFogEnd));
+          }
+          else
+          {
+            g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
+          }
+          if ( pChildFrame->pHanaLight_210
+            && g_nLightningEnabled
+            && pChildFrame->pHanaLight_210->d3dLight_134.dltType != (D3DLIGHT_FORCE_DWORD|0x80000000) )
+          {
+            qmemcpy(&posX, &pChildFrame->mat4x4_after, sizeof(posX));
+            ConfigureLight(pChildFrame->pHanaLight_210, posX._41, posX._42, posX._43, posX._13, posX._23, posX._33);
+            *(_QWORD *)qwBitLightEnables |= 1 << pChildFrame->pHanaLight_210->dwLightIndex_130;
+          }
+          if ( pChildFrame->pHanaLight_210 && g_nLightningEnabled )
+          {
+            ApplyLightSettings(pChildFrame->pHanaLight_210);
+            g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_AMBIENT, &nAmbient);
+            ProcessFrame(pChildFrame, nAmbient, qwBitLightEnables);
+            g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_AMBIENT, dwAmbientSaved);
+            if ( pChildFrame->pHanaLight_210->d3dLight_134.dltType != (D3DLIGHT_FORCE_DWORD|0x80000000) )// != -1
+              g_pD3DDevice_4D6C78->LightEnable(
+                pChildFrame->pHanaLight_210->dwLightIndex_130,
+                0);
+          }
+          else
+          {
+            ProcessFrame(pChildFrame, dwAmbientSaved, qwBitLightEnables);
+          }
+        }
+        pFirstChildNode = pFirstChildNode->pNext;
+      }
+    }
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_AMBIENT, dwAmbientSaved);
+  }
+}
+
 void register_PlayScreenFade_4874DE() {
   hnh_Hook(0x4874DE, hook_PlayScreenFade, "PlayScreenFade_4874DE"); // [OK]
 
@@ -771,5 +960,8 @@ void register_PlayScreenFade_4874DE() {
   hnh_Hook(0x418544, hook_CHanaObj__LockVtxBufT3EA_418544,   "CHanaObj__LockVtxBufT3EA_418544");
   hnh_Hook(0x41858E, hook_CHanaObj__UnlockVrxBufT3EA_41858E, "CHanaObj__UnlockVrxBufT3EA_41858E");
   hnh_Hook(0x417F88, hook_CalculateVertexSize, "CalculateVertexSize_417F88");
-  hnh_Hook(0x47E79A, hook_GetFrameTime,        "GetFrameTime_47E79A");
+  hnh_Hook(0x47E79A, hook_GetFrameTime, "GetFrameTime_47E79A");
+  hnh_Hook(0x43F3F7, hook_SelfBltDC,    "SelfBltDC_43F3F7");
+  hnh_Hook(0x407800, hook_HanaFrame_PushNode,     "HanaFrame_PushNode_407800");
+  hnh_Hook(0x405BB4, hook_SetInversTransf_405BB4, "SetInversTransf_405BB4");
 }

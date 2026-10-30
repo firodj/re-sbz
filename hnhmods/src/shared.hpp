@@ -121,7 +121,7 @@ extern BOOL      &g_bSpecularEnable;
 extern HWND      &g_hWnd;
 extern HINSTANCE &g_hInstance_518CB0;
 extern BOOL      &g_bRunGame;
-
+extern D3DXMATRIX &g_mat4x4View_4D4780;
 
 extern void (__cdecl*CHanaObj__NewLightT3EF)(CHanaLightT3EF_S1A0** pOut, D3DLIGHT7* pD3Dlight);
 extern void (__cdecl*AttachHanaObj_40BAB8)(CHanaBase_S130* pParent, LPCSTR szName);
@@ -289,6 +289,13 @@ extern unsigned int (* CalculateVertexSize)(DWORD fvf);
 extern HRESULT  (__cdecl* HanaFrame_PushNode)(CHanaFrameT3EC_S354* pFrame);
 extern void   (__cdecl * HanaMorpT457_Animate)(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim);
 extern int    (__cdecl*CHanaObj__GetType_40BBF4)(CHanaBase_S130* pObj);
+extern void(__cdecl* SetInversTransf_405BB4)(D3DXMATRIX* pM);
+extern void(__cdecl*ProcessFrame)(CHanaFrameT3EC_S354* pChildFrame, int nAmbient, DWORD* qwBitLightEnables);
+extern void(__cdecl*HanaFrame_PreDraw)(CHanaFrameT3EC_S354* pFrame);
+
+extern LPD3DXMATRIXSTACK& g_pMatrixStack_4CD77C;
+extern uint32_t& g_fCurFrameIsScene;
+extern CHanaFrameT3EC_S354 * &g_pCurFrame;
 
 // === DEFINED ParseODFContent.cpp ===
 
