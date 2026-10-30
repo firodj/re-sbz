@@ -18,8 +18,8 @@ uint32_t &g_nTitleMenuHotToggleRow_4B3490 = *(uint32_t *)0x4B3490; // WRITABLE
 
 WNDPROC WndProcTitleMenu_428C11 = (WNDPROC)0x428C11;
 BOOL (__cdecl*FreeBmp_4211ED)(CBMPFile *pBMPFile) = reinterpret_cast<BOOL (__cdecl *)(CBMPFile *pBMPFile)>(0x4211ED);
-void (__cdecl*GetNthActiveVideoMode)(CDisplayConfig* pDisplayConfig, int modeSetIndex, int nthActiveModeIndex, _DWORD* pWidth, _DWORD* pHeight, unsigned int* pBpp)
-= reinterpret_cast<void (__cdecl*)(CDisplayConfig *pDisplayConfig, int modeSetIndex, int nthActiveModeIndex, _DWORD *pWidth, _DWORD *pHeight, unsigned int *pBpp)>(0x42833C);
+void (__cdecl*GetNthActiveVideoMode)(CDisplayConfig* pDisplayConfig, int modeSetIndex, int nthActiveModeIndex, DWORD* pWidth, DWORD* pHeight, unsigned int* pBpp)
+= reinterpret_cast<void (__cdecl*)(CDisplayConfig *pDisplayConfig, int modeSetIndex, int nthActiveModeIndex, DWORD *pWidth, DWORD *pHeight, unsigned int *pBpp)>(0x42833C);
 void (__cdecl*GetNthValidDimensionString)(HWND hWnd, CDisplayConfig *pDisplayConfig, int nIndex, int *pOutIndex, LPSTR pszOutput)
 = reinterpret_cast<void(__cdecl*)(HWND hWnd, CDisplayConfig *pDisplayConfig, int nIndex, int *pOutIndex, LPSTR pszOutput)>(0x428A7C);
 void (__cdecl*DrawTextPairs)(HDC hdc, int xBase, int y, int xStep, LPSTR pStr, int byteCount)
@@ -766,8 +766,158 @@ LRESULT __stdcall hook_WndProcTitleMenu_428C11(HWND hWnd, unsigned int Msg, WPAR
   }
 }
 
+void __cdecl hook_GetNthValidDimensionString(
+  HWND hWnd,
+  CDisplayConfig *pDisplayConfig,
+  int nIndex,
+  int *pOutIndex,
+  LPSTR pszOutput)
+{
+  int validCount; // [esp+0h] [ebp-14h]
+  int curValid; // [esp+0h] [ebp-14h]
+  unsigned int loopIdx; // [esp+4h] [ebp-10h]
+  unsigned int loopIdxa; // [esp+4h] [ebp-10h]
+  CVideoModeDesc *pArrayInfo; // [esp+8h] [ebp-Ch]
+  BOOL *pFlags; // [esp+Ch] [ebp-8h]
+  D3DX_VIDMODEDESC *pDim; // [esp+10h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] GetNthValidDimensionString_428A7C\n");
+  
+  validCount = 0;
+  *pszOutput = 0;
+  pArrayInfo = &pDisplayConfig->parrVidModeDesc[nIndex];
+  pFlags = pArrayInfo->parrbActive;
+  pDim = pArrayInfo->pModeDesc;
+  for ( loopIdx = 0; loopIdx < pArrayInfo->nMaxNumVideoModes; ++loopIdx )
+  {
+    if ( pFlags[loopIdx] )
+      ++validCount;
+  }
+  if ( *pOutIndex < 0 )
+    *pOutIndex = 0;
+  if ( *pOutIndex >= validCount )
+    *pOutIndex = validCount - 1;
+  curValid = 0;
+  for ( loopIdxa = 0; loopIdxa < pArrayInfo->nMaxNumVideoModes; ++loopIdxa )
+  {
+    if ( *pFlags )
+    {
+      if ( *pOutIndex == curValid )
+      {
+        if ( pDim->bpp == 16 )
+          wsprintfA(pszOutput, "%d x %d (ʲ�װ)", pDim->width, pDim->height);
+        else
+          wsprintfA(pszOutput, "%d x %d (�ٶװ)", pDim->width, pDim->height);
+        *pOutIndex = curValid;
+        return;
+      }
+      ++curValid;
+    }
+    ++pFlags;
+    ++pDim;
+  }
+}
+
+void __cdecl hook_DrawTextPairs(HDC hdc, int xBase, int y, int xStep, LPSTR pStr, int byteCount)
+{
+  int loopIdx; // [esp+0h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] DrawTextPairs_428BC1\n");
+
+  for ( loopIdx = 0; loopIdx < byteCount / 2; ++loopIdx )
+    TextOutA(hdc, xStep * loopIdx + xBase, y, &pStr[2 * loopIdx], 2);
+}
+
+CBMPColor *__cdecl hook_CreatePaletteFromBuffer(BYTE *pBuffer, int colorCount)
+{
+  int index; // [esp+0h] [ebp-8h]
+  CBMPColor *pPalette; // [esp+4h] [ebp-4h
+
+  ONCELOG("[HNH:SUB CreatePaletteFromBuffer_421095\n");
+
+  pPalette = (CBMPColor *)GlobalAlloc(0, 4 * colorCount + 8);
+  if ( !pPalette )
+    return 0;
+  pPalette->size = 768;
+  pPalette->count = colorCount;
+  for ( index = 0; index < colorCount; ++index )
+  {
+    pPalette->colors[index].rgbBlue = pBuffer[2];
+    pPalette->colors[index].rgbGreen = pBuffer[1];
+    pPalette->colors[index].rgbRed = *pBuffer;
+    pPalette->colors[index].rgbReserved = 0;
+    pBuffer += 4;
+  }
+  return pPalette;
+}
+
+void __cdecl hook_UpdateRenderOptionsCheckboxes(HWND hDlg)
+{
+  ONCELOG("[HNH:SUB] UpdateRenderOptionsCheckboxes_42889B\n");
+
+  if ( g_bAntiAliasEnable )
+    CheckDlgButton(hDlg, 1161, 1u);
+  else
+    CheckDlgButton(hDlg, 1161, 0);
+  if ( g_bSpecularEnable_4B3474 )
+    CheckDlgButton(hDlg, 1162, 1u);
+  else
+    CheckDlgButton(hDlg, 1162, 0);
+  if ( g_bDitherEnable )
+    CheckDlgButton(hDlg, 1006, 1u);
+  else
+    CheckDlgButton(hDlg, 1006, 0);
+}
+
+void __cdecl hook_GetNthActiveVideoMode(
+  CDisplayConfig *pDisplayConfig,
+  int modeSetIndex,
+  int nthActiveModeIndex,
+  DWORD *pWidth,
+  DWORD *pHeight,
+  unsigned int *pBpp)
+{
+  unsigned int modeIdx; // [esp+0h] [ebp-14h]
+  CVideoModeDesc *pVidModeDesc; // [esp+4h] [ebp-10h]
+  BOOL *pActiveFlag; // [esp+8h] [ebp-Ch]
+  int activeCount; // [esp+Ch] [ebp-8h]
+  D3DX_VIDMODEDESC *pModeDesc; // [esp+10h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] GetNthActiveVideoMode_42833C\n");
+
+  pVidModeDesc = &pDisplayConfig->parrVidModeDesc[modeSetIndex];
+  pActiveFlag = pVidModeDesc->parrbActive;
+  pModeDesc = pVidModeDesc->pModeDesc;
+  *pWidth = 0;
+  *pHeight = 0;
+  *pBpp = 0;
+  activeCount = 0;
+  for ( modeIdx = 0; modeIdx < pVidModeDesc->nMaxNumVideoModes; ++modeIdx )
+  {
+    if ( *pActiveFlag )
+    {
+      if ( activeCount == nthActiveModeIndex )
+      {
+        *pWidth = pModeDesc->width;
+        *pHeight = pModeDesc->height;
+        *pBpp = pModeDesc->bpp;
+        return;
+      }
+      ++activeCount;
+    }
+    ++pActiveFlag;
+    ++pModeDesc;
+  }
+}
+
 // Register hook if needed
 void register_WndProcTitleMenu_428C11() {
+  hnh_Hook(0x428A7C, hook_GetNthValidDimensionString, "GetNthValidDimensionString_428A7C");
+  hnh_Hook(0x428BC1, hook_DrawTextPairs, "DrawTextPairs_428BC1");
+  hnh_Hook(0x421095, hook_CreatePaletteFromBuffer, "CreatePaletteFromBuffer_421095");
+  hnh_Hook(0x42889B, hook_UpdateRenderOptionsCheckboxes, "UpdateRenderOptionsCheckboxes_42889B");
+  hnh_Hook(0x42833C, hook_GetNthActiveVideoMode, "GetNthActiveVideoMode_42833C");
+
   hnh_HookOff();
     hnh_Hook(0x428C11, hook_WndProcTitleMenu_428C11, "WndProcTitleMenu_428C11"); // [OK] 
     hnh_Hook(0x4211ED, hook_FreeBmp_4211ED, "FreeBmp_4211ED"); // [OK] 
