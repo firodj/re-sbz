@@ -94,6 +94,7 @@ void register_MenuCharSelect_47A324();
 void register_PlayScreenFade_4874DE();
 void register_ParseODFContent_441A5D();
 void register_ParseODS_483932();
+void register_ProcessFrame_40600C();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -137,6 +138,7 @@ void InitHNH() {
 	register_PlayScreenFade_4874DE();
 	register_ParseODFContent_441A5D();
 	register_ParseODS_483932();
+	register_ProcessFrame_40600C();
 
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)

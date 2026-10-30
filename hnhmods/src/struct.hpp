@@ -47,8 +47,8 @@ struct CHanaFrameT3EC_S354;
 
 struct CHanaFrameRootT3EC_S2D4: public CHanaBase_S130
 {
-    int bFlagAlpha_130;
-    int flag_134;
+    int bAlphaDeferred_130;
+    int bDisableFog_134;
     D3DXMATRIX mat4x4_fmrx;
     D3DXMATRIX mat4x4_after;
     D3DXMATRIX mat4x4_before;
@@ -60,8 +60,8 @@ struct CHanaFrameRootT3EC_S2D4: public CHanaBase_S130
     CHanaMorpT457_S40C *pAttachedObj_20C;
     CHanaLightT3EF_S1A0 *pHanaLight_210;
     int bHasLight_214;
-    int flag_218;
-    int flag_21C;
+    int bUpdateBone_218;
+    int bFlagFFLG3_21C;
     D3DXVECTOR3 vertBoundMax_220;
     D3DXVECTOR3 vertBoundMin_22C;
     D3DXVECTOR3 transformedCorners[8];
@@ -270,14 +270,14 @@ struct CHanaVertT3EA_S1FC: public CHanaBase_S130
     int nPrimType_154[4];
     IUnknown *pUnk_164;
     int gap168[25];
-    int flg_1CC;
+    int bForceAlphaPass_1CC;
     int nBlendMode_1D0;
     int flg_1D4;
     int fFlatShade_1D8;
     int flg_1DC;
-    int fShadowOnly_1E0;
-    int fUnlit_1E4;
-    int flg_1E8;
+    int bShadowOnly_1E0;
+    int bUnlit_1E4;
+    int bAlphaPass2_1E8;
     int nFogDensity_1EC;
     int nAlphaOpSel_1F0;
     int fNoTexPersp_1F4;

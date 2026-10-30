@@ -270,8 +270,8 @@ BOOL __cdecl hook_ParseODFContent_441A5D(
 //   LIGH  [8-byte hdr][light payload]   D3DLIGHT7 copied out, NewLightT3EF +
 //                                       AssignLigthtToFrame onto this frame;
 //                                       payload advances 8+104 bytes
-//   FFLG  [8-byte hdr][WORD flags]      bit0 -> flag_218, bit1 -> bFlagAlpha_130,
-//                                       bit2 -> flag_134, bit3 -> flag_21C
+//   FFLG  [8-byte hdr][WORD flags]      bit0 -> bUpdateBone_218, bit1 -> bAlphaDeferred_130,
+//                                       bit2 -> bDisableFog_134, bit3 -> bFlagFFLG3_21C
 //   End-Objection (aEndObjection @0x4B411C) ends the attribute scan
 //   FMRX  [DWORD][DWORD nSize][matrix]  overwrite of the ROOT frame's
 //                                       mat4x4_fmrx
@@ -289,7 +289,7 @@ CHanaFrameT3EC_S354 *__cdecl hook_ParseOdfFRAM_44106A(LPBYTE *ppBuf,
     CHAR (*pParentList)[256];                // [esp+17Ch] [ebp-24h]
     int i, nSize;                            // nSize = [ebp-4h]
     LPBYTE pBuf, pScan;                      // [ebp-10h] / [ebp-Ch]
-    WORD wFlags;                             // [esp+8h] [ebp-198h]
+    WORD wFrameFlags;                             // [esp+8h] [ebp-198h]
 
     DebugLog("[HNH:SUB] ParseOdfFRAM_44106A\n");
 
@@ -361,15 +361,15 @@ CHanaFrameT3EC_S354 *__cdecl hook_ParseOdfFRAM_44106A(LPBYTE *ppBuf,
         else if (!memcmp("FFLG", pScan, 4))
         {
             pScan += 8;
-            wFlags = *(WORD *)pScan;
-            if (wFlags & 1)
-                pFrame->flag_218 = 1;
-            if (wFlags & 2)
-                pFrame->bFlagAlpha_130 = 1;
-            if (wFlags & 4)
-                pFrame->flag_134 = 1;
-            if (wFlags & 8)
-                pFrame->flag_21C = 1;
+            wFrameFlags = *(WORD *)pScan;
+            if (wFrameFlags & 1)
+                pFrame->bUpdateBone_218 = 1;        // FFLG bit0: bone transform
+            if (wFrameFlags & 2)
+                pFrame->bAlphaDeferred_130 = 1;   // FFLG bit1: alpha-deferred render
+            if (wFrameFlags & 4)
+                pFrame->bDisableFog_134 = 1;        // FFLG bit2: fog off for this frame
+            if (wFrameFlags & 8)
+                pFrame->bFlagFFLG3_21C = 1;          // FFLG bit3: meaning unknown
             pScan += 2;
             pBuf = pScan;
         }

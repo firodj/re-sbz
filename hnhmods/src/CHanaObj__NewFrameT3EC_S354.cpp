@@ -2,11 +2,9 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-// === GLOBAL VARIABLES ===
-
-LPD3DXMATRIXSTACK g_pMatrixStack_4CD77C;
 
 // === GLOBAL FUNCTIONS ===
+
 void(__cdecl *CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354 *pParent, CHanaFrameT3EC_S354 **ppOutFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*, CHanaFrameT3EC_S354**)>(0x404720);
 void(__cdecl* AttachChild_4055FD)(CHanaFrameRootT3EC_S2D4* pParent, CHanaFrameT3EC_S354* pChild) = reinterpret_cast<void(__cdecl *)(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFrameT3EC_S354 *pChild)>(0x4055FD);
 void(__cdecl* MtxStackStartMultLocal_4074EF)(void) = reinterpret_cast<void(__cdecl*)(void)>(0x4074EF);
@@ -14,7 +12,6 @@ void(__cdecl* MtxStackRecursiveMulLocal_4075B0)(CHanaFrameT3EC_S354* pFrame) = r
 void(__cdecl* CHanaObj__NewFrameRootT3EC_S2D4)(CHanaFrameRootT3EC_S2D4 **ppOutFrameRoot) = reinterpret_cast<void(__cdecl*)(CHanaFrameRootT3EC_S2D4**)>(0x404908);
 void(__cdecl* CHanaObj__NewMateT3EE_S184)(CHanaMateT3EE_S184** ppOutMate) = reinterpret_cast<void(__cdecl*)(CHanaMateT3EE_S184**)>(0x40F720);
 void (__cdecl*CHanaObj__NewSprite3F6byWH)(CHanaSpriteT3F6_S1FC** ppOut, DWORD w, DWORD h) = reinterpret_cast<void (__cdecl*)(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWORD h)>(0x4133D0);
-
 
 // === FUNCITON HOOKS ===
 // 

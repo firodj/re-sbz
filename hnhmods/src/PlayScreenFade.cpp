@@ -70,7 +70,7 @@ void (__cdecl * HanaMorpT457_Animate)(CHanaFrameT3EC_S354 *pFrame, float fValue,
   reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim)>(0x433569);
 int(__cdecl*CHanaObj__GetType_40BBF4)(CHanaBase_S130* pObj) = reinterpret_cast<int(__cdecl*)(CHanaBase_S130*)>(0x40BBF4);
 void(__cdecl*SetInversTransf_405BB4)(D3DXMATRIX* pM) = reinterpret_cast<void(__cdecl*)(D3DXMATRIX * pM)>(0x405BB4);
-void(__cdecl*ProcessFrame)(CHanaFrameT3EC_S354* pChildFrame, int nAmbient, DWORD* qwBitLightEnables) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 * pChildFrame, int nAmbient, DWORD * qwBitLightEnables)>(0x40600C);
+// ProcessFrame lives in src/ProcessFrame_40600C.cpp (extern in shared.hpp)
 void(__cdecl*HanaFrame_PreDraw)(CHanaFrameT3EC_S354* pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*)>(0x4339B2);
 
 // === GLOBAL VARIABLES ===
@@ -868,7 +868,7 @@ void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
   HanaFrame_BuildMatrixStack();
   if ( g_pSceneFrame == g_pCurFrame )
     g_fCurFrameIsScene = 1;
-  if ( !g_pCurFrame->bFlagAlpha_130 )
+  if ( !g_pCurFrame->bAlphaDeferred_130 )
   {
     HanaFrame_PreDraw(pFrame);
     g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_AMBIENT, &dwAmbientSaved);
