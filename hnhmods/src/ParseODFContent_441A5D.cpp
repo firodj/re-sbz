@@ -1368,5 +1368,5 @@ void register_ParseODFContent_441A5D() {
     // [OK] hnh_Hook(0x4035B1, hook_ApplyQTS_4035B1, "ApplyQTS_4035B1");
     // [OK] hnh_Hook(0x403C15, hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15, "CHanaAnimSetT3F1__AddAnimT3F0_403C15");
     // [OK] hnh_Hook(0x408C3E, hook_HanaFrame_GetCenterPosition_408C3E, "HanaFrame_GetCenterPosition_408C3E");
-    hnh_Hook(0x4248F2, hook_GetSoundBufferAverageLevel, "GetSoundBufferAverageLevel_4248F2");
+    // [OK] hnh_Hook(0x4248F2, hook_GetSoundBufferAverageLevel, "GetSoundBufferAverageLevel_4248F2");
 }

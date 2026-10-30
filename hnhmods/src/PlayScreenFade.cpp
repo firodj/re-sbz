@@ -53,7 +53,7 @@ HRESULT(__cdecl* HanaFrame_Draw)(CHanaFrameT3EC_S354 *pFrame) =
 double(__cdecl* GetTimerScaleFactor)(void) = reinterpret_cast<double(__cdecl*)()>(0x47E78F);
 void(__cdecl* SetTimerScaleFactor)(float fTimeScale) =
     reinterpret_cast<void(__cdecl*)(float)>(0x47E782);
-int(__cdecl* FrameTimer_BeginFrame)(void) = reinterpret_cast<int(__cdecl*)()>(0x47E768);
+int (__cdecl* FrameTimer_BeginFrame)(void) = reinterpret_cast<int(__cdecl*)()>(0x47E768);
 DWORD(__cdecl* FrameTimer_EndFrame)(void) = reinterpret_cast<DWORD(__cdecl*)()>(0x47E7D5);
 double(__cdecl* GetFrameTime)(void) = reinterpret_cast<double(__cdecl*)()>(0x47E79A);
 void (__cdecl * HanaFrame_GetRelPosition)( CHanaFrameT3EC_S354 *pFrame, CHanaFrameRootT3EC_S2D4 *pRefFrame, float *pOutX, float *pOutY, float *pOutZ) = 
@@ -68,13 +68,18 @@ HRESULT(__cdecl* HanaFrame_PushNode)(CHanaFrameT3EC_S354* pFrame) =
   reinterpret_cast<HRESULT(__cdecl*)(CHanaFrameT3EC_S354* pFrame)>(0x407800);
 void (__cdecl * HanaMorpT457_Animate)(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim) =
   reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim)>(0x433569);
-int(__cdecl*CHanaObj__GetType_40BBF4)(CHanaBase_S130* pObj) = reinterpret_cast<int(__cdecl*)(CHanaBase_S130*)>(0x40BBF4);
-void(__cdecl*SetInversTransf_405BB4)(D3DXMATRIX* pM) = reinterpret_cast<void(__cdecl*)(D3DXMATRIX * pM)>(0x405BB4);
+int  (__cdecl*CHanaObj__GetType_40BBF4)(CHanaBase_S130* pObj) = reinterpret_cast<int(__cdecl*)(CHanaBase_S130*)>(0x40BBF4);
+void (__cdecl*SetInversTransf_405BB4)(D3DXMATRIX* pM) = reinterpret_cast<void(__cdecl*)(D3DXMATRIX * pM)>(0x405BB4);
 // ProcessFrame lives in src/ProcessFrame_40600C.cpp (extern in shared.hpp)
-void(__cdecl*HanaFrame_PreDraw)(CHanaFrameT3EC_S354* pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*)>(0x4339B2);
+void (__cdecl*HanaFrame_PreDraw)(CHanaFrameT3EC_S354* pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*)>(0x4339B2);
 void (__cdecl * HanaMorp_ApplyTree)(CHanaFrameT3EC_S354 *pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x43383A);
 void (__cdecl * HanaMorp_ApplySubTree)(CHanaFrameT3EC_S354 *pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x433916);
 D3DVERTEX * (__cdecl * HanaVert_Transform)(D3DVERTEX *pOutVtx, D3DXMATRIX *pM, D3DXVECTOR3 *pVtxIn) = reinterpret_cast<D3DVERTEX *(__cdecl*)(D3DVERTEX *pOutVtx, D3DXMATRIX *pM, D3DXVECTOR3 *pVtxIn)>(0x4363EE);
+void (__cdecl*HanaMorpT457_Interp)(CHanaMorpT457_S40C* pMorpT457, float fMorpParam) =
+  reinterpret_cast<void(__cdecl*)(CHanaMorpT457_S40C * pMorpT457, float fMorpParam)>(0x43315F);
+void (__cdecl*HanaMorpT457_ApplySubs)(CHanaFrameT3EC_S354* pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*)>(0x4365B9);
+void (__cdecl * HanaVert_BlendMorph)( D3DVERTEX **pVertexBufs, int nBufs, unsigned int dwNumVerts, int nFlags, float *fParams) = reinterpret_cast<void(__cdecl*)( D3DVERTEX **pVertexBufs, int nBufs, unsigned int dwNumVerts, int nFlags, float *fParams)>(0x432DB0);
+
 
 
 // === GLOBAL VARIABLES ===
@@ -425,7 +430,7 @@ void __cdecl hook_HanaMorpT457_Animate(CHanaFrameT3EC_S354 *pFrame, float fValue
   float fTimeScale; // [esp+2Ch] [ebp-4h]
   float fProgress; // [esp+40h] [ebp+10h]
   
-  ONCELOG("[HNH:SUB] HanaMorpT457_Animate_433569");
+  ONCELOG("[HNH:SUB] HanaMorpT457_Animate_433569\n");
 
   if ( pFrame && CHanaObj__GetType_40BBF4(pFrame->pAttachedObj_20C) == 1111 )
   {
@@ -491,7 +496,7 @@ void __cdecl hook_HanaMorpT457_Animate(CHanaFrameT3EC_S354 *pFrame, float fValue
 
 void __cdecl hook_CHanaObj__LockVtxBufT3EA_418544(CHanaVertT3EA_S1FC *pVert, DWORD *pNumVertices, LPVOID *ppData)
 {
-  ONCELOG("[HNH:SUB] CHanaObj__LockVtxBufT3EA_418544");
+  ONCELOG("[HNH:SUB] CHanaObj__LockVtxBufT3EA_418544\n");
 
   if ( pVert->pD3DVtxBuf_130->Lock(DDLOCK_NOSYSLOCK | DDLOCK_WAIT, ppData, 0) >= 0 )
     *pNumVertices = pVert->dwNumVertices_134;
@@ -499,7 +504,7 @@ void __cdecl hook_CHanaObj__LockVtxBufT3EA_418544(CHanaVertT3EA_S1FC *pVert, DWO
 
 void __cdecl hook_CHanaObj__UnlockVrxBufT3EA_41858E(CHanaVertT3EA_S1FC *pVert)
 {
-  ONCELOG("[HNH:SUB] CHanaObj__UnlockVrxBufT3EA_41858E");
+  ONCELOG("[HNH:SUB] CHanaObj__UnlockVrxBufT3EA_41858E\n");
 
   pVert->pD3DVtxBuf_130->Unlock();
 }
@@ -510,7 +515,7 @@ unsigned int hook_CalculateVertexSize(DWORD fvf)
   unsigned int vertexSize; // [esp+8h] [ebp-8h]
   unsigned int texCount; // [esp+Ch] [ebp-4h]
 
-  ONCELOG("[HNH:SUB] CalculateVertexSize_417F88");
+  ONCELOG("[HNH:SUB] CalculateVertexSize_417F88\n");
 
   vertexSize = 0;
   if ( (fvf & D3DFVF_RESERVED0) != 0 )
@@ -577,7 +582,7 @@ void __cdecl hook_SelfBltDC(LPDIRECTDRAWSURFACE7 pDDSurf)
 
 void __cdecl hook_SetInversTransf_405BB4(D3DXMATRIX *pM)
 {
-  ONCELOG("[HNH:SUB] SetInversTransf_405BB4");
+  ONCELOG("[HNH:SUB] SetInversTransf_405BB4\n");
 
   D3DXMatrixInverse(&g_mat4x4View_4D4780, 0, pM);
   g_pD3DDevice_4D6C78->SetTransform(D3DTRANSFORMSTATE_VIEW, (LPD3DMATRIX) & g_mat4x4View_4D4780);
@@ -590,7 +595,7 @@ void __cdecl hook_HanaFrame_PushNode(CHanaFrameT3EC_S354 *pFrame)
   unsigned int i; // [esp+48h] [ebp-8h]
   CHanaNode *pFirstChildNode; // [esp+4Ch] [ebp-4h]
 
-  ONCELOG("[HNH:SUB] HanaFrame_PushNode_407800");
+  ONCELOG("[HNH:SUB] HanaFrame_PushNode_407800\n");
 
   g_pMatrixStack_4CD77C->Push();
   g_pMatrixStack_4CD77C->MultMatrixLocal(& pFrame->mat4x4_fmrx);
@@ -955,9 +960,6 @@ void __cdecl hook_HanaFrame_PreDraw(CHanaFrameT3EC_S354 *pFrame)
   HanaMorp_ApplySubTree(pFrame);
 }
 
-void(__cdecl*HanaMorpT457_Interp)(CHanaMorpT457_S40C* pMorpT457, float fMorpParam) =
-  reinterpret_cast<void(__cdecl*)(CHanaMorpT457_S40C * pMorpT457, float fMorpParam)>(0x43315F);
-
 // HanaMorp_ApplyTree - recursive walk of the frame tree that applies each T457 morph (vertex-animation) at its current parameter. First pass of sub_4339B2 (called from HanaFrame_Draw); sibling sub_433916 is the second pass.
 // For each frame: if pMorpT457_20C is a T457 object (CHanaObj::GetType == 0x457 == 1111), apply the morph-target blend at the frame's current param via sub_43315F (interpolates each vertex between the two bracketing keyframes in arrMKeyT3EA_34C), then read that param back into fMorpParam (default -1.0 when no morph). Recurse into every child frame, then advance/decay the param with sub_433569(frame, fMorpParam, 0.0, 0).
 void __cdecl hook_HanaMorp_ApplyTree(CHanaFrameT3EC_S354 *pFrame)
@@ -990,8 +992,6 @@ void __cdecl hook_HanaMorp_ApplyTree(CHanaFrameT3EC_S354 *pFrame)
   HanaMorpT457_Animate(pFrame, fMorpParam, 0.0, 0);
 }
 
-void(__cdecl*HanaMorpT457_ApplySubs)(CHanaFrameT3EC_S354* pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*)>(0x4365B9);
-
 // HanaMorp_ApplySubTree - second recursive pass of the frame-tree prep (from HanaFrame_PreDraw). For each frame whose pMorpT457_20C is a T457 object (CHanaObj::GetType==0x457==1111), run sub_4365B9(frame): it walks the morph's arrS8_144 sub-object list and, for each entry with a target vertex set, transforms the affected vertices between frame space (inverse of mat4x4_after, times a fixed axis rotation) and the subobject's local space, applying per-subobject position/normal offsets (pos/norm) and an arrFun_4 callback, writing back into the mesh vertex buffer. Then recurse into every child frame (self-before-children).
 void __cdecl hook_HanaMorp_ApplySubTree(CHanaFrameT3EC_S354 *pFrame)
 {
@@ -1014,8 +1014,6 @@ void __cdecl hook_HanaMorp_ApplySubTree(CHanaFrameT3EC_S354 *pFrame)
     pFirstChildNode = pFirstChildNode->pNext;
   }
 }
-
-void (__cdecl * HanaVert_BlendMorph)( D3DVERTEX **pVertexBufs, int nBufs, unsigned int dwNumVerts, int nFlags, float *fParams) = reinterpret_cast<void(__cdecl*)( D3DVERTEX **pVertexBufs, int nBufs, unsigned int dwNumVerts, int nFlags, float *fParams)>(0x432DB0);
 
 // HanaMorpT457_Interp - per-object morph keyframe resolver + blender. Called from HanaMorp_ApplyTree with fParam = the object's current morph parameter.
 // For each vertex-slot i in the object's mesh (pMorp->pMeshT3F5_138, 0..nCountVertT3EA_130):
@@ -1280,35 +1278,35 @@ D3DVERTEX *__cdecl hook_HanaVert_Transform(D3DVERTEX *pOutVtx, D3DXMATRIX *pM, D
 void register_PlayScreenFade_4874DE() {
   hnh_Hook(0x4874DE, hook_PlayScreenFade, "PlayScreenFade_4874DE"); // [OK]
 
-  hnh_Hook(0x47E78F, hook_GetTimerScaleFactor,           "GetTimerScaleFactor_47E78F");
-  hnh_Hook(0x47E782, hook_SetTimerScaleFactor,           "SetTimerScaleFactor_47E782");
-  hnh_Hook(0x41973F, hook_RGBToSurfaceFormat,            "RGBToSurfaceFormat_41973F");
-  hnh_Hook(0x4137D1, hook_CHanaObj__NewSpriteT3F6bySurf, "CHanaObj__NewSpriteT3F6bySurf_4137D1");
-  hnh_Hook(0x413D78, hook_CHanaObj__ReplaceTexture3F6,   "CHanaObj__ReplaceTexture3F6_413D78");
-  hnh_Hook(0x414589, hook_DrawSpriteLTRB,                "DrawSpriteLTRB_414589");
-  hnh_Hook(0x414ABA, hook_CHanaObj__SetAlpha3F6,         "CHanaObj__SetAlpha3F6_414ABA");
-  hnh_Hook(0x419D16, hook_BltFastWH,                     "BltFastWH_419D16");
+  // [OK] hnh_Hook(0x47E78F, hook_GetTimerScaleFactor,           "GetTimerScaleFactor_47E78F");
+  // [OK] hnh_Hook(0x47E782, hook_SetTimerScaleFactor,           "SetTimerScaleFactor_47E782");
+  // [OK] hnh_Hook(0x41973F, hook_RGBToSurfaceFormat,            "RGBToSurfaceFormat_41973F");
+  // [OK] hnh_Hook(0x4137D1, hook_CHanaObj__NewSpriteT3F6bySurf, "CHanaObj__NewSpriteT3F6bySurf_4137D1");
+  // [OK] hnh_Hook(0x413D78, hook_CHanaObj__ReplaceTexture3F6,   "CHanaObj__ReplaceTexture3F6_413D78");
+  // [OK] hnh_Hook(0x414589, hook_DrawSpriteLTRB,                "DrawSpriteLTRB_414589");
+  // [OK] hnh_Hook(0x414ABA, hook_CHanaObj__SetAlpha3F6,         "CHanaObj__SetAlpha3F6_414ABA");
+  // [OK] hnh_Hook(0x419D16, hook_BltFastWH,                     "BltFastWH_419D16");
   hnh_Hook(0x4874A5, hook_RenderFlush_4874A5,            "RenderFlush_4874A5");
-  hnh_Hook(0x40BF4F, hook_RenderClear_40BF4F,            "RenderClear_40BF4F");
-  hnh_Hook(0x47E768, hook_FrameTimer_BeginFrame,         "FrameTimer_BeginFrame_47E768");
-  hnh_Hook(0x47E7D5, hook_FrameTimer_EndFrame,           "FrameTimer_EndFrame_47E7D5");
-  hnh_Hook(0x406AB1, hook_HanaFrame_GetRelPosition,      "HanaFrame_GetRelPosition_406AB1");
-  hnh_Hook(0x40773F, hook_HanaFrame_BuildMatrixStack,    "HanaFrame_BuildMatrixStack_40773F");
-  hnh_Hook(0x40BBF4, hook_CHanaObj__GetType_40BBF4,      "CHanaObj__GetType_40BBF4");
-  hnh_Hook(0x433569, hook_HanaMorpT457_Animate,          "HanaMorpT457_Animate_433569");
-  hnh_Hook(0x418544, hook_CHanaObj__LockVtxBufT3EA_418544,   "CHanaObj__LockVtxBufT3EA_418544");
-  hnh_Hook(0x41858E, hook_CHanaObj__UnlockVrxBufT3EA_41858E, "CHanaObj__UnlockVrxBufT3EA_41858E");
-  hnh_Hook(0x417F88, hook_CalculateVertexSize, "CalculateVertexSize_417F88");
-  hnh_Hook(0x47E79A, hook_GetFrameTime, "GetFrameTime_47E79A");
+  // [OK] hnh_Hook(0x40BF4F, hook_RenderClear_40BF4F,            "RenderClear_40BF4F");
+  // [OK] hnh_Hook(0x47E768, hook_FrameTimer_BeginFrame,         "FrameTimer_BeginFrame_47E768");
+  // [OK] hnh_Hook(0x47E7D5, hook_FrameTimer_EndFrame,           "FrameTimer_EndFrame_47E7D5");
+  // [OK] hnh_Hook(0x406AB1, hook_HanaFrame_GetRelPosition,      "HanaFrame_GetRelPosition_406AB1");
+  // [OK] hnh_Hook(0x40773F, hook_HanaFrame_BuildMatrixStack,    "HanaFrame_BuildMatrixStack_40773F");
+  // [OK] hnh_Hook(0x40BBF4, hook_CHanaObj__GetType_40BBF4,      "CHanaObj__GetType_40BBF4");
+  // [OK] hnh_Hook(0x433569, hook_HanaMorpT457_Animate,          "HanaMorpT457_Animate_433569");
+  // [OK] hnh_Hook(0x418544, hook_CHanaObj__LockVtxBufT3EA_418544,   "CHanaObj__LockVtxBufT3EA_418544");
+  // [OK] hnh_Hook(0x41858E, hook_CHanaObj__UnlockVrxBufT3EA_41858E, "CHanaObj__UnlockVrxBufT3EA_41858E");
+  // [OK] hnh_Hook(0x417F88, hook_CalculateVertexSize, "CalculateVertexSize_417F88");
+  // [OK] hnh_Hook(0x47E79A, hook_GetFrameTime, "GetFrameTime_47E79A");
   hnh_Hook(0x43F3F7, hook_SelfBltDC,    "SelfBltDC_43F3F7");
-  hnh_Hook(0x407800, hook_HanaFrame_PushNode,     "HanaFrame_PushNode_407800");
-  hnh_Hook(0x405BB4, hook_SetInversTransf_405BB4, "SetInversTransf_405BB4");
-  hnh_Hook(0x405C06, hook_HanaFrame_Draw,         "HanaFrame_Draw_405C06");
-  hnh_Hook(0x4339B2, hook_HanaFrame_PreDraw,      "HanaFrame_PreDraw");
-  hnh_Hook(0x43383A, hook_HanaMorp_ApplyTree,     "HanaMorp_ApplyTree_43383A");
-  hnh_Hook(0x433916, hook_HanaMorp_ApplySubTree,  "HanaMorp_ApplySubTree_433916");
-  hnh_Hook(0x43315F, hook_HanaMorpT457_Interp,    "HanaMorpT457_Interp_43315F");
-  hnh_Hook(0x432DB0, hook_HanaVert_BlendMorph,    "HanaVert_BlendMorph_432DB0");
-  hnh_Hook(0x4365B9, hook_HanaMorpT457_ApplySubs, "HanaMorpT457_ApplySubs_4365B9");
-  hnh_Hook(0x4363EE, hook_HanaVert_Transform,     "HanaVert_Transform_4363EE");
+  // [OK] hnh_Hook(0x407800, hook_HanaFrame_PushNode,     "HanaFrame_PushNode_407800");
+  // [OK] hnh_Hook(0x405BB4, hook_SetInversTransf_405BB4, "SetInversTransf_405BB4");
+  // [OK] hnh_Hook(0x405C06, hook_HanaFrame_Draw,         "HanaFrame_Draw_405C06");
+  // [OK] hnh_Hook(0x4339B2, hook_HanaFrame_PreDraw,      "HanaFrame_PreDraw");
+  // [OK] hnh_Hook(0x43383A, hook_HanaMorp_ApplyTree,     "HanaMorp_ApplyTree_43383A");
+  // [OK] hnh_Hook(0x433916, hook_HanaMorp_ApplySubTree,  "HanaMorp_ApplySubTree_433916");
+  // [!] hnh_Hook(0x43315F, hook_HanaMorpT457_Interp,    "HanaMorpT457_Interp_43315F");
+  // [OK] hnh_Hook(0x432DB0, hook_HanaVert_BlendMorph,    "HanaVert_BlendMorph_432DB0");
+  // [OK] hnh_Hook(0x4365B9, hook_HanaMorpT457_ApplySubs, "HanaMorpT457_ApplySubs_4365B9");
+  // [OK] hnh_Hook(0x4363EE, hook_HanaVert_Transform,     "HanaVert_Transform_4363EE");
 }

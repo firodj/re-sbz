@@ -97,7 +97,7 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
     DWORD dwAmbientCur;
     unsigned int j;
 
-    DebugLog("[HNH:SUB] ProcessFrame_40600C\n");
+    ONCELOG("[HNH:SUB] ProcessFrame_40600C\n");
 
     qwAccumulatedLights = 0;
 
