@@ -693,13 +693,13 @@ int __cdecl hook_ParseOdfMORP_440896(LPBYTE *ppBuf, CHanaMorpT457_S40C **ppOut,
       pBuf = pScan;
       if (pMorpT457->arrMKeyT3EASize_348[idx])
       {
-        pMorpT457->arrMKeyT3EA_34C[idx] = (POINT*)MemAlloc_40DEF7(
+        pMorpT457->arrMKeyT3EA_34C[idx] = (CHanaMKey_S8*)MemAlloc_40DEF7(
           8 * pMorpT457->arrMKeyT3EASize_348[idx] + 80);
         for (k = 0; k < (unsigned int)pMorpT457->arrMKeyT3EASize_348[idx]; ++k)
         {
-          pMorpT457->arrMKeyT3EA_34C[idx][k].x = *(int *)pBuf;
+          pMorpT457->arrMKeyT3EA_34C[idx][k].nParam = *(int *)pBuf;
           pBuf += 4;
-          pMorpT457->arrMKeyT3EA_34C[idx][k].y = *(int *)pBuf;
+          pMorpT457->arrMKeyT3EA_34C[idx][k].nVtxIdx = *(int *)pBuf;
           pBuf += 4;
         }
       }

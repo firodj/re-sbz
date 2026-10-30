@@ -72,6 +72,10 @@ int(__cdecl*CHanaObj__GetType_40BBF4)(CHanaBase_S130* pObj) = reinterpret_cast<i
 void(__cdecl*SetInversTransf_405BB4)(D3DXMATRIX* pM) = reinterpret_cast<void(__cdecl*)(D3DXMATRIX * pM)>(0x405BB4);
 // ProcessFrame lives in src/ProcessFrame_40600C.cpp (extern in shared.hpp)
 void(__cdecl*HanaFrame_PreDraw)(CHanaFrameT3EC_S354* pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*)>(0x4339B2);
+void (__cdecl * HanaMorp_ApplyTree)(CHanaFrameT3EC_S354 *pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x43383A);
+void (__cdecl * HanaMorp_ApplySubTree)(CHanaFrameT3EC_S354 *pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x433916);
+D3DVERTEX * (__cdecl * HanaVert_Transform)(D3DVERTEX *pOutVtx, D3DXMATRIX *pM, D3DXVECTOR3 *pVtxIn) = reinterpret_cast<D3DVERTEX *(__cdecl*)(D3DVERTEX *pOutVtx, D3DXMATRIX *pM, D3DXVECTOR3 *pVtxIn)>(0x4363EE);
+
 
 // === GLOBAL VARIABLES ===
 
@@ -844,6 +848,8 @@ void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
   int v14; // [esp+7Ch] [ebp-8h]
   CHanaNode *pFirstChildNode; // [esp+80h] [ebp-4h]
 
+  ONCELOG("[HNH:SUB] HanaFrame_Draw_405C06\n");
+
   qwBitLightEnables[0] = 0;
   qwBitLightEnables[1] = 0;
   pChildFrame = 0;
@@ -913,7 +919,7 @@ void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
           {
             qmemcpy(&posX, &pChildFrame->mat4x4_after, sizeof(posX));
             ConfigureLight(pChildFrame->pHanaLight_210, posX._41, posX._42, posX._43, posX._13, posX._23, posX._33);
-            *(_QWORD *)qwBitLightEnables |= 1 << pChildFrame->pHanaLight_210->dwLightIndex_130;
+            *(QWORD *)qwBitLightEnables |= static_cast<QWORD>(1) << pChildFrame->pHanaLight_210->dwLightIndex_130;
           }
           if ( pChildFrame->pHanaLight_210 && g_nLightningEnabled )
           {
@@ -936,6 +942,339 @@ void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
     }
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_AMBIENT, dwAmbientSaved);
   }
+}
+
+// HanaFrame_PreDraw - pre-draw prep for a frame subtree; called from HanaFrame_Draw just before the child-draw loop. Runs the two morph passes in sequence: (1) HanaMorp_ApplyTree - apply + advance each T457 morph at its current param, recursively; (2) HanaMorp_ApplySubTree (sub_433916) - for each T457 frame run sub_4365B9, which applies the morph's secondary/sub-object vertex transformations. No return value.
+void __cdecl hook_HanaFrame_PreDraw(CHanaFrameT3EC_S354 *pFrame)
+{
+  if ( !pFrame ) return;
+
+  ONCELOG("[HNH:SUB] HanaFrame_PreDraw_4339B2\n")
+  
+  HanaMorp_ApplyTree(pFrame);
+  HanaMorp_ApplySubTree(pFrame);
+}
+
+void(__cdecl*HanaMorpT457_Interp)(CHanaMorpT457_S40C* pMorpT457, float fMorpParam) =
+  reinterpret_cast<void(__cdecl*)(CHanaMorpT457_S40C * pMorpT457, float fMorpParam)>(0x43315F);
+
+// HanaMorp_ApplyTree - recursive walk of the frame tree that applies each T457 morph (vertex-animation) at its current parameter. First pass of sub_4339B2 (called from HanaFrame_Draw); sibling sub_433916 is the second pass.
+// For each frame: if pMorpT457_20C is a T457 object (CHanaObj::GetType == 0x457 == 1111), apply the morph-target blend at the frame's current param via sub_43315F (interpolates each vertex between the two bracketing keyframes in arrMKeyT3EA_34C), then read that param back into fMorpParam (default -1.0 when no morph). Recurse into every child frame, then advance/decay the param with sub_433569(frame, fMorpParam, 0.0, 0).
+void __cdecl hook_HanaMorp_ApplyTree(CHanaFrameT3EC_S354 *pFrame)
+{
+  CHanaMorpT457_S40C *pMorpT457; // [esp+4h] [ebp-18h]
+  float fMorpParam; // [esp+8h] [ebp-14h]
+  unsigned int i; // [esp+Ch] [ebp-10h]
+  CHanaNode *pFirstChildNode; // [esp+18h] [ebp-4h]
+
+  fMorpParam = -1.0;
+  if ( !pFrame ) return;
+
+  ONCELOG("[HNH:SUB] HanaMorp_ApplyTree_43383A\n");
+
+  if ( CHanaObj__GetType_40BBF4(pFrame->pAttachedObj_20C) == 1111 )
+  {
+    pMorpT457 = pFrame->pAttachedObj_20C;
+    HanaMorpT457_Interp(pMorpT457, pMorpT457->fMorpParam_130);
+    fMorpParam = pMorpT457->fMorpParam_130;
+  }
+  if ( pFrame->nCountChild )
+  {
+    pFirstChildNode = pFrame->pFirstChildNode;
+    for ( i = 0; i < pFrame->nCountChild; ++i )
+    {
+      HanaMorp_ApplyTree(pFirstChildNode->pData);
+      pFirstChildNode = pFirstChildNode->pNext;
+    }
+  }
+  HanaMorpT457_Animate(pFrame, fMorpParam, 0.0, 0);
+}
+
+void(__cdecl*HanaMorpT457_ApplySubs)(CHanaFrameT3EC_S354* pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354*)>(0x4365B9);
+
+// HanaMorp_ApplySubTree - second recursive pass of the frame-tree prep (from HanaFrame_PreDraw). For each frame whose pMorpT457_20C is a T457 object (CHanaObj::GetType==0x457==1111), run sub_4365B9(frame): it walks the morph's arrS8_144 sub-object list and, for each entry with a target vertex set, transforms the affected vertices between frame space (inverse of mat4x4_after, times a fixed axis rotation) and the subobject's local space, applying per-subobject position/normal offsets (pos/norm) and an arrFun_4 callback, writing back into the mesh vertex buffer. Then recurse into every child frame (self-before-children).
+void __cdecl hook_HanaMorp_ApplySubTree(CHanaFrameT3EC_S354 *pFrame)
+{
+  unsigned int i; // [esp+4h] [ebp-10h]
+  CHanaNode *pFirstChildNode; // [esp+10h] [ebp-4h]
+
+  if ( !pFrame ) return;
+
+  ONCELOG("[HNH:SUB] HanaMorp_ApplySubTree_433916\n");
+  
+  if ( CHanaObj__GetType_40BBF4(pFrame->pAttachedObj_20C) == 1111 )
+    HanaMorpT457_ApplySubs(pFrame);
+
+  if ( !pFrame->nCountChild ) return;
+  
+  pFirstChildNode = pFrame->pFirstChildNode;
+  for ( i = 0; i < pFrame->nCountChild; ++i )
+  {
+    HanaMorp_ApplySubTree(pFirstChildNode->pData);
+    pFirstChildNode = pFirstChildNode->pNext;
+  }
+}
+
+void (__cdecl * HanaVert_BlendMorph)( D3DVERTEX **pVertexBufs, int nBufs, unsigned int dwNumVerts, int nFlags, float *fParams) = reinterpret_cast<void(__cdecl*)( D3DVERTEX **pVertexBufs, int nBufs, unsigned int dwNumVerts, int nFlags, float *fParams)>(0x432DB0);
+
+// HanaMorpT457_Interp - per-object morph keyframe resolver + blender. Called from HanaMorp_ApplyTree with fParam = the object's current morph parameter.
+// For each vertex-slot i in the object's mesh (pMorp->pMeshT3F5_138, 0..nCountVertT3EA_130):
+//   - scan that slot's keyframe list arrMKeyT3EA_34C[i] (count arrMKeyT3EASize_348[i]) to find the two keyframes bracketing fParam: key[j-1].x <= fParam < key[j].x. Each key = {x=param, y=source-vertex index}.
+//   - lock the two source vertex buffers pMorp->refsVertT3EA_13C[key.y] via LockVtxBufT3EA, stashing their params into fParams[1]/fParams[2] and their data pointers into the buf array.
+//   - [gated on bBlendGate0 && bBlendGate1] lock the target buffer pMorp->pMeshT3F5_138->refsVertT3EA[i], set fParams[0]=fParam, and call HanaVert_BlendMorph to lerp the target between the two source buffers.
+//   - unlock all locked source vertex objects (UnlockVrxBufT3EA).
+// NOTE (this build): bBlendGate0/bBlendGate1 (var_1B8/var_1B4) are written 0 exactly once and never set otherwise, so the HanaVert_BlendMorph call is DEAD - the keyframe search and lock/unlock run, but the actual per-vertex lerp into the target buffer is disabled. Returns the last i (vestigial).
+void __cdecl hook_HanaMorpT457_Interp(CHanaMorpT457_S40C *pMorpT457, float fMorpParam)
+{
+  D3DVERTEX *pVtxBuf; // [esp+1Ch] [ebp-1FCh] BYREF
+  unsigned int nSrcIdx; // [esp+20h] [ebp-1F8h]
+  int j; // [esp+24h] [ebp-1F4h]
+  int v5; // [esp+28h] [ebp-1F0h]
+  float fParams[10]; // [esp+2Ch] [ebp-1ECh] BYREF
+  DWORD dwNumVerts; // [esp+54h] [ebp-1C4h] BYREF
+  unsigned int nBufs; // [esp+58h] [ebp-1C0h]
+  CHanaVertT3EA_S1FC *pVtxObjs[1]; // [esp+5Ch] [ebp-1BCh]
+  int bBlendGate0; // [esp+60h] [ebp-1B8h]
+  int bBlendGate1; // [esp+64h] [ebp-1B4h]
+  _BYTE v12[28]; // [esp+68h] [ebp-1B0h] BYREF
+  int i; // [esp+84h] [ebp-194h]
+  D3DVERTEX *pVtxBufs[100]; // [esp+88h] [ebp-190h] BYREF
+
+  ONCELOG("[HNH:SUB] HanaMorpT457_Interp_43315F\n");
+
+  for ( i = 0; i < pMorpT457->pMeshT3F5_138->nCountVertT3EA_130; ++i )
+  {
+    nBufs = 1;
+    v5 = 0;
+    nSrcIdx = 0;
+    dwNumVerts = 0;
+    memset(fParams, 0, sizeof(fParams));
+    pVtxObjs[0] = 0;
+    bBlendGate0 = 0;
+    bBlendGate1 = 0;
+    memset(v12, 0, sizeof(v12));
+    for ( j = 1; j < pMorpT457->arrMKeyT3EASize_348[i]; ++j )
+    {
+      if ( (double)(unsigned int)pMorpT457->arrMKeyT3EA_34C[i][j].nParam > fMorpParam )
+      {
+        nSrcIdx = pMorpT457->arrMKeyT3EA_34C[i][j - 1].nVtxIdx;
+        CHanaObj__LockVtxBufT3EA_418544(pMorpT457->refsVertT3EA_13C[nSrcIdx], &dwNumVerts, (LPVOID *)&pVtxBuf);
+        fParams[nBufs] = (float)(unsigned int)pMorpT457->arrMKeyT3EA_34C[i][j - 1].nParam;
+        pVtxBufs[nBufs] = pVtxBuf;
+        pVtxObjs[nBufs++] = pMorpT457->refsVertT3EA_13C[nSrcIdx];
+        nSrcIdx = pMorpT457->arrMKeyT3EA_34C[i][j].nVtxIdx;
+        CHanaObj__LockVtxBufT3EA_418544(pMorpT457->refsVertT3EA_13C[nSrcIdx], &dwNumVerts, (LPVOID *)&pVtxBuf);
+        fParams[nBufs] = (float)(unsigned int)pMorpT457->arrMKeyT3EA_34C[i][j].nParam;
+        pVtxBufs[nBufs] = pVtxBuf;
+        pVtxObjs[nBufs++] = pMorpT457->refsVertT3EA_13C[nSrcIdx];
+        if ( bBlendGate0 && bBlendGate1 )
+        {
+          CHanaObj__LockVtxBufT3EA_418544(pMorpT457->pMeshT3F5_138->refsVertT3EA[i], &dwNumVerts, (LPVOID *)&pVtxBuf);
+          fParams[0] = fMorpParam;
+          pVtxBufs[0] = pVtxBuf;
+          pVtxObjs[0] = pMorpT457->pMeshT3F5_138->refsVertT3EA[i];
+          HanaVert_BlendMorph(pVtxBufs, nBufs, dwNumVerts, 0, fParams);
+        }
+        for ( nSrcIdx = 0; nSrcIdx < nBufs; ++nSrcIdx )
+        {
+          if ( pVtxObjs[nSrcIdx] )
+            CHanaObj__UnlockVrxBufT3EA_41858E(pVtxObjs[nSrcIdx]);
+        }
+        break;
+      }
+    }
+  }
+}
+
+// HanaVert_BlendMorph - low-level morph-target vertex blender (leaf of the T457 morph pipeline; called only from sub_43315F). Blends the target vertex buffer between two morph-keyframe source buffers at the current param.
+// pVertexBufs = array of vertex-buffer pointers: pVertexBufs[0]=target(out), pVertexBufs[1]=keyA, pVertexBufs[2]=keyB. dwNumVerts = vertex count. fParams = { [0] current param, [1] keyA param, [2] keyB param }. (nBufs and nFlags are part of the calling signature but unused in the body.)
+// Vertex stride = 32 bytes (8 floats); only components 0..5 (position xyz + normal xyz) are blended - texcoords (6,7) are left as-is.
+//  If keyA == keyB (degenerate): copy keyA -> target for all 6 components.
+//  Else: for each vertex, t = (fParams[0]-fParams[1])/(fParams[2]-fParams[1]); comp = t*(keyB-comp - keyA-comp) + keyA-comp  (i.e. lerp(keyA,keyB,t)) per component.
+void __cdecl hook_HanaVert_BlendMorph(
+  D3DVERTEX **pVertexBufs,
+  int nBufs,
+  unsigned int dwNumVerts,
+  int nFlags,
+  float *fParams)
+{
+  float *pSrcA5; // edi
+  float *pSrcA4; // [esp+14h] [ebp-2Ch]
+  float *pSrcA3; // [esp+1Ch] [ebp-24h]
+  float *pSrcA2; // [esp+24h] [ebp-1Ch]
+  float *pSrcA1; // [esp+2Ch] [ebp-14h]
+  unsigned int i; // [esp+3Ch] [ebp-4h]
+  unsigned int j; // [esp+3Ch] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] HanaVert_BlendMorph_432DB0\n");
+
+  if ( pVertexBufs[1] == pVertexBufs[2] )
+  {
+    for ( i = 0; i < dwNumVerts; ++i )
+    {
+      (*pVertexBufs)[i].x = pVertexBufs[1][i].x;
+      (*pVertexBufs)[i].y = pVertexBufs[1][i].y;
+      (*pVertexBufs)[i].z = pVertexBufs[1][i].z;
+      (*pVertexBufs)[i].nx = pVertexBufs[1][i].nx;
+      (*pVertexBufs)[i].ny = pVertexBufs[1][i].ny;
+      (*pVertexBufs)[i].nz = pVertexBufs[1][i].nz;
+    }
+  }
+  else
+  {
+    for ( j = 0; j < dwNumVerts; ++j )
+    {
+      (*pVertexBufs)[j].x = (*fParams - fParams[1])
+        / (fParams[2] - fParams[1])
+        * (pVertexBufs[2][j].x - pVertexBufs[1][j].x)
+        + pVertexBufs[1][j].x;
+      pSrcA1 = &pVertexBufs[1][j].y;
+      (*pVertexBufs)[j].y = (*fParams - fParams[1]) / (fParams[2] - fParams[1]) * (pVertexBufs[2][j].y - *pSrcA1)
+        + *pSrcA1;
+      pSrcA2 = &pVertexBufs[1][j].z;
+      (*pVertexBufs)[j].z = (*fParams - fParams[1]) / (fParams[2] - fParams[1]) * (pVertexBufs[2][j].z - *pSrcA2)
+        + *pSrcA2;
+      pSrcA3 = &pVertexBufs[1][j].nx;
+      (*pVertexBufs)[j].nx = (*fParams - fParams[1]) / (fParams[2] - fParams[1]) * (pVertexBufs[2][j].nx - *pSrcA3)
+        + *pSrcA3;
+      pSrcA4 = &pVertexBufs[1][j].ny;
+      (*pVertexBufs)[j].ny = (*fParams - fParams[1]) / (fParams[2] - fParams[1]) * (pVertexBufs[2][j].ny - *pSrcA4)
+        + *pSrcA4;
+      pSrcA5 = &pVertexBufs[1][j].nz;
+      (*pVertexBufs)[j].nz = (*fParams - fParams[1]) / (fParams[2] - fParams[1]) * (pVertexBufs[2][j].nz - *pSrcA5)
+        + *pSrcA5;
+    }
+  }
+}
+
+// HanaMorpT457_ApplySubs - apply the T457 morph's secondary/sub-object vertex transforms. For the frame's T457 object, walk pMorp->arrS8_144 (each entry has pS120 = {n1 target vertex index, pVert_14 source vertex, parrS2C per-vertex mapping, nCountS2C_0 count, field_118 matrix offset} and arrFun_4 = per-vertex callback array). For each such entry: build pTgtMat = inverse(frame->mat4x4_after) * pAxisRot; lock target vertex buffer pTgtBuf (mesh refsVertT3EA[n1]) and source pSrcBuf (pVert_14); then for each of nCountSubObjs vertices (pSubObjArr[j]):
+//   vtxTgt = HanaVert_Transform(target vert, frame matrix); vtxSrc = HanaVert_Transform(source vert, matrix at (nMatOff+376));
+//   arrFun_4[j](vtxTgt, vtxSrc, flt_8)  // per-vertex custom blend/deform callback
+//   writeback = HanaVert_Transform(vtxTgt, pTgtMat); store into target buffer; then subtract the subobject's pos (x,y,z) and norm (x,y,z) offsets.
+//   Unlock buffers. Shared by 5 callers (HanaMorp_ApplySubTree + sub_436BC0/sub_43768D/sub_43827C/sub_438DCF).
+void __cdecl hook_HanaMorpT457_ApplySubs(CHanaFrameT3EC_S354 *pFrame)
+{
+  D3DVERTEX *pVtx; // esi
+  D3DVERTEX vtxTmp2; // [esp+8h] [ebp-14Ch] BYREF
+  D3DVERTEX vtxTmp1; // [esp+28h] [ebp-12Ch] BYREF
+  D3DVERTEX vtxTmp0; // [esp+48h] [ebp-10Ch] BYREF
+  unsigned int i; // [esp+68h] [ebp-ECh]
+  D3DVERTEX vtxSrc; // [esp+6Ch] [ebp-E8h] BYREF
+  CHanaSubObj_S2C *pSubObjArr; // [esp+8Ch] [ebp-C8h]
+  unsigned int j; // [esp+90h] [ebp-C4h]
+  CHanaMorpT457_S40C *pMorp; // [esp+94h] [ebp-C0h]
+  BYTE vtxTgt[32]; // [esp+98h] [ebp-BCh] BYREF
+  unsigned int nCountSubObjs; // [esp+B8h] [ebp-9Ch]
+  CHanaFrameT3EC_S354 *nMatOff; // [esp+BCh] [ebp-98h]
+  D3DVERTEX *pSrcBuf; // [esp+C0h] [ebp-94h] BYREF
+  CHanaVertT3EA_S1FC *pSrcVert; // [esp+C4h] [ebp-90h]
+  D3DVERTEX *pTgtBuf; // [esp+C8h] [ebp-8Ch] BYREF
+  CHanaVertT3EA_S1FC *pTgtVert; // [esp+CCh] [ebp-88h]
+  D3DXMATRIX pTgtMat; // [esp+D0h] [ebp-84h] BYREF
+  DWORD dwNumVertices; // [esp+110h] [ebp-44h] BYREF
+  D3DXMATRIX pAxisRot; // [esp+114h] [ebp-40h] BYREF
+
+  ONCELOG("[HNH:SUB] HanaMorpT457_ApplySubs_4365B9\n");
+
+  nMatOff = 0;
+  pSubObjArr = 0;
+  *(QWORD *)&pAxisRot._11 = 0x3F800000;
+  *(QWORD *)&pAxisRot.m[0][2] = 0;
+  *(QWORD *)&pAxisRot.m[1][0] = 0x3F80000000000000LL;
+  memset(&pAxisRot.m[1][2], 0, 16);
+  *(QWORD *)&pAxisRot.m[2][2] = 0x3F800000;
+  *(QWORD *)&pAxisRot.m[3][0] = 0;
+  *(QWORD *)&pAxisRot.m[3][2] = 0x3F80000000000000LL;
+  if ( pFrame )
+  {
+    if ( CHanaObj__GetType_40BBF4(pFrame->pAttachedObj_20C) == 1111 )
+    {
+      pMorp = pFrame->pAttachedObj_20C;
+      if ( pMorp )
+      {
+        for ( i = 0; i < pMorp->nCount_344; ++i )
+        {
+          if ( pMorp->arrSubObj_144[i].pSubObj_0 )
+          {
+            if ( pMorp->arrSubObj_144[i].pSubObj_0->pVert_14 )
+            {
+              nCountSubObjs = pMorp->arrSubObj_144[i].pSubObj_0->nCountS2C_0;
+              if ( nCountSubObjs )
+              {
+                nMatOff = pMorp->arrSubObj_144[i].pSubObj_0->pFrame_118;
+                D3DXMatrixInverse(&pTgtMat, 0, &pFrame->mat4x4_after);
+                D3DXMatrixMultiply(&pTgtMat, &pAxisRot, &pTgtMat);
+                pTgtVert = pMorp->pMeshT3F5_138->refsVertT3EA[pMorp->arrSubObj_144[i].pSubObj_0->n1];
+                pSrcVert = pMorp->arrSubObj_144[i].pSubObj_0->pVert_14;
+                pSubObjArr = pMorp->arrSubObj_144[i].pSubObj_0->parrS2C;
+                if ( pTgtVert == pSrcVert )
+                {
+                  CHanaObj__LockVtxBufT3EA_418544(pTgtVert, &dwNumVertices, (LPVOID *)&pTgtBuf);
+                  pSrcBuf = pTgtBuf;
+                }
+                else
+                {
+                  CHanaObj__LockVtxBufT3EA_418544(pTgtVert, &dwNumVertices, (LPVOID *)&pTgtBuf);
+                  CHanaObj__LockVtxBufT3EA_418544(pSrcVert, &dwNumVertices, (LPVOID *)&pSrcBuf);
+                }
+                for ( j = 0; j < nCountSubObjs; ++j )
+                {
+                  qmemcpy(
+                    vtxTgt,
+                    HanaVert_Transform(&vtxTmp0, &pFrame->mat4x4_after, (D3DXVECTOR3 *)&pTgtBuf[pSubObjArr[j].nFrame_4]),
+                    sizeof(vtxTgt));
+                  qmemcpy(
+                    &vtxSrc,
+                    HanaVert_Transform(&vtxTmp1, &nMatOff->mat4x4_after, (D3DXVECTOR3 *)&pSrcBuf[pSubObjArr[j].nSrc_0]),
+                    sizeof(vtxSrc));
+                  pMorp->arrSubObj_144[i].arrFun_4[j]((float *)vtxTgt, &vtxSrc.x, pSubObjArr[j].fWeight_8);
+                  pVtx = HanaVert_Transform(&vtxTmp2, &pTgtMat, (D3DXVECTOR3 *)vtxTgt);
+                  qmemcpy(&pTgtBuf[pSubObjArr[j].nFrame_4], pVtx, sizeof(_D3DVERTEX));
+                  pTgtBuf[pSubObjArr[j].nFrame_4].x = pTgtBuf[pSubObjArr[j].nFrame_4].x - pSubObjArr[j].pos.x;
+                  pTgtBuf[pSubObjArr[j].nFrame_4].y = pTgtBuf[pSubObjArr[j].nFrame_4].y - pSubObjArr[j].pos.y;
+                  pTgtBuf[pSubObjArr[j].nFrame_4].z = pTgtBuf[pSubObjArr[j].nFrame_4].z - pSubObjArr[j].pos.z;
+                  pTgtBuf[pSubObjArr[j].nFrame_4].nx = pTgtBuf[pSubObjArr[j].nFrame_4].nx - pSubObjArr[j].norm.x;
+                  pTgtBuf[pSubObjArr[j].nFrame_4].ny = pTgtBuf[pSubObjArr[j].nFrame_4].ny - pSubObjArr[j].norm.y;
+                  pTgtBuf[pSubObjArr[j].nFrame_4].nz = pTgtBuf[pSubObjArr[j].nFrame_4].nz - pSubObjArr[j].norm.z;
+                }
+                if ( pTgtVert == pSrcVert )
+                {
+                  CHanaObj__UnlockVrxBufT3EA_41858E(pTgtVert);
+                }
+                else
+                {
+                  CHanaObj__UnlockVrxBufT3EA_41858E(pSrcVert);
+                  CHanaObj__UnlockVrxBufT3EA_41858E(pTgtVert);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// HanaVert_Transform - transform a single D3DVERTEX (position + normal) by a matrix pMat: position via D3DXVec3TransformCoord, normal via D3DXVec3TransformNormal; texcoords and the rest of the 32-byte vertex are copied through. Writes the 32-byte result into pOutBuf and returns pOutBuf. The basic vertex-transform primitive used by the T457 sub-object/morph transforms (HanaMorpT457_ApplySubs and 4 sibling routines).
+D3DVERTEX *__cdecl hook_HanaVert_Transform(D3DVERTEX *pOutVtx, D3DXMATRIX *pM, D3DXVECTOR3 *pVtxIn)
+{
+  D3DVERTEX vtxBuf; // [esp+8h] [ebp-38h] BYREF
+  D3DXVECTOR3 pvOut; // [esp+28h] [ebp-18h] BYREF
+  D3DXVECTOR3 pV; // [esp+34h] [ebp-Ch] BYREF
+
+  ONCELOG("[HNH:SUB] HanaVert_Transform_4363EE\n");
+
+  qmemcpy(&vtxBuf, pVtxIn, sizeof(vtxBuf));
+  pV = *pVtxIn;
+  D3DXVec3TransformCoord(&pvOut, &pV, pM);
+  vtxBuf.x = pvOut.x;
+  vtxBuf.y = pvOut.y;
+  vtxBuf.z = pvOut.z;
+  pV = pVtxIn[1];
+  D3DXVec3TransformNormal(&pvOut, &pV, pM);     // normal
+  *(D3DXVECTOR3 *)&vtxBuf.nx = pvOut;
+  qmemcpy(pOutVtx, &vtxBuf, sizeof(D3DVERTEX));
+  return pOutVtx;
 }
 
 void register_PlayScreenFade_4874DE() {
@@ -964,4 +1303,12 @@ void register_PlayScreenFade_4874DE() {
   hnh_Hook(0x43F3F7, hook_SelfBltDC,    "SelfBltDC_43F3F7");
   hnh_Hook(0x407800, hook_HanaFrame_PushNode,     "HanaFrame_PushNode_407800");
   hnh_Hook(0x405BB4, hook_SetInversTransf_405BB4, "SetInversTransf_405BB4");
+  hnh_Hook(0x405C06, hook_HanaFrame_Draw,         "HanaFrame_Draw_405C06");
+  hnh_Hook(0x4339B2, hook_HanaFrame_PreDraw,      "HanaFrame_PreDraw");
+  hnh_Hook(0x43383A, hook_HanaMorp_ApplyTree,     "HanaMorp_ApplyTree_43383A");
+  hnh_Hook(0x433916, hook_HanaMorp_ApplySubTree,  "HanaMorp_ApplySubTree_433916");
+  hnh_Hook(0x43315F, hook_HanaMorpT457_Interp,    "HanaMorpT457_Interp_43315F");
+  hnh_Hook(0x432DB0, hook_HanaVert_BlendMorph,    "HanaVert_BlendMorph_432DB0");
+  hnh_Hook(0x4365B9, hook_HanaMorpT457_ApplySubs, "HanaMorpT457_ApplySubs_4365B9");
+  hnh_Hook(0x4363EE, hook_HanaVert_Transform,     "HanaVert_Transform_4363EE");
 }

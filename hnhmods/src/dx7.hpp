@@ -395,3 +395,5 @@ extern D3DXQUATERNION* (__stdcall*D3DXQuaternionSlerp)(D3DXQUATERNION* pOut,
 extern D3DXMATRIX* (__stdcall*D3DXMatrixRotationQuaternion)(D3DXMATRIX* pOut, const D3DXQUATERNION* pQ);
 extern D3DXMATRIX* (__stdcall*D3DXMatrixTranslation)(D3DXMATRIX* pOut,  float x,  float y, float z);
 extern D3DXMATRIX* (__stdcall*D3DXMatrixScaling)(D3DXMATRIX* pOut,  float sx,  float sy, float sz);
+extern D3DXVECTOR3* (__stdcall*D3DXVec3TransformCoord)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV, const D3DXMATRIX* pM);
+extern D3DXVECTOR3* (__stdcall* D3DXVec3TransformNormal)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV, const D3DXMATRIX* pM);

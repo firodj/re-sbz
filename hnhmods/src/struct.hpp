@@ -4,11 +4,11 @@
 
 #pragma pack(push, 1)
 
-// struct CHanaVector2 = POINT
-// {
-//     int x;
-//     int y;
-// };
+struct CHanaMKey_S8
+{
+    int nParam;
+    int nVtxIdx;
+};
 
 struct CHanaBase_S130
 {
@@ -120,7 +120,7 @@ struct  CHanaMorpT457_S40C : public CHanaBase_S130
     CHanaSubObj_S8 arrSubObj_144[64];
     unsigned int nCount_344;
     int *arrMKeyT3EASize_348;
-    POINT **arrMKeyT3EA_34C;
+    CHanaMKey_S8 **arrMKeyT3EA_34C;
     int gap350[2];
     int dwEaseEnabled_358;
     int nEaseFrom_35C;

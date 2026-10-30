@@ -73,6 +73,9 @@ D3DXMATRIX* (__stdcall*D3DXMatrixScaling)(D3DXMATRIX* pOut,  float sx,  float sy
   float sz) = reinterpret_cast<D3DXMATRIX* (__stdcall*)(D3DXMATRIX* pOut,  float sx,  float sy,
   float sz)>(0x48A968); 
 
+D3DXVECTOR3* (__stdcall*D3DXVec3TransformCoord)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV, const D3DXMATRIX* pM) = reinterpret_cast<D3DXVECTOR3* (__stdcall*)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV, const D3DXMATRIX* pM)>(0x48A2A0);
+D3DXVECTOR3* (__stdcall* D3DXVec3TransformNormal)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV, const D3DXMATRIX* pM) = reinterpret_cast<D3DXVECTOR3* (__stdcall*)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV,  const D3DXMATRIX* pM)>(0x48A38E);
+
 // === FUNCTION IMPLEMENATIONS ===
 
 D3DXVECTOR3 *__stdcall hook_D3DXVec3Normalize(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV)
