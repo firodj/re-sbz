@@ -8,7 +8,7 @@ void AssertHanaStructSize() {
   static_assert(sizeof(D3DXMATRIX) == 0x40, "D3DXMATRIX");
   static_assert(sizeof(D3DXQUATERNION) == 0x10, "D3DXQUATERNION");
     
-  static_assert(sizeof(CHanaVector2) == 0x8, "HanaVector2");
+  static_assert(sizeof(POINT) == 0x8, "POINT");
   static_assert(sizeof(CHanaBase_S130) == 0x130, "CHanaBase_S130");
   static_assert(sizeof(CHanaTextureT3EB_S2CC) == 0x2CC, "CHanaTextureT3EB_S2CC");
   static_assert(sizeof(CHanaFrameRootT3EC_S2D4) == 0x2D4, "CHanaFrameRootT3EC_S2D4");

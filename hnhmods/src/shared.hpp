@@ -44,6 +44,9 @@ extern CHanaFrameRootT3EC_S2D4* &g_pSceneFrame;
 extern CHanaFrameT3EC_S354*     &g_pCameraFrame;
 extern CHanaFrameT3EC_S354*     &g_pLightFrame;
 
+extern uint32_t &g_dwGBitMask;
+extern uint32_t &g_dwRBitMask;
+
 extern const char *(__cdecl*HanaDS_SetErrStr)(DWORD hr);
 extern void (__cdecl*SetUiFont_419BCD)(int nCharW, int nFontH, LPCSTR szFaceName);
 extern void (__cdecl*D3DDeinit)(void);
@@ -263,6 +266,30 @@ extern int(__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab);
 extern LPDIRECTDRAWSURFACE7(__cdecl* PlayScreenFade)(int bisGo, COLORREF colorref,
   LPDIRECTDRAWSURFACE7 pDdSurface, float fFade, char bFlags);
 
+extern DWORD  (__cdecl* RGBToSurfaceFormat)(LPDIRECTDRAWSURFACE7 surface, COLORREF color);
+extern int  (__cdecl* CHanaObj__NewSpriteT3F6bySurf)(CHanaSpriteT3F6_S1FC **pOut, LPDIRECTDRAWSURFACE7 pSurfaceSrc);
+extern int  (__cdecl* CHanaObj__ReplaceTexture3F6)(CHanaSpriteT3F6_S1FC *pSprite, LPDIRECTDRAWSURFACE7 *pTexture);
+extern void (__cdecl* CHanaObj__SetAlpha3F6)(CHanaSpriteT3F6_S1FC *pSprite, float alpha);
+extern int  (__cdecl* DrawSpriteLTRB)(CHanaSpriteT3F6_S1FC *pSprite, int left, int top, int right, int bottom);
+extern int  (__cdecl* BltFastWH)(LPDIRECTDRAWSURFACE7 pSurf, int xDest, int yDest, LPDIRECTDRAWSURFACE7 pSrc, int left, int top, int width, int height, int ddbltfastFlags);
+extern void (__cdecl* RenderFlush_4874A5)(void);
+extern HRESULT  (__cdecl* RenderClear_40BF4F)(DWORD ClearFlags);
+extern HRESULT  (__cdecl* HanaFrame_Draw)(CHanaFrameT3EC_S354 *pFrame);
+extern double (__cdecl* GetTimerScaleFactor)(void);
+extern void   (__cdecl* SetTimerScaleFactor)(float fTimeScale);
+extern int    (__cdecl* FrameTimer_BeginFrame)(void);
+extern DWORD  (__cdecl* FrameTimer_EndFrame)(void);
+extern double (__cdecl* GetFrameTime)(void);
+extern void   (__cdecl * HanaFrame_GetRelPosition)( CHanaFrameT3EC_S354 *pFrame, CHanaFrameRootT3EC_S2D4 *pRefFrame, float *pOutX, float *pOutY, float *pOutZ);
+extern void   (__cdecl*SelfBltDC)(LPDIRECTDRAWSURFACE7 pDDSurf);
+extern void   (* HanaFrame_BuildMatrixStack)();
+extern void   (__cdecl * CHanaObj__LockVtxBufT3EA_418544)(CHanaVertT3EA_S1FC *pVert, DWORD *pNumVertices, LPVOID *ppData);
+extern void   (__cdecl * CHanaObj__UnlockVrxBufT3EA_41858E)(CHanaVertT3EA_S1FC *pVert);
+extern unsigned int (* CalculateVertexSize)(DWORD fvf);
+extern HRESULT  (__cdecl* HanaFrame_PushNode)(CHanaFrameT3EC_S354* pFrame);
+extern void   (__cdecl * HanaMorpT457_Animate)(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim);
+extern int    (__cdecl*CHanaObj__GetType_40BBF4)(CHanaBase_S130* pObj);
+
 // === DEFINED ParseODFContent.cpp ===
 
 extern int(__cdecl*ParseOdfANIM_4414EB)(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAnimSetT3F1, CHanaFrameT3EC_S354 *pCurrentFramT3EC);
@@ -299,3 +326,14 @@ extern CInputState* (*GetInputState_481B37)(void);
 extern bool(__cdecl* GetCursorPos_4811FA)(int* pOutX, int* pOutY, __int16* pOutBtn);
 extern void(__cdecl* MutexThreadWait_4815EC)(bool bWait);
 extern void(__cdecl* StopAndRestartThread)(DWORD nThreadType);
+
+// == MACROS
+
+#define ONCELOG(format, ...) \
+  { \
+    static bool _debugged = true; \
+    if (_debugged) { \
+      _debugged = false; \
+      DebugLog(format, __VA_ARGS__); \
+    } \
+  }

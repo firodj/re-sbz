@@ -693,7 +693,7 @@ int __cdecl hook_ParseOdfMORP_440896(LPBYTE *ppBuf, CHanaMorpT457_S40C **ppOut,
       pBuf = pScan;
       if (pMorpT457->arrMKeyT3EASize_348[idx])
       {
-        pMorpT457->arrMKeyT3EA_34C[idx] = (CHanaVector2 *)MemAlloc_40DEF7(
+        pMorpT457->arrMKeyT3EA_34C[idx] = (POINT*)MemAlloc_40DEF7(
           8 * pMorpT457->arrMKeyT3EASize_348[idx] + 80);
         for (k = 0; k < (unsigned int)pMorpT457->arrMKeyT3EASize_348[idx]; ++k)
         {
@@ -747,11 +747,11 @@ int __cdecl hook_ParseOdfMORP_440896(LPBYTE *ppBuf, CHanaMorpT457_S40C **ppOut,
     pScan += 4;
     pBuf = pScan;
     pMorpT457->dwEaseEnabled_358 = *(int *)pBuf;   pBuf += 4;
-    pMorpT457->fEaseFrom_35C    = *(int *)pBuf;    pBuf += 4;
-    pMorpT457->fEaseTo_360      = *(int *)pBuf;    pBuf += 4;
+    pMorpT457->nEaseFrom_35C    = *(int *)pBuf;    pBuf += 4;
+    pMorpT457->nEaseTo_360      = *(int *)pBuf;    pBuf += 4;
     pMorpT457->nTimeState_36C   = *(int *)pBuf;    pBuf += 4;
-    pMorpT457->fTimeFrom_370    = *(int *)pBuf;    pBuf += 4;
-    pMorpT457->fTimeTo_374      = *(int *)pBuf;    pBuf += 4;
+    pMorpT457->nTimeFrom_370    = *(int *)pBuf;    pBuf += 4;
+    pMorpT457->nTimeTo_374      = *(int *)pBuf;    pBuf += 4;
     pMorpT457->fEaseProgress_384 = 0;
     pMorpT457->dwClockStart_380 = 0;
     if (memcmp("Mani", pBuf, 4))       // optional 7th dword unless "Mani"
