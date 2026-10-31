@@ -41,7 +41,7 @@ void(__cdecl*ProcessFrame)(CHanaFrameT3EC_S354* pChildFrame, int nAmbient, DWORD
 void (__cdecl*UpdateBoneTransform)(CHanaFrameT3EC_S354 *boneStruct,
     CHanaFrameT3EC_S354 *parentStruct, CHanaFrameT3EC_S354 *pSceneFrame) =
     reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *)>(0x408283);
-int  (__cdecl*AlwaysTrue)(void) = reinterpret_cast<int(__cdecl*)()>(0x4084C2);
+//int  (__cdecl*AlwaysTrue)(void) = reinterpret_cast<int(__cdecl*)()>(0x4084C2);
 int  (__cdecl*AddObjectToPool)(D3DXMATRIX *mat4x4After, CHanaFrameT3EC_S354 *pChildFrame,
     CHanaVertT3EA_S1FC *pVert, int nAmbient, QWORD qwBitLightEnables) =
     reinterpret_cast<int(__cdecl*)(D3DXMATRIX *, CHanaFrameT3EC_S354 *, CHanaVertT3EA_S1FC *, int, QWORD)>(0x40CD32);
@@ -56,10 +56,12 @@ void(__cdecl*UpdateVertTextureFromFrame)(CHanaVertT3EA_S1FC* pVertArg, CHanaFram
 void (__cdecl * ProjectToScreen_40E2A5)(D3DXMATRIX *pM, POINT *pOut) = reinterpret_cast<void(__cdecl*)(D3DXMATRIX *pM, POINT *pOut)>(0x40E2A5);
 void (__cdecl * BuildViewportMatrix)() = reinterpret_cast<void(__cdecl*)()>(0x40E167);
 double (* GetProjectionFov_40DCF6)() = reinterpret_cast<double(*)()>(0x40DCF6);
-void (__cdecl * HanaVert_Draw)(CHanaVertT3EA_S1FC *pVert) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert)>(0x417B27);
+void (__cdecl * HanaVertT3EA_Draw)(CHanaVertT3EA_S1FC *pVert) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert)>(0x417B27);
 void (__cdecl * HanaMate_SetMaterial)(CHanaMateT3EE_S184 *pMate) = reinterpret_cast<void(__cdecl*)(CHanaMateT3EE_S184 *pMate)>(0x40FB30);
 void (__cdecl * UpdateBoneLookAtTransform)( CHanaFrameT3EC_S354 *pBoneFrame, CHanaFrameT3EC_S354 *pParentFrame, float dirForwardX, float dirForwardY, float dirForwardZ, float dirUpX, float dirUpY, float dirUpZ) = reinterpret_cast<void(__cdecl*)( CHanaFrameT3EC_S354 *pBoneFrame, CHanaFrameT3EC_S354 *pParentFrame, float dirForwardX, float dirForwardY, float dirForwardZ, float dirUpX, float dirUpY, float dirUpZ)>(0x406CA4);
 void (__cdecl * CameraLookAtFrame)( CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pTargetFrame, CHanaFrameT3EC_S354 *pSceneFrame, __int16 iMode) = reinterpret_cast<void(__cdecl*)( CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pTargetFrame, CHanaFrameT3EC_S354 *pSceneFrame, __int16 iMode)>(0x40873E);
+void (__cdecl * HanaMeshT3F5_Draw)(CHanaMeshT3F5_S138 *pMesh) = reinterpret_cast<void(__cdecl*)(CHanaMeshT3F5_S138 *pMesh)>(0x40FE8E);
+void (__cdecl * HanaMorpT457_Draw)(CHanaMorpT457_S40C *pMorp) = reinterpret_cast<void(__cdecl*)(CHanaMorpT457_S40C *pMorp)>(0x434FC9);
 
 // === PINNED GLOBALS ===
 uint32_t &g_fRendering    = *(uint32_t *)0x4CD778;  // WRITABLE
@@ -95,6 +97,11 @@ static void FixAlphaAndAddToPool(D3DXMATRIX *pMat, CHanaFrameT3EC_S354 *pFrame,
             fabsf(pVert->pMateT3EE->d3dMaterial_130.diffuse.a);
     }
     AddObjectToPool(pMat, pFrame, pVert, nAmbient, qwLightEnables);
+}
+
+BOOL AlwaysTrue()
+{
+  return 1;
 }
 
 void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, DWORD *qwBitLightEnables)
@@ -488,14 +495,14 @@ void __cdecl hook_UpdateVertTextureFromFrame(CHanaVertT3EA_S1FC *pVertArg, CHana
   g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_FOGENABLE, &fogEnabled);
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_AMBIENT, -1);
-  HanaVert_Draw(pVert);
+  HanaVertT3EA_Draw(pVert);
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, fogEnabled);
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_AMBIENT, ambientColor);
   g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MINFILTER, 2);
   g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MAGFILTER, 2);
 }
 
-// HanaVert_Draw(pVert): draw a CHanaVert geometry with full D3D7 state setup.
+// HanaVertT3EA_Draw(pVert): draw a CHanaVert geometry with full D3D7 state setup.
 // - early-out if pVert->fShadowOnly_1E0 && shadows off (g_dwShadowOff)
 // - texstage0 = modulate; material = pVert->pMateT3EE (or g_pMaterial),
 //   skip if material diffuse.a <= 0.0
@@ -506,9 +513,9 @@ void __cdecl hook_UpdateVertTextureFromFrame(CHanaVertT3EA_S1FC *pVertArg, CHana
 // - shade: fFlatShade_1D8 ? FLAT : GOURAUD; fog density = nFogDensity_1EC
 // - primitive per nPrimType_154: 0=Indexed TRIANGLELIST, 1=TRIANGLESTRIP, else=TRIANGLEFAN
 // - restore LIGHTING=1, SHADEMODE=GOURAUD, ALPHABLENDENABLE=0
-void __cdecl hook_HanaVert_Draw(CHanaVertT3EA_S1FC *pVert)
+void __cdecl hook_HanaVertT3EA_Draw(CHanaVertT3EA_S1FC *pVert)
 {
-  ONCELOG("[HNH:SUB] HanaVert_Draw_417B27\n");
+  ONCELOG("[HNH:SUB] HanaVertT3EA_Draw_417B27\n");
 
   if ( pVert->bShadowOnly_1E0 != 1 || g_dwShadowOff != 1 )
   {
@@ -920,6 +927,110 @@ void __cdecl hook_CameraLookAtFrame(
   }
 }
 
+void __cdecl hook_AddObjectToPool(
+  D3DXMATRIX *mat4x4After,
+  CHanaFrameT3EC_S354 *pChildFrame,
+  CHanaVertT3EA_S1FC *pVert,
+  int nAmbient,
+  QWORD qwBitLightEnables)
+{
+  CObjPoolMgr_S58 *pOldPool; // [esp+10h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] AddObjectToPool_40CD32\n");
+
+  if ( g_nObjCount >= g_nCapObjects_4CD780 - 1 )
+  {
+    pOldPool = g_pObjPool;
+    g_pObjPool = (CObjPoolMgr_S58 *)MemAlloc_40DEF7(0x58 * (g_nCapObjects_4CD780 + 256));
+    qmemcpy(g_pObjPool, pOldPool, 4 * ((unsigned int)(0x58 * g_nCapObjects_4CD780) >> 2));
+    MemFree_40DF64(pOldPool);
+    g_nCapObjects_4CD780 += 256;
+  }
+  qmemcpy(&g_pObjPool[g_nObjCount], mat4x4After, 0x40u);
+  g_pObjPool[g_nObjCount].pFrame = pChildFrame;
+  g_pObjPool[g_nObjCount].pVert = pVert;
+  g_pObjPool[g_nObjCount].fNeedsDraw_48 = 1;
+  g_pObjPool[g_nObjCount].nAmbient = nAmbient;
+  g_pObjPool[g_nObjCount++].bitLightEnables = qwBitLightEnables;
+}
+
+void(__cdecl*HanaT3FB_Draw)(CHanaBase_S130* pObj) = reinterpret_cast<void(__cdecl*)(CHanaBase_S130*)>(0x416776);
+
+DWORD __cdecl hook_CHanaObj__GetChildCountT3F5_40FF0F(CHanaMeshT3F5_S138 *pHanaT3F5)
+{
+  ONCELOG("[HNH:SUB] CHanaObj__GetChildCountT3F5_40FF0F");
+
+  return pHanaT3F5->nCountVertT3EA_130;
+}
+
+// HanaMeshT3F5_Draw(pMesh): draw a compound CHanaMeshT3F5 = an array of
+//   CHanaVertT3EA children (refsVertT3EA[0..nCountVertT3EA_130)).
+//   For each child:
+//     - if child->nPrimType_154[0] != 0: clear it and skip this child this frame
+//     - else: HanaVert_Draw(child)
+//   (nPrimType_154[1] is the primitive type used inside HanaVert_Draw; [0]
+//    doubles as a per-child skip flag here.)
+//   Polymorphic target of HanaVert_DrawByType (dwType 0x3F5); also called from
+//   sub_434FC9 (the 0x457 morph draw, which shares this child-vert layout).
+void __cdecl hook_HanaMeshT3F5_Draw(CHanaMeshT3F5_S138 *pMesh)
+{
+  unsigned int i; // [esp+0h] [ebp-8h]
+
+  ONCELOG("[HNH:SUB] HanaMeshT3F5_Draw_40FE8E\n");
+
+  for ( i = 0; i < pMesh->nCountVertT3EA_130; ++i )
+  {
+    if ( pMesh->refsVertT3EA[i]->nPrimType_154[0] )
+      pMesh->refsVertT3EA[i]->nPrimType_154[0] = 0;
+    else
+      HanaVertT3EA_Draw(pMesh->refsVertT3EA[i]);
+  }
+}
+
+// HanaMorpT457_Draw(pMorp): dwType 0x457 geometry draw. A CHanaMorpT457 wraps a
+//   CHanaMeshT3F5 (pMorp->pMeshT3F5_138); drawing it is a pure delegation to
+//   HanaMeshT3F5_Draw (which draws the child-vert array).
+//   Confirms the morph geometry shares the 0x3F5 mesh child-vert layout.
+//   Polymorphic target of HanaVert_DrawByType (dwType 0x457).
+void __cdecl hook_HanaMorpT457_Draw(CHanaMorpT457_S40C *pMorp)
+{
+  ONCELOG("[HNH:SUB] HanaMorpT457_Draw_434FC9\n");
+
+  HanaMeshT3F5_Draw(pMorp->pMeshT3F5_138);
+}
+
+// HanaVert_DrawByType(pVert): dispatch a CHana geometry object to its
+//   type-specific D3D draw routine, selected by pVert->dwType:
+//     0x3EA  HanaVert_Draw   (CHanaVertT3EA_S1FC)
+//     0x3F5  sub_40FE8E      (CHanaMeshT3F5_S138)   mesh
+//     0x3FB  HanaMesh_Draw   (CHana3FB_S160)
+//     0x457  sub_434FC9      (CHanaMorpT457_S40C)   morph
+//     else   no-op (return 0)
+//   The 'T####' suffix in each CHana* struct name == this dwType tag.
+//   Called from HanaVert_DrawBatch (opaque + translucent passes) and sub_40600C.
+void __cdecl hook_HanaVert_DrawByType(CHanaVertT3EA_S1FC *pObj)
+{
+  ONCELOG("[HNH:SUB] HanaVert_DrawByType_40C54C\n");
+
+  switch ( pObj->dwType )
+  {
+  case 0x3EA:
+    HanaVertT3EA_Draw((CHanaVertT3EA_S1FC*)pObj);
+    break;
+  case 0x3F5:
+    HanaMeshT3F5_Draw((CHanaMeshT3F5_S138 *)pObj);
+    break;
+  case 0x3FB:
+    HanaT3FB_Draw((CHanaBase_S130 *)pObj);
+    break;
+  case 0x457:
+    HanaMorpT457_Draw((CHanaMorpT457_S40C *)pObj);
+    break;
+  default:
+    return;
+  }
+}
+
 void register_ProcessFrame_40600C() {
     hnh_Hook(0x40600C, hook_ProcessFrame, "ProcessFrame_40600C"); // [OK]
     hnh_Hook(0x40D9C7, hook_SortObjectsByDepth, "SortObjectsByDepth_40D9C7");
@@ -928,9 +1039,14 @@ void register_ProcessFrame_40600C() {
     hnh_Hook(0x40E167, hook_BuildViewportMatrix, "BuildViewportMatrix_40E167");
     hnh_Hook(0x40E2A5, hook_ProjectToScreen_40E2A5, "ProjectToScreen_40E2A5");
     hnh_Hook(0x40DCF6, hook_GetProjectionFov_40DCF6, "GetProjectionFov_40DCF6");
-    hnh_Hook(0x417B27, hook_HanaVert_Draw, "HanaVert_Draw_417B27");
+    hnh_Hook(0x417B27, hook_HanaVertT3EA_Draw, "HanaVert_Draw_417B27");
     hnh_Hook(0x40FB30, hook_HanaMate_SetMaterial, "HanaMate_SetMaterial_40FB30");
     hnh_Hook(0x408283, hook_UpdateBoneTransform, "UpdateBoneTransform_408283");
     hnh_Hook(0x406CA4, hook_UpdateBoneLookAtTransform, "UpdateBoneLookAtTransform_406CA4");
     hnh_Hook(0x40873E, hook_CameraLookAtFrame, "CameraLookAtFrame_40873E");
+    hnh_Hook(0x40CD32, hook_AddObjectToPool, "AddObjectToPool_40CD32");
+    hnh_Hook(0x40FF0F, hook_CHanaObj__GetChildCountT3F5_40FF0F, "CHanaObj__GetChildCountT3F5_40FF0F");
+    hnh_Hook(0x40C54C, hook_HanaVert_DrawByType, "HanaVert_DrawByType_40C54C");
+    hnh_Hook(0x40FE8E, hook_HanaMeshT3F5_Draw, "HanaMeshT3F5_Draw_40FE8E");
+    hnh_Hook(0x434FC9, hook_HanaMorpT457_Draw, "HanaMorpT457_Draw_434FC9");
 }
