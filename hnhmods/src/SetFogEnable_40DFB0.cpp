@@ -91,11 +91,44 @@ HRESULT __cdecl hook_SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
   return hr;
 }
 
+// DrawTextOnSurfaceSpaced(pSurf, nX, nY, nCharPitch, lpString, color)
+// GDI TextOutA of lpString onto a DD surface's DC in 2-char chunks, selecting g_hFont,
+// transparent background. Per-char x-advance = (nCharPitch + g_dwCharWidth)/2, letting the
+// caller tighten (nCharPitch<0) or widen the text vs. DrawTextOnSurface_419A4B. Calls GetDC/ReleaseDC.
+void __cdecl hook_DrawTextOnSurfaceSpaced_419B05(
+  LPDIRECTDRAWSURFACE7 pSurface,
+  int a2,
+  int y,
+  int a4,
+  LPCSTR lpString,
+  COLORREF color)
+{
+  HGDIOBJ hOldFont; // [esp+0h] [ebp-10h]
+  int nLen; // [esp+4h] [ebp-Ch]
+  int i; // [esp+8h] [ebp-8h]
+  HDC hdc; // [esp+Ch] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] DrawTextOnSurfaceSpaced_419B0\n")
+
+  GetDC_4188B4(pSurface, &hdc);
+  hOldFont = SelectObject(hdc, g_hFont);
+  SetTextColor(hdc, color);
+  SetBkMode(hdc, 1);
+  nLen = lstrlenA(lpString);
+  for ( i = 0; i < nLen; i += 2 )
+    TextOutA(hdc, i * a4 / 2 + i * g_dwCharWidth / 2 + a2, y, &lpString[i], 2);
+  SelectObject(hdc, hOldFont);
+  pSurface->ReleaseDC(hdc);
+}
+
 void register_SetFogEnable_40DFB0() {
+  hnh_Hook(0x419B0, hook_DrawTextOnSurfaceSpaced_419B05, "DrawTextOnSurfaceSpaced_419B0");
+
   hnh_HookOff();
   hnh_Hook(0x40DFB0, hook_SetFogEnable_40DFB0, "SetFogEnable_40DFB0"); // [OK] 
   hnh_Hook(0x40E02D, hook_SetFogMode_40E02D, "SetFogMode_40E02D"); // [OK] 
   hnh_Hook(0x40E0B4, hook_SetFogColor_40E0B4, "SetFogColor_40E0B4"); // [OK] 
-  hnh_Hook(0x40E0E2, hook_SetFogRange_40E0E2, "SetFogRange_40E0E2"); // [OK] 
+  hnh_Hook(0x40E0E2, hook_SetFogRange_40E0E2, "SetFogRange_40E0E2"); // [OK]
+  
   hnh_HookOn();
 }

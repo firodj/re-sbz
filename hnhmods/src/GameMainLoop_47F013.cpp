@@ -22,7 +22,7 @@
 //     9    1     4    ODS dialogue
 //    10    0     -    table end (first dword past the [10] array is 0)
 // A scene returning 1 ends the chapter; >= 2 replays the SAME step (the scene
-// itself moved menuState.bActiveSceneStep); anything else advances until
+// itself moved bActiveSceneStep); anything else advances until
 // nSceneType == 0. g_sceneProgressFlag_530269: 0 = fresh, 1 = backdrop seen,
 // 2 = ending seen.
 
@@ -120,6 +120,9 @@ void __cdecl hook_GameMainLoop_47F013(void)
     PlayVideoWith3DAudio_4791A3("op.avi", 0);         // aOpAvi @0x4C730C
     LoadSoundEffects_47EB7F();
 
+    // --- HACK
+    g_sceneProgressFlag_530269 = 1;
+
     // --- outer loop: menu <-> scene chapter <-> autosave ---------------------
     for (;;)
     {
@@ -149,7 +152,7 @@ void __cdecl hook_GameMainLoop_47F013(void)
             for (;;)                                  // walk the chapter table
             {
                 D3DSetRenderStates_4276C0();
-                int nStep = g_sceneState_52F7E0.menuState.bActiveSceneStep;
+                int nStep = g_sceneState_52F7E0.bActiveSceneStep;
 
                 switch (g_arrSceneNo_4C6F78[nStep].nSceneType)
                 {
@@ -170,13 +173,13 @@ void __cdecl hook_GameMainLoop_47F013(void)
                     ReleaseSoundEffects();
                     PlayVideoWith3DAudio_4791A3("ED.avi", 0);  // aEdAvi @0x4C731C
                     LoadSoundEffects_47EB7F();
-                    g_sceneState_52F7E0.menuState.bActiveSceneStep = 0;
+                    g_sceneState_52F7E0.bActiveSceneStep = 0;
                     g_sceneProgressFlag_530269 = 2;    // ending seen
                     break;
                 case 6:                               // backdrop
                     nMenuResult = 1;
                     ShowBackdropAndWait_4795CE();
-                    g_sceneState_52F7E0.menuState.bActiveSceneStep = 0;
+                    g_sceneState_52F7E0.bActiveSceneStep = 0;
                     if (!g_sceneProgressFlag_530269)
                         g_sceneProgressFlag_530269 = 1; // backdrop seen
                     break;
@@ -191,8 +194,8 @@ void __cdecl hook_GameMainLoop_47F013(void)
                 }
                 if (nMenuResult < 2)                  // advance to the next step
                 {
-                    ++g_sceneState_52F7E0.menuState.bActiveSceneStep;
-                    if (!g_arrSceneNo_4C6F78[g_sceneState_52F7E0.menuState.bActiveSceneStep].nSceneType)
+                    ++g_sceneState_52F7E0.bActiveSceneStep;
+                    if (!g_arrSceneNo_4C6F78[g_sceneState_52F7E0.bActiveSceneStep].nSceneType)
                         break;                        // fell off the chapter table
                 }
                 // nMenuResult >= 2: replay the (scene-selected) current step

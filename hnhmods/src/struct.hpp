@@ -584,9 +584,11 @@ struct CSceneSlot  // sizeof=0x8
   int nStrIndex;   // Str/ODS table index handed to the scene function
 };
 
-// In-game menu / scene progress block at CSceneState+0.
-struct CSceneMenuState_9C  // sizeof=0x9C
+// No more CSceneMenuState_9C / CSceneMenuState_98 (who made this!?)
+// Whole per-playthrough scene state @0x52F7E0 (g_sceneState_52F7E0).
+struct CSceneState  // sizeof=0x190
 {
+  // In-game menu / scene progress block at CSceneState+0.
   BYTE  bActiveSceneStep;      // +0x00 index into g_arrSceneNo_4C6F78
   BYTE  bCurrentSubStage;      // +0x01
   BYTE  gap02[2];              // +0x02
@@ -598,12 +600,7 @@ struct CSceneMenuState_9C  // sizeof=0x9C
   BYTE  gap94[3];              // +0x94
   char  bMaxSubStage;          // +0x97
   int   pSceneFlags[1];        // +0x98
-};
 
-// Whole per-playthrough scene state @0x52F7E0 (g_sceneState_52F7E0).
-struct CSceneState  // sizeof=0x190
-{
-  CSceneMenuState_9C menuState;          // +0x000
   int   field_9C[9];                     // +0x09C
   float field_C0;                        // +0x0C0
   float field_C4;                        // +0x0C4

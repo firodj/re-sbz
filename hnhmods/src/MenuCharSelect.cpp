@@ -74,7 +74,7 @@ int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F
     CHanaObj__GetRealPath_486D9A(szFileName, 1007);
     pBackgroundSurface = LoadBmpScaled_4203B3(szFileName, ConvertFrom640AsInt(640), ConvertFrom640AsInt(480));
 
-    g_sceneState_52F7E0.menuState.bActiveSceneStep = 0;
+    g_sceneState_52F7E0.bActiveSceneStep = 0;
     StopAndRestartThread(2);
 
     for (;;)

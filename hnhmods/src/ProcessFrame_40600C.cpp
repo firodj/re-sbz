@@ -1045,7 +1045,6 @@ void register_ProcessFrame_40600C() {
     
     hnh_Hook(0x439D48, hook_UpdateVertTextureFromFrame, "UpdateVertTextureFromFrame_439D48");
     hnh_Hook(0x40E2A5, hook_ProjectToScreen_40E2A5, "ProjectToScreen_40E2A5");
-    hnh_Hook(0x40FF1D, hook_CHanaObj__GetVertsAtT3F5_40FF1D, "CHanaObj__GetVertsAtT3F5_40FF1D");
     
     hnh_HookOff();
     hnh_Hook(0x40CD32, hook_AddObjectToPool, "AddObjectToPool_40CD32"); // [OK]
@@ -1062,7 +1061,7 @@ void register_ProcessFrame_40600C() {
     hnh_Hook(0x40C54C, hook_HanaVert_DrawByType, "HanaVert_DrawByType_40C54C"); // [OK]
     hnh_Hook(0x40FE8E, hook_HanaMeshT3F5_Draw, "HanaMeshT3F5_Draw_40FE8E"); // [OK]
     hnh_Hook(0x434FC9, hook_HanaMorpT457_Draw, "HanaMorpT457_Draw_434FC9"); // [OK]
-
+    hnh_Hook(0x40FF1D, hook_CHanaObj__GetVertsAtT3F5_40FF1D, "CHanaObj__GetVertsAtT3F5_40FF1D"); // [OK]
     hnh_HookOn();
 
 }

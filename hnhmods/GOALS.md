@@ -68,8 +68,6 @@
     │   │   │   │   │       │   │   ├──0x405421 Frame_FreeAttachedLight
     │   │   │   │   │       │   │   ├──0x40536d Frame_FreeAttachedObject
     │   │   │   │   │       │   ├──0x4166b5 CHanaObj__FreeT3FB
-    │   │   │   │   │       │   │   ├──0x416960 ReleaseHana3FBTexture
-    │   │   │   │   │       │   │   ├──0x4169cb ReleaseHana3FBMaterial
     │   │   │   │   │       │   ├──0x40e6b6 CHanaObj__FreeMateAnimT3F7
     │   │   │   │   │       │   ├──0x409437 CHanaObj__FreeLightT3EF
     │   │   │   │   │       │   ├──0x40a3bb CHanaObj__FreeLightAnimSetT3FA
@@ -103,7 +101,6 @@
     │   │   ├──0x422d50 HanaDS_Init
     │   │   │   ├──0x423ccc HanaDS_SetErrStr
     │   │   │   │   └──0x423ce7 DSErrToString_423CE7
-    │   │   │   ├──0x49dfb6 DirectSoundCreate
     │   │   │   └──0x424886 HanaDS_InitHeap
     │   │   │       └──0x427520 HanaHeap_Create
     │   │   ├──0x422690 HanaDS_Create3DListener
@@ -112,12 +109,8 @@
     │   │   ├──0x422e14 HanaDS_Shutdown
     │   │   │   └──0x42489d HanaDS_DestroyHeap
     │   │   │       └──0x427551 HanaHeap_Destroy
-    │   ├──0x43ab06 return1_20
     │   ├──0x43ad67 DInputInit_43AD67
-    │   │   ├──0x49dfb0 DirectInputCreateA
     │   │   └──0x43af33 DIMouseKeybInit_43AF33
-    │   ├──0x43ab10 return1_21
-    │   ├──0x43aaf2 return1_18
     │   ├──0x47f013 GameMainLoop_47F013
     │   │   ├──0x47df0d MainMenu
     │   │   │   ├──0x47d163 MenuMusicSelect
@@ -226,7 +219,6 @@
     │   │   │   │   │   │   │   ├──0x481637 InputThread_Relative_481637
     │   │   │   │   │   │   └──0x481a35 TerminateThreadGracefully
     │   │   │   │   │   ├──0x462fe9 SysMenu_Options_462FE9
-    │   │   │   │   ├──0x4863c3 nop_4863C3
     │   │   │   │   ├──0x45a4d8 GetMouseXY_45A4D8
     │   │   │   │   ├──0x481170 IsMenuKeyPressed_481170
     │   │   │   │   └──0x422e7b LoadWav_422E7B
@@ -452,13 +444,6 @@
     │   │   ├──0x4799e2 InGameMenu_4799E2
     │   │   ├──0x47eeec ReleaseSoundEffects
     │   │   └──0x47eb7f LoadSoundEffects_47EB7F
-    │   ├──0x43aafc return1_19
-    │   └──0x43ad5d return1_22
     ├──0x4a2d6b heap_init_crt
-    ├──0x4a2830 setargv
-    │   ├──0x4a28c9 parse_cmdline
-    │   ├──0x4a2222 malloc
-    │   │   └──0x4a2234 nh_malloc
-    ├──0x4a2777 setenvp
     ├──0x4a2a7d crtGetEnvironmentStringsA
 ```

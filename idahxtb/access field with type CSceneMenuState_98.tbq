@@ -1,0 +1,1 @@
+{"version": 1.0, "query": "(i.op is idaapi.cot_memref and\ni.x.op is idaapi.cot_obj and i.type.is_udt() and\ni.type.get_final_type_name() == 'CSceneMenuState_98' )", "query_type": 1, "ast_type": 1, "help": "new query", "scope": 1}

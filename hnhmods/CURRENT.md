@@ -81,8 +81,6 @@ Legend:
     │   │   │   │   │       │   │   ├──0x405421 Frame_FreeAttachedLight                         <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   │   ├──0x40536d Frame_FreeAttachedObject                        <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   ├──0x4166b5 CHanaObj__FreeT3FB                                  <- [PTR CHanaObj__Free_40C1E4.cpp]
-    │   │   │   │   │       │   │   ├──0x416960 ReleaseHana3FBTexture                           <- [todo]
-    │   │   │   │   │       │   │   ├──0x4169cb ReleaseHana3FBMaterial                          <- [todo]
     │   │   │   │   │       │   ├──0x40e6b6 CHanaObj__FreeMateAnimT3F7                          <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   ├──0x409437 CHanaObj__FreeLightT3EF                             <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   ├──0x40a3bb CHanaObj__FreeLightAnimSetT3FA                      <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
@@ -109,14 +107,13 @@ Legend:
     │   │   ├──0x41888e Renderer_CleanupFont                                                    <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   │   ├──0x485c50 CDROM_VerifyDiscSignature                                               <- [HOOK+PTR CDROM_VerifyDiscSignature_485C50.cpp]
     │   │   │   ├──0x485ba8 CDROM_VerifyWin9x                                                   <- [HOOK+PTR CDROM_VerifyDiscSignature_485C50.cpp]
-    │   │   │   │   ├──0x485ada CDROM_IoctlReadSectorWin9x                                      <- [PTR CDROM_VerifyDiscSignature_485C50.cpp]
+    │   │   │   │   ├──0x485ada CDROM_IoctlReadSectorWin9x                                      <- [HOOK+PTR CDROM_VerifyDiscSignature_485C50.cpp]
     │   │   │   │   │   └──0x485b27 CDROM_DeviceIoControlVWIN32                                 <- [HOOK+PTR CDROM_VerifyDiscSignature_485C50.cpp]
     │   │   │   └──0x4858d0 CDROM_VerifyNT                                                      <- [HOOK+PTR CDROM_VerifyDiscSignature_485C50.cpp]
     │   │   │       └──0x485a2a CDROM_GetDriveFileSystemType                                    <- [HOOK+PTR CDROM_VerifyDiscSignature_485C50.cpp]
     │   │   ├──0x422d50 HanaDS_Init                                                             <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   │   │   ├──0x423ccc HanaDS_SetErrStr                                                    <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   │   │   │   └──0x423ce7 DSErrToString_423CE7                                            <- [HOOK+PTR DSErrToString_423CE7.cpp]
-    │   │   │   ├──0x49dfb6 DirectSoundCreate                                                   <- [todo]
     │   │   │   └──0x424886 HanaDS_InitHeap                                                     <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   │   │       └──0x427520 HanaHeap_Create                                                 <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   │   ├──0x422690 HanaDS_Create3DListener                                                 <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
@@ -127,10 +124,7 @@ Legend:
     │   │   │       └──0x427551 HanaHeap_Destroy                                                <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   ├──0x43ab06 return1_20                                                                  <- [todo]
     │   ├──0x43ad67 DInputInit_43AD67                                                           <- [HOOK+PTR WinMain_485CE0.cpp]
-    │   │   ├──0x49dfb0 DirectInputCreateA                                                      <- [todo]
     │   │   └──0x43af33 DIMouseKeybInit_43AF33                                                  <- [HOOK+PTR WinMain_485CE0.cpp]
-    │   ├──0x43ab10 return1_21                                                                  <- [todo]
-    │   ├──0x43aaf2 return1_18                                                                  <- [todo]
     │   ├──0x47f013 GameMainLoop_47F013                                                         <- [HOOK+PTR GameMainLoop_47F013.cpp]
     │   │   ├──0x47df0d MainMenu                                                                <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   ├──0x47d163 MenuMusicSelect                                                     <- [PTR InGameMenu_4799E2.cpp]
@@ -139,12 +133,12 @@ Legend:
     │   │   │   │   │   ├──0x40be03 RecoverLostDevice                                           <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   └──0x40ceec HanaVert_DrawBatch                                          <- [PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │       ├──0x439d48 UpdateVertTextureFromFrame                              <- [HOOK+PTR ProcessFrame_40600C.cpp]
-    │   │   │   │   │       │   ├──0x404b80 CalcFrameBound_404B80                               <- [PTR ParseODFContent_441A5D.cpp]
+    │   │   │   │   │       │   ├──0x404b80 CalcFrameBound_404B80                               <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │       │   │   ├──0x418544 CHanaObj::LockVtxBufT3EA_418544                 <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │       │   │   ├──0x41858e CHanaObj::UnlockVrxBufT3EA_41858E               <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │       │   │   ├──0x40ff0f CHanaObj::GetChildCountT3F5_40FF0F              <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   │   ├──0x40bbf4 CHanaObj::GetType_40BBF4                        <- [HOOK+PTR PlayScreenFade.cpp]
-    │   │   │   │   │       │   │   └──0x40ff1d CHanaObj::GetChildAtT3F5_40FF1D                 <- [todo]
+    │   │   │   │   │       │   │   └──0x40ff1d CHanaObj::GetChildAtT3F5_40FF1D                 <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   ├──0x40e2a5 ProjectToScreen_40E2A5                              <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   │   └──0x40e167 BuildViewportMatrix                             <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   │       └──0x40dcf6 GetProjectionFov_40DCF6                     <- [HOOK+PTR ProcessFrame_40600C.cpp]
@@ -239,7 +233,6 @@ Legend:
     │   │   │   │   │   │   │   ├──0x481637 InputThread_Relative_481637                         <- [HOOK StopAndRestartThread.cpp]
     │   │   │   │   │   │   └──0x481a35 TerminateThreadGracefully                               <- [HOOK+PTR StopAndRestartThread.cpp]
     │   │   │   │   │   ├──0x462fe9 SysMenu_Options_462FE9                                      <- [todo]
-    │   │   │   │   ├──0x4863c3 nop_4863C3                                                      <- [todo]
     │   │   │   │   ├──0x45a4d8 GetMouseXY_45A4D8                                               <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   ├──0x481170 IsMenuKeyPressed_481170                                         <- [PTR MenuCharSelect.cpp]
     │   │   │   │   └──0x422e7b LoadWav_422E7B                                                  <- [HOOK+PTR LoadSoundEffects_47EB7F.cpp]
@@ -465,25 +458,18 @@ Legend:
     │   │   ├──0x4799e2 InGameMenu_4799E2                                                       <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   ├──0x47eeec ReleaseSoundEffects                                                     <- [HOOK+PTR LoadSoundEffects_47EB7F.cpp]
     │   │   └──0x47eb7f LoadSoundEffects_47EB7F                                                 <- [HOOK+PTR LoadSoundEffects_47EB7F.cpp]
-    │   ├──0x43aafc return1_19                                                                  <- [todo]
-    │   └──0x43ad5d return1_22                                                                  <- [todo]
     ├──0x4a2d6b heap_init_crt                                                                   <- [todo]
-    ├──0x4a2830 setargv                                                                         <- [todo]
-    │   ├──0x4a28c9 parse_cmdline                                                               <- [todo]
-    │   ├──0x4a2222 malloc                                                                      <- [todo]
-    │   │   └──0x4a2234 nh_malloc                                                               <- [todo]
-    ├──0x4a2777 setenvp                                                                         <- [todo]
     ├──0x4a2a7d crtGetEnvironmentStringsA                                                       <- [todo]
 ```
 
 ## Stats
 
-- tree functions:      460
-- hooked:              219 (HOOK or HOOK+PTR)
-- pinned:              251 (PTR or HOOK+PTR)
-- fully covered:       215 (HOOK+PTR)
+- tree functions:      446
+- hooked:              222 (HOOK or HOOK+PTR)
+- pinned:              252 (PTR or HOOK+PTR)
+- fully covered:       218 (HOOK+PTR)
 - implemented only:    1
-- untouched:           204
+- untouched:           189
 
 ## Per-file status (scan_cpp.py)
 
@@ -495,10 +481,9 @@ structs:              0
   globals:              7 (6 func-ptr imports)
   functions:            7 (6 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   6/6
-  hnh_Hook-registered:  5/6
+  hnh_Hook-registered:  6/6
   func-ptrs declared:   6/6
   func-ptrs w/o hook:   0/6
-  not registered:       hook_CDROM_IoctlReadSectorWin9x
 ```
 
 ### hnhmods/src/CHanaObj__Free_40C1E4.cpp
@@ -689,12 +674,12 @@ structs:              0
 SUMMARY
 structs:              0
   globals:              31 (31 func-ptr imports)
-  functions:            18 (17 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   17/17
-  hnh_Hook-registered:  17/17
-  func-ptrs declared:   17/17
-  func-ptrs w/o hook:   14/31
-  no hook function for: InterpolateHanaAnimFrame, CHanaAnimSetT3F1__SetTime_403D61, CHanaObj__NewMeshT3F5, ParseVERT_440288, HanaMesh_AddVertexReference, CHanaObj__NewMorpT457, HanaMorp_AddVertexRef, HanaMorp_InitSubObject, HanaFrame_FindByName, CalcFrameBound_404B80, CHanaObj__NewFrameArrayT3EDFromChildT3EC, CHanaObj__GetFramesCountT3ED_408E75, CHanaObj__GetFrameAtIndexT3ED, MtxMult_4069DD
+  functions:            19 (18 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   18/18
+  hnh_Hook-registered:  18/18
+  func-ptrs declared:   18/18
+  func-ptrs w/o hook:   13/31
+  no hook function for: InterpolateHanaAnimFrame, CHanaAnimSetT3F1__SetTime_403D61, CHanaObj__NewMeshT3F5, ParseVERT_440288, HanaMesh_AddVertexReference, CHanaObj__NewMorpT457, HanaMorp_AddVertexRef, HanaMorp_InitSubObject, HanaFrame_FindByName, CHanaObj__NewFrameArrayT3EDFromChildT3EC, CHanaObj__GetFramesCountT3ED_408E75, CHanaObj__GetFrameAtIndexT3ED, MtxMult_4069DD
 ```
 
 ### hnhmods/src/ParseODS_483932.cpp
@@ -729,12 +714,12 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              21 (18 func-ptr imports)
-  functions:            21 (20 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   17/20
-  hnh_Hook-registered:  17/20
-  func-ptrs declared:   17/17
-  func-ptrs w/o hook:   1/18
+  globals:              22 (19 func-ptr imports)
+  functions:            22 (21 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   18/21
+  hnh_Hook-registered:  18/21
+  func-ptrs declared:   18/18
+  func-ptrs w/o hook:   1/19
   no hook function for: HanaT3FB_Draw
   missing DebugLog:     VertNeedsAlphaPass, FixAlphaAndAddToPool, AlwaysTrue
   not registered:       VertNeedsAlphaPass, FixAlphaAndAddToPool, AlwaysTrue

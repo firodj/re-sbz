@@ -46,6 +46,9 @@ extern CHanaFrameT3EC_S354*     &g_pLightFrame;
 
 extern uint32_t &g_dwGBitMask;
 extern uint32_t &g_dwRBitMask;
+extern HGDIOBJ& g_hFont;
+extern int& g_dwCharWidth;
+extern int& g_dwFontHeight;
 
 extern const char *(__cdecl*HanaDS_SetErrStr)(DWORD hr);
 extern void (__cdecl*SetUiFont_419BCD)(int nCharW, int nFontH, LPCSTR szFaceName);

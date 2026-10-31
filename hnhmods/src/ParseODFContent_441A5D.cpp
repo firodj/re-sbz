@@ -1497,8 +1497,7 @@ void register_ParseODFContent_441A5D() {
   hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C"); // [OK]
   hnh_Hook(0x440896, hook_ParseOdfMORP_440896, "ParseOdfMORP_440896"); // [OK]
   hnh_Hook(0x44189C, hook_ParseOdf3DON_44189C, "ParseOdf3DON_44189C"); // [OK]
-  hnh_Hook(0x404B80, hook_CalcFrameBound_404B80, "CalcFrameBound_404B80");
-
+ 
   hnh_HookOff();
     hnh_Hook(0x441A5D, hook_ParseODFContent_441A5D, "ParseODFContent_441A5D"); // [OK] 
     hnh_Hook(0x409510, hook_ConfigureLight,"ConfigureLight_409510"); // [OK] 
@@ -1511,6 +1510,7 @@ void register_ParseODFContent_441A5D() {
     hnh_Hook(0x4035B1, hook_ApplyQTS_4035B1, "ApplyQTS_4035B1"); // [OK] 
     hnh_Hook(0x403C15, hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15, "CHanaAnimSetT3F1__AddAnimT3F0_403C15"); // [OK] 
     hnh_Hook(0x408C3E, hook_HanaFrame_GetCenterPosition_408C3E, "HanaFrame_GetCenterPosition_408C3E"); // [OK] 
-    hnh_Hook(0x4248F2, hook_GetSoundBufferAverageLevel, "GetSoundBufferAverageLevel_4248F2"); // [OK] 
+    hnh_Hook(0x4248F2, hook_GetSoundBufferAverageLevel, "GetSoundBufferAverageLevel_4248F2"); // [OK]
+    hnh_Hook(0x404B80, hook_CalcFrameBound_404B80, "CalcFrameBound_404B80"); // [OK]
   hnh_HookOn();
 }
