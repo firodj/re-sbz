@@ -1189,12 +1189,9 @@ void register_CHanaObj__Free_40C1E4() {
   hnh_Hook(0x415E05, hook_CHanaObj__FreeTexCoordT3F2, "CHanaObj__FreeTexCoordT3F2_415E05");
   hnh_Hook(0x414F62, hook_CHanaObj__FreeTexAnimT3F3, "CHanaObj__FreeTexAnimT3F3_414F62");
   hnh_Hook(0x41595B, hook_CHanaObj__FreeTexAnimSetT3F4, "CHanaObj__FreeTexAnimSetT3F4_41595B");
-
   hnh_Hook(0x40F3E5, hook_CHanaObj__FreeMateAnimSetT3F8, "CHanaObj__FreeMateAnimSetT3F8_40F3E5");  
   hnh_Hook(0x409820, hook_CHanaObj__FreeLightAnimT3F9, "CHanaObj__FreeLightAnimT3F9_409820");
   hnh_Hook(0x40A3BB, hook_CHanaObj__FreeLightAnimSetT3FA, "CHanaObj__FreeLightAnimSetT3FA_40A3BB");
-
-  hnh_Hook(0x40BD4D, hook_CHanaObj__RemoveFromGlobalRef, "CHanaObj__RemoveFromGlobalRef__40BD4D");
 
   hnh_HookOff();
   hnh_Hook(0x40C1E4, hook_CHanaObj__Free_40C1E4, "CHanaObj__Free_40C1E4"); // [OK] 

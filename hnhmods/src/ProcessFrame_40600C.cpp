@@ -839,7 +839,7 @@ void __cdecl hook_CameraLookAtFrame(
   D3DXVECTOR3 vecUp; // [esp+130h] [ebp-4Ch] BYREF
   D3DXMATRIX fCamMatrix; // [esp+13Ch] [ebp-40h] BYREF
 
-  ONCELOG("[HNH:SUB] CameraLookAtFrame_40873E");
+  ONCELOG("[HNH:SUB] CameraLookAtFrame_40873E\n");
 
   qmemcpy(&fTgtMatrix, &pTargetFrame->mat4x4_after, sizeof(fTgtMatrix));
   qmemcpy(&fCamMatrix, &pCameraFrame->mat4x4_after, sizeof(fCamMatrix));
@@ -958,7 +958,7 @@ void(__cdecl*HanaT3FB_Draw)(CHanaBase_S130* pObj) = reinterpret_cast<void(__cdec
 
 DWORD __cdecl hook_CHanaObj__GetChildCountT3F5_40FF0F(CHanaMeshT3F5_S138 *pHanaT3F5)
 {
-  ONCELOG("[HNH:SUB] CHanaObj__GetChildCountT3F5_40FF0F");
+  ONCELOG("[HNH:SUB] CHanaObj__GetChildCountT3F5_40FF0F\n");
 
   return pHanaT3F5->nCountVertT3EA_130;
 }
@@ -1033,20 +1033,26 @@ void __cdecl hook_HanaVert_DrawByType(CHanaVertT3EA_S1FC *pObj)
 
 void register_ProcessFrame_40600C() {
     hnh_Hook(0x40600C, hook_ProcessFrame, "ProcessFrame_40600C"); // [OK]
-    hnh_Hook(0x40D9C7, hook_SortObjectsByDepth, "SortObjectsByDepth_40D9C7");
-    hnh_Hook(0x40CE4E, hook_SetLightEnableMask, "SetLightEnableMask_0040CE4E");
+    
     hnh_Hook(0x439D48, hook_UpdateVertTextureFromFrame, "UpdateVertTextureFromFrame_439D48");
-    hnh_Hook(0x40E167, hook_BuildViewportMatrix, "BuildViewportMatrix_40E167");
     hnh_Hook(0x40E2A5, hook_ProjectToScreen_40E2A5, "ProjectToScreen_40E2A5");
-    hnh_Hook(0x40DCF6, hook_GetProjectionFov_40DCF6, "GetProjectionFov_40DCF6");
-    hnh_Hook(0x417B27, hook_HanaVertT3EA_Draw, "HanaVert_Draw_417B27");
-    hnh_Hook(0x40FB30, hook_HanaMate_SetMaterial, "HanaMate_SetMaterial_40FB30");
-    hnh_Hook(0x408283, hook_UpdateBoneTransform, "UpdateBoneTransform_408283");
-    hnh_Hook(0x406CA4, hook_UpdateBoneLookAtTransform, "UpdateBoneLookAtTransform_406CA4");
-    hnh_Hook(0x40873E, hook_CameraLookAtFrame, "CameraLookAtFrame_40873E");
-    hnh_Hook(0x40CD32, hook_AddObjectToPool, "AddObjectToPool_40CD32");
-    hnh_Hook(0x40FF0F, hook_CHanaObj__GetChildCountT3F5_40FF0F, "CHanaObj__GetChildCountT3F5_40FF0F");
-    hnh_Hook(0x40C54C, hook_HanaVert_DrawByType, "HanaVert_DrawByType_40C54C");
-    hnh_Hook(0x40FE8E, hook_HanaMeshT3F5_Draw, "HanaMeshT3F5_Draw_40FE8E");
-    hnh_Hook(0x434FC9, hook_HanaMorpT457_Draw, "HanaMorpT457_Draw_434FC9");
+
+    hnh_HookOff();
+    hnh_Hook(0x40CD32, hook_AddObjectToPool, "AddObjectToPool_40CD32"); // [OK]
+    hnh_Hook(0x40D9C7, hook_SortObjectsByDepth, "SortObjectsByDepth_40D9C7"); // [OK]
+    hnh_Hook(0x40873E, hook_CameraLookAtFrame, "CameraLookAtFrame_40873E"); // [OK]
+    hnh_Hook(0x40DCF6, hook_GetProjectionFov_40DCF6, "GetProjectionFov_40DCF6"); // [OK]
+    hnh_Hook(0x40CE4E, hook_SetLightEnableMask, "SetLightEnableMask_0040CE4E"); // [OK]
+    hnh_Hook(0x40E167, hook_BuildViewportMatrix, "BuildViewportMatrix_40E167"); // [OK]
+    hnh_Hook(0x417B27, hook_HanaVertT3EA_Draw, "HanaVertT3EA_Draw_417B27"); // [OK]
+    hnh_Hook(0x40FB30, hook_HanaMate_SetMaterial, "HanaMate_SetMaterial_40FB30"); // [OK]
+    hnh_Hook(0x408283, hook_UpdateBoneTransform, "UpdateBoneTransform_408283"); // [OK]
+    hnh_Hook(0x406CA4, hook_UpdateBoneLookAtTransform, "UpdateBoneLookAtTransform_406CA4"); // [OK]
+    hnh_Hook(0x40FF0F, hook_CHanaObj__GetChildCountT3F5_40FF0F, "CHanaObj__GetChildCountT3F5_40FF0F"); // [OK]
+    hnh_Hook(0x40C54C, hook_HanaVert_DrawByType, "HanaVert_DrawByType_40C54C"); // [OK]
+    hnh_Hook(0x40FE8E, hook_HanaMeshT3F5_Draw, "HanaMeshT3F5_Draw_40FE8E"); // [OK]
+    hnh_Hook(0x434FC9, hook_HanaMorpT457_Draw, "HanaMorpT457_Draw_434FC9"); // [OK]
+
+    hnh_HookOn();
+
 }
