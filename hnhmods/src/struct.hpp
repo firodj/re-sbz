@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dx7.hpp"
+// #include "dx7.hpp"
 
 #pragma pack(push, 1)
 
@@ -586,34 +586,30 @@ struct CSceneSlot  // sizeof=0x8
 
 // No more CSceneMenuState_9C / CSceneMenuState_98 (who made this!?)
 // Whole per-playthrough scene state @0x52F7E0 (g_sceneState_52F7E0).
-struct CSceneState  // sizeof=0x190
+struct CSceneState
 {
-  // In-game menu / scene progress block at CSceneState+0.
-  BYTE  bActiveSceneStep;      // +0x00 index into g_arrSceneNo_4C6F78
-  BYTE  bCurrentSubStage;      // +0x01
-  BYTE  gap02[2];              // +0x02
-  int   nSceneDataIndices[11]; // +0x04
-  BYTE  gap30[2];              // +0x30
-  char  field_32;              // +0x32
-  BYTE  gap33;                 // +0x33
-  int   nSceneExtraData[24];   // +0x34
-  BYTE  gap94[3];              // +0x94
-  char  bMaxSubStage;          // +0x97
-  int   pSceneFlags[1];        // +0x98
-
-  int   field_9C[9];                     // +0x09C
-  float field_C0;                        // +0x0C0
-  float field_C4;                        // +0x0C4
-  __int64 qwSelMask_C8;                  // +0x0C8
-  int   field_D0;                        // +0x0D0
-  int   gapD4[10];                       // +0x0D4
-  int   field_FC;                        // +0x0FC
-  int   gap100[31];                      // +0x100
-  int   field_17C;                       // +0x17C
-  float frameTimeMultiplied_180;         // +0x180
-  LPDIRECTDRAWSURFACE7 lpDDSurface_184;  // +0x184
-  float fPosX_188;                       // +0x188
-  float fPosY_18C;                       // +0x18C
+  BYTE bActiveSceneStep;
+  BYTE bCurrentSubStage;
+  char byte_2;
+  char byte_3;
+  int nSceneDataIndices[11];
+  BYTE gap30[2];
+  char byte_32;
+  char ary33[100];
+  char bMaxSubStage;
+  QWORD sceneFlags_98[5];
+  float protCurrentHP_C0;
+  float protMaximumHP_C4;
+  QWORD qwSelMask_C8;
+  int field_D0;
+  int gapD4[10];
+  int field_FC;
+  int gap100[31];
+  float flt_17C;
+  float frameTimeMultiplied_180;
+  LPDIRECTDRAWSURFACE7 lpDDSurface_184;
+  float fPosX_188;                      ///< or mousePressed
+  float fPosY_18C;                      ///< or frameTime or effectIntensity
 };
 
 struct CInputState // sizeof=0x8

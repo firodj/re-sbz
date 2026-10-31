@@ -123,7 +123,7 @@ void __cdecl hook_MainMenu_47DF0D(void)
     }
 
     // carry the persistent scene flags into the scene state block
-    memcpy(g_sceneState_52F7E0.pSceneFlags, g_Src, 0x28);
+    memcpy(g_sceneState_52F7E0.sceneFlags_98, g_Src, 0x28);
 
     // dispatch until a sub-menu answers with a non-negative state; the mouse
     // is pumped each round (the previous-button read in the original is dead)
@@ -159,7 +159,7 @@ void __cdecl hook_MainMenu_47DF0D(void)
         }
     }
     g_sceneState_52F7E0.bActiveSceneStep = 0;
-    memset(g_sceneState_52F7E0.pSceneFlags, 0, 0x28);
+    memset(g_sceneState_52F7E0.sceneFlags_98, 0, 0x28);
     if (nMenuState < 0)                                     // exited via sub-menu
         PlayScreenFade(0, 0, g_pPrimaryBuffer_4D6C88, 25.0f, 0);
 }
@@ -264,8 +264,8 @@ int __cdecl hook_InGameMenu_4799E2(void)
                 StopAndRestartThread(0);
                 memcpy(&sceneScratch, &g_sceneState_52F7E0, sizeof(sceneScratch));
                 nMenuSelected = SystemMenu_4655AB(pBgmBuffer, -1000, 1,
-                                                  g_sceneState_52F7E0.field_C0,
-                                                  g_sceneState_52F7E0.field_C4,
+                                                  g_sceneState_52F7E0.protCurrentHP_C0,
+                                                  g_sceneState_52F7E0.protMaximumHP_C4,
                                                   sceneScratch);
                 g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 0);
                 StopAndRestartThread(2);

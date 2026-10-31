@@ -18,6 +18,8 @@ namespace py = pybind11;
 #include "user32hook.hpp"
 #include "imgui_internal.h"
 
+//#include "src/shared.hpp"
+
 // WinMain
 typedef std::add_pointer_t<int WINAPI(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)> WinMainFn;
 
@@ -152,33 +154,6 @@ void FinishHNH() {
 	
 }
 
-struct CSceneState  // sizeof=0x190
-{
-	BYTE  bActiveSceneStep;      // +0x00 index into g_arrSceneNo_4C6F78
-	BYTE  bCurrentSubStage;      // +0x01
-	BYTE  gap02[2];              // +0x02
-	int   nSceneDataIndices[11]; // +0x04
-	BYTE  gap30[2];              // +0x30
-	char  byte_32;              // +0x32
-	BYTE  gap33;                 // +0x33
-	int   nSceneExtraData[24];   // +0x34
-	BYTE  gap94[3];              // +0x94
-	char  bMaxSubStage;          // +0x97
-	int   field_98[1];        // +0x98
-	int   field_9C[9];                     // +0x09C
-	float field_C0;                        // +0x0C0
-	float field_C4;                        // +0x0C4
-	__int64 qwSelMask_C8;                  // +0x0C8
-	int   field_D0;                        // +0x0D0
-	int   gapD4[10];                       // +0x0D4
-	int   field_FC;                        // +0x0FC
-	int   gap100[31];                      // +0x100
-	int   field_17C;                       // +0x17C
-	float frameTimeMultiplied_180;         // +0x180
-	LPVOID lpDDSurface_184;  // +0x184
-	float fPosX_188;                       // +0x188
-	float fPosY_18C;                       // +0x18C
-};
 
 class StructFielder {
 	DWORD m_offset;
@@ -361,6 +336,36 @@ public:
 	}
 };
 
+typedef __int64 QWORD;
+
+// No more CSceneMenuState_9C / CSceneMenuState_98 (who made this!?)
+// Whole per-playthrough scene state @0x52F7E0 (g_sceneState_52F7E0).
+struct CSceneState
+{
+	BYTE bActiveSceneStep;
+	BYTE bCurrentSubStage;
+	char byte_2;
+	char byte_3;
+	int nSceneDataIndices[11];
+	BYTE gap30[2];
+	char byte_32;
+	char ary33[100];
+	char bMaxSubStage;
+	QWORD sceneFlags_98[5];
+	float protCurrentHP_C0;
+	float protMaximumHP_C4;
+	QWORD qwSelMask_C8;
+	int field_D0;
+	int gapD4[10];
+	int field_FC;
+	int gap100[31];
+	float flt_17C;
+	float frameTimeMultiplied_180;
+	LPVOID lpDDSurface_184;
+	float fPosX_188;                      ///< or mousePressed
+	float fPosY_18C;                      ///< or frameTime or effectIntensity
+};
+
 void DrawHNH(const char *window_name) {
 	static_assert(sizeof(CSceneState) == 0x190, "CSceneState");
 
@@ -379,24 +384,20 @@ void DrawHNH(const char *window_name) {
 	if (sviewer.fields.size() == 0) {
 		sviewer.fields.emplace_back(offsetof(CSceneState, bActiveSceneStep), "bActiveSceneStep", ImGuiDataType_U8, &g_sceneState_52F7E0.bActiveSceneStep);
 		sviewer.fields.emplace_back(offsetof(CSceneState, bCurrentSubStage), "bCurrentSubStage", ImGuiDataType_U8, &g_sceneState_52F7E0.bCurrentSubStage);
-		sviewer.fields.emplace_back(offsetof(CSceneState, gap02), "gap02", ImGuiDataType_U8, 2, &g_sceneState_52F7E0.gap02);
+		sviewer.fields.emplace_back(offsetof(CSceneState, byte_2), "byte_2", ImGuiDataType_U8, 2, &g_sceneState_52F7E0.byte_2);
 		sviewer.fields.emplace_back(offsetof(CSceneState, nSceneDataIndices), "nSceneDataIndices", ImGuiDataType_S32, 11, &g_sceneState_52F7E0.nSceneDataIndices);
 		sviewer.fields.emplace_back(offsetof(CSceneState, gap30), "gap30", ImGuiDataType_U8, 2, &g_sceneState_52F7E0.gap30);
 		sviewer.fields.emplace_back(offsetof(CSceneState, byte_32), "byte_32", ImGuiDataType_S8, &g_sceneState_52F7E0.byte_32);
-		sviewer.fields.emplace_back(offsetof(CSceneState, gap33), "gap33", ImGuiDataType_U8, 1, &g_sceneState_52F7E0.gap33);
-		sviewer.fields.emplace_back(offsetof(CSceneState, nSceneExtraData), "nSceneExtraData", ImGuiDataType_S32, 24, &g_sceneState_52F7E0.nSceneExtraData);
-		sviewer.fields.emplace_back(offsetof(CSceneState, gap94), "gap94", ImGuiDataType_U8, 3, &g_sceneState_52F7E0.gap94);
+		sviewer.fields.emplace_back(offsetof(CSceneState, ary33), "ary33", ImGuiDataType_U8, 100, &g_sceneState_52F7E0.ary33);
+
 		sviewer.fields.emplace_back(offsetof(CSceneState, bMaxSubStage), "bMaxSubStage", ImGuiDataType_S8, &g_sceneState_52F7E0.bMaxSubStage);
-		sviewer.fields.emplace_back(offsetof(CSceneState, field_98), "field_98", ImGuiDataType_S32, 1, &g_sceneState_52F7E0.field_98);
-		sviewer.fields.emplace_back(offsetof(CSceneState, field_9C), "field_9C", ImGuiDataType_S32, 9, &g_sceneState_52F7E0.field_9C);
-		sviewer.fields.emplace_back(offsetof(CSceneState, field_C0), "field_C0", ImGuiDataType_Float, &g_sceneState_52F7E0.field_C0);
-		sviewer.fields.emplace_back(offsetof(CSceneState, field_C4), "field_C4", ImGuiDataType_Float, &g_sceneState_52F7E0.field_C4);
+	
 		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "qwSelMask_C8", ImGuiDataType_S64, &g_sceneState_52F7E0.qwSelMask_C8);
 		sviewer.fields.emplace_back(offsetof(CSceneState, field_D0), "field_D0", ImGuiDataType_S32, &g_sceneState_52F7E0.field_D0);
 		sviewer.fields.emplace_back(offsetof(CSceneState, gapD4), "gapD4", ImGuiDataType_U32, 10, &g_sceneState_52F7E0.gapD4);
 		sviewer.fields.emplace_back(offsetof(CSceneState, field_FC), "field_FC", ImGuiDataType_S32, &g_sceneState_52F7E0.field_FC);
 		sviewer.fields.emplace_back(offsetof(CSceneState, gap100), "gap100", ImGuiDataType_U32, 31, &g_sceneState_52F7E0.gap100);
-		sviewer.fields.emplace_back(offsetof(CSceneState, field_17C), "field_17C", ImGuiDataType_S32, &g_sceneState_52F7E0.field_17C);
+		sviewer.fields.emplace_back(offsetof(CSceneState, flt_17C), "flt_17C", ImGuiDataType_Float, &g_sceneState_52F7E0.flt_17C);
 		sviewer.fields.emplace_back(offsetof(CSceneState, frameTimeMultiplied_180), "frameTimeMultiplied_180", ImGuiDataType_Float, &g_sceneState_52F7E0.frameTimeMultiplied_180);
 		sviewer.fields.emplace_back(offsetof(CSceneState, lpDDSurface_184), "lpDDSurface_184", ImGuiDataType_U32, &g_sceneState_52F7E0.lpDDSurface_184);
 		sviewer.fields.emplace_back(offsetof(CSceneState, fPosX_188), "fPosX_188", ImGuiDataType_Float, &g_sceneState_52F7E0.fPosX_188);

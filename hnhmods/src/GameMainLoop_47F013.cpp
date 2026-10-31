@@ -127,8 +127,8 @@ void __cdecl hook_GameMainLoop_47F013(void)
     for (;;)
     {
         memset(&g_sceneState_52F7E0, 0, sizeof(g_sceneState_52F7E0));
-        g_sceneState_52F7E0.field_C4 = 66600.0f;
-        g_sceneState_52F7E0.field_C0 = 66600.0f;
+        g_sceneState_52F7E0.protMaximumHP_C4 = 66600.0f;
+        g_sceneState_52F7E0.protCurrentHP_C0 = 66600.0f;
 
         // In-game menu. 999 -> title menu (then replay the opening); the replay
         // loops back through the menu until it answers with neither -1 nor 999.
