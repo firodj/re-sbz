@@ -228,5 +228,6 @@ void register_CDROM_VerifyDiscSignature_485C50() {
   hnh_Hook(0x485A2A, hook_CDROM_GetDriveFileSystemType, "CDROM_GetDriveFileSystemType_485A2A"); // [OK]
   hnh_Hook(0x485BA8, hook_CDROM_VerifyWin9x, "CDROM_VerifyWin9x_485BA8"); // [SKIP]
   hnh_Hook(0x485B27, hook_CDROM_DeviceIoControlVWIN32, "CDROM_DeviceIoControlVWIN32_485B27"); // [SKIP]
+  hnh_Hook(0x485ADA, hook_CDROM_IoctlReadSectorWin9x, "CDROM_IoctlReadSectorWin9x_485ADA"); // [SKIP]
   hnh_HookOn();
 }

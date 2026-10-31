@@ -243,6 +243,9 @@
       <Project>{1c015f7c-647e-46e3-855e-614b434116a6}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="CURRENT.md" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

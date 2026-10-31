@@ -1351,12 +1351,153 @@ BOOL __cdecl hook_GetSoundBufferAverageLevel(LPDIRECTSOUNDBUFFER pDSBuffer, floa
   return 1;
 }
 
+void __cdecl hook_CalcFrameBound_404B80(CHanaFrameT3EC_S354 *pFrame, CHanaMorpT457_S40C *pVertOrMeshOrMorp)
+{
+  D3DVERTEX *pData_1; // [esp+8h] [ebp-4Ch] BYREF
+  DWORD numVertices; // [esp+Ch] [ebp-48h] BYREF
+  unsigned int m; // [esp+10h] [ebp-44h]
+  CHanaVertT3EA_S1FC *pVert; // [esp+14h] [ebp-40h]
+  CHanaMorpT457_S40C *pMorp; // [esp+18h] [ebp-3Ch]
+  int k; // [esp+1Ch] [ebp-38h]
+  unsigned int dwNumChild; // [esp+20h] [ebp-34h]
+  CHanaMeshT3F5_S138 *pMesh; // [esp+24h] [ebp-30h]
+  D3DVERTEX *ppData; // [esp+28h] [ebp-2Ch] BYREF
+  DWORD dwNumVertices_v2; // [esp+2Ch] [ebp-28h] BYREF
+  unsigned int j; // [esp+30h] [ebp-24h]
+  CHanaVertT3EA_S1FC *pVert_v2; // [esp+34h] [ebp-20h]
+  int nIndex; // [esp+38h] [ebp-1Ch]
+  unsigned int dwCount_v16; // [esp+3Ch] [ebp-18h]
+  CHanaMeshT3F5_S138 *pMesh_v2; // [esp+40h] [ebp-14h]
+  D3DVERTEX *pData; // [esp+44h] [ebp-10h] BYREF
+  DWORD dwNumVertices; // [esp+48h] [ebp-Ch] BYREF
+  unsigned int i; // [esp+4Ch] [ebp-8h]
+  CHanaVertT3EA_S1FC *pVert_v3; // [esp+50h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] CalcFrameBound_404B80\n");
+
+  if ( pFrame->pAttachedObj_20C )
+    CHanaObj__Free_40C1E4(pFrame->pAttachedObj_20C);
+  pFrame->pAttachedObj_20C = pVertOrMeshOrMorp;
+  CHanaObj__AddRef_40BFC3(pVertOrMeshOrMorp);
+  if ( CHanaObj__GetType_40BBF4(pVertOrMeshOrMorp) == 0x3EA )
+  {
+    pVert_v3 = (CHanaVertT3EA_S1FC *)pVertOrMeshOrMorp;
+    CHanaObj__LockVtxBufT3EA_418544((CHanaVertT3EA_S1FC *)pVertOrMeshOrMorp, &dwNumVertices, (LPVOID *)&pData);
+    pFrame->vertBoundMin_22C.x = pData->x;
+    pFrame->vertBoundMax_220.x = pFrame->vertBoundMin_22C.x;
+    pFrame->vertBoundMin_22C.y = pData->y;
+    pFrame->vertBoundMax_220.y = pFrame->vertBoundMin_22C.y;
+    pFrame->vertBoundMin_22C.z = pData->z;
+    pFrame->vertBoundMax_220.z = pFrame->vertBoundMin_22C.z;
+    for ( i = 1; i < dwNumVertices; ++i )
+    {
+      if ( pData[i].x < (double)pFrame->vertBoundMax_220.x )
+        pFrame->vertBoundMax_220.x = pData[i].x;
+      if ( pData[i].y < (double)pFrame->vertBoundMax_220.y )
+        pFrame->vertBoundMax_220.y = pData[i].y;
+      if ( pData[i].z < (double)pFrame->vertBoundMax_220.z )
+        pFrame->vertBoundMax_220.z = pData[i].z;
+      if ( pData[i].x > (double)pFrame->vertBoundMin_22C.x )
+        pFrame->vertBoundMin_22C.x = pData[i].x;
+      if ( pData[i].y > (double)pFrame->vertBoundMin_22C.y )
+        pFrame->vertBoundMin_22C.y = pData[i].y;
+      if ( pData[i].z > (double)pFrame->vertBoundMin_22C.z )
+        pFrame->vertBoundMin_22C.z = pData[i].z;
+    }
+    CHanaObj__UnlockVrxBufT3EA_41858E(pVert_v3);
+  }
+  else if ( CHanaObj__GetType_40BBF4(pVertOrMeshOrMorp) == 0x3F5 )
+  {
+    pMesh_v2 = (CHanaMeshT3F5_S138 *)pVertOrMeshOrMorp;
+    dwCount_v16 = CHanaObj__GetChildCountT3F5_40FF0F((CHanaMeshT3F5_S138 *)pVertOrMeshOrMorp);
+    for ( nIndex = 0; nIndex < dwCount_v16; ++nIndex )// find vertix bound min,max
+    {
+      pVert_v2 = CHanaObj__GetVertsAtT3F5_40FF1D(pMesh_v2, nIndex);
+      CHanaObj__LockVtxBufT3EA_418544(pVert_v2, &dwNumVertices_v2, (LPVOID *)&ppData);
+      if ( !nIndex )
+      {
+        pFrame->vertBoundMin_22C.x = ppData->x;
+        pFrame->vertBoundMax_220.x = pFrame->vertBoundMin_22C.x;
+        pFrame->vertBoundMin_22C.y = ppData->y;
+        pFrame->vertBoundMax_220.y = pFrame->vertBoundMin_22C.y;
+        pFrame->vertBoundMin_22C.z = ppData->z;
+        pFrame->vertBoundMax_220.z = pFrame->vertBoundMin_22C.z;
+      }
+      for ( j = 0; j < dwNumVertices_v2; ++j )
+      {
+        if ( ppData[j].x < (double)pFrame->vertBoundMax_220.x )
+          pFrame->vertBoundMax_220.x = ppData[j].x;
+        if ( ppData[j].y < (double)pFrame->vertBoundMax_220.y )
+          pFrame->vertBoundMax_220.y = ppData[j].y;
+        if ( ppData[j].z < (double)pFrame->vertBoundMax_220.z )
+          pFrame->vertBoundMax_220.z = ppData[j].z;
+        if ( ppData[j].x > (double)pFrame->vertBoundMin_22C.x )
+          pFrame->vertBoundMin_22C.x = ppData[j].x;
+        if ( ppData[j].y > (double)pFrame->vertBoundMin_22C.y )
+          pFrame->vertBoundMin_22C.y = ppData[j].y;
+        if ( ppData[j].z > (double)pFrame->vertBoundMin_22C.z )
+          pFrame->vertBoundMin_22C.z = ppData[j].z;
+      }
+      CHanaObj__UnlockVrxBufT3EA_41858E(pVert_v2);
+      CHanaObj__Free_40C1E4(pVert_v2);
+    }
+  }
+  else if ( CHanaObj__GetType_40BBF4(pVertOrMeshOrMorp) == 0x457 )
+  {
+    pMorp = pVertOrMeshOrMorp;
+    pMesh = pVertOrMeshOrMorp->pMeshT3F5_138;
+    dwNumChild = CHanaObj__GetChildCountT3F5_40FF0F(pMesh);
+    for ( k = 0; k < dwNumChild; ++k )
+    {
+      pVert = CHanaObj__GetVertsAtT3F5_40FF1D(pMesh, k);
+      CHanaObj__LockVtxBufT3EA_418544(pVert, &numVertices, (LPVOID *)&pData_1);
+      if ( !k )
+      {
+        pFrame->vertBoundMin_22C.x = pData_1->x;
+        pFrame->vertBoundMax_220.x = pFrame->vertBoundMin_22C.x;
+        pFrame->vertBoundMin_22C.y = pData_1->y;
+        pFrame->vertBoundMax_220.y = pFrame->vertBoundMin_22C.y;
+        pFrame->vertBoundMin_22C.z = pData_1->z;
+        pFrame->vertBoundMax_220.z = pFrame->vertBoundMin_22C.z;
+      }
+      for ( m = 0; m < numVertices; ++m )
+      {
+        if ( pData_1[m].x < (double)pFrame->vertBoundMax_220.x )
+          pFrame->vertBoundMax_220.x = pData_1[m].x;
+        if ( pData_1[m].y < (double)pFrame->vertBoundMax_220.y )
+          pFrame->vertBoundMax_220.y = pData_1[m].y;
+        if ( pData_1[m].z < (double)pFrame->vertBoundMax_220.z )
+          pFrame->vertBoundMax_220.z = pData_1[m].z;
+        if ( pData_1[m].x > (double)pFrame->vertBoundMin_22C.x )
+          pFrame->vertBoundMin_22C.x = pData_1[m].x;
+        if ( pData_1[m].y > (double)pFrame->vertBoundMin_22C.y )
+          pFrame->vertBoundMin_22C.y = pData_1[m].y;
+        if ( pData_1[m].z > (double)pFrame->vertBoundMin_22C.z )
+          pFrame->vertBoundMin_22C.z = pData_1[m].z;
+      }
+      CHanaObj__UnlockVrxBufT3EA_41858E(pVert);
+      CHanaObj__Free_40C1E4(pVert);
+    }
+  }
+  pFrame->vertCenter_2B4.x = (pFrame->vertBoundMax_220.x + pFrame->vertBoundMin_22C.x) / 2.0;
+  pFrame->vertCenter_2B4.y = (pFrame->vertBoundMax_220.y + pFrame->vertBoundMin_22C.y) / 2.0;
+  pFrame->vertCenter_2B4.z = (pFrame->vertBoundMax_220.z + pFrame->vertBoundMin_22C.z) / 2.0;
+  pFrame->vertMagnitude_2B0 = sqrt(
+    (pFrame->vertBoundMax_220.x - pFrame->vertCenter_2B4.x)
+    * (pFrame->vertBoundMax_220.x - pFrame->vertCenter_2B4.x)
+    + (pFrame->vertBoundMax_220.y - pFrame->vertCenter_2B4.y)
+    * (pFrame->vertBoundMax_220.y - pFrame->vertCenter_2B4.y)
+    + (pFrame->vertBoundMax_220.z - pFrame->vertCenter_2B4.z)
+    * (pFrame->vertBoundMax_220.z - pFrame->vertCenter_2B4.z));
+}
+
 void register_ParseODFContent_441A5D() {
   hnh_Hook(0x44106A, hook_ParseOdfFRAM_44106A, "ParseOdfFRAM_44106A"); // [OK]
   hnh_Hook(0x4414EB, hook_ParseOdfANIM_4414EB, "ParseOdfANIM_4414EB"); // [OK]
   hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C"); // [OK]
   hnh_Hook(0x440896, hook_ParseOdfMORP_440896, "ParseOdfMORP_440896"); // [OK]
   hnh_Hook(0x44189C, hook_ParseOdf3DON_44189C, "ParseOdf3DON_44189C"); // [OK]
+  hnh_Hook(0x404B80, hook_CalcFrameBound_404B80, "CalcFrameBound_404B80");
 
   hnh_HookOff();
     hnh_Hook(0x441A5D, hook_ParseODFContent_441A5D, "ParseODFContent_441A5D"); // [OK] 

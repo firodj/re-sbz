@@ -1,6 +1,6 @@
 # CURRENT - GOALS coverage in hnhmods/src
 
-Generated 2026-10-30 by `py tools/gen_current.py` from `hnhmods/GOALS.md`
+Generated 2026-10-31 by `py tools/gen_current.py` from `hnhmods/GOALS.md`
 vs `hnhmods/src/*.cpp` (function data via `tools/scan_cpp.py`).
 
 Legend:
@@ -28,14 +28,14 @@ Legend:
     │   │   │   │   ├──0x4276c0 D3DSetRenderStates_4276C0                                       <- [HOOK+PTR ShowTitleMenu.cpp]
     │   │   │   │   ├──0x428927 ShowTitleMenuWnd_428927                                         <- [HOOK+PTR CheckRunGame_4863C8.cpp]
     │   │   │   │   │   └──0x428c11 WndProcTitleMenu_428C11                                     <- [HOOK WndProcTitleMenu.cpp]
-    │   │   │   │   │       ├──0x428a7c GetNthValidDimensionString                              <- [PTR WndProcTitleMenu.cpp]
-    │   │   │   │   │       ├──0x428bc1 DrawTextPairs                                           <- [PTR WndProcTitleMenu.cpp]
+    │   │   │   │   │       ├──0x428a7c GetNthValidDimensionString                              <- [HOOK+PTR WndProcTitleMenu.cpp]
+    │   │   │   │   │       ├──0x428bc1 DrawTextPairs                                           <- [HOOK+PTR WndProcTitleMenu.cpp]
     │   │   │   │   │       ├──0x4211ed FreeBmp_4211ED                                          <- [HOOK+PTR WndProcTitleMenu.cpp]
     │   │   │   │   │       ├──0x420df0 LoadBmp_420DF0                                          <- [HOOK+PTR WndProcTitleMenu.cpp]
-    │   │   │   │   │       │   └──0x421095 CreatePaletteFromBuffer                             <- [PTR WndProcTitleMenu.cpp]
+    │   │   │   │   │       │   └──0x421095 CreatePaletteFromBuffer                             <- [HOOK+PTR WndProcTitleMenu.cpp]
     │   │   │   │   │       ├──0x486d9a CHanaObj__GetRealPath_486D9A                            <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
-    │   │   │   │   │       ├──0x42889b UpdateRenderOptionsCheckboxes                           <- [PTR WndProcTitleMenu.cpp]
-    │   │   │   │   │       └──0x42833c GetNthActiveVideoMode                                   <- [PTR WndProcTitleMenu.cpp]
+    │   │   │   │   │       ├──0x42889b UpdateRenderOptionsCheckboxes                           <- [HOOK+PTR WndProcTitleMenu.cpp]
+    │   │   │   │   │       └──0x42833c GetNthActiveVideoMode                                   <- [HOOK+PTR WndProcTitleMenu.cpp]
     │   │   │   │   ├──0x427cc9 DisplayConfig_Destroy                                           <- [HOOK+PTR ShowTitleMenu.cpp]
     │   │   │   │   │   └──0x40df64 MemFree_40DF64                                              <- [HOOK+PTR MemAlloc_40DEF7.cpp]
     │   │   │   │   │       ├──0x40a813 PrintDebugError                                         <- [HOOK+PTR MemAlloc_40DEF7.cpp]
@@ -108,9 +108,9 @@ Legend:
     │   │   ├──0x40e02d SetFogMode_40E02D                                                       <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
     │   │   ├──0x41888e Renderer_CleanupFont                                                    <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   │   ├──0x485c50 CDROM_VerifyDiscSignature                                               <- [HOOK+PTR CDROM_VerifyDiscSignature_485C50.cpp]
-    │   │   │   ├──0x485ba8 CDROM_VerifyWin9x                                                   <- [PTR CDROM_VerifyDiscSignature_485C50.cpp]
+    │   │   │   ├──0x485ba8 CDROM_VerifyWin9x                                                   <- [HOOK+PTR CDROM_VerifyDiscSignature_485C50.cpp]
     │   │   │   │   ├──0x485ada CDROM_IoctlReadSectorWin9x                                      <- [PTR CDROM_VerifyDiscSignature_485C50.cpp]
-    │   │   │   │   │   └──0x485b27 CDROM_DeviceIoControlVWIN32                                 <- [PTR CDROM_VerifyDiscSignature_485C50.cpp]
+    │   │   │   │   │   └──0x485b27 CDROM_DeviceIoControlVWIN32                                 <- [HOOK+PTR CDROM_VerifyDiscSignature_485C50.cpp]
     │   │   │   └──0x4858d0 CDROM_VerifyNT                                                      <- [HOOK+PTR CDROM_VerifyDiscSignature_485C50.cpp]
     │   │   │       └──0x485a2a CDROM_GetDriveFileSystemType                                    <- [HOOK+PTR CDROM_VerifyDiscSignature_485C50.cpp]
     │   │   ├──0x422d50 HanaDS_Init                                                             <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
@@ -138,29 +138,29 @@ Legend:
     │   │   │   │   ├──0x40bf01 PresentFrame                                                    <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   ├──0x40be03 RecoverLostDevice                                           <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   └──0x40ceec HanaVert_DrawBatch                                          <- [PTR InGameMenu_4799E2.cpp]
-    │   │   │   │   │       ├──0x439d48 UpdateVertTextureFromFrame                              <- [todo]
+    │   │   │   │   │       ├──0x439d48 UpdateVertTextureFromFrame                              <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   ├──0x404b80 CalcFrameBound_404B80                               <- [PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │       │   │   ├──0x418544 CHanaObj::LockVtxBufT3EA_418544                 <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │       │   │   ├──0x41858e CHanaObj::UnlockVrxBufT3EA_41858E               <- [HOOK+PTR PlayScreenFade.cpp]
-    │   │   │   │   │       │   │   ├──0x40ff0f CHanaObj::GetChildCountT3F5_40FF0F              <- [PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       │   │   ├──0x40ff0f CHanaObj::GetChildCountT3F5_40FF0F              <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   │   ├──0x40bbf4 CHanaObj::GetType_40BBF4                        <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │       │   │   └──0x40ff1d CHanaObj::GetChildAtT3F5_40FF1D                 <- [todo]
-    │   │   │   │   │       │   ├──0x40e2a5 ProjectToScreen_40E2A5                              <- [todo]
-    │   │   │   │   │       │   │   └──0x40e167 BuildViewportMatrix                             <- [todo]
-    │   │   │   │   │       │   │       └──0x40dcf6 GetProjectionFov_40DCF6                     <- [todo]
+    │   │   │   │   │       │   ├──0x40e2a5 ProjectToScreen_40E2A5                              <- [HOOK+PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       │   │   └──0x40e167 BuildViewportMatrix                             <- [HOOK+PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       │   │       └──0x40dcf6 GetProjectionFov_40DCF6                     <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   ├──0x418905 CreateSurfaceWH                                     <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │       │   │   └──0x41898e DDErrToString_41898E                            <- [HOOK+PTR DSErrToString_423CE7.cpp]
-    │   │   │   │   │       │   ├──0x417b27 HanaVert_Draw                                       <- [todo]
-    │   │   │   │   │       │   │   └──0x40fb30 HanaMate_SetMaterial                            <- [todo]
+    │   │   │   │   │       │   ├──0x417b27 HanaVert_Draw                                       <- [HOOK+PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       │   │   └──0x40fb30 HanaMate_SetMaterial                            <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   ├──0x43bf6f FlushD3DAndTouchSurface                             <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │       │   ├──0x47e6af ConvertFrom640AsInt                                 <- [HOOK+PTR GameMainLoop_47F013.cpp]
     │   │   │   │   │       │   ├──0x419d16 BltFastWH                                           <- [HOOK+PTR PlayScreenFade.cpp]
-    │   │   │   │   │       ├──0x40c54c HanaVert_DrawByType                                     <- [PTR ProcessFrame_40600C.cpp]
-    │   │   │   │   │       │   ├──0x434fc9 HanaMorpT457_Draw                                   <- [todo]
-    │   │   │   │   │       │   │   └──0x40fe8e HanaMeshT3F5_Draw                               <- [todo]
-    │   │   │   │   │       │   ├──0x416776 HanaMesh_Draw                                       <- [todo]
-    │   │   │   │   │       ├──0x40ce4e SetLightEnableMask                                      <- [todo]
-    │   │   │   │   │       └──0x40d9c7 SortObjectsByDepth                                      <- [todo]
+    │   │   │   │   │       ├──0x40c54c HanaVert_DrawByType                                     <- [HOOK+PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       │   ├──0x434fc9 HanaMorpT457_Draw                                   <- [HOOK+PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       │   │   └──0x40fe8e HanaMeshT3F5_Draw                               <- [HOOK+PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       │   ├──0x416776 HanaMesh_Draw                                       <- [PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       ├──0x40ce4e SetLightEnableMask                                      <- [HOOK+PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       └──0x40d9c7 SortObjectsByDepth                                      <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │           └──0x408c3e HanaFrame_GetCenterPosition_408C3E                  <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   ├──0x414191 DrawSprite2D                                                    <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   ├──0x45a41b GetMouseBtn_45A41B                                              <- [HOOK+PTR InGameMenu_4799E2.cpp]
@@ -204,12 +204,12 @@ Legend:
     │   │   │   │   │   │   ├──0x47e782 SetTimerScaleFactor                                     <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │   │   ├──0x405c06 HanaFrame_Draw                                          <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │   │   │   ├──0x40600c ProcessFrame                                        <- [HOOK+PTR ProcessFrame_40600C.cpp]
-    │   │   │   │   │   │   │   │   ├──0x4084c2 AlwaysTrue                                      <- [PTR ProcessFrame_40600C.cpp]
-    │   │   │   │   │   │   │   │   ├──0x408283 UpdateBoneTransform                             <- [PTR ProcessFrame_40600C.cpp]
-    │   │   │   │   │   │   │   │   │   ├──0x406ca4 UpdateBoneLookAtTransform                   <- [todo]
-    │   │   │   │   │   │   │   │   │   └──0x40873e CameraLookAtFrame                           <- [todo]
+    │   │   │   │   │   │   │   │   ├──0x4084c2 AlwaysTrue                                      <- [IMPL ProcessFrame_40600C.cpp]
+    │   │   │   │   │   │   │   │   ├──0x408283 UpdateBoneTransform                             <- [HOOK+PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │   │   │   │   │   ├──0x406ca4 UpdateBoneLookAtTransform                   <- [HOOK+PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │   │   │   │   │   └──0x40873e CameraLookAtFrame                           <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │   │   │   │   ├──0x409510 ConfigureLight                                  <- [HOOK+PTR ParseODFContent_441A5D.cpp]
-    │   │   │   │   │   │   │   │   ├──0x40cd32 AddObjectToPool                                 <- [PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │   │   │   │   ├──0x40cd32 AddObjectToPool                                 <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │   │   │   ├──0x406ab1 HanaFrame_GetRelPosition                            <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │   │   │   ├──0x4339b2 HanaFrame_PreDraw                                   <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │   │   │   │   ├──0x43383a HanaMorp_ApplyTree                              <- [HOOK+PTR PlayScreenFade.cpp]
@@ -479,11 +479,11 @@ Legend:
 ## Stats
 
 - tree functions:      460
-- hooked:              196 (HOOK or HOOK+PTR)
-- pinned:              239 (PTR or HOOK+PTR)
-- fully covered:       192 (HOOK+PTR)
-- implemented only:    0
-- untouched:           217
+- hooked:              219 (HOOK or HOOK+PTR)
+- pinned:              251 (PTR or HOOK+PTR)
+- fully covered:       215 (HOOK+PTR)
+- implemented only:    1
+- untouched:           204
 
 ## Per-file status (scan_cpp.py)
 
@@ -495,10 +495,10 @@ structs:              0
   globals:              7 (6 func-ptr imports)
   functions:            7 (6 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   6/6
-  hnh_Hook-registered:  3/6
+  hnh_Hook-registered:  5/6
   func-ptrs declared:   6/6
   func-ptrs w/o hook:   0/6
-  not registered:       hook_CDROM_DeviceIoControlVWIN32, hook_CDROM_IoctlReadSectorWin9x, hook_CDROM_VerifyWin9x
+  not registered:       hook_CDROM_IoctlReadSectorWin9x
 ```
 
 ### hnhmods/src/CHanaObj__Free_40C1E4.cpp
@@ -607,14 +607,14 @@ structs:              0
 SUMMARY
 structs:              0
   globals:              25 (22 func-ptr imports)
-  functions:            20 (19 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   18/19
-  hnh_Hook-registered:  18/19
-  func-ptrs declared:   18/18
-  func-ptrs w/o hook:   4/22
-  no hook function for: HanaVert_DrawBatch, SystemMenu_4655AB, MenuMusicSelect, MenuGallery
+  functions:            21 (20 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   19/20
+  hnh_Hook-registered:  18/20
+  func-ptrs declared:   19/19
+  func-ptrs w/o hook:   3/22
+  no hook function for: SystemMenu_4655AB, MenuMusicSelect, MenuGallery
   missing DebugLog:     ApplyMenuBgmVolume
-  not registered:       ApplyMenuBgmVolume
+  not registered:       ApplyMenuBgmVolume, hook_HanaVert_DrawBatch
 ```
 
 ### hnhmods/src/IsFileExists_47E8EE.cpp
@@ -729,15 +729,15 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              8 (6 func-ptr imports)
-  functions:            4 (3 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   1/3
-  hnh_Hook-registered:  1/3
-  func-ptrs declared:   1/1
-  func-ptrs w/o hook:   5/6
-  no hook function for: UpdateBoneTransform, AlwaysTrue, AddObjectToPool, CHanaObj__GetChildCountT3F5_40FF0F, HanaVert_DrawByType
-  missing DebugLog:     VertNeedsAlphaPass, FixAlphaAndAddToPool
-  not registered:       VertNeedsAlphaPass, FixAlphaAndAddToPool
+  globals:              21 (18 func-ptr imports)
+  functions:            21 (20 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   17/20
+  hnh_Hook-registered:  17/20
+  func-ptrs declared:   17/17
+  func-ptrs w/o hook:   1/18
+  no hook function for: HanaT3FB_Draw
+  missing DebugLog:     VertNeedsAlphaPass, FixAlphaAndAddToPool, AlwaysTrue
+  not registered:       VertNeedsAlphaPass, FixAlphaAndAddToPool, AlwaysTrue
 ```
 
 ### hnhmods/src/SetFogEnable_40DFB0.cpp
@@ -827,13 +827,12 @@ structs:              0
 SUMMARY
 structs:              0
   globals:              18 (7 func-ptr imports)
-  functions:            24 (23 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   3/23
-  hnh_Hook-registered:  3/23
-  func-ptrs declared:   2/3
-  func-ptrs w/o hook:   5/7
-  no hook function for: GetNthActiveVideoMode, GetNthValidDimensionString, DrawTextPairs, UpdateRenderOptionsCheckboxes, CreatePaletteFromBuffer
-  missing DebugLog:     PtInBox, PollLMouseButton, FreeTitleMenuBitmaps, BlitBmp, BlitBmpPart, DrawTip, StartGame, PickDefaultRenderHALMode, ClampConfigSelections, UpdateConfigScreenInput, UpdateMainMenuInput, TitleMenu_OnTimer, PaintConfigHotButtons, PaintConfigToggleOverlays, PaintConfigInfoText, PaintConfigScreen, PaintMainMenu, TitleMenu_OnPaint, TitleMenu_OnCreate, TitleMenu_OnDestroy
+  functions:            29 (28 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   7/28
+  hnh_Hook-registered:  8/28
+  func-ptrs declared:   6/7
+  func-ptrs w/o hook:   0/7
+  missing DebugLog:     PtInBox, PollLMouseButton, FreeTitleMenuBitmaps, BlitBmp, BlitBmpPart, DrawTip, StartGame, PickDefaultRenderHALMode, ClampConfigSelections, UpdateConfigScreenInput, UpdateMainMenuInput, TitleMenu_OnTimer, PaintConfigHotButtons, PaintConfigToggleOverlays, PaintConfigInfoText, PaintConfigScreen, PaintMainMenu, TitleMenu_OnPaint, TitleMenu_OnCreate, TitleMenu_OnDestroy, hook_CreatePaletteFromBuffer
   not registered:       PtInBox, PollLMouseButton, FreeTitleMenuBitmaps, BlitBmp, BlitBmpPart, DrawTip, StartGame, PickDefaultRenderHALMode, ClampConfigSelections, UpdateConfigScreenInput, UpdateMainMenuInput, TitleMenu_OnTimer, PaintConfigHotButtons, PaintConfigToggleOverlays, PaintConfigInfoText, PaintConfigScreen, PaintMainMenu, TitleMenu_OnPaint, TitleMenu_OnCreate, TitleMenu_OnDestroy
 ```
 

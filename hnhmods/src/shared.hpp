@@ -341,6 +341,11 @@ extern void(__cdecl* StopAndRestartThread)(DWORD nThreadType);
 // === DEFINED ProcessFrame.cpp ===
 
 extern void(__cdecl*ProcessFrame)(CHanaFrameT3EC_S354* pChildFrame, int nAmbient, DWORD* qwBitLightEnables);
+
+extern void(__cdecl* UpdateBoneTransform)(CHanaFrameT3EC_S354* boneStruct, CHanaFrameT3EC_S354* parentStruct, CHanaFrameT3EC_S354* pSceneFrame);
+extern void (__cdecl*AddObjectToPool)(D3DXMATRIX *mat4x4After, CHanaFrameT3EC_S354 *pChildFrame, CHanaVertT3EA_S1FC *pVert, int nAmbient, QWORD qwBitLightEnables);
+extern DWORD (__cdecl*CHanaObj__GetChildCountT3F5_40FF0F)(CHanaMeshT3F5_S138 *pHanaT3F5);
+extern CHanaVertT3EA_S1FC* (__cdecl* CHanaObj__GetVertsAtT3F5_40FF1D)(CHanaMeshT3F5_S138* pHanaT3F5, int nIndex);
 extern void(__cdecl* HanaVert_DrawByType)(CHanaVertT3EA_S1FC* pVert);
 extern void(__cdecl* SortObjectsByDepth)();
 extern void(__cdecl*SetLightEnableMask)(QWORD bitLightEnables);

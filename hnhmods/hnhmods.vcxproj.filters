@@ -100,4 +100,7 @@
       <UniqueIdentifier>{50b8c6ba-2670-44e9-a993-6c9c95b5e735}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="CURRENT.md" />
+  </ItemGroup>
 </Project>

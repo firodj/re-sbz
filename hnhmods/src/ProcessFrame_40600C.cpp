@@ -42,13 +42,14 @@ void (__cdecl*UpdateBoneTransform)(CHanaFrameT3EC_S354 *boneStruct,
     CHanaFrameT3EC_S354 *parentStruct, CHanaFrameT3EC_S354 *pSceneFrame) =
     reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *)>(0x408283);
 //int  (__cdecl*AlwaysTrue)(void) = reinterpret_cast<int(__cdecl*)()>(0x4084C2);
-int  (__cdecl*AddObjectToPool)(D3DXMATRIX *mat4x4After, CHanaFrameT3EC_S354 *pChildFrame,
+void (__cdecl*AddObjectToPool)(D3DXMATRIX *mat4x4After, CHanaFrameT3EC_S354 *pChildFrame,
     CHanaVertT3EA_S1FC *pVert, int nAmbient, QWORD qwBitLightEnables) =
-    reinterpret_cast<int(__cdecl*)(D3DXMATRIX *, CHanaFrameT3EC_S354 *, CHanaVertT3EA_S1FC *, int, QWORD)>(0x40CD32);
+    reinterpret_cast<void(__cdecl*)(D3DXMATRIX *, CHanaFrameT3EC_S354 *, CHanaVertT3EA_S1FC *, int, QWORD)>(0x40CD32);
 DWORD (__cdecl*CHanaObj__GetChildCountT3F5_40FF0F)(CHanaMeshT3F5_S138 *pHanaT3F5) =
     reinterpret_cast<DWORD(__cdecl*)(CHanaMeshT3F5_S138 *)>(0x40FF0F);
 void (__cdecl*HanaVert_DrawByType)(CHanaVertT3EA_S1FC *pVert) =
     reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *)>(0x40C54C);
+CHanaVertT3EA_S1FC * (__cdecl * CHanaObj__GetVertsAtT3F5_40FF1D)(CHanaMeshT3F5_S138 *pHanaT3F5, int nIndex) = reinterpret_cast<CHanaVertT3EA_S1FC *(__cdecl*)(CHanaMeshT3F5_S138 *pHanaT3F5, int nIndex)>(0x40FF1D);
 
 void(__cdecl*SortObjectsByDepth)() = reinterpret_cast<void(__cdecl*)()>(0x40D9C7);
 void(__cdecl*SetLightEnableMask)(QWORD bitLightEnables) = reinterpret_cast<void(__cdecl*)(QWORD)>(0x40CE4E);
@@ -1031,12 +1032,21 @@ void __cdecl hook_HanaVert_DrawByType(CHanaVertT3EA_S1FC *pObj)
   }
 }
 
+CHanaVertT3EA_S1FC *__cdecl hook_CHanaObj__GetVertsAtT3F5_40FF1D(CHanaMeshT3F5_S138 *pHanaT3F5, int nIndex)
+{
+  ONCELOG("[HNH:SUB] CHanaObj__GetVertsAtT3F5_40FF1D\n");
+
+  CHanaObj__AddRef_40BFC3(pHanaT3F5->refsVertT3EA[nIndex]);
+  return pHanaT3F5->refsVertT3EA[nIndex];
+}
+
 void register_ProcessFrame_40600C() {
     hnh_Hook(0x40600C, hook_ProcessFrame, "ProcessFrame_40600C"); // [OK]
     
     hnh_Hook(0x439D48, hook_UpdateVertTextureFromFrame, "UpdateVertTextureFromFrame_439D48");
     hnh_Hook(0x40E2A5, hook_ProjectToScreen_40E2A5, "ProjectToScreen_40E2A5");
-
+    hnh_Hook(0x40FF1D, hook_CHanaObj__GetVertsAtT3F5_40FF1D, "CHanaObj__GetVertsAtT3F5_40FF1D");
+    
     hnh_HookOff();
     hnh_Hook(0x40CD32, hook_AddObjectToPool, "AddObjectToPool_40CD32"); // [OK]
     hnh_Hook(0x40D9C7, hook_SortObjectsByDepth, "SortObjectsByDepth_40D9C7"); // [OK]
