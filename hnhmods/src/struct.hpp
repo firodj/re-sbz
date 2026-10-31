@@ -4,6 +4,8 @@
 
 #pragma pack(push, 1)
 
+#ifndef HNHMAIN
+
 struct CHanaMKey_S8
 {
     int nParam;
@@ -584,6 +586,12 @@ struct CSceneSlot  // sizeof=0x8
   int nStrIndex;   // Str/ODS table index handed to the scene function
 };
 
+#endif
+
+#ifdef HNHMAIN
+typedef LPVOID LPDIRECTDRAWSURFACE7;
+#endif
+
 // No more CSceneMenuState_9C / CSceneMenuState_98 (who made this!?)
 // Whole per-playthrough scene state @0x52F7E0 (g_sceneState_52F7E0).
 struct CSceneState
@@ -612,6 +620,8 @@ struct CSceneState
   float fPosY_18C;                      ///< or frameTime or effectIntensity
 };
 
+#ifndef HNHMAIN
+
 struct CInputState // sizeof=0x8
 {
   __int16 mouseX_0;
@@ -621,6 +631,8 @@ struct CInputState // sizeof=0x8
   char true_6;
   char gap_7;
 };
+
+#endif
 
 #pragma pack(pop)
 

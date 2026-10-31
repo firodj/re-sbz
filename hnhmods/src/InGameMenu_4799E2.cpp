@@ -1398,7 +1398,7 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
 }
 
 void register_InGameMenu_4799E2() {
-  hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D");
+  hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D"); // [OK]
   hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
 
   hnh_HookOff();

@@ -18,7 +18,11 @@ namespace py = pybind11;
 #include "user32hook.hpp"
 #include "imgui_internal.h"
 
-//#include "src/shared.hpp"
+#define HNHMAIN
+
+#include "../d3dx/ida_defs.hpp"
+#include "src/shared.hpp"
+#undef HNHMAIN
 
 // WinMain
 typedef std::add_pointer_t<int WINAPI(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)> WinMainFn;
@@ -336,40 +340,10 @@ public:
 	}
 };
 
-typedef __int64 QWORD;
-
-// No more CSceneMenuState_9C / CSceneMenuState_98 (who made this!?)
-// Whole per-playthrough scene state @0x52F7E0 (g_sceneState_52F7E0).
-struct CSceneState
-{
-	BYTE bActiveSceneStep;
-	BYTE bCurrentSubStage;
-	char byte_2;
-	char byte_3;
-	int nSceneDataIndices[11];
-	BYTE gap30[2];
-	char byte_32;
-	char ary33[100];
-	char bMaxSubStage;
-	QWORD sceneFlags_98[5];
-	float protCurrentHP_C0;
-	float protMaximumHP_C4;
-	QWORD qwSelMask_C8;
-	int field_D0;
-	int gapD4[10];
-	int field_FC;
-	int gap100[31];
-	float flt_17C;
-	float frameTimeMultiplied_180;
-	LPVOID lpDDSurface_184;
-	float fPosX_188;                      ///< or mousePressed
-	float fPosY_18C;                      ///< or frameTime or effectIntensity
-};
-
 void DrawHNH(const char *window_name) {
 	static_assert(sizeof(CSceneState) == 0x190, "CSceneState");
 
-	CSceneState& g_sceneState_52F7E0 = *(CSceneState*)0x52F7E0;
+	//CSceneState& g_sceneState_52F7E0 = *(CSceneState*)0x52F7E0;
 
 	static bool isOpen = true;
 	// Window flags
@@ -421,6 +395,16 @@ void DrawHNH(const char *window_name) {
 				ImGui::EndTable();
 			}
 			
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Others")) {
+			BYTE step = 1;
+			if (ImGui::InputScalar("g_sceneProgressFlag_530269",
+				ImGuiDataType_U8,
+				&g_sceneProgressFlag_530269,
+				&step, NULL, "%u")) {
+				if (g_sceneProgressFlag_530269 > 2) g_sceneProgressFlag_530269 = 2;
+			}
 			ImGui::TreePop();
 		}
 	}

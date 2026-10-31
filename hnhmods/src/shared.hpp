@@ -3,7 +3,10 @@
 #include <type_traits>
 #include "struct.hpp"
 
+#ifndef HNHMAIN
+
 // === DEFINED WinMain.cpp ===
+
 extern HINSTANCE &g_hInstance;
 extern HWND      &g_hwndParent;
 
@@ -222,8 +225,12 @@ extern int(__cdecl* ConvertFrom1024AsInt)(int nNum);
 extern double(__cdecl* ConvertFrom1024AsFloat)(float fNum);
 
 extern BYTE &g_nAviVolumeIndex_530266;
+#endif
+
 extern BYTE &g_sceneProgressFlag_530269;
 extern CSceneState &g_sceneState_52F7E0;
+#ifndef HNHMAIN
+
 extern const char*& g_szLastDDError_51836C;
 
 // === DEFINED LoadSoundEffects.cpp ===
@@ -353,6 +360,8 @@ extern void(__cdecl* HanaVert_DrawByType)(CHanaVertT3EA_S1FC* pVert);
 extern void(__cdecl* SortObjectsByDepth)();
 extern void(__cdecl*SetLightEnableMask)(QWORD bitLightEnables);
 extern void(__cdecl*UpdateVertTextureFromFrame)(CHanaVertT3EA_S1FC* pVertArg, CHanaFrameT3EC_S354* pFrameArg);
+
+#endif
 
 // == MACROS
 

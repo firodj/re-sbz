@@ -219,5 +219,5 @@ int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F
 }
 
 void register_MenuCharSelect_47A324() {
-    hnh_Hook(0x47A324, hook_MenuCharSelect, "MenuCharSelect_47A324");
+    hnh_Hook(0x47A324, hook_MenuCharSelect, "MenuCharSelect_47A324"); // [OK]
 }
