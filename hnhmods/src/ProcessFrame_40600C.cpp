@@ -58,6 +58,8 @@ void (__cdecl * BuildViewportMatrix)() = reinterpret_cast<void(__cdecl*)()>(0x40
 double (* GetProjectionFov_40DCF6)() = reinterpret_cast<double(*)()>(0x40DCF6);
 void (__cdecl * HanaVert_Draw)(CHanaVertT3EA_S1FC *pVert) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert)>(0x417B27);
 void (__cdecl * HanaMate_SetMaterial)(CHanaMateT3EE_S184 *pMate) = reinterpret_cast<void(__cdecl*)(CHanaMateT3EE_S184 *pMate)>(0x40FB30);
+void (__cdecl * UpdateBoneLookAtTransform)( CHanaFrameT3EC_S354 *pBoneFrame, CHanaFrameT3EC_S354 *pParentFrame, float dirForwardX, float dirForwardY, float dirForwardZ, float dirUpX, float dirUpY, float dirUpZ) = reinterpret_cast<void(__cdecl*)( CHanaFrameT3EC_S354 *pBoneFrame, CHanaFrameT3EC_S354 *pParentFrame, float dirForwardX, float dirForwardY, float dirForwardZ, float dirUpX, float dirUpY, float dirUpZ)>(0x406CA4);
+void (__cdecl * CameraLookAtFrame)( CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pTargetFrame, CHanaFrameT3EC_S354 *pSceneFrame, __int16 iMode) = reinterpret_cast<void(__cdecl*)( CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pTargetFrame, CHanaFrameT3EC_S354 *pSceneFrame, __int16 iMode)>(0x40873E);
 
 // === PINNED GLOBALS ===
 uint32_t &g_fRendering    = *(uint32_t *)0x4CD778;  // WRITABLE
@@ -681,6 +683,243 @@ double hook_GetProjectionFov_40DCF6()
   return g_fProjFov;
 }
 
+void __cdecl hook_UpdateBoneTransform(
+  CHanaFrameT3EC_S354 *boneStruct,
+  CHanaFrameT3EC_S354 *parentStruct,
+  CHanaFrameT3EC_S354 *pSceneFrame)
+{
+  ONCELOG("[HNH:SUB] UpdateBoneTransform_408283\n");
+
+  UpdateBoneLookAtTransform(boneStruct, parentStruct, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0);
+  CameraLookAtFrame(boneStruct, parentStruct, pSceneFrame, -1);
+}
+
+/**
+ *  What it does - Gram-Schmidt basis + matrix reparenting
+ *  
+ *  1. Build an orthonormal basis (LH convention):
+ *  pForward = normalize(dirForward);
+ *  pRight   = normalize(crossUpFwd);       // v9 = pUp * pForward   -> right axis
+ *  pUp      = normalize(crossFwdRight);    // v8 = pForward * pRight -> re-orthogonalized up
+ *  Standard left-handed cross products: right = up * forward, up = forward * right - exactly what D3DXMatrixLookAtLH does
+ *  internally, so the up input only needs to be roughly correct.
+ *  
+ *  2. Build the rotation matrix (columns = basis vectors):
+ *  matLookRot = | pRight.x  pUp.x  pForward.x  0 |
+ *               | pRight.y  pUp.y  pForward.y  0 |
+ *               | pRight.z  pUp.z  pForward.z  0 |
+ *               |    0        0        0       . |
+ *  (Object-to-parent orientation whose columns are the object's axes in parent space. _44 is never initialized -
+ *  harmless, since only the 3*3 part survives to the end.)
+ *  
+ *  3. Convert into the bone's local matrix:
+ *  matLookRot = matLookRot * pParentFrame->mat4x4_after;      // parent space -> world space
+ *  matBeforeInv = D3DXMatrixInverse(bone->mat4x4_before);     // bone rest/rest-pose inverse
+ *  matLookRot = matLookRot * matBeforeInv;                    // strip bone's rest orientation
+ *  
+ *  4. Write back rotation-only (translation preserved) and recompose:
+ *  pBoneFrame->mat4x4_fmrx._11.._33 = matLookRot._11.._33;    // 3*3 rotation only
+ *  pBoneFrame->mat4x4_after = mat4x4_fmrx * mat4x4_before;    // world = local * parent-chain
+ *  
+ *  Net effect
+ *  
+ *  The bone's world orientation becomes LookRot * parentWorld - i.e., the frame is made to point its local +Z (and +Y)
+ *  along the given forward/up directions expressed in the parent's space, while discarding the bone's own rest-pose
+ *  rotation and keeping its position. This is the engine's per-bone aim-at constraint (eyes/head tracking, look-at IK
+ *  style chains).
+ */
+void __cdecl hook_UpdateBoneLookAtTransform(
+  CHanaFrameT3EC_S354 *pBoneFrame,
+  CHanaFrameT3EC_S354 *pParentFrame,
+  float dirForwardX,
+  float dirForwardY,
+  float dirForwardZ,
+  float dirUpX,
+  float dirUpY,
+  float dirUpZ)
+{
+  D3DXVECTOR3 crossFwdRight; // [esp+0h] [ebp-BCh]
+  D3DXVECTOR3 crossUpFwd; // [esp+Ch] [ebp-B0h]
+  D3DXMATRIX matBeforeInv; // [esp+18h] [ebp-A4h] BYREF
+  D3DXVECTOR3 pRight; // [esp+58h] [ebp-64h] BYREF
+  D3DXMATRIX matLookRot; // [esp+64h] [ebp-58h] BYREF
+  D3DXVECTOR3 pForward; // [esp+A4h] [ebp-18h] BYREF
+  D3DXVECTOR3 pUp; // [esp+B0h] [ebp-Ch] BYREF
+
+  ONCELOG("[HNH:SUB] UpdateBoneLookAtTransform_406CA4\n");
+
+  pForward.x = dirForwardX;
+  pForward.y = dirForwardY;
+  pForward.z = dirForwardZ;
+  D3DXVec3Normalize(&pForward, &pForward);
+  pUp.x = dirUpX;
+  pUp.y = dirUpY;
+  pUp.z = dirUpZ;
+  D3DXVec3Normalize(&pUp, &pUp);
+  crossUpFwd.x = pUp.y * pForward.z - pUp.z * pForward.y;
+  crossUpFwd.y = pUp.z * pForward.x - pUp.x * pForward.z;
+  crossUpFwd.z = pUp.x * pForward.y - pUp.y * pForward.x;
+  pRight = crossUpFwd;
+  D3DXVec3Normalize(&pRight, &pRight);
+  crossFwdRight.x = pForward.y * pRight.z - pForward.z * pRight.y;
+  crossFwdRight.y = pForward.z * pRight.x - pForward.x * pRight.z;
+  crossFwdRight.z = pForward.x * pRight.y - pForward.y * pRight.x;
+  pUp = crossFwdRight;
+  D3DXVec3Normalize(&pUp, &pUp);
+  *(_QWORD *)&matLookRot._11 = __PAIR64__(LODWORD(pUp.x), LODWORD(pRight.x));
+  *(_QWORD *)&matLookRot.m[1][0] = __PAIR64__(LODWORD(pUp.y), LODWORD(pRight.y));
+  *(_QWORD *)&matLookRot.m[2][0] = __PAIR64__(LODWORD(pUp.z), LODWORD(pRight.z));
+  *(_QWORD *)&matLookRot.m[0][2] = LODWORD(pForward.x);
+  *(_QWORD *)&matLookRot.m[1][2] = LODWORD(pForward.y);
+  matLookRot._33 = pForward.z;
+  memset(&matLookRot.m[2][3], 0, 16);
+  D3DXMatrixMultiply(&matLookRot, &matLookRot, &pParentFrame->mat4x4_after);
+  D3DXMatrixInverse(&matBeforeInv, 0, &pBoneFrame->mat4x4_before);
+  D3DXMatrixMultiply(&matLookRot, &matLookRot, &matBeforeInv);
+  pBoneFrame->mat4x4_fmrx._11 = matLookRot._11;
+  pBoneFrame->mat4x4_fmrx._21 = matLookRot._21;
+  pBoneFrame->mat4x4_fmrx._31 = matLookRot._31;
+  pBoneFrame->mat4x4_fmrx._12 = matLookRot._12;
+  pBoneFrame->mat4x4_fmrx._22 = matLookRot._22;
+  pBoneFrame->mat4x4_fmrx._32 = matLookRot._32;
+  pBoneFrame->mat4x4_fmrx._13 = matLookRot._13;
+  pBoneFrame->mat4x4_fmrx._23 = matLookRot._23;
+  pBoneFrame->mat4x4_fmrx._33 = matLookRot._33;
+  D3DXMatrixMultiply(&pBoneFrame->mat4x4_after, &pBoneFrame->mat4x4_fmrx, &pBoneFrame->mat4x4_before);
+}
+
+/**
+ * CameraLookAtFrame(pCameraFrame, pTargetFrame, pSceneFrame, iMode)
+ * Rebuilds the camera frame's orientation basis so it looks at pTargetFrame.
+ * pCameraFrame: camera frame (g_pCameraFrame). pTargetFrame: frame to look at.
+ * pSceneFrame: scene frame (g_pSceneFrame).
+ * iMode: 0 = world up (0,1,0); 1 or 2 = no-op (returns iMode, matrices untouched);
+ * otherwise (-1 at every current call site) = up taken from the camera's local
+ * rotation relative to the scene (CalculateLocalRotationMatrix, middle column).
+ * Steps (modes 0 and -1):
+ * 1. pLookDir = normalize(target.pos - camera.pos); positions read from the
+ *    mat4x4_after (offset 0x178) translation row m[3][0..2] (fTgtMatrix vs fCamMatrix).
+ * 2. pRightVec = normalize(up x pLookDir); pUpVec = normalize(pLookDir x pRightVec);
+ *    mode -1 zeroes up components < 0.001 before normalizing.
+ * 3. Writes basis into pCameraFrame->mat4x4_after: _1* = right, _2* = up,
+ *    _3* = look dir; translation m[3][0..2] (fCamTrans01/fCamTrans2) and m[0][3]
+ *    / m[3][3] kept.
+ * 4. mat4x4_fmrx (0x138) = mat4x4_after x inv(mat4x4_before (0x1B8)); returns
+ *    &pCameraFrame->mat4x4_fmrx (all callers ignore the return).
+ * Callers: sub_408283 (mode -1 wrapper), sub_466BDA (camera move-to-target,
+ * mode -1 x3), sub_4686F8 (camera follow/physics), sub_46D9AF/sub_46F37E
+ * (pause loop: look at the scene's "mune" frame when present).
+ */
+void __cdecl hook_CameraLookAtFrame(
+  CHanaFrameT3EC_S354 *pCameraFrame,
+  CHanaFrameT3EC_S354 *pTargetFrame,
+  CHanaFrameT3EC_S354 *pSceneFrame,
+  __int16 iMode)
+{
+  D3DXVECTOR3 crossFwdRightM1; // [esp+10h] [ebp-16Ch]
+  D3DXVECTOR3 crossUpFwdM1; // [esp+1Ch] [ebp-160h]
+  D3DXVECTOR3 crossFwdRight0; // [esp+28h] [ebp-154h]
+  D3DXVECTOR3 crossUpFwd0; // [esp+34h] [ebp-148h]
+  D3DXMATRIX matCamBeforeInvM1; // [esp+40h] [ebp-13Ch] BYREF
+  D3DXMATRIX matCamBeforeInv0; // [esp+80h] [ebp-FCh] BYREF
+  D3DXVECTOR3 vecRight; // [esp+C0h] [ebp-BCh] BYREF
+  D3DXMATRIX fTgtMatrix; // [esp+CCh] [ebp-B0h] BYREF
+  float pOutFwdZ; // [esp+10Ch] [ebp-70h] BYREF
+  float pOutFwdY; // [esp+110h] [ebp-6Ch] BYREF
+  float pOutFwdX; // [esp+114h] [ebp-68h] BYREF
+  D3DXVECTOR3 qCamTransXY; // [esp+118h] [ebp-64h]
+  D3DXVECTOR3 vecLookDir; // [esp+124h] [ebp-58h] BYREF
+  D3DXVECTOR3 vecUp; // [esp+130h] [ebp-4Ch] BYREF
+  D3DXMATRIX fCamMatrix; // [esp+13Ch] [ebp-40h] BYREF
+
+  ONCELOG("[HNH:SUB] CameraLookAtFrame_40873E");
+
+  qmemcpy(&fTgtMatrix, &pTargetFrame->mat4x4_after, sizeof(fTgtMatrix));
+  qmemcpy(&fCamMatrix, &pCameraFrame->mat4x4_after, sizeof(fCamMatrix));
+  qCamTransXY = *(D3DXVECTOR3 *)&fCamMatrix.m[3][0];
+  if ( iMode )
+  {
+    if ( iMode != 1 && iMode != 2 )
+    {
+      vecLookDir.x = fTgtMatrix._41 - fCamMatrix._41;
+      vecLookDir.y = fTgtMatrix._42 - fCamMatrix._42;
+      vecLookDir.z = fTgtMatrix._43 - fCamMatrix._43;
+      D3DXVec3Normalize(&vecLookDir, &vecLookDir);
+      CalculateLocalRotationMatrix(
+        pSceneFrame,
+        pCameraFrame,
+        &pOutFwdX,
+        &pOutFwdY,
+        &pOutFwdZ,
+        &vecUp.x,
+        &vecUp.y,
+        &vecUp.z);
+      if ( fabs(vecUp.x) < 0.001000000047497451 )
+        vecUp.x = 0.0;
+      if ( fabs(vecUp.y) < 0.001000000047497451 )
+        vecUp.y = 0.0;
+      if ( fabs(vecUp.z) < 0.001000000047497451 )
+        vecUp.z = 0.0;
+      D3DXVec3Normalize(&vecUp, &vecUp);
+      crossUpFwdM1.x = vecUp.y * vecLookDir.z - vecUp.z * vecLookDir.y;
+      crossUpFwdM1.y = vecUp.z * vecLookDir.x - vecUp.x * vecLookDir.z;
+      crossUpFwdM1.z = vecUp.x * vecLookDir.y - vecUp.y * vecLookDir.x;
+      vecRight = crossUpFwdM1;
+      D3DXVec3Normalize(&vecRight, &vecRight);
+      crossFwdRightM1.x = vecLookDir.y * vecRight.z - vecLookDir.z * vecRight.y;
+      crossFwdRightM1.y = vecLookDir.z * vecRight.x - vecLookDir.x * vecRight.z;
+      crossFwdRightM1.z = vecLookDir.x * vecRight.y - vecLookDir.y * vecRight.x;
+      vecUp = crossFwdRightM1;
+      D3DXVec3Normalize(&vecUp, &vecUp);
+      pCameraFrame->mat4x4_after._11 = vecRight.x;
+      pCameraFrame->mat4x4_after._21 = vecUp.x;
+      pCameraFrame->mat4x4_after._31 = vecLookDir.x;
+      pCameraFrame->mat4x4_after._12 = vecRight.y;
+      pCameraFrame->mat4x4_after._22 = vecUp.y;
+      pCameraFrame->mat4x4_after._32 = vecLookDir.y;
+      pCameraFrame->mat4x4_after._13 = vecRight.z;
+      pCameraFrame->mat4x4_after._23 = vecUp.z;
+      pCameraFrame->mat4x4_after._33 = vecLookDir.z;
+      *(D3DXVECTOR3 *)&pCameraFrame->mat4x4_after.m[3][0] = qCamTransXY;
+      D3DXMatrixInverse(&matCamBeforeInvM1, 0, &pCameraFrame->mat4x4_before);
+      D3DXMatrixMultiply(&pCameraFrame->mat4x4_fmrx, &pCameraFrame->mat4x4_after, &matCamBeforeInvM1);
+    }
+  }
+  else
+  {
+    vecLookDir.x = fTgtMatrix._41 - fCamMatrix._41;
+    vecLookDir.y = fTgtMatrix._42 - fCamMatrix._42;
+    vecLookDir.z = fTgtMatrix._43 - fCamMatrix._43;
+    D3DXVec3Normalize(&vecLookDir, &vecLookDir);
+    vecUp.x = 0.0;
+    vecUp.y = 1.0;
+    vecUp.z = 0.0;
+    D3DXVec3Normalize(&vecUp, &vecUp);
+    crossUpFwd0.x = vecUp.y * vecLookDir.z - vecUp.z * vecLookDir.y;
+    crossUpFwd0.y = vecUp.z * vecLookDir.x - vecUp.x * vecLookDir.z;
+    crossUpFwd0.z = vecUp.x * vecLookDir.y - vecUp.y * vecLookDir.x;
+    vecRight = crossUpFwd0;
+    D3DXVec3Normalize(&vecRight, &vecRight);
+    crossFwdRight0.x = vecLookDir.y * vecRight.z - vecLookDir.z * vecRight.y;
+    crossFwdRight0.y = vecLookDir.z * vecRight.x - vecLookDir.x * vecRight.z;
+    crossFwdRight0.z = vecLookDir.x * vecRight.y - vecLookDir.y * vecRight.x;
+    vecUp = crossFwdRight0;
+    D3DXVec3Normalize(&vecUp, &vecUp);
+    pCameraFrame->mat4x4_after._11 = vecRight.x;
+    pCameraFrame->mat4x4_after._21 = vecUp.x;
+    pCameraFrame->mat4x4_after._31 = vecLookDir.x;
+    pCameraFrame->mat4x4_after._12 = vecRight.y;
+    pCameraFrame->mat4x4_after._22 = vecUp.y;
+    pCameraFrame->mat4x4_after._32 = vecLookDir.y;
+    pCameraFrame->mat4x4_after._13 = vecRight.z;
+    pCameraFrame->mat4x4_after._23 = vecUp.z;
+    pCameraFrame->mat4x4_after._33 = vecLookDir.z;
+    *(D3DXVECTOR3 *)&pCameraFrame->mat4x4_after.m[3][0] = qCamTransXY;
+    D3DXMatrixInverse(&matCamBeforeInv0, 0, &pCameraFrame->mat4x4_before);
+    D3DXMatrixMultiply(&pCameraFrame->mat4x4_fmrx, &pCameraFrame->mat4x4_after, &matCamBeforeInv0);
+  }
+}
+
 void register_ProcessFrame_40600C() {
     hnh_Hook(0x40600C, hook_ProcessFrame, "ProcessFrame_40600C"); // [OK]
     hnh_Hook(0x40D9C7, hook_SortObjectsByDepth, "SortObjectsByDepth_40D9C7");
@@ -691,4 +930,7 @@ void register_ProcessFrame_40600C() {
     hnh_Hook(0x40DCF6, hook_GetProjectionFov_40DCF6, "GetProjectionFov_40DCF6");
     hnh_Hook(0x417B27, hook_HanaVert_Draw, "HanaVert_Draw_417B27");
     hnh_Hook(0x40FB30, hook_HanaMate_SetMaterial, "HanaMate_SetMaterial_40FB30");
+    hnh_Hook(0x408283, hook_UpdateBoneTransform, "UpdateBoneTransform_408283");
+    hnh_Hook(0x406CA4, hook_UpdateBoneLookAtTransform, "UpdateBoneLookAtTransform_406CA4");
+    hnh_Hook(0x40873E, hook_CameraLookAtFrame, "CameraLookAtFrame_40873E");
 }
