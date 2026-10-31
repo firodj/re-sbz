@@ -277,7 +277,10 @@ int hook_HanaDS_InitHeap()
   return 1;
 }
 
-// HanaDS_Init - initialize the global DirectSound device. Ensures the audio heap is up (HanaDS_InitHeap); then DirectSoundCreate(0, &g_ppDS, 0) and SetCooperativeLevel(hwnd, DSSCL_EXCLUSIVE=3). On any failure it records the DS error string (sub_423CCC -> g_szDDErr) and returns 0. On success it Compact()s the device, zero-fills and queries capabilities into g_dsCaps (dwSize=96), sets g_bDSInited_5185C4=1, and returns 1.
+// HanaDS_Init - initialize the global DirectSound device. Ensures the audio heap is up (HanaDS_InitHeap);
+// then DirectSoundCreate(0, &g_ppDS, 0) and SetCooperativeLevel(hwnd, DSSCL_EXCLUSIVE=3). 
+// On any failure it records the DS error string (sub_423CCC -> g_szDDErr) and returns 0.
+// On success it Compact()s the device, zero-fills and queries capabilities into g_dsCaps (dwSize=96), sets g_bDSInited_5185C4=1, and returns 1.
 int __cdecl hook_HanaDS_Init(HWND hwnd)
 {
   HRESULT hr; // [esp+0h] [ebp-4h]

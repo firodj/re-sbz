@@ -110,6 +110,7 @@ extern uint32_t &g_nZBufDepthMode_518C9C;
 extern int      &g_nRenderHALMode_518CA0;
 extern uint32_t &g_nWidth2;
 extern uint32_t &g_nScreenScale_52F19C;
+extern float& g_fProjFov;
 
 extern int (&g_arrZBufDepthCountPerDev_518C40)[16];
 extern int (&g_arrZBufDepthsPerDev_518828)[256];
@@ -122,6 +123,7 @@ extern HWND      &g_hWnd;
 extern HINSTANCE &g_hInstance_518CB0;
 extern BOOL      &g_bRunGame;
 extern D3DXMATRIX &g_mat4x4View_4D4780;
+extern D3DXMATRIX& g_mat4x4Projection_4CE870;
 
 extern void (__cdecl*CHanaObj__NewLightT3EF)(CHanaLightT3EF_S1A0** pOut, D3DLIGHT7* pD3Dlight);
 extern void (__cdecl*AttachHanaObj_40BAB8)(CHanaBase_S130* pParent, LPCSTR szName);
@@ -290,7 +292,6 @@ extern HRESULT  (__cdecl* HanaFrame_PushNode)(CHanaFrameT3EC_S354* pFrame);
 extern void   (__cdecl * HanaMorpT457_Animate)(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim);
 extern int    (__cdecl*CHanaObj__GetType_40BBF4)(CHanaBase_S130* pObj);
 extern void(__cdecl* SetInversTransf_405BB4)(D3DXMATRIX* pM);
-extern void(__cdecl*ProcessFrame)(CHanaFrameT3EC_S354* pChildFrame, int nAmbient, DWORD* qwBitLightEnables);
 extern void(__cdecl*HanaFrame_PreDraw)(CHanaFrameT3EC_S354* pFrame);
 
 extern LPD3DXMATRIXSTACK& g_pMatrixStack_4CD77C;
@@ -307,6 +308,7 @@ extern void (__cdecl * ApplyQTS_4035B1)( D3DXMATRIX *pOut, D3DXQUATERNION *pQ, f
 extern void (__cdecl * ConfigureLight)( CHanaLightT3EF_S1A0 *pHanaLight, float posX, float posY, float posZ, float dirX, float dirY, float dirZ);
 extern void (__cdecl * HanaFrame_GetCenterPosition_408C3E)( CHanaFrameRootT3EC_S2D4 *pFrame, CHanaFrameRootT3EC_S2D4 *pRelFrame, float *pOutX, float *pOutY, float *pOutZ);
 extern BOOL(__cdecl* GetSoundBufferAverageLevel)(LPDIRECTSOUNDBUFFER pDSBuffer, float* pfPlayPos);
+extern void(__cdecl* CalcFrameBound_404B80)(CHanaFrameT3EC_S354* pFrameT3EC, CHanaMorpT457_S40C* pMorpT3F5);
 
 // === DEFINED ParseODS.cpp ===
 
@@ -335,6 +337,14 @@ extern CInputState* (*GetInputState_481B37)(void);
 extern bool(__cdecl* GetCursorPos_4811FA)(int* pOutX, int* pOutY, __int16* pOutBtn);
 extern void(__cdecl* MutexThreadWait_4815EC)(bool bWait);
 extern void(__cdecl* StopAndRestartThread)(DWORD nThreadType);
+
+// === DEFINED ProcessFrame.cpp ===
+
+extern void(__cdecl*ProcessFrame)(CHanaFrameT3EC_S354* pChildFrame, int nAmbient, DWORD* qwBitLightEnables);
+extern void(__cdecl* HanaVert_DrawByType)(CHanaVertT3EA_S1FC* pVert);
+extern void(__cdecl* SortObjectsByDepth)();
+extern void(__cdecl*SetLightEnableMask)(QWORD bitLightEnables);
+extern void(__cdecl*UpdateVertTextureFromFrame)(CHanaVertT3EA_S1FC* pVertArg, CHanaFrameT3EC_S354* pFrameArg);
 
 // == MACROS
 

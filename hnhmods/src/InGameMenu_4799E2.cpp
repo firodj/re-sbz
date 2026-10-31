@@ -1198,6 +1198,205 @@ void __cdecl hook_DrawSpriteAtRect(CHanaSpriteT3F6_S1FC *pSprite, D2D_RECT_F *rc
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_LIGHTING, 1);
 }
 
+// HanaVert_DrawBatch(bDraw): render the queued CStructObject batch on the D3D device,
+//   or (bDraw==0) clear the queue + cached state.
+//   bDraw==1: three sorted passes over g_pObjPool[0..g_nObjCount), each object drawn
+//   on both cull faces; fNeedsDraw_48 is cleared after an object is drawn so later
+//   passes skip it:
+//     PASS 1 opaque:    material.a==1 / no blend / !flg_1E8 / no tex mask;
+//                       blend OFF, ZWRITE on        -> sub_40C54C
+//     PASS 2 translucent: remaining !flg_1E8;
+//                       SRCALPHA/INVSRCALPHA, ZWRITE off -> sub_40C54C
+//     PASS 3 glow/mask:  flg_1E8; white ambient, no fog/lights -> sub_439D48
+//     per object: SetTransform(WORLD,&obj); ambient=nAmbient;
+//       lights via sub_40CE4E(bitLightEnables); fog from pFrame
+//       (flag_134 / fFogStart / fFogEnd / dwFogColor); skip if pFrame->flag_130
+//   bDraw==0: g_fObjBatchActive=0, g_nObjCount=0, g_pCurMatObj=g_pCurTexObj=0
+//   restore: g_fObjBatchActive=0, g_nObjCount=0, Z/ZWRITE/FOG on, CULL=BACK, ambient=saved
+void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
+{
+  CHanaVertT3EA_S1FC *pVertGlow; // [esp+0h] [ebp-18h]
+  CHanaVertT3EA_S1FC *pVertTrans; // [esp+4h] [ebp-14h]
+  CHanaVertT3EA_S1FC *pVert; // [esp+8h] [ebp-10h]
+  DWORD dwAmbientSaved; // [esp+Ch] [ebp-Ch] BYREF
+  int j; // [esp+10h] [ebp-8h]
+  int i; // [esp+14h] [ebp-4h]
+  ONCELOG("[HNH:SUB] HanaVert_DrawBatch_40CEEC\n");
+
+  if ( bClear )
+  {
+    SortObjectsByDepth();
+    g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_AMBIENT, &dwAmbientSaved);
+    g_fObjBatchActive = 1;
+    for ( i = 0; i < g_nObjCount; ++i )
+    {
+      pVert = g_pObjPool[i].pVert;
+      if ( g_pObjPool[i].fNeedsDraw_48
+        && (!pVert->pMateT3EE || pVert->pMateT3EE->d3dMaterial_130.diffuse.a == 1.0)
+        && !pVert->nBlendMode_1D0
+        && !pVert->bAlphaPass2_1E8
+        && (!pVert->pTexT3EB || !pVert->pTexT3EB->bHasMask) )
+      {
+        g_pD3DDevice_4D6C78->SetTransform(
+          D3DTRANSFORMSTATE_WORLD,
+          (LPD3DMATRIX)&g_pObjPool[i]);
+        if ( !g_pObjPool[i].pFrame->bAlphaDeferred_130 )
+        {
+          if ( g_pObjPool[i].pFrame->pAttachedObj_20C )
+          {
+            g_pD3DDevice_4D6C78->SetRenderState(
+              D3DRENDERSTATE_AMBIENT,
+              g_pObjPool[i].nAmbient);
+            SetLightEnableMask(g_pObjPool[i].bitLightEnables);
+            if ( g_pObjPool[i].pFrame->bDisableFog_134 == 1 && g_dwFogEnable_4D6CF4 == 1
+              || g_pObjPool[i].pFrame->fFogStart == g_pObjPool[i].pFrame->fFogEnd )
+            {
+              g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
+            }
+            else
+            {
+              g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
+              g_pD3DDevice_4D6C78->SetRenderState(
+                D3DRENDERSTATE_FOGCOLOR,
+                g_pObjPool[i].pFrame->dwFogColor);
+              g_pD3DDevice_4D6C78->SetRenderState(
+                D3DRENDERSTATE_FOGTABLESTART,
+                LODWORD(g_pObjPool[i].pFrame->fFogStart));
+              g_pD3DDevice_4D6C78->SetRenderState(
+                D3DRENDERSTATE_FOGTABLEEND,
+                LODWORD(g_pObjPool[i].pFrame->fFogEnd));
+            }
+            for ( j = 1; j >= 0; --j )
+            {
+              if ( j )
+                g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_CULLMODE, 3);
+              else
+                g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_CULLMODE, 2);
+              g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+              g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 3);
+              g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 1);
+              g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
+              g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZVISIBLE, 1);
+              g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
+              if ( pVert->bForceAlphaPass_1CC == 1 || j )
+                HanaVert_DrawByType(g_pObjPool[i].pVert);
+            }
+            g_pObjPool[i].fNeedsDraw_48 = 0;
+            g_pD3DDevice_4D6C78->SetRenderState(
+              D3DRENDERSTATE_FOGENABLE,
+              g_dwFogEnable_4D6CF4);
+          }
+        }
+      }
+    }
+    for ( i = 0; i < g_nObjCount; ++i )
+    {
+      pVertTrans = g_pObjPool[i].pVert;
+      if ( g_pObjPool[i].fNeedsDraw_48 )
+      {
+        if ( !pVertTrans->bAlphaPass2_1E8 )
+        {
+          g_pD3DDevice_4D6C78->SetTransform(
+            D3DTRANSFORMSTATE_WORLD,
+            (LPD3DMATRIX)&g_pObjPool[i]);
+          if ( !g_pObjPool[i].pFrame->bAlphaDeferred_130 )
+          {
+            if ( g_pObjPool[i].pFrame->pAttachedObj_20C )
+            {
+              SetLightEnableMask(g_pObjPool[i].bitLightEnables);
+              g_pD3DDevice_4D6C78->SetRenderState(
+                D3DRENDERSTATE_AMBIENT,
+                g_pObjPool[i].nAmbient);
+              if ( g_pObjPool[i].pFrame->bDisableFog_134 == 1 && g_dwFogEnable_4D6CF4 == 1
+                || g_pObjPool[i].pFrame->fFogStart == g_pObjPool[i].pFrame->fFogEnd )
+              {
+                g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
+              }
+              else
+              {
+                g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
+                g_pD3DDevice_4D6C78->SetRenderState(
+                  D3DRENDERSTATE_FOGCOLOR,
+                  g_pObjPool[i].pFrame->dwFogColor);
+                g_pD3DDevice_4D6C78->SetRenderState(
+                  D3DRENDERSTATE_FOGTABLESTART,
+                  LODWORD(g_pObjPool[i].pFrame->fFogStart));
+                g_pD3DDevice_4D6C78->SetRenderState(
+                  D3DRENDERSTATE_FOGTABLEEND,
+                  LODWORD(g_pObjPool[i].pFrame->fFogEnd));
+              }
+              for ( j = 0; j < 2; ++j )
+              {
+                if ( j )
+                  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_CULLMODE, 3);
+                else
+                  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_CULLMODE, 2);
+                g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+                g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+                g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
+                g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
+                g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
+                g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZVISIBLE, 1);
+                if ( pVertTrans->bForceAlphaPass_1CC == 1 || j )
+                  HanaVert_DrawByType(g_pObjPool[i].pVert);
+              }
+              g_pObjPool[i].fNeedsDraw_48 = 0;
+              g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
+            }
+          }
+        }
+      }
+    }
+    for ( i = 0; i < g_nObjCount; ++i )
+    {
+      pVertGlow = g_pObjPool[i].pVert;
+      if ( g_pObjPool[i].fNeedsDraw_48 )
+      {
+        g_pD3DDevice_4D6C78->SetTransform(
+          D3DTRANSFORMSTATE_WORLD,
+          (LPD3DMATRIX)&g_pObjPool[i]);
+        if ( !g_pObjPool[i].pFrame->bAlphaDeferred_130
+          && g_pObjPool[i].pFrame->pAttachedObj_20C
+          && g_pObjPool[i].pVert->bAlphaPass2_1E8 )
+        {
+          g_pD3DDevice_4D6C78->SetTransform(
+            D3DTRANSFORMSTATE_WORLD,
+            (LPD3DMATRIX)&g_pObjPool[i]);
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_AMBIENT, 0xFFFFFF);
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
+          SetLightEnableMask(0);
+          for ( j = 0; j < 2; ++j )
+          {
+            if ( j )
+              g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_CULLMODE, 3);
+            else
+              g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_CULLMODE, 2);
+            if ( pVertGlow->bForceAlphaPass_1CC == 1 || j )
+              UpdateVertTextureFromFrame(g_pObjPool[i].pVert, g_pObjPool[i].pFrame);
+          }
+          g_pObjPool[i].fNeedsDraw_48 = 0;
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE,
+            g_dwFogEnable_4D6CF4);
+        }
+      }
+    }
+    g_fObjBatchActive = 0;
+    g_nObjCount = 0;
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZVISIBLE, 1);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_CULLMODE, 3);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_AMBIENT, dwAmbientSaved);
+  }
+  else
+  {
+    g_fObjBatchActive = 0;
+    g_nObjCount = 0;
+    g_pCurMatObj = 0;
+    g_pCurTexObj = 0;
+  }
+}
+
 void register_InGameMenu_4799E2() {
   hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D");
   hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");

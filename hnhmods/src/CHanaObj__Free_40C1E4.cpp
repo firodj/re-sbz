@@ -72,12 +72,7 @@ void (__cdecl * CHanaObj__AddRef_40BFC3)(CHanaBase_S130 *pObj) = reinterpret_cas
 // === FUNCTION IMPLEMENTATIONS ===
 void __cdecl hook_CHanaObj__RemoveFromGlobalRef(CHanaBase_S130 *pObj)
 {
-  static int log_CHanaObj__RemoveFromGlobalRef_40BD4D = 1;
-  log_CHanaObj__RemoveFromGlobalRef_40BD4D--;
-  if (!log_CHanaObj__RemoveFromGlobalRef_40BD4D) {
-    DebugLog("[HNH:SUB] CHanaObj__RemoveFromGlobalRef_40BD4D\n");
-    log_CHanaObj__RemoveFromGlobalRef_40BD4D = 1000;
-  }
+  ONCELOG("[HNH:SUB] CHanaObj__RemoveFromGlobalRef_40BD4D\n");
 
   if ( pObj->nIndex_108 > 0 )
   {
@@ -91,7 +86,7 @@ void __cdecl hook_CHanaObj__FreeVertT3EA(CHanaVertT3EA_S1FC *pVert)
 {
   int v1; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeVertT3EA_417A0C\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeVertT3EA_417A0C\n");
 
   if ( pVert->nCount_12C <= 1 )
   {
@@ -128,7 +123,7 @@ void __cdecl hook_CHanaObj__FreeTextureT3EB(CHanaTextureT3EB_S2CC *pTexture)
 {
   int v1; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeTextureT3EB_416256\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeTextureT3EB_416256\n");
 
   if ( pTexture->nCount_12C <= 1 )
   {
@@ -152,7 +147,7 @@ void __cdecl hook_CHanaObj__FreeTextureT3EB(CHanaTextureT3EB_S2CC *pTexture)
 
 void __cdecl hook_Frame_FreeAttachedObject(CHanaFrameT3EC_S354 *pFrame)
 {
-  DebugLog("[HNH:SUB] Frame_FreeAttachedObject_40536D\n");
+  ONCELOG("[HNH:SUB] Frame_FreeAttachedObject_40536D\n");
  
   if ( pFrame->pAttachedObj_20C )
   {
@@ -163,7 +158,7 @@ void __cdecl hook_Frame_FreeAttachedObject(CHanaFrameT3EC_S354 *pFrame)
 
 void __cdecl hook_Frame_FreeAttachedLight(CHanaFrameT3EC_S354 *pFrame)
 {
-  DebugLog("[HNH:SUB] Frame_FreeAttachedLight_405421\n");
+  ONCELOG("[HNH:SUB] Frame_FreeAttachedLight_405421\n");
 
   if ( pFrame->pHanaLight_210 )
   {
@@ -181,7 +176,7 @@ void __cdecl hook_RemoveChild_4058C3(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFram
   unsigned int i; // [esp+4h] [ebp-8h]
   CHanaNode *pNode; // [esp+8h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] RemoveChild_4058C3\n");
+  ONCELOG("[HNH:SUB] RemoveChild_4058C3\n");
 
   if ( pParent->nCountChild )
   {
@@ -228,7 +223,7 @@ void __cdecl hook_CHanaObj__FreeFrameT3EC(CHanaFrameT3EC_S354 *pFrame)
   unsigned int nCountChild; // [esp+Ch] [ebp-8h]
   CHanaAnimT3F0_S240 *pHanaAnim_2C0; // [esp+10h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeFrameT3EC_4054B3\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeFrameT3EC_4054B3\n");
 
   if ( pFrame->nCount_12C <= 1 )
   {
@@ -267,7 +262,7 @@ void __cdecl hook_CHanaObj__FreeFrameT3EC(CHanaFrameT3EC_S354 *pFrame)
 
 void __cdecl hook_CHanaObj__FreeMateT3EE(CHanaMateT3EE_S184 *pMate)
 {
-  DebugLog("[HNH:SUB] CHanaObj__FreeMateT3EE_40FC5E\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeMateT3EE_40FC5E\n");
 
   if ( pMate->nCount_12C <= 1 )
   {
@@ -282,7 +277,7 @@ void __cdecl hook_CHanaObj__FreeMateT3EE(CHanaMateT3EE_S184 *pMate)
 
 void __cdecl hook_CHanaObj__FreeLightT3EF(CHanaLightT3EF_S1A0 *pLight)
 {
-  DebugLog("[HNH:SUB] CHanaObj__FreeLightT3EF_409437\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeLightT3EF_409437\n");
 
   if ( pLight->nCount_12C <= 1 )
   {
@@ -301,7 +296,7 @@ void __cdecl hook_CHanaObj__FreeLightT3EF(CHanaLightT3EF_S1A0 *pLight)
 // Idiomatic with IUnknown::Release() - decrements nCount_12C; at <= 1 frees arrFrames, unlinks global ref, frees object
 void __cdecl hook_CHanaObj__FreeFrameArrayT3ED(CHanaFrameArrayT3ED_S138 *pFrameArrayT3ED)
 {
-  DebugLog("[HNH:SUB] CHanaObj__FreeFrameArrayT3ED_408E8D\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeFrameArrayT3ED_408E8D\n");
 
   if ( pFrameArrayT3ED )
   {
@@ -328,7 +323,7 @@ void __cdecl hook_UnlinkHanaAnimFromFrame(CHanaAnimT3F0_S240 *pAnim)
   int i; // [esp+4h] [ebp-8h]
   CObjItemRef_S208 *pObjIt; // [esp+8h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] UnlinkHanaAnimFromFrame_401EDF\n");
+  ONCELOG("[HNH:SUB] UnlinkHanaAnimFromFrame_401EDF\n");
 
   pObjIt = g_pObjectTable;
   for ( i = 0; i < g_nObjectTableCount; ++i )
@@ -348,7 +343,7 @@ void __cdecl hook_UnlinkHanaAnimFromFrame(CHanaAnimT3F0_S240 *pAnim)
 
 void __cdecl hook_CHanaObj__FreeAnimT3F0(CHanaAnimT3F0_S240 *pAnim)
 {
-  DebugLog("[HNH:SUB] CHanaObj__FreeAnimT3F0_401F53\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeAnimT3F0_401F53\n");
 
   if ( pAnim->nCount_12C <= 1 )
   {
@@ -366,7 +361,7 @@ void __cdecl hook_CHanaObj__FreeAnimT3F0(CHanaAnimT3F0_S240 *pAnim)
 
 void __cdecl hook_FreeSoundStruct_422C72(CSoundStruct_8 *pSound)
 {
-  DebugLog("[HNH:SUB] FreeSoundStruct_422C72\n");
+  ONCELOG("[HNH:SUB] FreeSoundStruct_422C72\n");
 
   if ( g_bDSInited_5185C4 && pSound )
   {
@@ -387,7 +382,7 @@ void __cdecl hook_CHanaObj__FreeAnimSetT3F1(CHanaAnimSetT3F1_S150 *pAnimSet)
   int j; // [esp+4h] [ebp-8h]
   unsigned int i; // [esp+8h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeAnimSetT3F1_403A55\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeAnimSetT3F1_403A55\n");
 
   if ( pAnimSet->nCount_12C <= 1 )
   {
@@ -426,7 +421,7 @@ void __cdecl hook_CHanaObj__FreeAnimSetT3F1(CHanaAnimSetT3F1_S150 *pAnimSet)
 
 void __cdecl hook_CHanaObj__FreeTexCoordT3F2(CHanaTextureCoordsT3F2_S140 *pTexCoord)
 {
-  DebugLog("[HNH:SUB] CHanaObj__FreeTexCoordT3F2_415E05\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeTexCoordT3F2_415E05\n");
 
   if ( pTexCoord->tvs_138 )
     MemFree_40DF64(pTexCoord->tvs_138);
@@ -439,7 +434,7 @@ void __cdecl hook_CHanaObj__FreeTexAnimT3F3(CHanaTextureAnimT3F3_S16C *pTexAnim)
 {
   unsigned int i; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeTexAnimT3F3_414F62\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeTexAnimT3F3_414F62\n");
 
   if ( pTexAnim->nCount_12C <= 1 )
   {
@@ -462,7 +457,7 @@ void __cdecl hook_CHanaObj__FreeTexAnimSetT3F4(CHanaTextureAnimSetT3F4_S138 *pTe
 {
   unsigned int i; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeTexAnimSetT3F4_41595B\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeTexAnimSetT3F4_41595B\n");
 
   if ( pTexAnimSet->nCount_12C <= 1 )
   {
@@ -485,7 +480,7 @@ void __cdecl hook_CHanaObj__FreeMeshT3F5(CHanaMeshT3F5_S138 *pMesh)
 {
   unsigned int i; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeMeshT3F5_40FDCB\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeMeshT3F5_40FDCB\n");
 
   if ( pMesh->nCount_12C <= 1 )
   {
@@ -512,7 +507,7 @@ void __cdecl hook_CHanaObj__FreeMeshT3F5(CHanaMeshT3F5_S138 *pMesh)
 
 void __cdecl hook_CHanaObj__FreeSpriteT3F6(CHanaSpriteT3F6_S1FC *pSprite)
 {
-  DebugLog("[HNH:SUB] CHanaObj__FreeSpriteT3F6_413F07\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeSpriteT3F6_413F07\n");
 
   if ( pSprite->base_0.nCount_12C <= 1 )
   {
@@ -529,7 +524,7 @@ void __cdecl hook_CHanaObj__FreeSpriteT3F6(CHanaSpriteT3F6_S1FC *pSprite)
 
 void __cdecl hook_ApplyMaterial(CHanaMateT3EE_S184 *pMate, D3DMATERIAL7 *pD3Dmaterial)
 {
-  DebugLog("[HNH:SUB] ApplyMaterial_40F891\n");
+  ONCELOG("[HNH:SUB] ApplyMaterial_40F891\n");
 
   qmemcpy(&pMate->d3dMaterial_130, pD3Dmaterial, sizeof(pMate->d3dMaterial_130));
   if ( pMate->d3dMaterial_130.diffuse.a > 1.0 )
@@ -572,7 +567,7 @@ void __cdecl hook_CHanaObj__FreeMateAnimT3F7(CHanaMateAnimT3F7_S148 *pMateAnim)
   CHanaSubObj_S50 *psoS50_4C; // [esp+0h] [ebp-8h]
   CHanaSubObj_S50 *hMem; // [esp+4h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeMateAnimT3F7_40E6B6\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeMateAnimT3F7_40E6B6\n");
 
   if ( pMateAnim->nCount_12C <= 1 )
   {
@@ -604,7 +599,7 @@ void __cdecl hook_CHanaObj__FreeMateAnimSetT3F8(CHanaMateAnimSetT3F8_S140 *pMate
 {
   unsigned int i; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeMateAnimSetT3F8_40F3E5\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeMateAnimSetT3F8_40F3E5\n");
 
   if ( pMateAnimSet->nCount_12C <= 1 )
   {
@@ -627,13 +622,8 @@ void __cdecl hook_ApplyLightSettings(CHanaLightT3EF_S1A0 *pLight)
 {
   CHanaFrameT3EC_S354 *pHanaFrame; // [esp+4h] [ebp-4h]
 
-  static int log_ApplyLightSettings = 1;
-  log_ApplyLightSettings--;
-  if (!log_ApplyLightSettings) {
-    DebugLog("[HNH:SUB] ApplyLightSettings_40929C\n");
-    log_ApplyLightSettings = 1000;
-  }
-
+  ONCELOG("[HNH:SUB] ApplyLightSettings_40929C\n");
+  
   if ( g_nLightningEnabled )
   {
     if ( pLight->d3dLight_134.dltType == (D3DLIGHT_FORCE_DWORD|0x80000000) )
@@ -669,7 +659,7 @@ void __cdecl hook_ApplyLightSettings(CHanaLightT3EF_S1A0 *pLight)
 
 void __cdecl hook_SetupLightFromD3D(CHanaLightT3EF_S1A0 *pHanaLight, D3DLIGHT7 *pD3DLight)
 {
-  DebugLog("[HNH:SUB] SetupLightFromD3D_40922E\n");
+  ONCELOG("[HNH:SUB] SetupLightFromD3D_40922E\n");
 
   qmemcpy(&pHanaLight->d3dLight_134, pD3DLight, sizeof(pHanaLight->d3dLight_134));
   ApplyLightSettings(pHanaLight);
@@ -680,7 +670,7 @@ void __cdecl hook_CHanaObj__FreeLightAnimT3F9(CHanaLightAnimT3F9_S144 *pLightAni
   CHanaSubObj_S74 *pNext_70; // [esp+0h] [ebp-8h]
   CHanaSubObj_S74 *hMem; // [esp+4h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeLightAnimT3F9_409820\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeLightAnimT3F9_409820\n");
 
   if ( pLightAnim->nCount_12C <= 1 )
   {
@@ -711,7 +701,7 @@ void __cdecl hook_CHanaObj__FreeLightAnimSetT3FA(CHanaLightAnimSetT3FA_S13C *pLi
 {
   unsigned int i; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeLightAnimSetT3FA_40A3BB\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeLightAnimSetT3FA_40A3BB\n");
 
   if ( pLightAnimSet->nCount_12C <= 1 )
   {
@@ -738,7 +728,7 @@ void __cdecl hook_CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
   unsigned int j; // [esp+4h] [ebp-4h]
   unsigned int k; // [esp+4h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeMorpT457_433E8D\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeMorpT457_433E8D\n");
 
   if ( pMorp )
   {
@@ -851,7 +841,7 @@ void __cdecl hook_CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
 
 void __cdecl hook_FreeSekHeader(CSekHeader *pSekHeader)
 {
-  DebugLog("[HNH:SUB] FreeSekHeader_40D8F6\n");
+  ONCELOG("[HNH:SUB] FreeSekHeader_40D8F6\n");
 
   if ( pSekHeader )
   {
@@ -874,7 +864,7 @@ void __cdecl hook_FreeSekHeader(CSekHeader *pSekHeader)
 // CSekBody::Release - refcounted release of a CSekBody. Decrement count_5050; when it hits 0, free the header (sub_40D8F6 on pSekHeader_220) and GlobalFree the body. Returns the body pointer.
 void __cdecl hook_CSekBody__Release_4012FE(CSekBody *pSekBody)
 {
-  DebugLog("[HNH:SUB] CSekBody__Release_4012FE\n");
+  ONCELOG("[HNH:SUB] CSekBody__Release_4012FE\n");
 
   if ( pSekBody )
   {
@@ -893,7 +883,7 @@ void __cdecl hook_CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
   unsigned int j; // [esp+0h] [ebp-4h]
   unsigned int k; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__FreeSceneT458_4821FA\n");
+  ONCELOG("[HNH:SUB] CHanaObj__FreeSceneT458_4821FA\n");
 
   if ( pScene->nCount_12C <= 1 )
   {
@@ -989,13 +979,8 @@ void __cdecl hook_CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
 
 void __cdecl hook_CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj)
 {
-  static int log_CHanaObj__Free_40C1E4 = 1;
-  log_CHanaObj__Free_40C1E4--;
-  if (!log_CHanaObj__Free_40C1E4) {
-    DebugLog("[HNH:SUB] CHanaObj__Free_40C1E4\n");
-    log_CHanaObj__Free_40C1E4 = 1000;
-  }
-
+  ONCELOG("[HNH:SUB] CHanaObj__Free_40C1E4\n");
+  
   switch ( pObj->dwType )
   {
   case 0x3EA:
@@ -1096,7 +1081,7 @@ void __cdecl hook_CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode)
 {
   CHAR szPathTemp[256]; // [esp+4h] [ebp-100h] BYREF
 
-  DebugLog("[HNH:SUB] %s\n", "CHanaObj__GetRealPath_486D9A");
+  ONCELOG("[HNH:SUB] %s\n", "CHanaObj__GetRealPath_486D9A");
 
   switch ( nPathCode )
   {
@@ -1141,13 +1126,8 @@ void __cdecl hook_CHanaObj__GetRealPath_486D9A(LPSTR szPathOut, int nPathCode)
 
 void __cdecl hook_CHanaObj__AddRef_40BFC3(CHanaBase_S130 *pObj)
 {
-  static int log_CHanaObj__AddRef_40BFC3 = 1;
-  log_CHanaObj__AddRef_40BFC3--;
-  if (!log_CHanaObj__AddRef_40BFC3) {
-    DebugLog("[HNH:SUB] %s\n", "CHanaObj__AddRef_40BFC3");
-    log_CHanaObj__AddRef_40BFC3 = 1000;
-  }
-
+  ONCELOG("[HNH:SUB] %s\n", "CHanaObj__AddRef_40BFC3");
+  
   switch ( pObj->dwType )
   {
   case 0x3EA:
@@ -1214,6 +1194,7 @@ void register_CHanaObj__Free_40C1E4() {
   hnh_Hook(0x409820, hook_CHanaObj__FreeLightAnimT3F9, "CHanaObj__FreeLightAnimT3F9_409820");
   hnh_Hook(0x40A3BB, hook_CHanaObj__FreeLightAnimSetT3FA, "CHanaObj__FreeLightAnimSetT3FA_40A3BB");
 
+  hnh_Hook(0x40BD4D, hook_CHanaObj__RemoveFromGlobalRef, "CHanaObj__RemoveFromGlobalRef__40BD4D");
 
   hnh_HookOff();
   hnh_Hook(0x40C1E4, hook_CHanaObj__Free_40C1E4, "CHanaObj__Free_40C1E4"); // [OK] 

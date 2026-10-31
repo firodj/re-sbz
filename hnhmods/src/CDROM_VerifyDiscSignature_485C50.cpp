@@ -34,7 +34,7 @@ int(*CDROM_DeviceIoControlVWIN32)(DIOC_REGISTERS* regs)
 // Returns 1 on success. reg_Flags bit 0x8000 is an error sentinel: preset here, a
 // successful DOS call clears it. (Original leaks hVWIN32 when DeviceIoControl
 // fails; it is closed here instead.)
-int hook_CDROM_DeviceIoControlVWIN32(DIOC_REGISTERS *regs)
+BOOL hook_CDROM_DeviceIoControlVWIN32(DIOC_REGISTERS *regs)
 {
     DWORD dwBytesReturned;
     HANDLE hVWIN32;
@@ -222,9 +222,11 @@ BOOL __cdecl hook_CDROM_VerifyDiscSignature(int chDriveLetter, const char* szExp
 
 void register_CDROM_VerifyDiscSignature_485C50() {
   hnh_Hook(0x4858D0, hook_CDROM_VerifyNT, "CDROM_VerifyNT_4858D0"); // [OK]
-
+  
   hnh_HookOff();
   hnh_Hook(0x485C50, hook_CDROM_VerifyDiscSignature, "CDROM_VerifyDiscSignature_485C50");       // [OK] 
-  hnh_Hook(0x485A2A, hook_CDROM_GetDriveFileSystemType, "CDROM_GetDriveFileSystemType_485A2A"); // [OK] 
+  hnh_Hook(0x485A2A, hook_CDROM_GetDriveFileSystemType, "CDROM_GetDriveFileSystemType_485A2A"); // [OK]
+  hnh_Hook(0x485BA8, hook_CDROM_VerifyWin9x, "CDROM_VerifyWin9x_485BA8"); // [SKIP]
+  hnh_Hook(0x485B27, hook_CDROM_DeviceIoControlVWIN32, "CDROM_DeviceIoControlVWIN32_485B27"); // [SKIP]
   hnh_HookOn();
 }
