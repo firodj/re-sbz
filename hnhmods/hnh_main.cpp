@@ -102,6 +102,7 @@ void register_ParseODFContent_441A5D();
 void register_ParseODS_483932();
 void register_ProcessFrame_40600C();
 void register_MenuMusicSelect();
+void register_MenuGallery();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -147,6 +148,7 @@ void InitHNH() {
 	register_ParseODS_483932();
 	register_ProcessFrame_40600C();
 	register_MenuMusicSelect();
+	register_MenuGallery();
 
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)

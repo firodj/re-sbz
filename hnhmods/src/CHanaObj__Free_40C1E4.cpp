@@ -509,16 +509,16 @@ void __cdecl hook_CHanaObj__FreeSpriteT3F6(CHanaSpriteT3F6_S1FC *pSprite)
 {
   ONCELOG("[HNH:SUB] CHanaObj__FreeSpriteT3F6_413F07\n");
 
-  if ( pSprite->base_0.nCount_12C <= 1 )
+  if ( pSprite->nCount_12C <= 1 )
   {
     if ( pSprite->pTexture_134 )
       pSprite->pTexture_134->Release();
-    CHanaObj__RemoveFromGlobalRef(&pSprite->base_0);
+    CHanaObj__RemoveFromGlobalRef((CHanaBase_S130*)&pSprite);
     MemFree_40DF64(pSprite);
   }
   else
   {
-    --pSprite->base_0.nCount_12C;
+    --pSprite->nCount_12C;
   }
 }
 
@@ -901,7 +901,7 @@ void __cdecl hook_CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
     {
       if ( pScene->pSprWindowBmp[i] )
       {
-        CHanaObj__Free_40C1E4(&pScene->pSprWindowBmp[i]->base_0);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pScene->pSprWindowBmp[i]);
         pScene->pSprWindowBmp[i] = 0;
       }
     }
@@ -909,7 +909,7 @@ void __cdecl hook_CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
     {
       if ( pScene->textSprites_264[0][j] )
       {
-        CHanaObj__Free_40C1E4(&pScene->textSprites_264[0][j]->base_0);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pScene->textSprites_264[0][j]);
         pScene->textSprites_264[0][j] = 0;
       }
     }

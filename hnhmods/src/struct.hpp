@@ -18,7 +18,7 @@ struct CHanaBase_S130
     int dwType;
     char szName_8[256];
     int nIndex_108;
-    int field_10C;
+    int bOk_10C;
     float flt_110;
     int field_114;
     int field_118;
@@ -363,9 +363,8 @@ struct CHanaTextureAnimSetT3F4_S138: public CHanaBase_S130
   CHanaBase_S130 **pArrObjs_134;
 };
 
-struct CHanaSpriteT3F6_S1FC
+struct CHanaSpriteT3F6_S1FC: public CHanaBase_S130
 {
-  CHanaBase_S130 base_0;
   float gap130;
   LPDIRECTDRAWSURFACE7 pTexture_134;
   D3DXVECTOR3 destWHZ_138;

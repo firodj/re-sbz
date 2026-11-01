@@ -69,8 +69,7 @@ int  (__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int n
   float fCurHP, float fMaxHP, CSceneState sceneState) =
   reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER, int, int, float, float, CSceneState)>(0x4655AB);
 // MenuMusicSelect lives in src/MenuMusicSelect.cpp (extern in shared.hpp)
-int  (__cdecl*MenuGallery)(LPDIRECTSOUNDBUFFER *pDSndBuf, CHanaSpriteT3F6_S1FC *pSprite) =
-  reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47AD8D);
+// MenuGallery lives in src/MenuGallery.cpp (extern in shared.hpp)
 // MenuCharSelect + its pins live in src/MenuCharSelect.cpp (extern in shared.hpp)
 // PlayScreenFade lives in src/PlayScreenFade.cpp (extern in shared.hpp)
 
@@ -144,7 +143,7 @@ void __cdecl hook_MainMenu_47DF0D(void)
 
     if (pMouseSprite)
     {
-        CHanaObj__Free_40C1E4(&pMouseSprite->base_0);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pMouseSprite);
         pMouseSprite = NULL;
     }
     if (pBgmBuffer)
@@ -341,7 +340,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
     }
     if (pMouseSprite)
     {
-        CHanaObj__Free_40C1E4(&pMouseSprite->base_0);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pMouseSprite);
         pMouseSprite = NULL;
     }
     if (pBgmBuffer)
@@ -436,7 +435,7 @@ void __cdecl hook_LoadBmpWithMask_413A5E(CHanaSpriteT3F6_S1FC **ppOut, LPCSTR sz
     GetSurfaceWH(pTexture, &width, &height);
     pSprite = (CHanaSpriteT3F6_S1FC *)MemAlloc_40DEF7(0x1FCu);
     memset(pSprite, 0, sizeof(CHanaSpriteT3F6_S1FC));
-    pSprite->base_0.dwType = 0x3F6;
+    pSprite->dwType = 0x3F6;
     pSprite->pTexture_134 = pTexture;
     ddSurfaceDesc.dwSize = 124;
     ddSurfaceDesc.dwFlags = 4102;
@@ -458,8 +457,8 @@ void __cdecl hook_LoadBmpWithMask_413A5E(CHanaSpriteT3F6_S1FC **ppOut, LPCSTR sz
     pSprite->rect_15C.left = 0;
     pSprite->rect_15C.bottom = height;
     pSprite->rect_15C.right = width;
-    CHanaObj__AddRef_40BFC3(&pSprite->base_0);
-    AttachHanaObj_40BAB8(&pSprite->base_0, szSpriteName);
+    CHanaObj__AddRef_40BFC3((CHanaBase_S130*)&pSprite);
+    AttachHanaObj_40BAB8((CHanaBase_S130*)&pSprite, szSpriteName);
   }
   else
   {
@@ -860,7 +859,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_LoadBmpScaled_4203B3(LPCSTR szBmpPath, DWORD n
         }
         if ( pSprite )
         {
-          CHanaObj__Free_40C1E4(&pSprite->base_0);
+          CHanaObj__Free_40C1E4((CHanaBase_S130*)&pSprite);
           pSprite = 0;
         }
       }
@@ -939,7 +938,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_LoadBmpScaled_4203B3(LPCSTR szBmpPath, DWORD n
       }
       if ( pSprite )
       {
-        CHanaObj__Free_40C1E4(&pSprite->base_0);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pSprite);
         pSprite = 0;
       }
       return pDestSurf;
@@ -1399,6 +1398,7 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
 void register_InGameMenu_4799E2() {
   hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D"); // [OK]
   hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
+  hnh_Hook(0x40CEEC, hook_HanaVert_DrawBatch, "HanaVert_DrawBatch_40CEEC");
 
   hnh_HookOff();
   hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2"); // [OK] 

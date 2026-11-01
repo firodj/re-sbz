@@ -1,7 +1,8 @@
 # GOALS
 
 ```
-0x49f107 WinMainCRTStartup
+Starting from 0x49f0e1
+0x49f0e1 WinMainCRTStartup
     ├──0x485ce0 WinMain_485CE0
     │   ├──0x485fc2 WndProcCheckSystem_485FC2
     │   │   ├──0x418620 Renderer_InitializeTrigTablesAndPixelFormat
@@ -46,7 +47,7 @@
     │   │   │   │   │   │   │   ├──0x40e420 Vec3Set
     │   │   │   │   │   │   │   ├──0x40e3c0 Vec3LengthSq
     │   │   │   │   │   │   │   ├──0x40e3f0 Vec3Dot
-    │   │   │   │   │   │   ├──0x4070ab MatrixRotateCubeMapFace
+    │   │   │   │   │   │   ├──0x4070ab Frame_RotateMatrixAxis_4070AB
     │   │   │   │   │   │   ├──0x40f891 ApplyMaterial
     │   │   │   │   │   │   ├──0x40dd71 SetLightingState
     │   │   │   │   │   │   ├──0x40ddf3 DegreesToRadians
@@ -68,6 +69,8 @@
     │   │   │   │   │       │   │   ├──0x405421 Frame_FreeAttachedLight
     │   │   │   │   │       │   │   ├──0x40536d Frame_FreeAttachedObject
     │   │   │   │   │       │   ├──0x4166b5 CHanaObj__FreeT3FB
+    │   │   │   │   │       │   │   ├──0x416960 ReleaseHana3FBTexture
+    │   │   │   │   │       │   │   ├──0x4169cb ReleaseHana3FBMaterial
     │   │   │   │   │       │   ├──0x40e6b6 CHanaObj__FreeMateAnimT3F7
     │   │   │   │   │       │   ├──0x409437 CHanaObj__FreeLightT3EF
     │   │   │   │   │       │   ├──0x40a3bb CHanaObj__FreeLightAnimSetT3FA
@@ -101,6 +104,7 @@
     │   │   ├──0x422d50 HanaDS_Init
     │   │   │   ├──0x423ccc HanaDS_SetErrStr
     │   │   │   │   └──0x423ce7 DSErrToString_423CE7
+    │   │   │   ├──0x49dfb6 DirectSoundCreate
     │   │   │   └──0x424886 HanaDS_InitHeap
     │   │   │       └──0x427520 HanaHeap_Create
     │   │   ├──0x422690 HanaDS_Create3DListener
@@ -109,8 +113,12 @@
     │   │   ├──0x422e14 HanaDS_Shutdown
     │   │   │   └──0x42489d HanaDS_DestroyHeap
     │   │   │       └──0x427551 HanaHeap_Destroy
+    │   ├──0x43ab06 return1_20
     │   ├──0x43ad67 DInputInit_43AD67
+    │   │   ├──0x49dfb0 DirectInputCreateA
     │   │   └──0x43af33 DIMouseKeybInit_43AF33
+    │   ├──0x43ab10 return1_21
+    │   ├──0x43aaf2 return1_18
     │   ├──0x47f013 GameMainLoop_47F013
     │   │   ├──0x47df0d MainMenu
     │   │   │   ├──0x47d163 MenuMusicSelect
@@ -120,17 +128,17 @@
     │   │   │   │   │   └──0x40ceec HanaVert_DrawBatch
     │   │   │   │   │       ├──0x439d48 UpdateVertTextureFromFrame
     │   │   │   │   │       │   ├──0x404b80 CalcFrameBound_404B80
-    │   │   │   │   │       │   │   ├──0x418544 CHanaObj::LockVtxBufT3EA_418544
-    │   │   │   │   │       │   │   ├──0x41858e CHanaObj::UnlockVrxBufT3EA_41858E
-    │   │   │   │   │       │   │   ├──0x40ff0f CHanaObj::GetChildCountT3F5_40FF0F
-    │   │   │   │   │       │   │   ├──0x40bbf4 CHanaObj::GetType_40BBF4
-    │   │   │   │   │       │   │   └──0x40ff1d CHanaObj::GetChildAtT3F5_40FF1D
+    │   │   │   │   │       │   │   ├──0x418544 CHanaObj__LockVtxBufT3EA_418544
+    │   │   │   │   │       │   │   ├──0x41858e CHanaObj__UnlockVrxBufT3EA_41858E
+    │   │   │   │   │       │   │   ├──0x40ff0f CHanaObj__GetChildCountT3F5_40FF0F
+    │   │   │   │   │       │   │   ├──0x40bbf4 CHanaObj__GetType_40BBF4
+    │   │   │   │   │       │   │   └──0x40ff1d CHanaObj__GetVertsAtT3F5_40FF1D
     │   │   │   │   │       │   ├──0x40e2a5 ProjectToScreen_40E2A5
     │   │   │   │   │       │   │   └──0x40e167 BuildViewportMatrix
     │   │   │   │   │       │   │       └──0x40dcf6 GetProjectionFov_40DCF6
     │   │   │   │   │       │   ├──0x418905 CreateSurfaceWH
     │   │   │   │   │       │   │   └──0x41898e DDErrToString_41898E
-    │   │   │   │   │       │   ├──0x417b27 HanaVert_Draw
+    │   │   │   │   │       │   ├──0x417b27 HanaVertT3EA_Draw
     │   │   │   │   │       │   │   └──0x40fb30 HanaMate_SetMaterial
     │   │   │   │   │       │   ├──0x43bf6f FlushD3DAndTouchSurface
     │   │   │   │   │       │   ├──0x47e6af ConvertFrom640AsInt
@@ -138,7 +146,7 @@
     │   │   │   │   │       ├──0x40c54c HanaVert_DrawByType
     │   │   │   │   │       │   ├──0x434fc9 HanaMorpT457_Draw
     │   │   │   │   │       │   │   └──0x40fe8e HanaMeshT3F5_Draw
-    │   │   │   │   │       │   ├──0x416776 HanaMesh_Draw
+    │   │   │   │   │       │   ├──0x416776 HanaT3FB_Draw
     │   │   │   │   │       ├──0x40ce4e SetLightEnableMask
     │   │   │   │   │       └──0x40d9c7 SortObjectsByDepth
     │   │   │   │   │           └──0x408c3e HanaFrame_GetCenterPosition_408C3E
@@ -162,16 +170,16 @@
     │   │   │   │   │   │   │   ├──0x4147ed DrawSpriteAtRect
     │   │   │   │   │   │   │   ├──0x4133d0 CHanaObj__NewSprite3F6byWH
     │   │   │   │   │   │   │   └──0x419a1a GetSurfaceWH
-    │   │   │   │   │   │   └──0x414a5d CHanaSpriteT3F6::SetPos_414A5D
+    │   │   │   │   │   │   └──0x414a5d CHanaSpriteT3F6__SetPos_414A5D
     │   │   │   │   │   ├──0x464919 SysMenu_GirlStatusCheck_464919
     │   │   │   │   │   │   ├──0x419a4b DrawTextOnSurface
     │   │   │   │   │   │   ├──0x44af15 IntPow_44AF15
     │   │   │   │   │   ├──0x461a9e ShowYesNoDialog_461A9E
-    │   │   │   │   │   │   ├──0x414b09 CHanaSpriteT3F6::SetScale_414B09
-    │   │   │   │   │   │   ├──0x414b28 CHanaSpriteT3F6::SetSrcRect_414B28
-    │   │   │   │   │   │   ├──0x414aba CHanaObj::SetAlpha3F6
+    │   │   │   │   │   │   ├──0x414b09 CHanaSpriteT3F6__SetScale_414B09
+    │   │   │   │   │   │   ├──0x414b28 CHanaSpriteT3F6__SetSrcRect_414B28
+    │   │   │   │   │   │   ├──0x414aba CHanaObj__SetAlpha3F6
     │   │   │   │   │   │   ├──0x481550 DoPeekMessages
-    │   │   │   │   │   │   └──0x414afb CHanaSpriteT3F6::GetAlpha_414AFB
+    │   │   │   │   │   │   └──0x414afb CHanaSpriteT3F6__GetAlpha_414AFB
     │   │   │   │   │   ├──0x462135 SysMenu_SaveMenu_462135
     │   │   │   │   │   │   ├──0x46164c ShowFadeDialog_46164C
     │   │   │   │   │   │   ├──0x461557 LoadDataFiles_461557
@@ -208,10 +216,10 @@
     │   │   │   │   │   │   │   ├──0x43f3f7 SelfBltDC
     │   │   │   │   │   │   ├──0x41973f RGBToSurfaceFormat
     │   │   │   │   │   │   ├──0x40bf4f RenderClear_40BF4F
-    │   │   │   │   │   │   ├──0x4137d1 CHanaObj::NewSpriteT3F6bySurf
+    │   │   │   │   │   │   ├──0x4137d1 CHanaObj__NewSpriteT3F6bySurf
     │   │   │   │   │   │   ├──0x47e7d5 FrameTimer_EndFrame
     │   │   │   │   │   │   ├──0x47e768 FrameTimer_BeginFrame
-    │   │   │   │   │   │   └──0x413d78 CHanaObj::ReplaceTexture3F6
+    │   │   │   │   │   │   └──0x413d78 CHanaObj__ReplaceTexture3F6
     │   │   │   │   │   ├──0x481ae4 StopAndRestartThread
     │   │   │   │   │   │   ├──0x4818fd CreateNewThread
     │   │   │   │   │   │   │   ├──0x4817b1 InputThread_Absolute_4817B1
@@ -219,6 +227,7 @@
     │   │   │   │   │   │   │   ├──0x481637 InputThread_Relative_481637
     │   │   │   │   │   │   └──0x481a35 TerminateThreadGracefully
     │   │   │   │   │   ├──0x462fe9 SysMenu_Options_462FE9
+    │   │   │   │   ├──0x4863c3 nop_4863C3
     │   │   │   │   ├──0x45a4d8 GetMouseXY_45A4D8
     │   │   │   │   ├──0x481170 IsMenuKeyPressed_481170
     │   │   │   │   └──0x422e7b LoadWav_422E7B
@@ -236,10 +245,10 @@
     │   │   │   │   │   │   ├──0x47ff01 ParseStrChunkText_47FF01
     │   │   │   │   │   │   ├──0x487d46 FindCharUntil_487D46
     │   │   │   │   │   │   ├──0x487267 Character_ApplyAnimationParamsToChildren
-    │   │   │   │   │   │   │   ├──0x405a0a CHanaObj::NewFrameArrayT3EDFromChildT3EC
+    │   │   │   │   │   │   │   ├──0x405a0a CHanaObj__NewFrameArrayT3EDFromChildT3EC
     │   │   │   │   │   │   │   │   ├──0x408dd0 CHanaObj::NewFrameArrayT3ED
-    │   │   │   │   │   │   │   ├──0x408e75 CHanaObj::GetFramesCountT3ED_408E75
-    │   │   │   │   │   │   │   └──0x408e1b CHanaObj::GetFrameAtIndexT3ED
+    │   │   │   │   │   │   │   ├──0x408e75 CHanaObj__GetFramesCountT3ED_408E75
+    │   │   │   │   │   │   │   └──0x408e1b CHanaObj__GetFrameAtIndexT3ED
     │   │   │   │   │   ├──0x46f37e RunModeSelectScreen
     │   │   │   │   │   │   ├──0x47e999 FindFrameByName_47E999
     │   │   │   │   │   │   ├──0x46a2a0 PauseSceneAudio_46A2A0
@@ -250,20 +259,20 @@
     │   │   │   │   │   │   │   ├──0x414a7a CHanaSpriteT3F6::GetPos_414A7A
     │   │   │   │   │   │   │   ├──0x414b1a CHanaSpriteT3F6::GetScale_414B1A
     │   │   │   │   │   │   ├──0x4825d5 UpdateSceneAtTime_4825D5
-    │   │   │   │   │   │   │   ├──0x403d61 CHanaAnimSetT3F1::SetTime_403D61
+    │   │   │   │   │   │   │   ├──0x403d61 CHanaAnimSetT3F1__SetTime_403D61
     │   │   │   │   │   │   │   │   ├──0x40e969 ApplyMateAnimMaterial
     │   │   │   │   │   │   │   │   │   └──0x40ef23 FindMateAnimKeyframeBounds
     │   │   │   │   │   │   │   │   ├──0x4248f2 GetSoundBufferAverageLevel
     │   │   │   │   │   │   │   │   ├──0x40283c InterpolateHanaAnimFrame
     │   │   │   │   │   │   │   │   │   ├──0x40344a HanaAnim_FindInterpolationFrame
-    │   │   │   │   │   │   │   │   │   ├──0x402d0e CHanaAnimT3F0::BakeKeyframesT3F0_402D0E
+    │   │   │   │   │   │   │   │   │   ├──0x402d0e CHanaAnimT3F0__BakeKeyframesT3F0_402D0E
     │   │   │   │   │   │   │   │   │   │   ├──0x4035b1 ApplyQTS_4035B1
     │   │   │   │   │   │   │   ├──0x4019e1 CSekBody::UpdateAnim_4019E1
     │   │   │   │   │   │   │   │   ├──0x4018e1 CSekBody::CutToAnim_4018E1
     │   │   │   │   │   │   │   │   ├──0x43a643 CHanaAnimSetT3F1::BlendStep_43A643
     │   │   │   │   │   │   │   │   │   └──0x43a43f HanaAnim_UpdateBoneTransform
     │   │   │   │   │   │   │   │   └──0x43a371 CHanaAnimSetT3F1::BeginBlend_43A371
-    │   │   │   │   │   │   │   ├──0x401647 SekBody::UpdateTo2_401647
+    │   │   │   │   │   │   │   ├──0x401647 SekBody__UpdateTo2_401647
     │   │   │   │   │   │   │   └──0x4069dd MtxMult_4069DD
     │   │   │   │   │   │   ├──0x467af3 SetFrameVisibilityAndGetHIndex
     │   │   │   │   │   │   └──0x4827fe UpdateSceneTimer_4827FE
@@ -297,8 +306,8 @@
     │   │   │   │   │   │   │   │   │   ├──0x4414eb ParseOdfANIM_4414EB
     │   │   │   │   │   │   │   │   │   │   ├──0x4039c9 HanaAnim_GetDuration
     │   │   │   │   │   │   │   │   │   │   ├──0x40ba89 HanaFrame_GetFrameName
-    │   │   │   │   │   │   │   │   │   │   ├──0x401cd0 CHanaObj::NewAnimT3F0
-    │   │   │   │   │   │   │   │   │   │   ├──0x403c15 CHanaAnimSetT3F1::AddAnimT3F0_403C15
+    │   │   │   │   │   │   │   │   │   │   ├──0x401cd0 CHanaObj__NewAnimT3F0
+    │   │   │   │   │   │   │   │   │   │   ├──0x403c15 CHanaAnimSetT3F1__AddAnimT3F0_403C15
     │   │   │   │   │   │   │   │   │   │   └──0x401fbd HanaAnim_LinkFrame
     │   │   │   │   │   │   │   │   │   ├──0x44068c ParseOdfMESH_44068C
     │   │   │   │   │   │   │   │   │   │   ├──0x440288 ParseVERT_440288
@@ -331,7 +340,7 @@
     │   │   │   │   │   │   │   ├──0x483567 ReadStrFile_483567
     │   │   │   │   │   │   └──0x481c5f CHanaObj__NewSceneT458_S504
     │   │   │   │   │   ├──0x4843cf LoadOds_4843CF
-    │   │   │   │   │   │   ├──0x483932 ParseOds_483932
+    │   │   │   │   │   │   ├──0x483932 ParseODS_483932
     │   │   │   │   │   ├──0x4445dd LoadSekAndOdf_4445DD
     │   │   │   │   │   │   ├──0x4014e4 SekBody::UpdateTo_4014E4
     │   │   │   │   │   ├──0x47e3e1 ToggleWaitScreen
@@ -444,6 +453,14 @@
     │   │   ├──0x4799e2 InGameMenu_4799E2
     │   │   ├──0x47eeec ReleaseSoundEffects
     │   │   └──0x47eb7f LoadSoundEffects_47EB7F
+    │   ├──0x43aafc return1_19
+    │   └──0x43ad5d return1_22
     ├──0x4a2d6b heap_init_crt
+    ├──0x4a2830 setargv
+    │   ├──0x4a28c9 parse_cmdline
+    │   ├──0x4a2222 malloc
+    │   │   └──0x4a2234 nh_malloc
+    ├──0x4a2777 setenvp
     ├──0x4a2a7d crtGetEnvironmentStringsA
+Done 460
 ```

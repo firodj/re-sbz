@@ -1,6 +1,6 @@
 # CURRENT - GOALS coverage in hnhmods/src
 
-Generated 2026-10-31 by `py tools/gen_current.py` from `hnhmods/GOALS.md`
+Generated 2026-11-01 by `py tools/gen_current.py` from `hnhmods/GOALS.md`
 vs `hnhmods/src/*.cpp` (function data via `tools/scan_cpp.py`).
 
 Legend:
@@ -14,7 +14,8 @@ Legend:
 ## Call tree with status
 
 ```
-0x49f107 WinMainCRTStartup                                                                      <- [todo]
+Starting from 0x49f0e1
+0x49f0e1 WinMainCRTStartup                                                                      <- [todo]
     ├──0x485ce0 WinMain_485CE0                                                                  <- [HOOK WinMain_485CE0.cpp]
     │   ├──0x485fc2 WndProcCheckSystem_485FC2                                                   <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   │   ├──0x418620 Renderer_InitializeTrigTablesAndPixelFormat                             <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
@@ -59,7 +60,7 @@ Legend:
     │   │   │   │   │   │   │   ├──0x40e420 Vec3Set                                             <- [HOOK+PTR dx7.cpp]
     │   │   │   │   │   │   │   ├──0x40e3c0 Vec3LengthSq                                        <- [HOOK+PTR dx7.cpp]
     │   │   │   │   │   │   │   ├──0x40e3f0 Vec3Dot                                             <- [HOOK+PTR dx7.cpp]
-    │   │   │   │   │   │   ├──0x4070ab MatrixRotateCubeMapFace                                 <- [HOOK+PTR CheckRunGame_4863C8.cpp]
+    │   │   │   │   │   │   ├──0x4070ab Frame_RotateMatrixAxis_4070AB                           <- [HOOK+PTR CheckRunGame_4863C8.cpp]
     │   │   │   │   │   │   ├──0x40f891 ApplyMaterial                                           <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │   │   ├──0x40dd71 SetLightingState                                        <- [HOOK+PTR CheckRunGame_4863C8.cpp]
     │   │   │   │   │   │   ├──0x40ddf3 DegreesToRadians                                        <- [HOOK+PTR dx7.cpp]
@@ -81,6 +82,8 @@ Legend:
     │   │   │   │   │       │   │   ├──0x405421 Frame_FreeAttachedLight                         <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   │   ├──0x40536d Frame_FreeAttachedObject                        <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   ├──0x4166b5 CHanaObj__FreeT3FB                                  <- [PTR CHanaObj__Free_40C1E4.cpp]
+    │   │   │   │   │       │   │   ├──0x416960 ReleaseHana3FBTexture                           <- [todo]
+    │   │   │   │   │       │   │   ├──0x4169cb ReleaseHana3FBMaterial                          <- [todo]
     │   │   │   │   │       │   ├──0x40e6b6 CHanaObj__FreeMateAnimT3F7                          <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   ├──0x409437 CHanaObj__FreeLightT3EF                             <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   ├──0x40a3bb CHanaObj__FreeLightAnimSetT3FA                      <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
@@ -114,6 +117,7 @@ Legend:
     │   │   ├──0x422d50 HanaDS_Init                                                             <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   │   │   ├──0x423ccc HanaDS_SetErrStr                                                    <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   │   │   │   └──0x423ce7 DSErrToString_423CE7                                            <- [HOOK+PTR DSErrToString_423CE7.cpp]
+    │   │   │   ├──0x49dfb6 DirectSoundCreate                                                   <- [todo]
     │   │   │   └──0x424886 HanaDS_InitHeap                                                     <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   │   │       └──0x427520 HanaHeap_Create                                                 <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   │   ├──0x422690 HanaDS_Create3DListener                                                 <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
@@ -124,27 +128,30 @@ Legend:
     │   │   │       └──0x427551 HanaHeap_Destroy                                                <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   ├──0x43ab06 return1_20                                                                  <- [todo]
     │   ├──0x43ad67 DInputInit_43AD67                                                           <- [HOOK+PTR WinMain_485CE0.cpp]
+    │   │   ├──0x49dfb0 DirectInputCreateA                                                      <- [todo]
     │   │   └──0x43af33 DIMouseKeybInit_43AF33                                                  <- [HOOK+PTR WinMain_485CE0.cpp]
+    │   ├──0x43ab10 return1_21                                                                  <- [todo]
+    │   ├──0x43aaf2 return1_18                                                                  <- [todo]
     │   ├──0x47f013 GameMainLoop_47F013                                                         <- [HOOK+PTR GameMainLoop_47F013.cpp]
     │   │   ├──0x47df0d MainMenu                                                                <- [HOOK+PTR InGameMenu_4799E2.cpp]
-    │   │   │   ├──0x47d163 MenuMusicSelect                                                     <- [PTR InGameMenu_4799E2.cpp]
+    │   │   │   ├──0x47d163 MenuMusicSelect                                                     <- [HOOK+PTR MenuMusicSelect.cpp]
     │   │   │   │   ├──0x47e680 ConvertFrom1024AsInt                                            <- [HOOK+PTR GameMainLoop_47F013.cpp]
     │   │   │   │   ├──0x40bf01 PresentFrame                                                    <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   ├──0x40be03 RecoverLostDevice                                           <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   └──0x40ceec HanaVert_DrawBatch                                          <- [PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │       ├──0x439d48 UpdateVertTextureFromFrame                              <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   ├──0x404b80 CalcFrameBound_404B80                               <- [HOOK+PTR ParseODFContent_441A5D.cpp]
-    │   │   │   │   │       │   │   ├──0x418544 CHanaObj::LockVtxBufT3EA_418544                 <- [HOOK+PTR PlayScreenFade.cpp]
-    │   │   │   │   │       │   │   ├──0x41858e CHanaObj::UnlockVrxBufT3EA_41858E               <- [HOOK+PTR PlayScreenFade.cpp]
-    │   │   │   │   │       │   │   ├──0x40ff0f CHanaObj::GetChildCountT3F5_40FF0F              <- [HOOK+PTR ProcessFrame_40600C.cpp]
-    │   │   │   │   │       │   │   ├──0x40bbf4 CHanaObj::GetType_40BBF4                        <- [HOOK+PTR PlayScreenFade.cpp]
-    │   │   │   │   │       │   │   └──0x40ff1d CHanaObj::GetChildAtT3F5_40FF1D                 <- [HOOK+PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       │   │   ├──0x418544 CHanaObj__LockVtxBufT3EA_418544                 <- [HOOK+PTR PlayScreenFade.cpp]
+    │   │   │   │   │       │   │   ├──0x41858e CHanaObj__UnlockVrxBufT3EA_41858E               <- [HOOK+PTR PlayScreenFade.cpp]
+    │   │   │   │   │       │   │   ├──0x40ff0f CHanaObj__GetChildCountT3F5_40FF0F              <- [HOOK+PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       │   │   ├──0x40bbf4 CHanaObj__GetType_40BBF4                        <- [HOOK+PTR PlayScreenFade.cpp]
+    │   │   │   │   │       │   │   └──0x40ff1d CHanaObj__GetVertsAtT3F5_40FF1D                 <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   ├──0x40e2a5 ProjectToScreen_40E2A5                              <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   │   └──0x40e167 BuildViewportMatrix                             <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   │       └──0x40dcf6 GetProjectionFov_40DCF6                     <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   ├──0x418905 CreateSurfaceWH                                     <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │       │   │   └──0x41898e DDErrToString_41898E                            <- [HOOK+PTR DSErrToString_423CE7.cpp]
-    │   │   │   │   │       │   ├──0x417b27 HanaVert_Draw                                       <- [HOOK+PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       │   ├──0x417b27 HanaVertT3EA_Draw                                   <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   │   └──0x40fb30 HanaMate_SetMaterial                            <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   ├──0x43bf6f FlushD3DAndTouchSurface                             <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │       │   ├──0x47e6af ConvertFrom640AsInt                                 <- [HOOK+PTR GameMainLoop_47F013.cpp]
@@ -152,7 +159,7 @@ Legend:
     │   │   │   │   │       ├──0x40c54c HanaVert_DrawByType                                     <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   ├──0x434fc9 HanaMorpT457_Draw                                   <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   │   └──0x40fe8e HanaMeshT3F5_Draw                               <- [HOOK+PTR ProcessFrame_40600C.cpp]
-    │   │   │   │   │       │   ├──0x416776 HanaMesh_Draw                                       <- [PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       │   ├──0x416776 HanaT3FB_Draw                                       <- [PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       ├──0x40ce4e SetLightEnableMask                                      <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       └──0x40d9c7 SortObjectsByDepth                                      <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │           └──0x408c3e HanaFrame_GetCenterPosition_408C3E                  <- [HOOK+PTR ParseODFContent_441A5D.cpp]
@@ -164,7 +171,7 @@ Legend:
     │   │   │   │   ├──0x4655ab SystemMenu_4655AB                                               <- [PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   ├──0x414589 DrawSpriteLTRB                                              <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │   ├──0x46380d SysMenu_Graphics_46380D                                     <- [todo]
-    │   │   │   │   │   │   ├──0x419b05 DrawTextOnSurfaceSpaced_419B05                          <- [todo]
+    │   │   │   │   │   │   ├──0x419b05 DrawTextOnSurfaceSpaced_419B05                          <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
     │   │   │   │   │   │   │   └──0x4188b4 GetDC_4188B4                                        <- [HOOK+PTR GameMainLoop_47F013.cpp]
     │   │   │   │   │   │   ├──0x47e6c6 ConvertFrom640AsFloat                                   <- [HOOK+PTR GameMainLoop_47F013.cpp]
     │   │   │   │   │   │   ├──0x423baf DSBufferPlay                                            <- [HOOK+PTR InGameMenu_4799E2.cpp]
@@ -176,21 +183,21 @@ Legend:
     │   │   │   │   │   │   │   ├──0x4147ed DrawSpriteAtRect                                    <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   │   │   ├──0x4133d0 CHanaObj__NewSprite3F6byWH                          <- [HOOK+PTR CHanaObj__NewFrameT3EC_S354.cpp]
     │   │   │   │   │   │   │   └──0x419a1a GetSurfaceWH                                        <- [HOOK+PTR InGameMenu_4799E2.cpp]
-    │   │   │   │   │   │   └──0x414a5d CHanaSpriteT3F6::SetPos_414A5D                          <- [HOOK+PTR InGameMenu_4799E2.cpp]
+    │   │   │   │   │   │   └──0x414a5d CHanaSpriteT3F6__SetPos_414A5D                          <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   ├──0x464919 SysMenu_GirlStatusCheck_464919                              <- [todo]
-    │   │   │   │   │   │   ├──0x419a4b DrawTextOnSurface                                       <- [todo]
-    │   │   │   │   │   │   ├──0x44af15 IntPow_44AF15                                           <- [todo]
+    │   │   │   │   │   │   ├──0x419a4b DrawTextOnSurface                                       <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
+    │   │   │   │   │   │   ├──0x44af15 IntPow_44AF15                                           <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
     │   │   │   │   │   ├──0x461a9e ShowYesNoDialog_461A9E                                      <- [todo]
-    │   │   │   │   │   │   ├──0x414b09 CHanaSpriteT3F6::SetScale_414B09                        <- [todo]
-    │   │   │   │   │   │   ├──0x414b28 CHanaSpriteT3F6::SetSrcRect_414B28                      <- [todo]
-    │   │   │   │   │   │   ├──0x414aba CHanaObj::SetAlpha3F6                                   <- [HOOK+PTR PlayScreenFade.cpp]
+    │   │   │   │   │   │   ├──0x414b09 CHanaSpriteT3F6__SetScale_414B09                        <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
+    │   │   │   │   │   │   ├──0x414b28 CHanaSpriteT3F6__SetSrcRect_414B28                      <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
+    │   │   │   │   │   │   ├──0x414aba CHanaObj__SetAlpha3F6                                   <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │   │   ├──0x481550 DoPeekMessages                                          <- [HOOK+PTR InGameMenu_4799E2.cpp]
-    │   │   │   │   │   │   └──0x414afb CHanaSpriteT3F6::GetAlpha_414AFB                        <- [todo]
+    │   │   │   │   │   │   └──0x414afb CHanaSpriteT3F6__GetAlpha_414AFB                        <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
     │   │   │   │   │   ├──0x462135 SysMenu_SaveMenu_462135                                     <- [todo]
-    │   │   │   │   │   │   ├──0x46164c ShowFadeDialog_46164C                                   <- [todo]
-    │   │   │   │   │   │   ├──0x461557 LoadDataFiles_461557                                    <- [todo]
-    │   │   │   │   │   │   │   ├──0x461397 FormatFileLastWriteTime_461397                      <- [todo]
-    │   │   │   │   │   │   │   │   ├──0x4612b0 ZeroPadNumberToString_4612B0                    <- [todo]
+    │   │   │   │   │   │   ├──0x46164c ShowFadeDialog_46164C                                   <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
+    │   │   │   │   │   │   ├──0x461557 LoadDataFiles_461557                                    <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
+    │   │   │   │   │   │   │   ├──0x461397 FormatFileLastWriteTime_461397                      <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
+    │   │   │   │   │   │   │   │   ├──0x4612b0 ZeroPadNumberToString_4612B0                    <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
     │   │   │   │   │   ├──0x462851 SysMenu_LoadMenu_462851                                     <- [todo]
     │   │   │   │   │   ├──0x413a5e LoadBmpWithMask_413A5E                                      <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   │   ├──0x43ea05 CreateTextureFromSurfaceWithAlphaMask                   <- [HOOK+PTR InGameMenu_4799E2.cpp]
@@ -222,10 +229,10 @@ Legend:
     │   │   │   │   │   │   │   ├──0x43f3f7 SelfBltDC                                           <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │   │   ├──0x41973f RGBToSurfaceFormat                                      <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │   │   ├──0x40bf4f RenderClear_40BF4F                                      <- [HOOK+PTR PlayScreenFade.cpp]
-    │   │   │   │   │   │   ├──0x4137d1 CHanaObj::NewSpriteT3F6bySurf                           <- [HOOK+PTR PlayScreenFade.cpp]
+    │   │   │   │   │   │   ├──0x4137d1 CHanaObj__NewSpriteT3F6bySurf                           <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │   │   ├──0x47e7d5 FrameTimer_EndFrame                                     <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │   │   ├──0x47e768 FrameTimer_BeginFrame                                   <- [HOOK+PTR PlayScreenFade.cpp]
-    │   │   │   │   │   │   └──0x413d78 CHanaObj::ReplaceTexture3F6                             <- [HOOK+PTR PlayScreenFade.cpp]
+    │   │   │   │   │   │   └──0x413d78 CHanaObj__ReplaceTexture3F6                             <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │   ├──0x481ae4 StopAndRestartThread                                        <- [HOOK+PTR StopAndRestartThread.cpp]
     │   │   │   │   │   │   ├──0x4818fd CreateNewThread                                         <- [HOOK+PTR StopAndRestartThread.cpp]
     │   │   │   │   │   │   │   ├──0x4817b1 InputThread_Absolute_4817B1                         <- [HOOK StopAndRestartThread.cpp]
@@ -233,6 +240,7 @@ Legend:
     │   │   │   │   │   │   │   ├──0x481637 InputThread_Relative_481637                         <- [HOOK StopAndRestartThread.cpp]
     │   │   │   │   │   │   └──0x481a35 TerminateThreadGracefully                               <- [HOOK+PTR StopAndRestartThread.cpp]
     │   │   │   │   │   ├──0x462fe9 SysMenu_Options_462FE9                                      <- [todo]
+    │   │   │   │   ├──0x4863c3 nop_4863C3                                                      <- [todo]
     │   │   │   │   ├──0x45a4d8 GetMouseXY_45A4D8                                               <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   ├──0x481170 IsMenuKeyPressed_481170                                         <- [PTR MenuCharSelect.cpp]
     │   │   │   │   └──0x422e7b LoadWav_422E7B                                                  <- [HOOK+PTR LoadSoundEffects_47EB7F.cpp]
@@ -250,10 +258,10 @@ Legend:
     │   │   │   │   │   │   ├──0x47ff01 ParseStrChunkText_47FF01                                <- [todo]
     │   │   │   │   │   │   ├──0x487d46 FindCharUntil_487D46                                    <- [todo]
     │   │   │   │   │   │   ├──0x487267 Character_ApplyAnimationParamsToChildren                <- [todo]
-    │   │   │   │   │   │   │   ├──0x405a0a CHanaObj::NewFrameArrayT3EDFromChildT3EC            <- [PTR ParseODFContent_441A5D.cpp]
+    │   │   │   │   │   │   │   ├──0x405a0a CHanaObj__NewFrameArrayT3EDFromChildT3EC            <- [PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   ├──0x408dd0 CHanaObj::NewFrameArrayT3ED                     <- [todo]
-    │   │   │   │   │   │   │   ├──0x408e75 CHanaObj::GetFramesCountT3ED_408E75                 <- [PTR ParseODFContent_441A5D.cpp]
-    │   │   │   │   │   │   │   └──0x408e1b CHanaObj::GetFrameAtIndexT3ED                       <- [PTR ParseODFContent_441A5D.cpp]
+    │   │   │   │   │   │   │   ├──0x408e75 CHanaObj__GetFramesCountT3ED_408E75                 <- [PTR ParseODFContent_441A5D.cpp]
+    │   │   │   │   │   │   │   └──0x408e1b CHanaObj__GetFrameAtIndexT3ED                       <- [PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   ├──0x46f37e RunModeSelectScreen                                         <- [todo]
     │   │   │   │   │   │   ├──0x47e999 FindFrameByName_47E999                                  <- [PTR ParseODS_483932.cpp]
     │   │   │   │   │   │   ├──0x46a2a0 PauseSceneAudio_46A2A0                                  <- [todo]
@@ -264,20 +272,20 @@ Legend:
     │   │   │   │   │   │   │   ├──0x414a7a CHanaSpriteT3F6::GetPos_414A7A                      <- [todo]
     │   │   │   │   │   │   │   ├──0x414b1a CHanaSpriteT3F6::GetScale_414B1A                    <- [todo]
     │   │   │   │   │   │   ├──0x4825d5 UpdateSceneAtTime_4825D5                                <- [todo]
-    │   │   │   │   │   │   │   ├──0x403d61 CHanaAnimSetT3F1::SetTime_403D61                    <- [PTR ParseODFContent_441A5D.cpp]
+    │   │   │   │   │   │   │   ├──0x403d61 CHanaAnimSetT3F1__SetTime_403D61                    <- [PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   ├──0x40e969 ApplyMateAnimMaterial                           <- [todo]
     │   │   │   │   │   │   │   │   │   └──0x40ef23 FindMateAnimKeyframeBounds                  <- [todo]
     │   │   │   │   │   │   │   │   ├──0x4248f2 GetSoundBufferAverageLevel                      <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   ├──0x40283c InterpolateHanaAnimFrame                        <- [PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   │   ├──0x40344a HanaAnim_FindInterpolationFrame             <- [todo]
-    │   │   │   │   │   │   │   │   │   ├──0x402d0e CHanaAnimT3F0::BakeKeyframesT3F0_402D0E     <- [HOOK+PTR ParseODFContent_441A5D.cpp]
+    │   │   │   │   │   │   │   │   │   ├──0x402d0e CHanaAnimT3F0__BakeKeyframesT3F0_402D0E     <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   │   │   ├──0x4035b1 ApplyQTS_4035B1                         <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   ├──0x4019e1 CSekBody::UpdateAnim_4019E1                         <- [todo]
     │   │   │   │   │   │   │   │   ├──0x4018e1 CSekBody::CutToAnim_4018E1                      <- [todo]
     │   │   │   │   │   │   │   │   ├──0x43a643 CHanaAnimSetT3F1::BlendStep_43A643              <- [todo]
     │   │   │   │   │   │   │   │   │   └──0x43a43f HanaAnim_UpdateBoneTransform                <- [todo]
     │   │   │   │   │   │   │   │   └──0x43a371 CHanaAnimSetT3F1::BeginBlend_43A371             <- [todo]
-    │   │   │   │   │   │   │   ├──0x401647 SekBody::UpdateTo2_401647                           <- [todo]
+    │   │   │   │   │   │   │   ├──0x401647 SekBody__UpdateTo2_401647                           <- [todo]
     │   │   │   │   │   │   │   └──0x4069dd MtxMult_4069DD                                      <- [PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   ├──0x467af3 SetFrameVisibilityAndGetHIndex                          <- [todo]
     │   │   │   │   │   │   └──0x4827fe UpdateSceneTimer_4827FE                                 <- [todo]
@@ -311,8 +319,8 @@ Legend:
     │   │   │   │   │   │   │   │   │   ├──0x4414eb ParseOdfANIM_4414EB                         <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   │   │   ├──0x4039c9 HanaAnim_GetDuration                    <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   │   │   ├──0x40ba89 HanaFrame_GetFrameName                  <- [HOOK+PTR ParseODFContent_441A5D.cpp]
-    │   │   │   │   │   │   │   │   │   │   ├──0x401cd0 CHanaObj::NewAnimT3F0                   <- [HOOK+PTR ParseODFContent_441A5D.cpp]
-    │   │   │   │   │   │   │   │   │   │   ├──0x403c15 CHanaAnimSetT3F1::AddAnimT3F0_403C15    <- [HOOK+PTR ParseODFContent_441A5D.cpp]
+    │   │   │   │   │   │   │   │   │   │   ├──0x401cd0 CHanaObj__NewAnimT3F0                   <- [HOOK+PTR ParseODFContent_441A5D.cpp]
+    │   │   │   │   │   │   │   │   │   │   ├──0x403c15 CHanaAnimSetT3F1__AddAnimT3F0_403C15    <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   │   │   └──0x401fbd HanaAnim_LinkFrame                      <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   │   ├──0x44068c ParseOdfMESH_44068C                         <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   │   │   ├──0x440288 ParseVERT_440288                        <- [PTR ParseODFContent_441A5D.cpp]
@@ -345,7 +353,7 @@ Legend:
     │   │   │   │   │   │   │   ├──0x483567 ReadStrFile_483567                                  <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   │   └──0x481c5f CHanaObj__NewSceneT458_S504                             <- [todo]
     │   │   │   │   │   ├──0x4843cf LoadOds_4843CF                                              <- [todo]
-    │   │   │   │   │   │   ├──0x483932 ParseOds_483932                                         <- [HOOK+PTR ParseODS_483932.cpp]
+    │   │   │   │   │   │   ├──0x483932 ParseODS_483932                                         <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   ├──0x4445dd LoadSekAndOdf_4445DD                                        <- [todo]
     │   │   │   │   │   │   ├──0x4014e4 SekBody::UpdateTo_4014E4                                <- [todo]
     │   │   │   │   │   ├──0x47e3e1 ToggleWaitScreen                                            <- [todo]
@@ -383,7 +391,7 @@ Legend:
     │   │   │   │   │   │   ├──0x4698e8 SoundSE_ManageEffectsAndPlay                            <- [todo]
     │   │   │   │   │   │   ├──0x467e72 AnimSet_MatchAndSortKutiRTibusaLFrames                  <- [todo]
     │   │   │   │   │   │   ├──0x4686f8 UpdateCutInSceneCameraFollow                            <- [todo]
-    │   │   │   ├──0x47ad8d MenuGallery                                                         <- [PTR InGameMenu_4799E2.cpp]
+    │   │   │   ├──0x47ad8d MenuGallery                                                         <- [HOOK+PTR MenuGallery.cpp]
     │   │   ├──0x44c38d PlayHunting_44C38D                                                      <- [PTR GameMainLoop_47F013.cpp]
     │   │   │   ├──0x455183 PlayVictoryCutscene_455183                                          <- [todo]
     │   │   │   │   ├──0x458b3a UpdateVoicePlayback_458B3A                                      <- [todo]
@@ -458,18 +466,26 @@ Legend:
     │   │   ├──0x4799e2 InGameMenu_4799E2                                                       <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   ├──0x47eeec ReleaseSoundEffects                                                     <- [HOOK+PTR LoadSoundEffects_47EB7F.cpp]
     │   │   └──0x47eb7f LoadSoundEffects_47EB7F                                                 <- [HOOK+PTR LoadSoundEffects_47EB7F.cpp]
+    │   ├──0x43aafc return1_19                                                                  <- [todo]
+    │   └──0x43ad5d return1_22                                                                  <- [todo]
     ├──0x4a2d6b heap_init_crt                                                                   <- [todo]
+    ├──0x4a2830 setargv                                                                         <- [todo]
+    │   ├──0x4a28c9 parse_cmdline                                                               <- [todo]
+    │   ├──0x4a2222 malloc                                                                      <- [todo]
+    │   │   └──0x4a2234 nh_malloc                                                               <- [todo]
+    ├──0x4a2777 setenvp                                                                         <- [todo]
     ├──0x4a2a7d crtGetEnvironmentStringsA                                                       <- [todo]
+Done 460
 ```
 
 ## Stats
 
-- tree functions:      446
-- hooked:              222 (HOOK or HOOK+PTR)
-- pinned:              252 (PTR or HOOK+PTR)
-- fully covered:       218 (HOOK+PTR)
+- tree functions:      460
+- hooked:              234 (HOOK or HOOK+PTR)
+- pinned:              262 (PTR or HOOK+PTR)
+- fully covered:       230 (HOOK+PTR)
 - implemented only:    1
-- untouched:           189
+- untouched:           193
 
 ## Per-file status (scan_cpp.py)
 
@@ -591,13 +607,13 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              25 (22 func-ptr imports)
+  globals:              23 (20 func-ptr imports)
   functions:            21 (20 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   19/20
   hnh_Hook-registered:  18/20
   func-ptrs declared:   19/19
-  func-ptrs w/o hook:   3/22
-  no hook function for: SystemMenu_4655AB, MenuMusicSelect, MenuGallery
+  func-ptrs w/o hook:   1/20
+  no hook function for: SystemMenu_4655AB
   missing DebugLog:     ApplyMenuBgmVolume
   not registered:       ApplyMenuBgmVolume, hook_HanaVert_DrawBatch
 ```
@@ -654,6 +670,32 @@ structs:              0
   func-ptrs declared:   1/1
   func-ptrs w/o hook:   3/4
   no hook function for: IsMenuKeyPressed_481170, Surface_SetColorKeyRGB, PlayAssault_4703AE
+```
+
+### hnhmods/src/MenuGallery.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              2 (1 func-ptr imports)
+  functions:            2 (1 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/1
+  hnh_Hook-registered:  1/1
+  func-ptrs declared:   1/1
+  func-ptrs w/o hook:   0/1
+```
+
+### hnhmods/src/MenuMusicSelect.cpp
+
+```
+SUMMARY
+structs:              1
+  globals:              2 (1 func-ptr imports)
+  functions:            2 (1 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/1
+  hnh_Hook-registered:  1/1
+  func-ptrs declared:   1/1
+  func-ptrs w/o hook:   0/1
 ```
 
 ### hnhmods/src/MtxStackRecursiveMulLocal.cpp
@@ -730,12 +772,12 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              10 (4 func-ptr imports)
-  functions:            5 (4 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   4/4
-  hnh_Hook-registered:  4/4
-  func-ptrs declared:   4/4
-  func-ptrs w/o hook:   0/4
+  globals:              21 (14 func-ptr imports)
+  functions:            15 (14 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   14/14
+  hnh_Hook-registered:  14/14
+  func-ptrs declared:   14/14
+  func-ptrs w/o hook:   0/14
 ```
 
 ### hnhmods/src/ShowTitleMenu.cpp

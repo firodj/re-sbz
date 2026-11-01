@@ -16,7 +16,7 @@ CHAR (&g_szGRPPath)[256]        = *(CHAR (*)[256])0x52F970; // WRITABLE
 CHAR (&g_szGRP800Path)[256]     = *(CHAR (*)[256])0x52FA70; // WRITABLE
 CHAR (&g_szSEPath)[256]         = *(CHAR (*)[256])0x52FD70; // WRITABLE
 CHAR (&g_szDATAPath)[256]       = *(CHAR (*)[256])0x52FE70; // WRITABLE
-
+uint32_t &g_dwFontRenderFlag = *(uint32_t *)0x52F1B0; // WRITABLE
 
 // === GLOBAL FUNCTIONS ===
 
@@ -223,7 +223,115 @@ BOOL __cdecl hook_IsFileExists_47E8EE(CHAR *pszFilePath)
 }
 
 
+// ParseStrChunkText(pScene) - (note: requested 0x480008 is interior to this function). Parses
+// the next dialogue text chunk from pScene->ptrStrData_260 (stops at ';','*', a non-letter,
+// or end), rasterizes it onto a 640x200 offscreen surface via DrawText_43BCAE, then rebuilds
+// each of the 4x29 text-glyph sprites' textures from 26x26 tiles of that surface (BltFast +
+// CreateTextureFromSurfaceWithAlphaMask + ReplaceTexture3F6). Marks the final glyph's
+// field_10C when the chunk is <120 chars. Temporarily disables D3D antialiasing.
+void __cdecl hook_ParseStrChunkText_47FF01(CHanaSceneT458_S504 *pScene)
+{
+  int n; // [esp+0h] [ebp-4Ch]
+  signed int fullwidt_length; // [esp+4h] [ebp-48h]
+  struct IDirectDrawSurface7 *pTextureWholeText; // [esp+8h] [ebp-44h]
+  int i; // [esp+Ch] [ebp-40h]
+  DWORD dwSavedAntialias; // [esp+10h] [ebp-3Ch] BYREF
+  int v6; // [esp+14h] [ebp-38h]
+  int j; // [esp+18h] [ebp-34h]
+  int k; // [esp+1Ch] [ebp-30h]
+  struct IDirectDrawSurface7 *pTexture; // [esp+20h] [ebp-2Ch] BYREF
+  RECT rect; // [esp+24h] [ebp-28h] BYREF
+  struct tagRECT rc; // [esp+34h] [ebp-18h] BYREF
+  LPDIRECTDRAWSURFACE7 pTextureChar; // [esp+44h] [ebp-8h]
+  int v13; // [esp+48h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] ParseStrChunkText_47FF01\n");
+
+  v6 = 0;
+  rect.left = 1;
+  rect.top = 1;
+  rect.right = 31;
+  rect.bottom = 31;
+  fullwidt_length = 0;
+  v13 = 0;
+  pTexture = 0;
+  pTextureWholeText = CreateSurfaceWH(640u, 200u);
+  pTextureChar = CreateSurfaceWH(28u, 28u);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MINFILTER, 1);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MAGFILTER, 1);
+  g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_ANTIALIAS, &dwSavedAntialias);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 0);
+  if ( pTextureWholeText && pScene && pScene->ptrStrData_260 )
+  {
+    FlushD3DAndTouchSurface(g_pBackBuffer_4D6C90);
+    BltSurface(pTextureWholeText, 0, 0, 640, 200, 0);
+    BltSurface(pTextureChar, 0, 0, 28, 28, 0);
+    g_dwFontRenderFlag = 0;
+    for ( i = pScene->dwPtrCurrent_448;
+      i < pScene->dwPtrSize_44C
+      && *((_BYTE *)pScene->ptrStrData_260 + i) != ';'
+      && *((_BYTE *)pScene->ptrStrData_260 + i) != '*'
+      && (*((char *)pScene->ptrStrData_260 + i) < 'A' || *((char *)pScene->ptrStrData_260 + i) > 'z');
+      i += 2 )
+    {
+      ;
+    }
+    if ( pScene->dwPtrSize_44C > (unsigned int)pScene->dwPtrPos_444 )
+    {
+      fullwidt_length = (unsigned int)(i - pScene->dwPtrCurrent_448) >> 1;
+      pScene->dwPtrCurrent_448 = i + 1;
+      SetRect(&rc, 0, 0, 640, 180);
+      BltSurface(pTextureWholeText, 0, 0, 640, 200, 0);
+      DrawText_43BCAE(
+        pTextureWholeText,
+        (char *)pScene->ptrStrData_260 + pScene->dwPtrPos_444,
+        rc.left,
+        rc.top,
+        rc.right,
+        rc.bottom);
+      pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
+    }
+    g_pD3DDevice_4D6C78->SetTexture(0, 0);
+    n = 0;
+    for ( j = 0; j < 4; ++j )
+    {
+      for ( k = 0; k < 29; ++k )
+      {
+        if ( pScene->textSprites_264[j][k] )
+        {
+          CHanaSpriteT3F6__SetSrcRect_414B28(pScene->textSprites_264[j][k], &rect);
+          CHanaObj__SetAlpha3F6(pScene->textSprites_264[j][k], 0.0);
+          SetRect(&rc, 26 * (n % 24), 26 * (n / 24), 26 * (n % 24 + 1) + 2, 26 * (n / 24 + 1) + 2);
+          ++n;
+          pTextureChar->BltFast(0, 0, pTextureWholeText, &rc, 16);
+          pTexture = CreateTextureFromSurfaceWithAlphaMask(pTextureChar, pTextureChar);
+          if ( pTexture )
+          {
+            CHanaObj__ReplaceTexture3F6(pScene->textSprites_264[j][k], &pTexture);
+            pScene->textSprites_264[j][k]->bOk_10C = 0;
+            pTexture = 0;
+          }
+        }
+      }
+    }
+    if ( fullwidt_length < 120 && pScene->textSprites_264[0][fullwidt_length] )
+      pScene->textSprites_264[0][fullwidt_length]->bOk_10C = 1;
+  }
+  if ( pTextureChar )
+    pTextureChar->Release();
+  pTextureChar = 0;
+  if ( pTextureWholeText )
+    pTextureWholeText->Release();
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MINFILTER, 2);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MAGFILTER, 2);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, dwSavedAntialias);
+}
+
+
+
 void register_CheckInstalledDirRoot_4869A7() {
+  hnh_Hook(0x47FF01, hook_ParseStrChunkText_47FF01, "ParseStrChunkText_47FF01");
+
   hnh_HookOff();
   hnh_Hook(0x4869A7, hook_CheckInstalledDirRoot_4869A7, "CheckInstalledDirRoot_4869A7"); // [OK] 
   hnh_Hook(0x486630, hook_SetupDirPath_486630, "SetupDirPath_486630"); // [OK] 

@@ -315,7 +315,7 @@ void hook_CHanaObj__NewSprite3F6byWH(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWOR
   flags = 256;
   pSprite = (CHanaSpriteT3F6_S1FC *)MemAlloc_40DEF7(0x1FCu);
   memset(pSprite, 0, sizeof(CHanaSpriteT3F6_S1FC));
-  pSprite->base_0.dwType = 0x3F6;
+  pSprite->dwType = 0x3F6;
   hr = D3DXCreateTexture(g_pD3DDevice_4D6C78, &flags, &w, &h, &pixelformat, 0, &pSprite->pTexture_134, 0);
   if ( hr < 0 )
     PrintDebugError(hr);
@@ -340,7 +340,7 @@ void hook_CHanaObj__NewSprite3F6byWH(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWOR
   pSprite->rect_15C.left = 0;
   pSprite->rect_15C.bottom = pSprite->dwHeight_1F4;
   pSprite->rect_15C.right = pSprite->dwWidth_1F0;
-  CHanaObj__AddRef_40BFC3(&pSprite->base_0);
+  CHanaObj__AddRef_40BFC3((CHanaBase_S130*)&pSprite);
   *ppOut = pSprite;
 }
 

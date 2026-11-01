@@ -29,6 +29,13 @@ HRESULT (__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF 
     reinterpret_cast<HRESULT(__cdecl*)(LPDIRECTDRAWSURFACE7, COLORREF)>(0x4198E0);
 int  (__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab) =
     reinterpret_cast<int(__cdecl*)(int, int)>(0x4703AE);
+BOOL (__cdecl * CheckSpecialJpChar_43BFFA)(const char *szText) = reinterpret_cast<BOOL(__cdecl*)(const char *szText)>(0x43BFFA);
+void (__cdecl * DrawText_43BCAE)(LPDIRECTDRAWSURFACE7 pSurface, char *szText, int left, int top, int right, int bottom) = reinterpret_cast<void(__cdecl*)(LPDIRECTDRAWSURFACE7 pSurface, char *szText, int left, int top, int right, int bottom)>(0x43BCAE);
+
+// === GLOBAL VARIABLES ===
+
+LPDIRECTDRAWSURFACE7 &g_lpDDSurface_519CF8 = *(LPDIRECTDRAWSURFACE7 *)0x519CF8; // WRITABLE
+char (&g_tempText_519D00)[50] = *(char (*)[50])0x519D00; // WRITABLE
 
 // === FUNCTIONS ===
 int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F6_S1FC *pMouseSprite)
@@ -218,6 +225,108 @@ int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F
     return nResult;
 }
 
+void __cdecl hook_Surface_SetColorKeyRGB(LPDIRECTDRAWSURFACE7 surface, COLORREF color)
+{
+  DWORD colorKey; // [esp+0h] [ebp-8h] BYREF
+  DWORD surfaceColor; // [esp+4h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] Surface_SetColorKeyRGB_4198E0\n");
+
+  surfaceColor = RGBToSurfaceFormat(surface, color);
+  colorKey = surfaceColor;
+  surface->SetColorKey(8, (LPDDCOLORKEY)&colorKey);
+}
+
+BOOL __cdecl hook_CheckSpecialJpChar_43BFFA(const char *szText)
+{
+  // Ensure valid pointer and minimum 2 bytes available
+  if (!szText || szText[0] == '\0' || szText[1] == '\0')
+    return FALSE;
+
+  ONCELOG("[HNH:SUB] CheckSpecialJpChar_43BFFA\n");
+
+  // Combine lead and trail bytes into a 16-bit big-endian value matching Shift-JIS bytes
+  // szText[0] = lead byte (e.g., 0x81), szText[1] = trail byte
+  unsigned short ch = ((unsigned char)szText[0] << 8) | (unsigned char)szText[1];
+
+  switch (ch)
+  {
+  case 0x8149: // '！' (Full-width Exclamation Mark)
+  case 0x8142: // '。' (Ideographic Period)
+  case 0x8141: // '、' (Ideographic Comma)
+  case 0x8143: // '，' (Full-width Comma)
+  case 0x8144: // '．' (Full-width Period)
+  case 0x8176: // '』' (Right White Corner Bracket)
+  case 0x8178: // '】' (Right Black Tortoise Shell Bracket)
+    return TRUE;
+  default:
+    return FALSE;
+  }
+}
+
+void __cdecl hook_DrawText_43BCAE(LPDIRECTDRAWSURFACE7 pSurface, char *szText, int left, int top, int right, int bottom)
+{
+  int y; // [esp+0h] [ebp-14h]
+  int p; // [esp+4h] [ebp-10h]
+  HDC hdc; // [esp+8h] [ebp-Ch] BYREF
+  HGDIOBJ h; // [esp+Ch] [ebp-8h]
+  int x; // [esp+10h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] DrawText_43BCAE\n");
+
+  x = 0;
+  p = 0;
+  y = 0;
+  if ( g_lpDDSurface_519CF8 )
+  {
+    g_lpDDSurface_519CF8->Release();
+    g_lpDDSurface_519CF8 = 0;
+  }
+  g_lpDDSurface_519CF8 = CreateSurfaceWH(right - left, bottom - top);
+  Surface_SetColorKeyRGB(g_lpDDSurface_519CF8, 0);
+  BltSurface(g_lpDDSurface_519CF8, 0, 0, right - left, bottom - top, 0);
+  memcpy(&g_tempText_519D00, szText, sizeof(g_tempText_519D00));
+  g_lpDDSurface_519CF8->GetDC(&hdc);
+  h = SelectObject(hdc, g_hFont);
+  SetTextColor(hdc, 0xFFFFFFu);
+  SetBkMode(hdc, 1);
+  do
+  {
+    x = 0;
+    do
+    {
+      if ( x >= right - left - 20 )
+        break;
+      if ( szText[p] == ';' || szText[p] == ',' || szText[p] >= 'A' && szText[p] <= 'z' )
+      {
+        ++p;                                    // skip halfwidth
+      }
+      else
+      {
+        TextOutA(hdc, x, y, &szText[p], 2);
+        TextOutA(hdc, x + 1, y, &szText[p], 2);
+        x += 26;
+        p += 2;                                 // only accept FullWidth shift-jis
+      }
+    }
+    while ( CheckSpecialJpChar_43BFFA(&szText[p]) || szText[p] && szText[p] != '\r' && szText[p] != '\n' );
+    y += 26;
+  }
+  while ( szText[p] && szText[p] != '\r' && szText[p] != '\n' && (szText[p] < 'A' || szText[p] > 'z') && y <= bottom );
+  SelectObject(hdc, h);
+  g_lpDDSurface_519CF8->ReleaseDC(hdc);
+  if ( g_lpDDSurface_519CF8 )
+  {
+    BltFastWH(pSurface, left, top + 2, g_lpDDSurface_519CF8, 0, 0, right - left, bottom - top, 1);
+    g_lpDDSurface_519CF8->Release();
+    g_lpDDSurface_519CF8 = 0;
+  }
+}
+
 void register_MenuCharSelect_47A324() {
-    hnh_Hook(0x47A324, hook_MenuCharSelect, "MenuCharSelect_47A324"); // [OK]
+  hnh_Hook(0x47A324, hook_MenuCharSelect, "MenuCharSelect_47A324"); // [OK]
+
+  hnh_Hook(0x43BFFA, hook_CheckSpecialJpChar_43BFFA, "CheckSpecialJpChar_43BFFA");
+  hnh_Hook(0x4198E0, hook_Surface_SetColorKeyRGB, "Surface_SetColorKeyRGB_4198E0");
+  hnh_Hook(0x43BCAE, hook_DrawText_43BCAE, "DrawText_43BCAE");
 }
