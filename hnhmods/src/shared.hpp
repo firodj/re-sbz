@@ -261,6 +261,7 @@ extern void(__cdecl* DrawSpriteAtRect)(CHanaSpriteT3F6_S1FC* pSprite, D2D_RECT_F
 
 extern void (__cdecl*MainMenu_47DF0D)(void);
 extern int (__cdecl*InGameMenu_4799E2)(void);
+extern float (&g_fVolumeDbTable)[10];
 extern int(__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
   float fCurHP, float fMaxHP, CSceneState sceneState);
 extern HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam);
@@ -272,6 +273,10 @@ extern int(__cdecl* MenuCharSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT
 extern bool(__cdecl*IsMenuKeyPressed_481170)(void);
 extern HRESULT(__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF color);
 extern int(__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab);
+
+// === DEFINED MenuMusicSelect.cpp ===
+
+extern int(__cdecl* MenuMusicSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite);
 
 // === DEFINED PlayScreenFade.cpp ===
 

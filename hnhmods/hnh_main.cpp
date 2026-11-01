@@ -101,6 +101,7 @@ void register_PlayScreenFade_4874DE();
 void register_ParseODFContent_441A5D();
 void register_ParseODS_483932();
 void register_ProcessFrame_40600C();
+void register_MenuMusicSelect();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -145,6 +146,7 @@ void InitHNH() {
 	register_ParseODFContent_441A5D();
 	register_ParseODS_483932();
 	register_ProcessFrame_40600C();
+	register_MenuMusicSelect();
 
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)

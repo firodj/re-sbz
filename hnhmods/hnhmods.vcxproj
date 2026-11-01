@@ -236,6 +236,9 @@
     <ClCompile Include="src\ProcessFrame_40600C.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\MenuMusicSelect.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="user32hook.cpp" />
   </ItemGroup>
   <ItemGroup>

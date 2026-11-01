@@ -45,6 +45,8 @@ At the top of file should have and not using precompiled header (.pch):
 #include "shared.hpp"
 ```
 
+Ensure the defines of global definitions wont make link collide, also check `shared.hpp` if the difinitions already defined.
+
 You don'n need to dig deeper to verify by try to compiling it.
 
 ## Create IDA Python Script
