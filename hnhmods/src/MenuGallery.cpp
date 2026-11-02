@@ -40,8 +40,8 @@ char (&g_arrGalleryUnlocked_5301A2)[150] = *(char(*)[150])0x5301A2;  // WRITABLE
 // === FUNCTIONS ===
 int __cdecl hook_MenuGallery(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F6_S1FC *pMouseSprite)
 {
-    LPDIRECTDRAWSURFACE7 bgSurfaces[10];    // [ebp-98Ch] 3 used (per tab)
-    LPDIRECTDRAWSURFACE7 thumbSurfaces[6];  // [ebp-964h] [2] = nav strip "glb"
+    LPDIRECTDRAWSURFACE7 bgSurfaces[9];    // [ebp-98Ch] 3 used (per tab)
+    LPDIRECTDRAWSURFACE7 thumbSurfaces[9];  // [ebp-964h] [2] = nav strip "glb"
     LPDIRECTDRAWSURFACE7 pPreviewSurface;   // [ebp-B88h]
     CHAR szFileName[256];                   // [ebp-93Ch]
     CSceneState sceneScratch;               // [ebp-DA4h] SystemMenu arg copy
@@ -288,5 +288,5 @@ int __cdecl hook_MenuGallery(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F6_S
 }
 
 void register_MenuGallery() {
-    // [!] hnh_Hook(0x47AD8D, hook_MenuGallery, "MenuGallery_47AD8D");
+    hnh_Hook(0x47AD8D, hook_MenuGallery, "MenuGallery_47AD8D"); // [OK]
 }
