@@ -65,9 +65,7 @@ void(__cdecl*DrawSpriteAtRect)(CHanaSpriteT3F6_S1FC* pSprite, D2D_RECT_F* rc) =
 //void (__cdecl*nop_4863C3)(void) = reinterpret_cast<void(__cdecl*)()>(0x4863C3);
 
 HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam) = reinterpret_cast<HRESULT(__cdecl*)(int)>(0x40CEEC);
-int  (__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
-  float fCurHP, float fMaxHP, CSceneState sceneState) =
-  reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER, int, int, float, float, CSceneState)>(0x4655AB);
+// SystemMenu_4655AB lives in src/SystemMenu_4655AB.cpp (extern in shared.hpp)
 // MenuMusicSelect lives in src/MenuMusicSelect.cpp (extern in shared.hpp)
 // MenuGallery lives in src/MenuGallery.cpp (extern in shared.hpp)
 // MenuCharSelect + its pins live in src/MenuCharSelect.cpp (extern in shared.hpp)
@@ -1399,7 +1397,6 @@ void register_InGameMenu_4799E2() {
   hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D"); // [OK]
   hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
   
-
   hnh_HookOff();
   hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2"); // [OK] 
   hnh_Hook(0x481550, hook_DoPeekMessages, "DoPeekMessages_481550"); // [OK] 

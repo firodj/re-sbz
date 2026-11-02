@@ -87,6 +87,7 @@ extern HRESULT (__cdecl*SetFogColor_40E0B4)(DWORD dwFogColor);
 extern HRESULT (__cdecl*SetFogRange_40E0E2)(DWORD dwFogStart, DWORD dwFogEnd);
 
 extern void(__cdecl* CHanaSpriteT3F6__SetSrcRect_414B28)(CHanaSpriteT3F6_S1FC* pSprite, LPRECT lpRect);
+extern void(__cdecl* LoadDataFiles_461557)(CSceneState* pDataBuffer, char* pszTimestamps);
 
 // === DEFINED CheckInstalledDirRoot.cpp ===
 
@@ -275,10 +276,13 @@ extern void(__cdecl* DrawSpriteAtRect)(CHanaSpriteT3F6_S1FC* pSprite, D2D_RECT_F
 extern void (__cdecl*MainMenu_47DF0D)(void);
 extern int (__cdecl*InGameMenu_4799E2)(void);
 extern float (&g_fVolumeDbTable)[10];
-extern int(__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
-  float fCurHP, float fMaxHP, CSceneState sceneState);
 extern HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam);
 extern DWORD& g_dwDSStatus_5185C8;
+
+// === DEFINED SystemMenu_4655AB.cpp ===
+
+extern int(__cdecl* SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
+  float fCurHP, float fMaxHP, CSceneState sceneState);
 
 // === DEFINED MenuCharSelect.cpp ===
 
@@ -288,11 +292,7 @@ extern HRESULT(__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COL
 extern int(__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab);
 extern void(__cdecl* DrawText_43BCAE)(LPDIRECTDRAWSURFACE7 pSurface, char* szText, int left, int top, int right, int bottom);
 
-// === DEFINED MenuMusicSelect.cpp ===
-
 extern int(__cdecl* MenuMusicSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite);
-
-// === DEFINED MenuGallery.cpp ===
 
 extern int(__cdecl* MenuGallery)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite);
 
