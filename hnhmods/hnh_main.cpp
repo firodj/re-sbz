@@ -109,6 +109,8 @@ void register_SysMenu_Options_462FE9();
 void register_SysMenu_Graphics_46380D();
 void register_ShowYesNoDialog_461A9E();
 void register_PlayOdsDialogueScene_477F90();
+void register_DrawDialogueText_4803B5();
+void register_Surface_AlphaBlendRect();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -161,6 +163,8 @@ void InitHNH() {
 	register_SysMenu_Graphics_46380D();
 	register_ShowYesNoDialog_461A9E();
 	register_PlayOdsDialogueScene_477F90();
+	register_DrawDialogueText_4803B5();
+	register_Surface_AlphaBlendRect();
 
 
 	DebugLog("[HNH] All hooking done !\n");

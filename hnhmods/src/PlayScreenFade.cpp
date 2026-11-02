@@ -569,7 +569,7 @@ void __cdecl hook_SelfBltDC(LPDIRECTDRAWSURFACE7 pDDSurf)
   DWORD w; // [esp+4h] [ebp-8h] BYREF
   DWORD h; // [esp+8h] [ebp-4h] BYREF
 
-  ONCELOG("[HNH:SUB] SelfBltDC_43F3F7");
+  ONCELOG("[HNH:SUB] SelfBltDC_43F3F7\n");
   
   if ( pDDSurf )
   {
@@ -1273,7 +1273,7 @@ D3DVERTEX *__cdecl hook_HanaVert_Transform(D3DVERTEX *pOutVtx, D3DXMATRIX *pM, D
 void register_PlayScreenFade_4874DE() {
   hnh_Hook(0x4874DE, hook_PlayScreenFade, "PlayScreenFade_4874DE"); // [OK]
   hnh_Hook(0x4874A5, hook_RenderFlush_4874A5,            "RenderFlush_4874A5");
-  hnh_Hook(0x43F3F7, hook_SelfBltDC,    "SelfBltDC_43F3F7");
+  
 
   hnh_HookOff();
   hnh_Hook(0x47E78F, hook_GetTimerScaleFactor,           "GetTimerScaleFactor_47E78F"); // [OK] 
@@ -1304,6 +1304,7 @@ void register_PlayScreenFade_4874DE() {
   hnh_Hook(0x43315F, hook_HanaMorpT457_Interp,    "HanaMorpT457_Interp_43315F"); // [OK] 
   hnh_Hook(0x432DB0, hook_HanaVert_BlendMorph,    "HanaVert_BlendMorph_432DB0"); // [OK] 
   hnh_Hook(0x4365B9, hook_HanaMorpT457_ApplySubs, "HanaMorpT457_ApplySubs_4365B9"); // [OK] 
-  hnh_Hook(0x4363EE, hook_HanaVert_Transform,     "HanaVert_Transform_4363EE"); // [OK] 
+  hnh_Hook(0x4363EE, hook_HanaVert_Transform,     "HanaVert_Transform_4363EE"); // [OK]
+  hnh_Hook(0x43F3F7, hook_SelfBltDC,    "SelfBltDC_43F3F7"); // [OK]
   hnh_HookOn();
 }

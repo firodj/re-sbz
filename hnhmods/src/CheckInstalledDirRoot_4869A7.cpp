@@ -16,7 +16,7 @@ CHAR (&g_szGRPPath)[256]        = *(CHAR (*)[256])0x52F970; // WRITABLE
 CHAR (&g_szGRP800Path)[256]     = *(CHAR (*)[256])0x52FA70; // WRITABLE
 CHAR (&g_szSEPath)[256]         = *(CHAR (*)[256])0x52FD70; // WRITABLE
 CHAR (&g_szDATAPath)[256]       = *(CHAR (*)[256])0x52FE70; // WRITABLE
-uint32_t &g_dwFontRenderFlag = *(uint32_t *)0x52F1B0; // WRITABLE
+DWORD &g_dwFontRenderFlag       = *(DWORD *)0x52F1B0; // WRITABLE
 
 // === GLOBAL FUNCTIONS ===
 

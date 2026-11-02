@@ -53,8 +53,10 @@ void (__cdecl*SetProjectionFov_40DCA3)(float fFov) =
 void (__cdecl*DrawDialogueWindow_480B2D)(CHanaSceneT458_S504 *pScene,
     float frameTimeMultiplied, int xMouse, int yMouse, short btnMouse) =
     reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, float, int, int, short)>(0x480B2D);
-void(__cdecl*Surface_AlphaBlendRect)(LPDIRECTDRAWSURFACE7 pDestSurface, int nDestX, int nDestY, LPDIRECTDRAWSURFACE7 pSrcSurface, LPRECT pSrcRect, int nBlendWeight, char bSkipColorKey)
-  = reinterpret_cast<void(__cdecl*)(LPDIRECTDRAWSURFACE7 pDestSurface, int nDestX, int nDestY, LPDIRECTDRAWSURFACE7 pSrcSurface, LPRECT pSrcRect, int nBlendWeight, char bSkipColorKey)>(0x41A039);
+// Surface_AlphaBlendRect lives in src/Surface_AlphaBlendRect.cpp (extern in shared.hpp)
+
+void (__cdecl *DrawAdvanceDialogueText_47FA84)(CHanaSceneT458_S504 *pScene, int, int, __int16)
+= reinterpret_cast<void (__cdecl*)(CHanaSceneT458_S504 *pScene, int, int, __int16)>(0x47fa84);
 
 
 void (__cdecl *CHanaObj__NewSceneT458_S504)(CHanaSceneT458_S504 **ppOut)
@@ -69,6 +71,8 @@ bool (__cdecl *CHanaAnimSetT3F1__BlendStep_43A643)(CHanaAnimSetT3F1_S150 *pAnimS
 = reinterpret_cast<bool (__cdecl*)(CHanaAnimSetT3F1_S150 *pAnimSet, float *pfWeight, float fDelta)>(0x43a643);
 void (__cdecl *HanaAnim_UpdateBoneTransform)(CHanaAnimT3F0_S240 *pAnim, float fWeight)
 = reinterpret_cast<void (__cdecl*)(CHanaAnimT3F0_S240 *pAnim, float fWeight)>(0x43a43f);
+void (__cdecl *SekBody__UpdateTo2_401647)(CSekBody *pSekBody, int nIndex)
+= reinterpret_cast<void (__cdecl*)(CSekBody *pSekBody, int nIndex)>(0x401647);
 
 
 // === FUNCTIONS ===
@@ -321,7 +325,7 @@ BOOL __cdecl hook_LoadOds_4843CF(LPCSTR lpFileName, CHanaSceneT458_S504 **ppScen
   if ( nNumberOfBytesToRead == -1 )
     return 0;
   lpBuffer = MemAlloc_40DEF7(nNumberOfBytesToRead + 128);
-  wsprintfA(String1, "VƒtƒH[ƒ}ƒbƒg‚n‚c‚r%c%c%c", 13, 10, 0);
+  wsprintfA(String1, "ï¿½Vï¿½tï¿½Hï¿½[ï¿½}ï¿½bï¿½gï¿½nï¿½cï¿½r%c%c%c", 13, 10, 0);
   ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, &NumberOfBytesRead, 0);
   CloseHandle(hFile);
   if ( !lstrcmpA(String1, (LPCSTR)lpBuffer) )
@@ -615,10 +619,412 @@ void __cdecl hook_HanaAnim_UpdateBoneTransform(CHanaAnimT3F0_S240 *pAnim, float 
   qmemcpy(&pAnim->keyCur_14C.matLocal, &pAnim->pHanaFram_130->mat4x4_fmrx, sizeof(pAnim->keyCur_14C.matLocal));
 }
 
+// Drive the whole scene to a script time. pfExecTime is clamped to the anim-set length (pAnimSet_148->fRes_13C) and to WCurNum; bContinue=0 when the end is reached. Calls SetTime on the master anim set, updates the camera look-at (CalculateLocalRotationMatrix + UpdateBoneLookAtTransform + MtxMult) when by_474/pCamFrame_478 are set, then per body finds the first item prop whose start (flt_0) < fClampedTime and CutTo it (UpdateTo2_401647), advancing with UpdateAnim(fDelta). Returns bContinue.
+bool __cdecl hook_UpdateSceneAtTime_4825D5(CHanaSceneT458_S504 *pScene, float *pfExecTime, float fDelta)
+{
+  float dirUpZ; // [esp+0h] [ebp-28h] BYREF
+  float dirForwardZ; // [esp+4h] [ebp-24h] BYREF
+  float dirUpY; // [esp+8h] [ebp-20h] BYREF
+  float dirForwardY; // [esp+Ch] [ebp-1Ch] BYREF
+  float dirUpX; // [esp+10h] [ebp-18h] BYREF
+  float dirForwardX; // [esp+14h] [ebp-14h] BYREF
+  signed int j; // [esp+18h] [ebp-10h]
+  unsigned int i; // [esp+1Ch] [ebp-Ch]
+  float t2; // [esp+20h] [ebp-8h]
+  bool bContinue; // [esp+24h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] UpdateSceneAtTime_4825D5\n");
+
+  bContinue = 1;
+  t2 = *pfExecTime;
+  if ( *pfExecTime >= (double)pScene->pAnimSet_148->fRes_13C )
+  {
+    *pfExecTime = pScene->pAnimSet_148->fRes_13C;
+    bContinue = 0;
+  }
+  if ( *pfExecTime >= (double)pScene->WCurNum )
+    t2 = pScene->WCurNum;
+  CHanaAnimSetT3F1__SetTime_403D61(pScene->pAnimSet_148, t2);
+  if ( pScene->by_474 && pScene->pCamFrame_478 )
+  {
+    CalculateLocalRotationMatrix(
+      pScene->pCamFrame_478,
+      (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+      &dirForwardX,
+      &dirForwardY,
+      &dirForwardZ,
+      &dirUpX,
+      &dirUpY,
+      &dirUpZ);
+    UpdateBoneLookAtTransform(
+      g_pCameraFrame,
+      (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+      dirForwardX,
+      dirForwardY,
+      dirForwardZ,
+      dirUpX,
+      dirUpY,
+      dirUpZ);
+    HanaFrame_GetRelPosition(pScene->pCamFrame_478, g_pSceneFrame, &dirForwardX, &dirForwardY, &dirForwardZ);
+    MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, dirForwardX, dirForwardY, dirForwardZ);
+  }
+  if ( pScene->arrSizes_144 )
+  {
+    for ( i = 0; i < pScene->dwCount_130; ++i )
+    {
+      for ( j = pScene->arrSizes_144[i] - 1; j >= 0; --j )
+      {
+        if ( pScene->arrSekItemProps_140[i][j].flt_0 < (double)t2 )
+        {
+          SekBody__UpdateTo2_401647(pScene->refsSekBody_13C[i], pScene->arrSekItemProps_140[i][j].index);
+          break;
+        }
+      }
+      if ( pScene->refsSekBody_13C[i] )
+        CSekBody__UpdateAnim_4019E1(pScene->refsSekBody_13C[i], fDelta);
+    }
+  }
+  return bContinue;
+}
+
+void __cdecl hook_SekBody__UpdateTo2_401647(CSekBody *pSekBody, int nIndex)
+{
+  ONCELOG("[HNH:SUB] SekBody__UpdateTo2_401647\n");
+
+  if ( pSekBody->field_208 != nIndex )
+  {
+    if ( !pSekBody->items_250[nIndex].field_7C )
+      pSekBody->float_21C = 1.0;
+    pSekBody->field_200 = nIndex;
+    pSekBody->field_208 = nIndex;
+    pSekBody->items_250[nIndex].field_44 = 0;
+    pSekBody->items_250[nIndex].field_6C = 0;
+    pSekBody->items_250[nIndex].field_64 = 0;
+    if ( pSekBody->items_250[nIndex].field_50 )
+      pSekBody->items_250[nIndex].float_5C = (pSekBody->items_250[nIndex].float_58 - pSekBody->items_250[nIndex].float_54)
+      / (double)pSekBody->items_250[nIndex].field_50;
+    else
+      pSekBody->items_250[nIndex].float_5C = 0.0;
+    pSekBody->items_250[nIndex].float_60 = pSekBody->items_250[nIndex].float_54;
+    pSekBody->field_244 = 0;
+    pSekBody->field_248 = 0;
+  }
+}
+
+// Scene fade/timer step. flt_454 accumulates a 0..1 fade envelope (flt_454 = fDelta*flt_458 + flt_454, clamped to [0,1] and re-arming flt_458=0 at the limits). When by_461[0] is set, flt_450 ramps a 0..1 timer at fDelta/10s. pfExecTime is advanced by fDelta. Called every frame in the ODS main loop.
+void __cdecl hook_UpdateSceneTimer_4827FE(CHanaSceneT458_S504 *pScene, float *pfExecTime, float fDelta)
+{
+  ONCELOG("[HNH:SUB] UpdateSceneTimer_4827FE\n");
+  pScene->flt_454 = fDelta * pScene->flt_458 + pScene->flt_454;
+  if ( pScene->flt_454 > 1.0 )
+  {
+    pScene->flt_454 = 1.0;
+    pScene->flt_458 = 0.0;
+  }
+  if ( pScene->flt_454 < 0.0 )
+  {
+    pScene->flt_454 = 0.0;
+    pScene->flt_458 = 0.0;
+  }
+  if ( pScene->by_461 )
+  {
+    pScene->flt_450 = fDelta / 10.0 + pScene->flt_450;
+    if ( pScene->flt_450 > 1.0 )
+      pScene->flt_450 = 1.0;
+  }
+  else
+  {
+    pScene->flt_450 = pScene->flt_450 - fDelta / 10.0;
+    if ( pScene->flt_450 < 0.0 )
+      pScene->flt_450 = 0.0;
+  }
+  *pfExecTime = fDelta + *pfExecTime;
+}
+
+// Pause/resume the scene's DirectSound. bPause=1: stop every anim-set sound (pAnimSet_148->arroS118_14C[i].pSnd_0->pDSBuffer_0->lpVtbl->Stop) and mark field_110=9999 (skipped). bPause=0: reset field_110=0 across all refsAnimeSets_138 so playback can restart.
+void __cdecl hook_PauseSceneAudio_46A2A0(CHanaSceneT458_S504 *pScene, int bPause)
+{
+  unsigned int j; // [esp+0h] [ebp-8h]
+  unsigned int i; // [esp+4h] [ebp-4h]
+  unsigned int k; // [esp+4h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] PauseSceneAudio_46A2A0\n");
+
+  if ( pScene )
+  {
+    if ( bPause == 1 )
+    {
+      for ( i = 0; i < pScene->pAnimSet_148->nCount_148; ++i )
+      {
+        if ( pScene->pAnimSet_148->arroS118_14C[i].pSnd_0 )
+        {
+          pScene->pAnimSet_148->arroS118_14C[i].pSnd_0->pDSBuffer_0->Stop();
+          pScene->pAnimSet_148->arroS118_14C[i].field_110 = 9999;
+        }
+      }
+    }
+    else
+    {
+      for ( j = 0; j < pScene->dwCount_130; ++j )
+      {
+        for ( k = 0; k < pScene->refsAnimeSets_138[j]->nCount_148; ++k )
+          pScene->refsAnimeSets_138[j]->arroS118_14C[k].field_110 = 0;
+      }
+    }
+  }
+}
+
+// Set the D3D projection FOV. Stores fFov in global flt_4B00C4, rebuilds g_mat4x4Projection_4CE870 via MatrixPerspectiveFovLH, and applies it as D3DTS_PROJECTION. Called at battle start (1.2) and during transitions (0.5).
+void __cdecl hook_SetProjectionFov_40DCA3(float fFov)
+{
+  ONCELOG("[HNH:SUB] SetProjectionFov_40DCA3\n");
+ 
+
+  g_fProjFov = fFov;
+  MatrixPerspectiveFovLH(&g_mat4x4Projection_4CE870, fFov, g_fProjAspect, g_fProjZNear, g_fProjZFar);
+  g_pD3DDevice_4D6C78->SetTransform(
+    D3DTRANSFORMSTATE_PROJECTION,
+    (LPD3DMATRIX)&g_mat4x4Projection_4CE870);
+  BuildViewportMatrix();
+}
+
+uint32_t &g_fFrameTime_52F1B4 = *(uint32_t *)0x52F1B4; // WRITABLE
+
+// DrawDialogueWindow(pScene, fFrameTime, xMouse, yMouse, wBtnMouse)
+// Dialogue-window renderer. pScene=CHanaSceneT458_S504*. Scales fFrameTime by the speed index
+// (byte_530267) and accumulates the text scroll offset flt_52F1B4; right-click fast-forwards.
+// Static mode (by_463==1, flt_454<=0): fades in pSprWindow6bmp (frame) and dispatches text
+// via sub_47FA84(pScene,x,y,wBtn). Scrolling mode: fades pSprWindow6bmp out, draws
+// pSprWindow2bmp (text tape) in 3 offset passes, then DrawDialogueText_4803B5(pScene,fFrameTime).
+// Called from Scene1Dialog_477F90 / Scene2_45BCAE / Scene4_4703AE.
+void __cdecl hook_DrawDialogueWindow_480B2D(
+  CHanaSceneT458_S504 *pScene,
+  float fDeltaTime,
+  int xMouse,
+  int yMouse,
+  WORD btnMouse)
+{
+  ONCELOG("[HNH:SUB] DrawDialogueWindow_480B2D\n");
+
+  double fAlphaCur; // st7
+  int nScrollTop; // eax
+  int nWin1L; // eax
+  int nWin2L; // eax
+  int nWin1T; // [esp+60h] [ebp-64h]
+  int nWin2T; // [esp+60h] [ebp-64h]
+  int nScrollR; // [esp+64h] [ebp-60h]
+  int nWin1R; // [esp+64h] [ebp-60h]
+  int nWin2R; // [esp+64h] [ebp-60h]
+  float fFadeOutAlpha; // [esp+68h] [ebp-5Ch]
+  float fTapeAlpha; // [esp+68h] [ebp-5Ch]
+  int nScrollB; // [esp+68h] [ebp-5Ch]
+  float fFadeInAlpha; // [esp+68h] [ebp-5Ch]
+  int nWin1B; // [esp+68h] [ebp-5Ch]
+  int nWin2B; // [esp+68h] [ebp-5Ch]
+  float fSavedAlpha; // [esp+6Ch] [ebp-58h]
+  float arrTextSpeedMult[10] = { 1.0, 2.5, 5.0 }; // [esp+70h] [ebp-54h] BYREF
+  DWORD nSurfH; // [esp+98h] [ebp-2Ch] BYREF
+  RECT rcDest; // [esp+9Ch] [ebp-28h] BYREF
+  DWORD nSurfW; // [esp+ACh] [ebp-18h] BYREF
+  RECT rcSrc; // [esp+B0h] [ebp-14h] BYREF
+  float fFrameTime; // [esp+C0h] [ebp-4h]
+
+  fFrameTime = fDeltaTime;
+  if ( pScene )
+  {
+    fFrameTime = fFrameTime * arrTextSpeedMult[(unsigned __int8)g_nAviFrameMultipler_530267];
+    g_fFrameTime_52F1B4 = g_fFrameTime_52F1B4 + fFrameTime;
+    if ( btnMouse == 3 && pScene->by_460 )
+      fFrameTime = 1000.0 * fDeltaTime;
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZENABLE, 0);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZVISIBLE, 0);
+    g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ADDRESS, 1);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 1);
+    if ( pScene->flt_454 <= 0.0 )
+    {
+      if ( pScene->by_463 == 1 && g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+      {
+        if ( pScene->pSprWindowBmp[3] )
+        {
+          fSavedAlpha = CHanaSpriteT3F6__GetAlpha_414AFB(pScene->pSprWindowBmp[3]);
+          fFadeInAlpha = fFrameTime * 0.050000001 + fSavedAlpha;
+          CHanaObj__SetAlpha3F6(pScene->pSprWindowBmp[3], fFadeInAlpha);
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
+          GetSurfaceWH(pScene->pSprWindowBmp[3]->pTexture_134, &nSurfW, &nSurfH);
+          SetRect(&rcSrc, 1, 1, nSurfW - 1, nSurfH - 1);
+          nWin1B = ConvertFrom640AsInt(378);
+          nWin1R = ConvertFrom640AsInt(320);
+          nWin1T = ConvertFrom640AsInt(250);
+          nWin1L = ConvertFrom640AsInt(64);
+          SetRect(&rcDest, nWin1L, nWin1T, nWin1R, nWin1B);
+          CHanaSpriteT3F6__SetSrcRect_414B28(pScene->pSprWindowBmp[3], &rcSrc);
+          DrawSpriteLTRB(pScene->pSprWindowBmp[3], rcDest.left, rcDest.top, rcDest.right, rcDest.bottom);
+          SetRect(&rcSrc, nSurfW - 1, 1, 1, nSurfH - 1);
+          nWin2B = ConvertFrom640AsInt(378);
+          nWin2R = ConvertFrom640AsInt(576);
+          nWin2T = ConvertFrom640AsInt(250);
+          nWin2L = ConvertFrom640AsInt(320);
+          SetRect(&rcDest, nWin2L, nWin2T, nWin2R, nWin2B);
+          CHanaSpriteT3F6__SetSrcRect_414B28(pScene->pSprWindowBmp[3], &rcSrc);
+          DrawSpriteLTRB(pScene->pSprWindowBmp[3], rcDest.left, rcDest.top, rcDest.right, rcDest.bottom);
+          DrawAdvanceDialogueText_47FA84(pScene, xMouse, yMouse, btnMouse);
+        }
+        g_pD3DDevice_4D6C78->EndScene();
+      }
+    }
+    else
+    {
+      fAlphaCur = CHanaSpriteT3F6__GetAlpha_414AFB(pScene->pSprWindowBmp[3]);
+      fFadeOutAlpha = fAlphaCur - fFrameTime * 0.1;
+      CHanaObj__SetAlpha3F6(pScene->pSprWindowBmp[3], fFadeOutAlpha);
+      if ( pScene->pSprWindowBmp[0] )
+      {
+        if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+        {
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
+          fTapeAlpha = pScene->flt_454 * 0.40000001;
+          CHanaObj__SetAlpha3F6(pScene->pSprWindowBmp[0], fTapeAlpha);
+          nScrollB = ConvertFrom640AsInt(480);
+          nScrollR = ConvertFrom640AsInt(640);
+          nScrollTop = ConvertFrom640AsInt(352);
+          SetRect(&rcDest, 0, nScrollTop, nScrollR, nScrollB);
+          SetRect(&rcSrc, (int)(-(__int64)g_fFrameTime_52F1B4) / 2, 2, 384 - (__int64)g_fFrameTime_52F1B4 / 2, 124);
+          CHanaSpriteT3F6__SetSrcRect_414B28(pScene->pSprWindowBmp[0], &rcSrc);
+          DrawSpriteLTRB(pScene->pSprWindowBmp[0], rcDest.left, rcDest.top, rcDest.right, rcDest.bottom);
+          SetRect(&rcSrc, (int)(-(__int64)g_fFrameTime_52F1B4) / 3, 2, 256 - (__int64)g_fFrameTime_52F1B4 / 3, 124);
+          CHanaSpriteT3F6__SetSrcRect_414B28(pScene->pSprWindowBmp[0], &rcSrc);
+          DrawSpriteLTRB(pScene->pSprWindowBmp[0], rcDest.left, rcDest.top, rcDest.right, rcDest.bottom);
+          SetRect(&rcSrc, (int)(-(__int64)g_fFrameTime_52F1B4) / 4, 2, 128 - (__int64)g_fFrameTime_52F1B4 / 4, 124);
+          CHanaSpriteT3F6__SetSrcRect_414B28(pScene->pSprWindowBmp[0], &rcSrc);
+          DrawSpriteLTRB(pScene->pSprWindowBmp[0], rcDest.left, rcDest.top, rcDest.right, rcDest.bottom);
+          DrawDialogueText_4803B5(pScene, fFrameTime);
+          g_pD3DDevice_4D6C78->EndScene();
+        }
+      }
+    }
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZVISIBLE, 1);
+  }
+}
+
+// DrawAdvanceDialogueText(pScene, xMouse, yMouse, wBtn)
+// Static (non-scrolling) dialogue renderer + click-to-advance. Walks pScene->textSprites_264[4][29],
+// drawing each glyph in a fixed 3-line layout (row i at y~32*i+270) with the window's current alpha;
+// stops at the first glyph flagged field_10C (end of line). Then, if the mouse Y (yMouse) is within one of
+// the 3 line bands, highlights that row with pSprWindow7bmp; on left-click (wBtn==1) it advances
+// dwPtrCurrent_448 (skipping up to 200 chars across '*' chunk markers, counting rows crossed) and, on a
+// row change, sets by_463=0, flt_454=0, flt_458=0.05 and returns to end the static display.
+void __cdecl hook_DrawAdvanceDialogueText_47FA84(CHanaSceneT458_S504 *pScene, int xMouse, int yMouse, __int16 wBtn)
+{
+  int v4; // eax
+  int left1; // eax
+  int v6; // [esp-Ch] [ebp-44h]
+  int top1; // [esp-Ch] [ebp-44h]
+  int v8; // [esp-8h] [ebp-40h]
+  int right1; // [esp-8h] [ebp-40h]
+  int v10; // [esp-4h] [ebp-3Ch]
+  int bottom1; // [esp-4h] [ebp-3Ch]
+  int currentk; // [esp+0h] [ebp-38h]
+  float v13; // [esp+4h] [ebp-34h]
+  int i; // [esp+8h] [ebp-30h]
+  int k; // [esp+8h] [ebp-30h]
+  int j; // [esp+Ch] [ebp-2Ch]
+  int m; // [esp+Ch] [ebp-2Ch]
+  struct tagRECT rc; // [esp+10h] [ebp-28h] BYREF
+  struct tagRECT rc1; // [esp+20h] [ebp-18h] BYREF
+  int bIsOk; // [esp+30h] [ebp-8h]
+  float alpha; // [esp+34h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] DrawAdvanceDialogueText_47FA84\n");
+  
+  v13 = 0.0;
+  alpha = 0.0;
+  bIsOk = 0;
+  if ( pScene && pScene->pSprWindowBmp[3] && pScene->ptrStrData_260 )
+  {
+    alpha = CHanaSpriteT3F6__GetAlpha_414AFB(pScene->pSprWindowBmp[3]);
+    SetRect(&rc, 0, 0, 24, 24);
+    for ( i = 0; i < 4; ++i )
+    {
+      for ( j = 0; j < 29; ++j )
+      {
+        if ( pScene->textSprites_264[i][j] )
+        {
+          SetRect(&rc1, 22 * j, 22 * i, 22 * (j + 1) + 2, 22 * (i + 1) + 2);
+          if ( pScene->textSprites_264[i][j]->bOk_10C == 1 )
+          {
+            bIsOk = 1;
+            break;
+          }
+          v13 = v13 + 1.0;
+          g_pD3DDevice_4D6C78->SetTexture(0, 0);
+          CHanaObj__SetAlpha3F6(pScene->textSprites_264[i][j], alpha);
+          v10 = ConvertFrom640AsInt(22 * (i + 1) + 10 * i + 272);
+          v8 = ConvertFrom640AsInt(22 * (j + 2) + 67);
+          v6 = ConvertFrom640AsInt(32 * i + 270);
+          v4 = ConvertFrom640AsInt(22 * (j + 1) + 65);
+          SetRect(&rc1, v4, v6, v8, v10);
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
+          DrawSpriteLTRB(pScene->textSprites_264[i][j], rc1.left, rc1.top, rc1.right, rc1.bottom);
+          DrawSpriteLTRB(pScene->textSprites_264[i][j], rc1.left, rc1.top, rc1.right, rc1.bottom);
+        }
+      }
+      if ( bIsOk == 1 )
+        break;
+    }
+    for ( k = 0; k < 3; ++k )
+    {
+      if ( ConvertFrom640AsInt(32 * k + 270) <= yMouse && ConvertFrom640AsInt(22 * (k + 1) + 10 * k + 270) >= yMouse )
+      {
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 2);
+        bottom1 = ConvertFrom640AsInt(22 * (k + 1) + 10 * k + 275);
+        right1 = ConvertFrom640AsInt(550);
+        top1 = ConvertFrom640AsInt(32 * k + 265);
+        left1 = ConvertFrom640AsInt(90);
+        SetRect(&rc1, left1, top1, right1, bottom1);
+        if ( pScene->pSprWindowBmp[4] )
+          DrawSpriteLTRB(pScene->pSprWindowBmp[4], rc1.left, rc1.top, rc1.right, rc1.bottom);
+        if ( wBtn == 1 )
+        {
+          currentk = 0;
+          for ( m = 0; m < 200; ++m )
+          {
+            if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) == '*' )
+            {
+              if ( currentk == k )
+              {
+                pScene->by_463 = 0;
+                pScene->flt_454 = 0.0;
+                pScene->flt_458 = 0.050000001;
+                return;
+              }
+              ++currentk;
+            }
+            ++pScene->dwPtrCurrent_448;
+          }
+        }
+        return;
+      }
+    }
+  }
+}
+
 void register_PlayOdsDialogueScene_477F90() {
     hnh_Hook(0x477F90, hook_PlayOdsDialogueScene_477F90, "PlayOdsDialogueScene_477F90"); // [OK]
     hnh_Hook(0x43a371, hook_CHanaAnimSetT3F1__BeginBlend_43A371, "CHanaAnimSetT3F1__BeginBlend_43A371");
     hnh_Hook(0x43a43f, hook_HanaAnim_UpdateBoneTransform, "HanaAnim_UpdateBoneTransform_43A43F");
+    hnh_Hook(0x401647, hook_SekBody__UpdateTo2_401647, "SekBody__UpdateTo2_401647");
+    hnh_Hook(0x47fa84, hook_DrawAdvanceDialogueText_47FA84, "DrawAdvanceDialogueText_47FA84");
 
     hnh_HookOff();
     hnh_Hook(0x4843cf, hook_LoadOds_4843CF, "LoadOds_4843CF"); // [OK]
@@ -627,5 +1033,11 @@ void register_PlayOdsDialogueScene_477F90() {
     hnh_Hook(0x43a643, hook_CHanaAnimSetT3F1__BlendStep_43A643, "CHanaAnimSetT3F1__BlendStep_43A643"); // [OK]
     hnh_Hook(0x4857ca, hook_ResetSceneBodies_4857CA, "ResetSceneBodies_4857CA"); // [OK]
     hnh_Hook(0x481c5f, hook_CHanaObj__NewSceneT458_S504, "CHanaObj__NewSceneT458_S504_481C5F"); // [OK]
+    hnh_Hook(0x4827fe, hook_UpdateSceneTimer_4827FE, "UpdateSceneTimer_4827FE"); // [OK]
+    hnh_Hook(0x46a2a0, hook_PauseSceneAudio_46A2A0, "PauseSceneAudio_46A2A0"); // [OK]
+    hnh_Hook(0x40dca3, hook_SetProjectionFov_40DCA3, "SetProjectionFov_40DCA3"); // [OK]
+    hnh_Hook(0x480b2d, hook_DrawDialogueWindow_480B2D, "DrawDialogueWindow_480B2D"); // [OK]
+    hnh_Hook(0x4825d5, hook_UpdateSceneAtTime_4825D5, "UpdateSceneAtTime_4825D5");  // [OK]
+
     hnh_HookOn();
 }

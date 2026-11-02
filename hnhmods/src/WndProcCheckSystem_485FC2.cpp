@@ -31,10 +31,12 @@ DDBLTFX &g_ddBltFx          = *(DDBLTFX *)0x518308; // WRITABLE
 DDPIXELFORMAT &g_ddPixFormat = *(DDPIXELFORMAT *)0x517790; // WRITABLE
 LPDIRECTDRAWSURFACE7 &g_pPrimaryBuffer_4D6C88 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C88; // WRITABLE
 uint32_t &dword_51779C      = *(uint32_t *)0x51779C; // WRITABLE
-uint32_t &g_dwPixelFormat   = *(uint32_t *)0x518370; // WRITABLE
+
+// === PINNED GLOBALS ===
+DWORD &g_dwPixelFormat = *(DWORD *)0x518370;   // READ-ONLY (16/24/32 bpp)
 uint32_t &g_dwBytesPerPixel = *(uint32_t *)0x518374; // WRITABLE
 uint32_t &dword_5177A0      = *(uint32_t *)0x5177A0; // WRITABLE
-uint32_t &g_dwRGBBitMask    = *(uint32_t *)0x517788; // WRITABLE
+DWORD &g_dwRGBBitMask  = *(DWORD *)0x517788;   // READ-ONLY (B channel mask)
 uint32_t &dword_5177A4      = *(uint32_t *)0x5177A4; // WRITABLE
 uint32_t &g_dwRBitMask      = *(uint32_t *)0x517D58; // WRITABLE
 uint32_t &dword_5177A8      = *(uint32_t *)0x5177A8; // WRITABLE

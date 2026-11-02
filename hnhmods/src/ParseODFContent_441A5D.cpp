@@ -61,11 +61,8 @@ void (__cdecl*HanaMorp_InitSubObject)(CHanaMorpT457_S40C *pMorpT457, int zero,
 void (__cdecl*CalcFrameBound_404B80)(CHanaFrameT3EC_S354 *pFrameT3EC, CHanaMorpT457_S40C *pMorpT3F5) =
     reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaMorpT457_S40C *)>(0x404B80);
 
-
-D3DXMATRIX *(__cdecl*MtxMult_4069DD)(CHanaFrameT3EC_S354 *pChildFrame,
-    CHanaFrameT3EC_S354 *pParentFrame, float x, float y, float z) =
-    reinterpret_cast<D3DXMATRIX *(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *,
-      float, float, float)>(0x4069DD);
+D3DXMATRIX *(__cdecl*MtxMult_4069DD)(CHanaFrameT3EC_S354 *pChildFrame, CHanaFrameT3EC_S354 *pParentFrame, float x, float y, float z) =
+    reinterpret_cast<D3DXMATRIX *(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *, float, float, float)>(0x4069DD);
 void (__cdecl * ApplyQTS_4035B1)( D3DXMATRIX *pOut, D3DXQUATERNION *pQ, float x, float y, float z, float sx, float sy, float sz) =
   reinterpret_cast<void(__cdecl*)( D3DXMATRIX *pOut, 
     D3DXQUATERNION *pQ, float x, float y, float z, float sx, float sy, float sz)>(0x4035B1);

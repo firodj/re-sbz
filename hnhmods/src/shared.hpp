@@ -52,6 +52,8 @@ extern uint32_t &g_dwRBitMask;
 extern HGDIOBJ& g_hFont;
 extern int& g_dwCharWidth;
 extern int& g_dwFontHeight;
+extern DWORD &g_dwPixelFormat;   // READ-ONLY (16/24/32 bpp)
+extern DWORD &g_dwRGBBitMask;   // READ-ONLY (B channel mask)
 
 extern const char *(__cdecl*HanaDS_SetErrStr)(DWORD hr);
 extern void (__cdecl*SetUiFont_419BCD)(int nCharW, int nFontH, LPCSTR szFaceName);
@@ -111,6 +113,7 @@ extern CHAR (&g_szGRPPath)[256];
 extern CHAR (&g_szGRP800Path)[256];
 extern CHAR (&g_szSEPath)[256];
 extern CHAR (&g_szDATAPath)[256];
+extern DWORD& g_dwFontRenderFlag;   // float text-scroll counter @0x52F1B0
 
 extern void (__cdecl * SetupDirPath_486630)(void);
 extern bool (__cdecl * CheckInstalledDirRoot_4869A7)(HWND hWnd);
@@ -139,6 +142,10 @@ extern uint32_t &g_nZBufDepthMode_518C9C;
 extern int      &g_nRenderHALMode_518CA0;
 extern uint32_t &g_nWidth2;
 extern uint32_t &g_nScreenScale_52F19C;
+
+extern float &g_fProjZFar;
+extern float &g_fProjZNear;
+extern float& g_fProjAspect;
 extern float& g_fProjFov;
 
 extern int (&g_arrZBufDepthCountPerDev_518C40)[16];
@@ -152,7 +159,7 @@ extern HWND      &g_hWnd;
 extern HINSTANCE &g_hInstance_518CB0;
 extern BOOL      &g_bRunGame;
 extern D3DXMATRIX &g_mat4x4View_4D4780;
-extern D3DXMATRIX& g_mat4x4Projection_4CE870;
+extern D3DXMATRIX &g_mat4x4Projection_4CE870;
 
 extern void (__cdecl*CHanaObj__NewLightT3EF)(CHanaLightT3EF_S1A0** pOut, D3DLIGHT7* pD3Dlight);
 extern void (__cdecl*AttachHanaObj_40BAB8)(CHanaBase_S130* pParent, LPCSTR szName);
@@ -304,6 +311,18 @@ extern int(__cdecl* ShowYesNoDialog_461A9E)(CHanaSpriteT3F6_S1FC* pCursor,
 
 extern int(__cdecl* PlayOdsDialogueScene_477F90)(int nOdsIndex);
 
+// === DEFINED DrawDialogueText_4803B5.cpp ===
+
+extern void(__cdecl* DrawDialogueText_4803B5)(CHanaSceneT458_S504* pScene, float fFrameTime);
+
+
+// === DEFINED Surface_AlphaBlendRect.cpp ===
+
+extern void(__cdecl* Surface_AlphaBlendRect)(LPDIRECTDRAWSURFACE7 pDestSurface, int nDestX,
+  int nDestY, LPDIRECTDRAWSURFACE7 pSrcSurface, LPRECT pSrcRect, int nBlendWeight,
+  char bSkipColorKey);
+
+
 // === DEFINED SysMenu_SaveMenu_462135.cpp ===
 
 extern void(__cdecl* SysMenu_SaveMenu_462135)(CSceneState* sceneStates, CHAR* arrSceneName,
@@ -407,6 +426,7 @@ extern void (__cdecl * HanaFrame_GetCenterPosition_408C3E)( CHanaFrameRootT3EC_S
 extern BOOL(__cdecl* GetSoundBufferAverageLevel)(LPDIRECTSOUNDBUFFER pDSBuffer, float* pfPlayPos);
 extern void(__cdecl* CalcFrameBound_404B80)(CHanaFrameT3EC_S354* pFrameT3EC, CHanaMorpT457_S40C* pMorpT3F5);
 extern void(__cdecl* CHanaAnimSetT3F1__SetTime_403D61)(CHanaAnimSetT3F1_S150* pHanaT3F1, float t2);
+extern D3DXMATRIX* (__cdecl* MtxMult_4069DD)(CHanaFrameT3EC_S354* pChildFrame, CHanaFrameT3EC_S354* pParentFrame, float x, float y, float z);
 
 // === DEFINED ParseODS.cpp ===
 
@@ -450,7 +470,8 @@ extern void(__cdecl* HanaVert_DrawByType)(CHanaVertT3EA_S1FC* pVert);
 extern void(__cdecl* SortObjectsByDepth)();
 extern void(__cdecl*SetLightEnableMask)(QWORD bitLightEnables);
 extern void(__cdecl*UpdateVertTextureFromFrame)(CHanaVertT3EA_S1FC* pVertArg, CHanaFrameT3EC_S354* pFrameArg);
-
+extern void(__cdecl* UpdateBoneLookAtTransform)(CHanaFrameT3EC_S354* pBoneFrame, CHanaFrameT3EC_S354* pParentFrame, float dirForwardX, float dirForwardY, float dirForwardZ, float dirUpX, float dirUpY, float dirUpZ);
+extern void(__cdecl* BuildViewportMatrix)();
 #endif
 
 // == MACROS

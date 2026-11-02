@@ -87,6 +87,12 @@
     <ClCompile Include="src\PlayOdsDialogueScene_477F90.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\DrawDialogueText_4803B5.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Surface_AlphaBlendRect.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="src\PlayScreenFade.cpp">
       <Filter>src</Filter>
     </ClCompile>
