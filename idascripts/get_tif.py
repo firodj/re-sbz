@@ -11,6 +11,7 @@ def get_c_type(ea):
         is_ptr=False,
         is_array=False,
         is_funcptr=False,
+        is_func=False,
         is_struct=False,
         is_typeref=False,
         size=None,
@@ -38,6 +39,7 @@ def get_c_type(ea):
             result['element_count'] = str(tif.get_array_nelems())
 
         result['is_funcptr'] = tif.is_funcptr()
+        result['is_func'] = tif.is_func()
         result['is_struct'] = tif.is_struct()
         result['is_typeref'] = tif.is_typeref()
         # get_udt_nmembers

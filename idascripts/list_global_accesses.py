@@ -10,7 +10,7 @@ import ida_lines
 import ida_xref
 import ida_ua
 import importlib
-
+import re
 import get_tif
 importlib.reload(get_tif)
 
@@ -75,7 +75,33 @@ def is_segment_writable(seg):
     # Check write permission: bit 2 (0x2) in seg.perm
     return bool(seg.perm & ida_segment.SEGPERM_WRITE)
 
-def list_global_accesses_in_func():
+def print_hook_name(func):
+    
+    start_ea = func.start_ea
+    func_name = ida_funcs.get_func_name(start_ea)
+    orig_func_name = func_name
+
+    suffix = f"{func.start_ea:06X}"
+    if not func_name.endswith(suffix):
+        func_name = f"{func_name}_{suffix}"
+    
+    print(f"hook_{orig_func_name}")
+    print(f"ONCELOG(\"[HNH:SUB] {func_name}\\n\");")
+    print(f"hnh_Hook({start_ea:#06x}, hook_{orig_func_name}, \"{func_name}\");")
+    
+    type_result = get_tif.get_c_type(start_ea)
+
+    pattern = r"^(.*?)\s*(__[a-zA-Z0-9_]+)\s*\((.*)\)$"
+    match = re.match(pattern, type_result["type_str"])
+    if match:
+        return_type = match.group(1).strip()
+        convention = match.group(2).strip()
+        params_str = match.group(3).strip()
+        print(f"{return_type} ({convention} *{orig_func_name})({params_str})")
+        print(f"  = reinterpret_cast<{return_type} ({convention}*)({params_str})>({start_ea:#06x});")
+    print(f"----------")
+
+def listglob():
     accesses = set()
     defineds = set()
     # Get current address (where cursor is)
@@ -93,7 +119,12 @@ def list_global_accesses_in_func():
     start_ea = func.start_ea
     end_ea = func.end_ea
     func_name = ida_funcs.get_func_name(here) or "<no name>"
+
+    print("\n\n======================\n")
     print(f"Function: {func_name} (0x{start_ea:X} - 0x{end_ea:X})")
+    
+    print_hook_name(func)
+
     print("Accesses to global variables:")
 
     count = 0
@@ -177,4 +208,6 @@ def list_global_accesses_in_func():
         print("No accesses to global variables found in the current function.")
 
 if __name__ == '__main__':
-    list_global_accesses_in_func()
+    print("type: listglob()\n")
+
+    listglob()

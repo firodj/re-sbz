@@ -14,14 +14,13 @@ int (__cdecl*ParseODFFile_441F19)(LPCSTR lpFileName, CHanaFrameT3EC_S354 **pOutR
     reinterpret_cast<int(__cdecl*)(LPCSTR, CHanaFrameT3EC_S354 **, CHanaAnimSetT3F1_S150 **)>(0x441F19);
 CSekBody *(__cdecl*ParseSekFile_401039)(LPCSTR lpFileName) =
     reinterpret_cast<CSekBody *(__cdecl*)(LPCSTR)>(0x401039);
-int (__cdecl*CSekBody__PlayAnim_40179D)(CSekBody *pSekBody, int nMode) =
-    reinterpret_cast<int(__cdecl*)(CSekBody *, int)>(0x40179D);
+void (__cdecl*CSekBody__PlayAnim_40179D)(CSekBody *pSekBody, int nMode) =
+    reinterpret_cast<void(__cdecl*)(CSekBody *, int)>(0x40179D);
 CHanaFrameT3EC_S354 *(__cdecl*FindFrameByName_47E999)(CHanaFrameT3EC_S354 *pRootFrame,
     LPCSTR pszName) =
     reinterpret_cast<CHanaFrameT3EC_S354 *(__cdecl*)(CHanaFrameT3EC_S354 *, LPCSTR)>(0x47E999);
-int (__cdecl*ParseOds3DON_483704)(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAnimSet,
-    CHanaFrameT3EC_S354 *pTempFrame) =
-    reinterpret_cast<int(__cdecl*)(LPBYTE *, CHanaAnimSetT3F1_S150 *, CHanaFrameT3EC_S354 *)>(0x483704);
+void (__cdecl*ParseOds3DON_483704)(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAnimSet, CHanaFrameT3EC_S354 *pTempFrame)
+  = reinterpret_cast<void(__cdecl*)(LPBYTE *, CHanaAnimSetT3F1_S150 *, CHanaFrameT3EC_S354 *)>(0x483704);
 void (__cdecl*HanaMesh_AddVertexReference)(CHanaMeshT3F5_S138 *pMeshT3F5, CHanaVertT3EA_S1FC *pVertT3EA)
   = reinterpret_cast<void(__cdecl*)(CHanaMeshT3F5_S138 *, CHanaVertT3EA_S1FC *)>(0x40FCEB);
 void (__cdecl * HanaMorpT457_SetupFunsSubtree)(CHanaFrameT3EC_S354 *pFrame, CHanaFrameT3EC_S354 *pRootFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame, CHanaFrameT3EC_S354 *pRootFrame)>(0x4375B3);
@@ -33,6 +32,13 @@ void (__cdecl * HanaMorpT457_SetupFuns)(CHanaMorpT457_S40C *pMorpT457, CHanaFram
   = reinterpret_cast<void(__cdecl*)(CHanaMorpT457_S40C *pMorpT457, CHanaFrameT3EC_S354 *pFrame)>(0x4372BA);
 void (__cdecl * CHanaObj__NewAnimSetT3F1_S150)(CHanaAnimSetT3F1_S150 **ppOut) = reinterpret_cast<void(__cdecl*)(CHanaAnimSetT3F1_S150 **ppOut)>(0x403A00);
 void (__cdecl * HanaFrame_PropagateFogToChildren)(CHanaFrameT3EC_S354 *pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x441E7E);
+CSekHeader * (__cdecl *SekHeader_CloneClean)(const CSekHeader *pSrcHdr)
+  = reinterpret_cast<CSekHeader * (__cdecl*)(const CSekHeader *pSrcHdr)>(0x40d875);
+CHanaFrameT3EC_S354 * (__cdecl *CHanaFrameT3EC__FindByName_483650)(CHanaFrameT3EC_S354 *, LPCSTR lpString)
+  = reinterpret_cast<CHanaFrameT3EC_S354 * (__cdecl*)(CHanaFrameT3EC_S354 *, LPCSTR lpString)>(0x483650);
+
+FnHanaMorp HanaVert_CopyMorph = reinterpret_cast<FnHanaMorp>(0x4363A3);
+FnHanaMorp HanaVert_LerpMorph = reinterpret_cast<FnHanaMorp>(0x436300);
 
 // === FUNCTIONS ===
 
@@ -597,7 +603,7 @@ CHanaMeshT3F5_S138 *__cdecl hook_GetMeshT3F5FromObj_434FE0(CHanaMorpT457_S40C *p
 void __cdecl hook_HanaMesh_AddVertexReference(CHanaMeshT3F5_S138 *pMeshT3F5, CHanaVertT3EA_S1FC *pVertT3EA)
 {
   CHanaVertT3EA_S1FC **ppOldVertices; // [esp+14h] [ebp-8h]
-
+  ONCELOG("[HNH:SUB] HanaMesh_AddVertexReference_40FCEB\n");
   ++pMeshT3F5->nCountVertT3EA_130;
   if ( pMeshT3F5->refsVertT3EA )
   {
@@ -613,9 +619,6 @@ void __cdecl hook_HanaMesh_AddVertexReference(CHanaMeshT3F5_S138 *pMeshT3F5, CHa
   pMeshT3F5->refsVertT3EA[pMeshT3F5->nCountVertT3EA_130 - 1] = pVertT3EA;
   CHanaObj__AddRef_40BFC3(pVertT3EA);
 }
-
-FnHanaMorp HanaVert_CopyMorph = reinterpret_cast<FnHanaMorp>(0x4363A3);
-FnHanaMorp HanaVert_LerpMorph = reinterpret_cast<FnHanaMorp>(0x436300);
 
 // HanaVert_CopyMorph - per-vertex RIGID morph callback (the weight == 1.0 case). Copies the source's 6 vertex components straight over the target's: pTarget[i] = pSource[i] for i in 0..5 (position xyz + normal xyz). Fast path installed by HanaMorpT457_SetupFuns when flt_8==1.0; called the same way as HanaVert_LerpMorph, so the extra 3rd (weight) argument is simply ignored. Returns pTarget.
 void __cdecl hook_HanaVert_CopyMorph(float *Target, float *pSource, float fWeight)
@@ -704,8 +707,176 @@ int __cdecl hook_HanaMorpT457_SetupFuns(CHanaMorpT457_S40C *pMorpT457, CHanaFram
   return nAllResolved;
 }
 
+CSekBody *__cdecl hook_ParseSekFile_401039(LPCSTR lpFileName)
+{
+  CSekHeader *v2; // eax
+  DWORD NumberOfBytesRead; // [esp+0h] [ebp-348h] BYREF
+  CSekBody *pOut; // [esp+4h] [ebp-344h]
+  HANDLE hObject; // [esp+8h] [ebp-340h]
+  CSekHeader sekHeader; // [esp+Ch] [ebp-33Ch] BYREF
+  BYTE Buffer[256]; // [esp+148h] [ebp-200h] BYREF
+  BYTE v8[256]; // [esp+248h] [ebp-100h] BYREF
+
+  ONCELOG("[HNH:SUB] ParseSekFile_401039\n");
+
+  hObject = CreateFileA(lpFileName, 0x80000000, 1u, 0, 3u, 0x8000000u, 0);
+  if ( hObject == (HANDLE)-1 || !hObject )
+    return 0;
+  pOut = (CSekBody *)GlobalAlloc(0, 0x5054u);
+  if ( pOut )
+  {
+    memset(pOut, 0, sizeof(CSekBody));
+    memset(&sekHeader, 0, sizeof(sekHeader));
+    ReadFile(hObject, Buffer, 0x100u, &NumberOfBytesRead, 0);
+    ReadFile(hObject, v8, 0x100u, &NumberOfBytesRead, 0);
+    ReadFile(hObject, pOut, 0x5054u, &NumberOfBytesRead, 0);
+    CloseHandle(hObject);
+    v2 = SekHeader_CloneClean(&sekHeader);
+    pOut->pSekHeader_220 = v2;
+    pOut->field_24C = 0;
+    pOut->angle_214 = 0;
+    pOut->angle_218 = 0;
+    pOut->angle_210 = 0;
+    pOut->count_5050 = 1;
+    wsprintfA(pOut->szName_0, "%s", lpFileName);
+    return pOut;
+  }
+  else
+  {
+    CloseHandle(hObject);
+    return 0;
+  }
+}
+
+CSekHeader *__cdecl hook_SekHeader_CloneClean(const CSekHeader *pSrc)
+{
+  CSekHeader *pDst; // [esp+10h] [ebp-4h]
+  ONCELOG("[HNH:SUB] SekHeader_CloneClean_40D875\n");
+  pDst = (CSekHeader *)MemAlloc_40DEF7(0x13Cu);
+  if ( !pDst )
+    return 0;
+  qmemcpy(pDst, pSrc, sizeof(CSekHeader));
+  pDst->pFrameT3EC = 0;
+  pDst->pAnimSetT3F1 = 0;
+  pDst->pObj_138 = 0;
+  pDst->pObj_130 = 0;
+  pDst->pObj_12C = 0;
+  return pDst;
+}
+
+// CSekBody::PlayAnim(pSekBody, nItemIndex) - select & start animation item nItemIndex on the body.
+// Sets field_200/field_208 = nItemIndex, resets that item's field_44/field_6C/field_64 (loop counter) to 0,
+// computes its per-unit speed float_5C = (float_58 - float_54)/field_50, and starts playback at float_54
+// (float_60). Clears the body's field_244/field_248 flags; if the item's field_7C (blend) flag is set,
+// starts a crossfade (float_21C = 1.0). Note: the trailing `return 156 * nItemIndex` is just the item's
+// byte offset left in eax - callers ignore it. items_250 is a 0x9C-byte-per-entry SEK item array.
+void __cdecl hook_CSekBody__PlayAnim_40179D(CSekBody *pSekBody, int nItemIndex)
+{
+  ONCELOG("[HNH:SUB] CSekBody__PlayAnim_40179D\n");
+  pSekBody->field_200 = nItemIndex;
+  pSekBody->field_208 = nItemIndex;
+  pSekBody->items_250[nItemIndex].field_44 = 0;
+  pSekBody->items_250[nItemIndex].field_6C = 0;
+  pSekBody->items_250[nItemIndex].field_64 = 0;
+  if ( pSekBody->items_250[nItemIndex].field_50 )
+    pSekBody->items_250[nItemIndex].float_5C = (pSekBody->items_250[nItemIndex].float_58
+      - pSekBody->items_250[nItemIndex].float_54)
+    / (double)pSekBody->items_250[nItemIndex].field_50;
+  else
+    pSekBody->items_250[nItemIndex].float_5C = 0.0;
+  pSekBody->items_250[nItemIndex].float_60 = pSekBody->items_250[nItemIndex].float_54;
+  pSekBody->field_244 = 0;
+  pSekBody->field_248 = 0;
+  if ( !pSekBody->items_250[nItemIndex].field_7C )
+    pSekBody->float_21C = 1.0;
+}
+
+void __cdecl hook_ParseOds3DON_483704(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAnimSet, CHanaFrameT3EC_S354 *pFrame)
+{
+  int len_name1a; // eax
+  int len_name1b; // eax
+  CSoundStruct_8 *pSound; // eax
+  CHanaFrameT3EC_S354 *pTheFrame; // eax
+  int len_name2; // eax
+  CHAR pszFileName[256]; // [esp+0h] [ebp-10Ch] BYREF
+  unsigned int i; // [esp+100h] [ebp-Ch]
+  LPCSTR pBuf; // [esp+104h] [ebp-8h]
+  int v11; // [esp+108h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] ParseOds3DON_483704\n");
+  v11 = 0;
+  pBuf = (LPCSTR)*ppBuf;
+  if ( !pAnimSet->nCount_148 )
+  {
+    pBuf += 4;
+    pAnimSet->nCount_148 = *(_DWORD *)pBuf;
+    pBuf += 4;
+    pAnimSet->arroS118_14C = (CHanaObj_S118 *)MemAlloc_40DEF7(280 * pAnimSet->nCount_148 + 128);
+    for ( i = 0; i < pAnimSet->nCount_148; ++i )
+    {
+      pAnimSet->arroS118_14C[i].flt_104 = *(float *)pBuf;
+      pBuf += 4;
+      pAnimSet->arroS118_14C[i].flt_108 = *(float *)pBuf;
+      pBuf += 4;
+      pAnimSet->arroS118_14C[i].field_10C = *(_DWORD *)pBuf;
+      pBuf += 4;
+      len_name1a = lstrlenA(pBuf);
+      memcpy(pAnimSet->arroS118_14C[i].sz_name_4, pBuf, len_name1a + 1);
+      wsprintfA(pszFileName, "%s", pBuf);
+      len_name1b = lstrlenA(pBuf);
+      pBuf += len_name1b + 1;
+      CHanaObj__GetRealPath_486D9A(pszFileName, 1009);
+      pSound = LoadWavToDS3DBuffer_42277E(pszFileName);
+      pAnimSet->arroS118_14C[i].pSnd_0 = pSound;
+      pTheFrame = CHanaFrameT3EC__FindByName_483650(pFrame, pBuf);
+      pAnimSet->arroS118_14C[i].pFrame_114 = pTheFrame;
+      if ( pAnimSet->arroS118_14C[i].pFrame_114 )
+        CHanaObj__AddRef_40BFC3(pAnimSet->arroS118_14C[i].pFrame_114);
+      len_name2 = lstrlenA(pBuf);
+      pBuf += len_name2 + 1;
+    }
+  }
+  *ppBuf = (LPBYTE)pBuf;
+}
+
+// CHanaFrameT3EC::FindByName - recursive search of a CHanaFrame node tree; returns the first descendant whose szName_8 matches lpName (case-insensitive prefix of its length), else NULL.
+CHanaFrameT3EC_S354 *__cdecl hook_CHanaFrameT3EC__FindByName_483650(CHanaFrameT3EC_S354 *pRoot, LPCSTR lpString)
+{
+  size_t namelen; // eax
+  CHanaFrameT3EC_S354 *pFoundFrame; // [esp+0h] [ebp-10h]
+  unsigned int i; // [esp+4h] [ebp-Ch]
+  CHanaNode *pFirstChildNode; // [esp+Ch] [ebp-4h]
+  ONCELOG("[HNH:SUB] CHanaFrameT3EC__FindByName_483650\n");
+  pFoundFrame = 0;
+  namelen = lstrlenA(lpString);
+  if ( !_strnicmp(pRoot->szName_8, lpString, namelen) )
+    return pRoot;
+  if ( pRoot->nCountChild )
+  {
+    pFirstChildNode = pRoot->pFirstChildNode;
+    for ( i = 0; i < pRoot->nCountChild; ++i )
+    {
+      if ( pFirstChildNode->pData )
+      {
+        pFoundFrame = CHanaFrameT3EC__FindByName_483650(pFirstChildNode->pData, lpString);
+        if ( pFoundFrame )
+          break;
+      }
+      pFirstChildNode = pFirstChildNode->pNext;
+    }
+  }
+  return pFoundFrame;
+}
+
 void register_ParseODS_483932() {
-    hnh_HookOff();
+  hnh_Hook(0x401039, hook_ParseSekFile_401039, "ParseSekFile_401039");
+  hnh_Hook(0x40d875, hook_SekHeader_CloneClean, "SekHeader_CloneClean_40D875");
+  hnh_Hook(0x40179d, hook_CSekBody__PlayAnim_40179D, "CSekBody__PlayAnim_40179D");
+  hnh_Hook(0x483704, hook_ParseOds3DON_483704, "ParseOds3DON_483704");
+  hnh_Hook(0x483650, hook_CHanaFrameT3EC__FindByName_483650, "CHanaFrameT3EC__FindByName_483650");
+  hnh_Hook(0x40fceb, hook_HanaMesh_AddVertexReference, "HanaMesh_AddVertexReference_40FCEB");
+
+  hnh_HookOff();
     hnh_Hook(0x483567, hook_ReadStrFile_483567, "ReadStrFile_483567"); // [OK]
     hnh_Hook(0x47E999, hook_FindFrameByName_47E999, "FindFrameByName_47E999"); // [OK]
     hnh_Hook(0x403A00, hook_CHanaObj__NewAnimSetT3F1_S150, "CHanaObj__NewAnimSetT3F1_S150_403A00"); // [OK]
@@ -718,5 +889,5 @@ void register_ParseODS_483932() {
     hnh_Hook(0x436300, hook_HanaVert_LerpMorph, "HanaVert_LerpMorph_436300"); // [OK]
     hnh_Hook(0x441F19, hook_ParseODFFile_441F19, "ParseODFFile_441F19"); // [OK]
     hnh_Hook(0x483932, hook_ParseODS_483932, "ParseODS_483932"); // [OK]
-    hnh_HookOn();
+  hnh_HookOn();
 }
