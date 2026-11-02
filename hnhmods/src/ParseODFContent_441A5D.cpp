@@ -43,8 +43,7 @@ bool (__cdecl*CHanaAnimSetT3F1__AddAnimT3F0_403C15)(CHanaAnimSetT3F1_S150 *pAnim
     reinterpret_cast<bool(__cdecl*)(CHanaAnimSetT3F1_S150 *, CHanaAnimT3F0_S240 *)>(0x403C15);
 int (__cdecl*CHanaAnimSetT3F1__SetTime_403D61)(CHanaAnimSetT3F1_S150 *pHanaT3F1, float t2) =
     reinterpret_cast<int(__cdecl*)(CHanaAnimSetT3F1_S150 *, float)>(0x403D61);
-int (__cdecl*CHanaObj__NewMeshT3F5)(CHanaMeshT3F5_S138 **pOut) =
-    reinterpret_cast<int(__cdecl*)(CHanaMeshT3F5_S138 **)>(0x40FCA0);
+
 int (__cdecl*ParseVERT_440288)(LPBYTE *ppBuf, CHanaVertT3EA_S1FC **ppVert,
     CHanaAnimSetT3F1_S150 *pAnimSetT3F1, CHanaFrameT3EC_S354 *pRootFrameT3EC) =
     reinterpret_cast<int(__cdecl*)(LPBYTE *, CHanaVertT3EA_S1FC **,
@@ -73,6 +72,11 @@ void (__cdecl * ApplyQTS_4035B1)( D3DXMATRIX *pOut, D3DXQUATERNION *pQ, float x,
 void (__cdecl * ConfigureLight)( CHanaLightT3EF_S1A0 *pHanaLight, float posX, float posY, float posZ, float dirX, float dirY, float dirZ) = reinterpret_cast<void(__cdecl*)( CHanaLightT3EF_S1A0 *pHanaLight, float posX, float posY, float posZ, float dirX, float dirY, float dirZ)>(0x409510);
 void (__cdecl * HanaFrame_GetCenterPosition_408C3E)( CHanaFrameRootT3EC_S2D4 *pFrame, CHanaFrameRootT3EC_S2D4 *pRelFrame, float *pOutX, float *pOutY, float *pOutZ) = reinterpret_cast<void(__cdecl*)( CHanaFrameRootT3EC_S2D4 *pFrame, CHanaFrameRootT3EC_S2D4 *pRelFrame, float *pOutX, float *pOutY, float *pOutZ)>(0x408C3E); 
 BOOL (__cdecl * GetSoundBufferAverageLevel)(LPDIRECTSOUNDBUFFER pDSBuffer, float *pfPlayPos) = reinterpret_cast<BOOL(__cdecl*)(LPDIRECTSOUNDBUFFER pDSBuffer, float *pfPlayPos)>(0x4248F2);
+BOOL (__cdecl * HanaAnim_FindInterpolationFrame)( CHanaAnimT3F0_S240 *pHanaAnimT3F0, float t2, CHanaAnimKeyT3F0_S78 **ppOutS78, CHanaAnimKeyT3F0_S78 **ppOutS78v2, int *pCount) = reinterpret_cast<BOOL(__cdecl*)( CHanaAnimT3F0_S240 *pHanaAnimT3F0, float t2, CHanaAnimKeyT3F0_S78 **ppOutS78, CHanaAnimKeyT3F0_S78 **ppOutS78v2, int *pCount)>(0x40344A);
+BOOL (__cdecl * FindMateAnimKeyframeBounds)( CHanaMateAnimT3F7_S148 *pMateAnim, float fTime, CHanaMateAnimKeyT3F7_S50 **ppOutStart, CHanaMateAnimKeyT3F7_S50 **ppOutEnd) = reinterpret_cast<BOOL(__cdecl*)( CHanaMateAnimT3F7_S148 *pMateAnim, float fTime, CHanaMateAnimKeyT3F7_S50 **ppOutStart, CHanaMateAnimKeyT3F7_S50 **ppOutEnd)>(0x40EF23);
+
+void(__cdecl*ApplyMateAnimMaterial)(CHanaMateAnimT3F7_S148* pMateAnim, float fNum)
+= reinterpret_cast<void(__cdecl*)(CHanaMateAnimT3F7_S148 * pMateAnim, float fNum)>(0x40E969);
 
 // === FUNCTIONS ===
 
@@ -1480,13 +1484,459 @@ void __cdecl hook_CalcFrameBound_404B80(CHanaFrameT3EC_S354 *pFrame, CHanaMorpT4
     * (pFrame->vertBoundMax_220.z - pFrame->vertCenter_2B4.z));
 }
 
+void __cdecl hook_InterpolateHanaAnimFrame(CHanaAnimT3F0_S240 *pAnim, float fTime)
+{
+  float interpTx; // [esp+Ch] [ebp-90h]
+  float interpTy; // [esp+10h] [ebp-8Ch]
+  float interpTz; // [esp+14h] [ebp-88h]
+  CHanaAnimKeyT3F0_S78 *pEndKeyframe; // [esp+18h] [ebp-84h] BYREF
+  CHanaAnimKeyT3F0_S78 *pStartKeyframe; // [esp+1Ch] [ebp-80h] BYREF
+  int iResult; // [esp+20h] [ebp-7Ch] BYREF
+  float fInterpolant; // [esp+24h] [ebp-78h]
+  float interpSx; // [esp+28h] [ebp-74h]
+  float interpSy; // [esp+2Ch] [ebp-70h]
+  float interpSz; // [esp+30h] [ebp-6Ch]
+  float endTx; // [esp+34h] [ebp-68h]
+  float endTy; // [esp+38h] [ebp-64h]
+  float endTz; // [esp+3Ch] [ebp-60h]
+  D3DXQUATERNION pOut; // [esp+40h] [ebp-5Ch] BYREF
+  float startTx; // [esp+50h] [ebp-4Ch]
+  float startTy; // [esp+54h] [ebp-48h]
+  float startTz; // [esp+58h] [ebp-44h]
+
+  ONCELOG("[HNH:SUN] InterpolateHanaAnimFrame_40283C\n");
+
+  pStartKeyframe = 0;
+  pEndKeyframe = 0;
+  if ( pAnim->nKeyCount_138 && pAnim->pHanaFram_130 )
+  {
+    pAnim->pHanaFram_130->pHanaAnim_2C0 = pAnim;
+    if ( !pAnim->field_144 )
+    {
+      CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(pAnim);
+      pAnim->field_144 = 1;
+    }
+    if ( pAnim->field_140 && pAnim->fDuration_134 >= 1.0 && pAnim->fDuration_134 <= (double)fTime )
+      fTime = (float)((__int64)fTime % (int)((__int64)pAnim->fDuration_134 + 1));
+    if ( HanaAnim_FindInterpolationFrame(pAnim, fTime, &pStartKeyframe, &pEndKeyframe, &iResult)
+      || !pEndKeyframe && pStartKeyframe )
+    {
+      qmemcpy(&pAnim->pHanaFram_130->mat4x4_fmrx, &pStartKeyframe->matLocal, sizeof(pAnim->pHanaFram_130->mat4x4_fmrx));
+      pAnim->keyCur_14C.fTime = fTime;
+      pAnim->keyCur_14C.fPosX = pStartKeyframe->fPosX;
+      pAnim->keyCur_14C.fPosY = pStartKeyframe->fPosY;
+      pAnim->keyCur_14C.fPosZ = pStartKeyframe->fPosZ;
+      pAnim->keyCur_14C.fScaleX = pStartKeyframe->fScaleX;
+      pAnim->keyCur_14C.fScaleY = pStartKeyframe->fScaleY;
+      pAnim->keyCur_14C.fScaleZ = pStartKeyframe->fScaleZ;
+      pAnim->keyCur_14C.quatRot = pStartKeyframe->quatRot;
+      qmemcpy(&pAnim->keyCur_14C.matLocal, &pAnim->pHanaFram_130->mat4x4_fmrx, sizeof(pAnim->keyCur_14C.matLocal));
+    }
+    else if ( pStartKeyframe )
+    {
+      fInterpolant = 0.0;
+      if ( pEndKeyframe->fTime - pStartKeyframe->fTime != 0.0 )
+        fInterpolant = (fTime - pStartKeyframe->fTime) / (pEndKeyframe->fTime - pStartKeyframe->fTime);
+      D3DXQuaternionSlerp(&pOut, &pStartKeyframe->quatRot, &pEndKeyframe->quatRot, fInterpolant);
+      startTx = pStartKeyframe->fPosX;
+      startTy = pStartKeyframe->fPosY;
+      startTz = pStartKeyframe->fPosZ;
+      endTx = pEndKeyframe->fPosX;
+      endTy = pEndKeyframe->fPosY;
+      endTz = pEndKeyframe->fPosZ;
+      interpTx = (endTx - startTx) * fInterpolant + startTx;
+      interpTy = (endTy - startTy) * fInterpolant + startTy;
+      interpTz = (endTz - startTz) * fInterpolant + startTz;
+      startTx = pStartKeyframe->fScaleX;
+      startTy = pStartKeyframe->fScaleY;
+      startTz = pStartKeyframe->fScaleZ;
+      endTx = pEndKeyframe->fScaleX;
+      endTy = pEndKeyframe->fScaleY;
+      endTz = pEndKeyframe->fScaleZ;
+      interpSx = (endTx - startTx) * fInterpolant + startTx;
+      interpSy = (endTy - startTy) * fInterpolant + startTy;
+      interpSz = (endTz - startTz) * fInterpolant + startTz;
+      ApplyQTS_4035B1(
+        &pAnim->pHanaFram_130->mat4x4_fmrx,
+        &pOut,
+        interpTx,
+        interpTy,
+        interpTz,
+        interpSx,
+        interpSy,
+        interpSz);
+      pAnim->keyCur_14C.fTime = fTime;
+      pAnim->keyCur_14C.fPosX = interpTx;
+      pAnim->keyCur_14C.fPosY = interpTy;
+      pAnim->keyCur_14C.fPosZ = interpTz;
+      pAnim->keyCur_14C.fScaleX = interpSx;
+      pAnim->keyCur_14C.fScaleY = interpSy;
+      pAnim->keyCur_14C.fScaleZ = interpSz;
+      pAnim->keyCur_14C.quatRot = pOut;
+      qmemcpy(&pAnim->keyCur_14C.matLocal, &pAnim->pHanaFram_130->mat4x4_fmrx, sizeof(pAnim->keyCur_14C.matLocal));
+    }
+  }
+}
+
+/**
+ * HanaAnim_FindInterpolationFrame_40344A - binary-searches the key array by fTime:
+ * - t2 > fDuration -> clamp: out1 = last key, out2 = NULL, return 0
+ * - Exact hit -> out1 = &keys[i], out2 = &keys[i+1] (bracketing pair), return 1
+ * - Miss -> out1 = first key >= t2, out2 = last key <= t2 (maintained during descent), return 0 - the caller slerps/lerps
+ * between out2 -> out1
+ */
+BOOL __cdecl hook_HanaAnim_FindInterpolationFrame(
+  CHanaAnimT3F0_S240 *pHanaAnimT3F0,
+  float t2,
+  CHanaAnimKeyT3F0_S78 **ppOutS78,
+  CHanaAnimKeyT3F0_S78 **ppOutS78v2,
+  int *pCount)
+{
+  CHanaAnimKeyT3F0_S78 *pFrames_test; // [esp+0h] [ebp-10h]
+  int index = -1; // [esp+4h] [ebp-Ch]
+  int low; // [esp+8h] [ebp-8h]
+  int high; // [esp+Ch] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] HanaAnim_FindInterpolationFrame_40344A\n");
+
+  *pCount = pHanaAnimT3F0->nKeyCount_138;
+  if ( pHanaAnimT3F0->fDuration_134 >= (double)t2 )
+  {
+    pFrames_test = pHanaAnimT3F0->arrKeys_13C;
+    *ppOutS78 = pFrames_test;
+    *ppOutS78v2 = 0;
+    low = 0;
+    high = pHanaAnimT3F0->nKeyCount_138 - 1;
+    while ( 1 )
+    {
+      if ( low > high )
+      {
+        *pCount = index;
+        return 0;
+      }
+      index = (high + low) / 2;
+      if ( pFrames_test[index].fTime == t2 )
+        break;
+      if ( pFrames_test[index].fTime >= (double)t2 )
+      {
+        high = index - 1;
+        *ppOutS78v2 = &pFrames_test[index - 1];
+      }
+      else
+      {
+        low = index + 1;
+        *ppOutS78 = &pFrames_test[index + 1];
+      }
+    }
+    *pCount = index;
+    *ppOutS78 = &pFrames_test[index];
+    if ( index < pHanaAnimT3F0->nKeyCount_138 )
+      *ppOutS78v2 = &pFrames_test[index + 1];
+    return 1;
+  }
+  else
+  {
+    *pCount = pHanaAnimT3F0->nKeyCount_138 - 1;
+    *ppOutS78 = &pHanaAnimT3F0->arrKeys_13C[pHanaAnimT3F0->nKeyCount_138 - 1];
+    *ppOutS78v2 = 0;
+    return 0;
+  }
+}
+
+// CHanaAnimSetT3F1::SetTime(pAnimSet, fTime) - drive the whole anim-set to pose time fTime and sync
+// its DirectSound effects. Stores pAnimSet->field_130 = fTime. For each of nCount_14C sound/morph entries
+// (arroS118_14C): if fTime is outside the entry's active window [flt_104, flt_108] stop + rewind its DS
+// buffer; otherwise accumulate the play offset (sub_4248F2 -> fPosAcc) - and animates the entry's morph
+// frame via HanaMorpT457_Animate(pFrame_114, fTime, fPosAcc, -1). Then advances every sub-anim ref
+// (refsAnimT3F0_138: sub_40283C + HanaMorpT457_Animate) and every secondary 'manm' set (pRefsManmT3F7:
+// sub_40E969). A final reverse pass re-arms in-window sounds (Play + SetPosition to the frame's 3D
+// position via sub_408C3E), respecting the repeat limit field_10C vs field_110. Returns pAnimSet.
+void __cdecl hook_CHanaAnimSetT3F1__SetTime_403D61(CHanaAnimSetT3F1_S150 *pHanaT3F1, float t2)
+{
+  BOOL bOk; // [esp+4h] [ebp-20h]
+  float fPosAcc; // [esp+8h] [ebp-1Ch]
+  signed int i; // [esp+Ch] [ebp-18h]
+  int j; // [esp+Ch] [ebp-18h]
+  signed int k; // [esp+Ch] [ebp-18h]
+  signed int m; // [esp+Ch] [ebp-18h]
+  int nRandTick; // [esp+10h] [ebp-14h]
+  float pfAvgLevel; // [esp+14h] [ebp-10h] BYREF
+  float pz; // [esp+18h] [ebp-Ch] BYREF
+  float py; // [esp+1Ch] [ebp-8h] BYREF
+  float px; // [esp+20h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] CHanaAnimSetT3F1__SetTime_403D61\n");
+
+  nRandTick = 0;
+  pHanaT3F1->field_130 = t2;
+  if ( g_pds3DListener )
+  {
+    fPosAcc = -0.000099999997;
+    for ( i = 0; i < (signed int)pHanaT3F1->nCount_148; ++i )
+    {
+      if ( pHanaT3F1->arroS118_14C[i].pSnd_0 )
+      {
+        if ( pHanaT3F1->arroS118_14C[i].flt_104 > (double)t2 || t2 > (double)pHanaT3F1->arroS118_14C[i].flt_108 )
+        {
+          pHanaT3F1->arroS118_14C[i].field_110 = 0;
+          pHanaT3F1->arroS118_14C[i].pSnd_0->pDSBuffer_0->Stop();
+          pHanaT3F1->arroS118_14C[i].pSnd_0->pDSBuffer_0->SetCurrentPosition(
+            0);
+        }
+        else if ( GetSoundBufferAverageLevel(pHanaT3F1->arroS118_14C[i].pSnd_0->pDSBuffer_0, &pfAvgLevel) )
+        {
+          fPosAcc = fPosAcc + pfAvgLevel;
+        }
+      }
+      HanaMorpT457_Animate(pHanaT3F1->arroS118_14C[i].pFrame_114, t2, fPosAcc, -1);
+    }
+  }
+  if ( !(rand() % 31) )
+    nRandTick = 1;
+  for ( j = 0; j < pHanaT3F1->nAnimCount_134; ++j )
+  {
+    InterpolateHanaAnimFrame(pHanaT3F1->refsAnimT3F0_138[j], t2);
+    HanaMorpT457_Animate(pHanaT3F1->refsAnimT3F0_138[j]->pHanaFram_130, t2, -1.0, nRandTick);
+  }
+  for ( k = 0; k < (signed int)pHanaT3F1->nManmCount_140; ++k )
+    ApplyMateAnimMaterial(pHanaT3F1->pRefsManmT3F7[k], t2);
+  if ( g_pds3DListener )
+  {
+    MtxStackStartMultLocal_4074EF();
+    for ( m = pHanaT3F1->nCount_148 - 1; m >= 0; --m )
+    {
+      if ( pHanaT3F1->arroS118_14C[m].pSnd_0 )
+      {
+        if ( pHanaT3F1->arroS118_14C[m].pFrame_114 )
+        {
+          if ( pHanaT3F1->arroS118_14C[m].flt_104 <= (double)t2 && t2 <= (double)pHanaT3F1->arroS118_14C[m].flt_108 )
+          {
+            bOk = pHanaT3F1->arroS118_14C[m].pSnd_0->pDSBuffer_0
+              && !pHanaT3F1->arroS118_14C[m].pSnd_0->pDSBuffer_0->GetStatus(
+                &g_dwDSStatus_5185C8)
+              && (g_dwDSStatus_5185C8 & 1) != 0;
+            if ( !bOk
+              && (pHanaT3F1->arroS118_14C[m].field_110 < pHanaT3F1->arroS118_14C[m].field_10C
+                || pHanaT3F1->arroS118_14C[m].field_10C < 0) )
+            {
+              pHanaT3F1->arroS118_14C[m].pSnd_0->pDSBuffer_0->Play(
+                0,
+                0,
+                0);
+              ++pHanaT3F1->arroS118_14C[m].field_110;
+            }
+          }
+          HanaFrame_GetCenterPosition_408C3E(pHanaT3F1->arroS118_14C[m].pFrame_114, g_pSceneFrame, &px, &py, &pz);
+          pHanaT3F1->arroS118_14C[m].pSnd_0->pDS3DBuffer_4->SetPosition(
+            px,
+            py,
+            pz,
+            1);
+        }
+        else
+        {
+          pHanaT3F1->arroS118_14C[m].pSnd_0->pDSBuffer_0->Stop();
+        }
+      }
+    }
+  }
+}
+
+void __cdecl hook_ApplyMateAnimMaterial(CHanaMateAnimT3F7_S148 *pMateAnim, float fTime)
+{
+  float fT_alpha; // [esp+8h] [ebp-94h]
+  float fT_specular; // [esp+Ch] [ebp-90h]
+  float fT_emissive; // [esp+10h] [ebp-8Ch]
+  float fT_diffuse; // [esp+14h] [ebp-88h]
+  float fT_alphaWrap; // [esp+18h] [ebp-84h]
+  float fT_specWrap; // [esp+1Ch] [ebp-80h]
+  float fT_emisWrap; // [esp+20h] [ebp-7Ch]
+  float fT_diffWrap; // [esp+24h] [ebp-78h]
+  D3DMATERIAL7 outMaterial; // [esp+2Ch] [ebp-70h] BYREF
+  CHanaMateAnimKeyT3F7_S50 *pKeyEnd; // [esp+70h] [ebp-2Ch] BYREF
+  CHanaMateAnimKeyT3F7_S50 *pKeyStart; // [esp+74h] [ebp-28h] BYREF
+  float fEndR; // [esp+78h] [ebp-24h]
+  float fEndG; // [esp+7Ch] [ebp-20h]
+  float fEndB; // [esp+80h] [ebp-1Ch]
+  __int64 qLerpRG; // [esp+84h] [ebp-18h]
+  float fLerpB; // [esp+8Ch] [ebp-10h]
+  float fStartR; // [esp+90h] [ebp-Ch]
+  float fStartG; // [esp+94h] [ebp-8h]
+  float fStartB; // [esp+98h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] ApplyMateAnimMaterial_40E969\n");
+
+  pKeyStart = 0;
+  pKeyEnd = 0;
+  if ( pMateAnim->fLoopEnd_134 >= 1.0 && pMateAnim->fLoopEnd_134 <= (double)fTime )
+    fTime = (float)((__int64)fTime % (int)((__int64)pMateAnim->fLoopEnd_134 + 1));
+  if ( pMateAnim->nKeyCount_138 >= 2u )
+  {
+    if ( FindMateAnimKeyframeBounds(pMateAnim, fTime, &pKeyStart, &pKeyEnd) )
+    {
+      ApplyMaterial(pMateAnim->pMateT3EE, &pKeyStart->d3dMat7_4);
+    }
+    else
+    {
+      if ( pKeyEnd )
+      {
+        fStartR = pKeyStart->d3dMat7_4.diffuse.r;
+        fStartG = pKeyStart->d3dMat7_4.diffuse.g;
+        fStartB = pKeyStart->d3dMat7_4.diffuse.b;
+        fEndR = pKeyEnd->d3dMat7_4.diffuse.r;
+        fEndG = pKeyEnd->d3dMat7_4.diffuse.g;
+        fEndB = pKeyEnd->d3dMat7_4.diffuse.b;
+        fT_diffuse = (fTime - pKeyStart->fTime) / (pKeyEnd->fTime - pKeyStart->fTime);
+        *(float *)&qLerpRG = (fEndR - fStartR) * fT_diffuse + fStartR;
+        *((float *)&qLerpRG + 1) = (fEndG - fStartG) * fT_diffuse + fStartG;
+        fLerpB = (fEndB - fStartB) * fT_diffuse + fStartB;
+        *(_QWORD *)&outMaterial.diffuse.r = qLerpRG;
+        outMaterial.diffuse.b = fLerpB;
+        fStartR = pKeyStart->d3dMat7_4.emissive.r;
+        fStartG = pKeyStart->d3dMat7_4.emissive.g;
+        fStartB = pKeyStart->d3dMat7_4.emissive.b;
+        fEndR = pKeyEnd->d3dMat7_4.emissive.r;
+        fEndG = pKeyEnd->d3dMat7_4.emissive.g;
+        fEndB = pKeyEnd->d3dMat7_4.emissive.b;
+        fT_emissive = (fTime - pKeyStart->fTime) / (pKeyEnd->fTime - pKeyStart->fTime);
+        *(float *)&qLerpRG = (fEndR - fStartR) * fT_emissive + fStartR;
+        *((float *)&qLerpRG + 1) = (fEndG - fStartG) * fT_emissive + fStartG;
+        fLerpB = (fEndB - fStartB) * fT_emissive + fStartB;
+        *(_QWORD *)&outMaterial.emissive.r = qLerpRG;
+        outMaterial.emissive.b = fLerpB;
+        fStartR = pKeyStart->d3dMat7_4.specular.r;
+        fStartG = pKeyStart->d3dMat7_4.specular.g;
+        fStartB = pKeyStart->d3dMat7_4.specular.b;
+        fEndR = pKeyEnd->d3dMat7_4.specular.r;
+        fEndG = pKeyEnd->d3dMat7_4.specular.g;
+        fEndB = pKeyEnd->d3dMat7_4.specular.b;
+        fT_specular = (fTime - pKeyStart->fTime) / (pKeyEnd->fTime - pKeyStart->fTime);
+        *(float *)&qLerpRG = (fEndR - fStartR) * fT_specular + fStartR;
+        *((float *)&qLerpRG + 1) = (fEndG - fStartG) * fT_specular + fStartG;
+        fLerpB = (fEndB - fStartB) * fT_specular + fStartB;
+        *(_QWORD *)&outMaterial.specular.r = qLerpRG;
+        outMaterial.specular.b = fLerpB;
+        *(_QWORD *)&outMaterial.ambient.r = 0x3F8000003F800000LL;
+        *(_QWORD *)&outMaterial.dcvAmbient.b = 1065353216;
+        fStartR = pKeyStart->d3dMat7_4.diffuse.a;
+        fStartG = 0.0;
+        fStartB = 0.0;
+        fEndR = pKeyEnd->d3dMat7_4.diffuse.a;
+        fEndG = 0.0;
+        fEndB = 0.0;
+        fT_alpha = (fTime - pKeyStart->fTime) / (pKeyEnd->fTime - pKeyStart->fTime);
+        *(float *)&qLerpRG = (fEndR - fStartR) * fT_alpha + fStartR;
+        *((float *)&qLerpRG + 1) = (0.0 - 0.0) * fT_alpha + 0.0;
+      }
+      else
+      {
+        pKeyEnd = pMateAnim->pKeyHead_13C;
+        fStartR = pKeyStart->d3dMat7_4.diffuse.r;
+        fStartG = pKeyStart->d3dMat7_4.diffuse.g;
+        fStartB = pKeyStart->d3dMat7_4.diffuse.b;
+        fEndR = pKeyEnd->d3dMat7_4.diffuse.r;
+        fEndG = pKeyEnd->d3dMat7_4.diffuse.g;
+        fEndB = pKeyEnd->d3dMat7_4.diffuse.b;
+        fT_diffWrap = (fTime - pKeyStart->fTime) / (pKeyEnd->fTime - pKeyStart->fTime);
+        *(float *)&qLerpRG = (fEndR - fStartR) * fT_diffWrap + fStartR;
+        *((float *)&qLerpRG + 1) = (fEndG - fStartG) * fT_diffWrap + fStartG;
+        fLerpB = (fEndB - fStartB) * fT_diffWrap + fStartB;
+        *(_QWORD *)&outMaterial.diffuse.r = qLerpRG;
+        outMaterial.diffuse.b = fLerpB;
+        fStartR = pKeyStart->d3dMat7_4.emissive.r;
+        fStartG = pKeyStart->d3dMat7_4.emissive.g;
+        fStartB = pKeyStart->d3dMat7_4.emissive.b;
+        fEndR = pKeyEnd->d3dMat7_4.emissive.r;
+        fEndG = pKeyEnd->d3dMat7_4.emissive.g;
+        fEndB = pKeyEnd->d3dMat7_4.emissive.b;
+        fT_emisWrap = (fTime - pKeyStart->fTime) / (pKeyEnd->fTime - pKeyStart->fTime);
+        *(float *)&qLerpRG = (fEndR - fStartR) * fT_emisWrap + fStartR;
+        *((float *)&qLerpRG + 1) = (fEndG - fStartG) * fT_emisWrap + fStartG;
+        fLerpB = (fEndB - fStartB) * fT_emisWrap + fStartB;
+        *(_QWORD *)&outMaterial.emissive.r = qLerpRG;
+        outMaterial.emissive.b = fLerpB;
+        fStartR = pKeyStart->d3dMat7_4.specular.r;
+        fStartG = pKeyStart->d3dMat7_4.specular.g;
+        fStartB = pKeyStart->d3dMat7_4.specular.b;
+        fEndR = pKeyEnd->d3dMat7_4.specular.r;
+        fEndG = pKeyEnd->d3dMat7_4.specular.g;
+        fEndB = pKeyEnd->d3dMat7_4.specular.b;
+        fT_specWrap = (fTime - pKeyStart->fTime) / (pKeyEnd->fTime - pKeyStart->fTime);
+        *(float *)&qLerpRG = (fEndR - fStartR) * fT_specWrap + fStartR;
+        *((float *)&qLerpRG + 1) = (fEndG - fStartG) * fT_specWrap + fStartG;
+        fLerpB = (fEndB - fStartB) * fT_specWrap + fStartB;
+        *(_QWORD *)&outMaterial.specular.r = qLerpRG;
+        outMaterial.specular.b = fLerpB;
+        *(_QWORD *)&outMaterial.ambient.r = 0x3F8000003F800000LL;
+        *(_QWORD *)&outMaterial.dcvAmbient.b = 1065353216;
+        fStartR = pKeyStart->d3dMat7_4.diffuse.a;
+        fStartG = 0.0;
+        fStartB = 0.0;
+        fEndR = pKeyEnd->d3dMat7_4.diffuse.a;
+        fEndG = 0.0;
+        fEndB = 0.0;
+        fT_alphaWrap = (fTime - pKeyStart->fTime) / (pKeyEnd->fTime - pKeyStart->fTime);
+        *(float *)&qLerpRG = (fEndR - fStartR) * fT_alphaWrap + fStartR;
+        *((float *)&qLerpRG + 1) = (0.0 - 0.0) * fT_alphaWrap + 0.0;
+      }
+      fLerpB = *((float *)&qLerpRG + 1);
+      LODWORD(outMaterial.diffuse.a) = qLerpRG;
+      ApplyMaterial(pMateAnim->pMateT3EE, &outMaterial);
+    }
+  }
+}
+
+BOOL __cdecl hook_FindMateAnimKeyframeBounds(
+  CHanaMateAnimT3F7_S148 *pMateAnim,
+  float fTime,
+  CHanaMateAnimKeyT3F7_S50 **ppOutStart,
+  CHanaMateAnimKeyT3F7_S50 **ppOutEnd)
+{
+  CHanaMateAnimKeyT3F7_S50 *pKeyWalk; // [esp+0h] [ebp-8h]
+  unsigned int iKey; // [esp+4h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] FindMateAnimKeyframeBounds_40EF23\n");
+
+  if ( pMateAnim->fLoopEnd_134 >= (double)fTime )
+  {
+    pKeyWalk = pMateAnim->pKeyHead_13C;
+    *ppOutStart = pKeyWalk;
+    *ppOutEnd = 0;
+    for ( iKey = 0; iKey < pMateAnim->nKeyCount_138; ++iKey )
+    {
+      if ( pKeyWalk->fTime == fTime )
+      {
+        *ppOutStart = pKeyWalk;
+        return 1;
+      }
+      if ( pKeyWalk->fTime < (double)fTime )
+        *ppOutStart = pKeyWalk;
+      if ( pKeyWalk->fTime > (double)fTime )
+      {
+        *ppOutEnd = pKeyWalk;
+        return 0;
+      }
+      pKeyWalk = pKeyWalk->pNextKey;
+      if ( !pKeyWalk )
+        return 0;
+    }
+    return 0;
+  }
+  else
+  {
+    *ppOutStart = pMateAnim->pKeyTail_140;
+    *ppOutEnd = 0;
+    return 0;
+  }
+}
+
 void register_ParseODFContent_441A5D() {
   hnh_Hook(0x44106A, hook_ParseOdfFRAM_44106A, "ParseOdfFRAM_44106A"); // [OK]
   hnh_Hook(0x4414EB, hook_ParseOdfANIM_4414EB, "ParseOdfANIM_4414EB"); // [OK]
   hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C"); // [OK]
   hnh_Hook(0x440896, hook_ParseOdfMORP_440896, "ParseOdfMORP_440896"); // [OK]
   hnh_Hook(0x44189C, hook_ParseOdf3DON_44189C, "ParseOdf3DON_44189C"); // [OK]
- 
+  
   hnh_HookOff();
     hnh_Hook(0x441A5D, hook_ParseODFContent_441A5D, "ParseODFContent_441A5D"); // [OK] 
     hnh_Hook(0x409510, hook_ConfigureLight,"ConfigureLight_409510"); // [OK] 
@@ -1501,5 +1951,10 @@ void register_ParseODFContent_441A5D() {
     hnh_Hook(0x408C3E, hook_HanaFrame_GetCenterPosition_408C3E, "HanaFrame_GetCenterPosition_408C3E"); // [OK] 
     hnh_Hook(0x4248F2, hook_GetSoundBufferAverageLevel, "GetSoundBufferAverageLevel_4248F2"); // [OK]
     hnh_Hook(0x404B80, hook_CalcFrameBound_404B80, "CalcFrameBound_404B80"); // [OK]
+    hnh_Hook(0x403D61, hook_CHanaAnimSetT3F1__SetTime_403D61, "CHanaAnimSetT3F1__SetTime_403D61"); // [OK]
+    hnh_Hook(0x40EF23, hook_FindMateAnimKeyframeBounds, "FindMateAnimKeyframeBounds_40EF23"); // [OK]
+    hnh_Hook(0x40E969, hook_ApplyMateAnimMaterial, "ApplyMateAnimMaterial_40E969"); // [OK]
+    hnh_Hook(0x40283C, hook_InterpolateHanaAnimFrame, "InterpolateHanaAnimFrame_40283C"); // [OK]
+    hnh_Hook(0x40344A, hook_HanaAnim_FindInterpolationFrame, "HanaAnim_FindInterpolationFrame_40344A"); // [OK]
   hnh_HookOn();
 }

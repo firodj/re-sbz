@@ -18,7 +18,7 @@ void AssertHanaStructSize() {
   static_assert(sizeof(CHanaMorpT457_S40C) == 0x40C, "CHanaMorpT457_S40C");
   static_assert(sizeof(CHanaLightT3EF_S1A0) == 0x1A0, "CHanaLightT3EF_S1A0");
 
-  static_assert(sizeof(CHanaSubObj_S50) == 0x50, "CHanaSubObj_S50");
+  static_assert(sizeof(CHanaMateAnimKeyT3F7_S50) == 0x50, "CHanaMateAnimKeyT3F7_S50");
   static_assert(sizeof(CHanaMateAnimT3F7_S148) == 0x148, "CHanaMateAnimT3F7_S148");
   static_assert(sizeof(CHanaMateT3EE_S184) == 0x184, "CHanaMateT3EE_S184");
   static_assert(sizeof(CHanaFrameT3EC_S354) == 0x354, "CHanaFrameT3EC_S354");

@@ -348,6 +348,7 @@ extern void(__cdecl* CalcFrameBound_404B80)(CHanaFrameT3EC_S354* pFrameT3EC, CHa
 // === DEFINED ParseODS.cpp ===
 
 extern int(__cdecl*ParseODS_483932)(LPBYTE pBuf, CHanaSceneT458_S504 *pScene);
+extern void(__cdecl* CHanaObj__NewMeshT3F5)(CHanaMeshT3F5_S138** pOut);
 
 // === DEFINED CHanaObj__NewFrameT3EC_S354.cpp ===
 

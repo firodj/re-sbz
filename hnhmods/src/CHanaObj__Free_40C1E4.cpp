@@ -564,26 +564,26 @@ void __cdecl hook_ApplyMaterial(CHanaMateT3EE_S184 *pMate, D3DMATERIAL7 *pD3Dmat
 
 void __cdecl hook_CHanaObj__FreeMateAnimT3F7(CHanaMateAnimT3F7_S148 *pMateAnim)
 {
-  CHanaSubObj_S50 *psoS50_4C; // [esp+0h] [ebp-8h]
-  CHanaSubObj_S50 *hMem; // [esp+4h] [ebp-4h]
+  CHanaMateAnimKeyT3F7_S50 *pNextKey; // [esp+0h] [ebp-8h]
+  CHanaMateAnimKeyT3F7_S50 *pCurKey; // [esp+4h] [ebp-4h]
 
   ONCELOG("[HNH:SUB] CHanaObj__FreeMateAnimT3F7_40E6B6\n");
 
   if ( pMateAnim->nCount_12C <= 1 )
   {
-    if ( pMateAnim->pObj_S50 )
+    if ( pMateAnim->pKeyHead_13C )
     {
-      hMem = pMateAnim->pObj_S50;
-      ApplyMaterial(pMateAnim->pMateT3EE, &hMem->d3dMat7_4);
+      pCurKey = pMateAnim->pKeyHead_13C;
+      ApplyMaterial(pMateAnim->pMateT3EE, &pCurKey->d3dMat7_4);
       CHanaObj__Free_40C1E4(pMateAnim->pMateT3EE);
       pMateAnim->pMateT3EE = 0;
       while ( 1 )
       {
-        psoS50_4C = hMem->psoS50_4C;
-        MemFree_40DF64(hMem);
-        if ( !psoS50_4C )
+        pNextKey = pCurKey->pNextKey;
+        MemFree_40DF64(pCurKey);
+        if ( !pNextKey )
           break;
-        hMem = psoS50_4C;
+        pCurKey = pNextKey;
       }
     }
     CHanaObj__RemoveFromGlobalRef(pMateAnim);

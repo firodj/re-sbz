@@ -323,11 +323,42 @@ void __cdecl hook_DrawText_43BCAE(LPDIRECTDRAWSURFACE7 pSurface, char *szText, i
   }
 }
 
+uint32_t &g_keyC = *(uint32_t *)0x4C7350; // WRITABLE
+uint8_t &g_btoggleC = *(uint8_t *)0x530268; // WRITABLE
+
+// Keyboard poll for the scene/menu layer. Returns true when ESC (0x1B) is down 
+// (bEsc, via GetAsyncKeyState after Sleep(0)). 
+// Also tracks the 'C' key (0x43): first press latches dword_4C7350=1 and 
+// toggles the global byte_530268; release clears the latch.
+bool hook_IsMenuKeyPressed_481170()
+{
+  bool bEsc; // [esp+0h] [ebp-4h]
+  ONCELOG("[HNH:SUB] IsMenuKeyPressed_481170\n");
+
+  Sleep(0);
+  bEsc = (unsigned __int16)GetAsyncKeyState(VK_ESCAPE) >> 8 != 0;
+  if ( (unsigned __int16)GetAsyncKeyState('C') >> 8 )
+  {
+    if ( !g_keyC )
+    {
+      g_btoggleC = g_btoggleC == 0;
+      g_keyC = 1;
+    }
+  }
+  else
+  {
+    g_keyC = 0;
+  }
+  return bEsc;
+}
+
 void register_MenuCharSelect_47A324() {
   hnh_Hook(0x47A324, hook_MenuCharSelect, "MenuCharSelect_47A324"); // [OK]
+ 
   hnh_HookOff();
   hnh_Hook(0x43BFFA, hook_CheckSpecialJpChar_43BFFA, "CheckSpecialJpChar_43BFFA"); // [OK]
   hnh_Hook(0x4198E0, hook_Surface_SetColorKeyRGB, "Surface_SetColorKeyRGB_4198E0"); // [OK]
   hnh_Hook(0x43BCAE, hook_DrawText_43BCAE, "DrawText_43BCAE");  // [OK]
+  hnh_Hook(0x481170, hook_IsMenuKeyPressed_481170, "IsMenuKeyPressed_481170"); // [OK]
   hnh_HookOn();
 }

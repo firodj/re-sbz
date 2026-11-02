@@ -149,12 +149,12 @@ struct CHanaLightT3EF_S1A0: public CHanaBase_S130
     CHanaFrameT3EC_S354 *pHanaT3EC_19C;
 };
 
-struct CHanaSubObj_S50
+struct CHanaMateAnimKeyT3F7_S50
 {
-    float fNum_0;
+    float fTime;
     D3DMATERIAL7 d3dMat7_4;
-    CHanaSubObj_S50 *psoS50_48;
-    CHanaSubObj_S50 *psoS50_4C;
+    CHanaMateAnimKeyT3F7_S50 *pPrevKey;
+    CHanaMateAnimKeyT3F7_S50 *pNextKey;
 };
 
 struct CHanaMateT3EE_S184;
@@ -162,10 +162,10 @@ struct CHanaMateT3EE_S184;
 struct CHanaMateAnimT3F7_S148: public CHanaBase_S130
 {
     CHanaMateT3EE_S184 *pMateT3EE;
-    float flt_134;
-    int dwCount_138;
-    CHanaSubObj_S50 *pObj_S50;
-    CHanaSubObj_S50 *psoS50_140;
+    float fLoopEnd_134;
+    int nKeyCount_138;
+    CHanaMateAnimKeyT3F7_S50 *pKeyHead_13C;
+    CHanaMateAnimKeyT3F7_S50 *pKeyTail_140;
     int field_144;
 };
 
