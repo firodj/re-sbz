@@ -1958,7 +1958,7 @@ void __cdecl hook_MtxMult_4069DD(
   D3DXMATRIX pOut; // [esp+48h] [ebp-80h] BYREF
   D3DXMATRIX pM1; // [esp+88h] [ebp-40h] BYREF
 
-  ONCELOG("[HNH:SUB] MtxMult_4069DD");
+  ONCELOG("[HNH:SUB] MtxMult_4069DD\n");
 
   D3DXMatrixTranslation(&pOut, x, y, z);
   D3DXMatrixMultiply(&pOut, &pOut, &pSceneFrame->mat4x4_after);
@@ -2795,29 +2795,11 @@ void register_ParseODFContent_441A5D() {
   hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C"); // [OK]
   hnh_Hook(0x440896, hook_ParseOdfMORP_440896, "ParseOdfMORP_440896"); // [OK]
   hnh_Hook(0x44189C, hook_ParseOdf3DON_44189C, "ParseOdf3DON_44189C"); // [OK]
-
-  hnh_Hook(0x4069DD, hook_MtxMult_4069DD, "MtxMult_4069DD");
-  hnh_Hook(0x439982, hook_HanaMorp_InitSubObject, "HanaMorp_InitSubObject_439982");
-  hnh_Hook(0x440288, hook_ParseVERT_440288, "ParseVERT_440288");
-  hnh_Hook(0x434370, hook_HanaMorp_AddVertexRef, "HanaMorp_AddVertexRef_434370");
-  hnh_Hook(0x433DA7, hook_CHanaObj__NewMorpT457, "CHanaObj__NewMorpT457_433DA7");
-
-  hnh_Hook(0x4400C3, hook_GetVertByName_4400C3, "GetVertByName_4400C3");
-  hnh_Hook(0x416CE0, hook_CHanaObj__NewVertT3EA, "CHanaObj__NewVertT3EA_416CE0");
-  hnh_Hook(0x416E65, hook_CHanaObj__FillVertexBufferT3EA, "CHanaObj__FillVertexBufferT3EA_416E65");
-  hnh_Hook(0x43F8FE, hook_ParseOdfMeshMATE_43F8FE, "ParseOdfMeshMATE_43F8FE");
-  hnh_Hook(0x418221, hook_HanaVert_SetMaterial, "HanaVert_SetMaterial_418221");
-  hnh_Hook(0x41828C, hook_FreeMate_41828C, "FreeMate_41828C");
-  hnh_Hook(0x40E7DA, hook_HanaMateAnim_InsertKeyframe, "HanaMateAnim_InsertKeyframe_40E7DA");
-  hnh_Hook(0x43FBD1, hook_ParseOdfMeshMANM_43FBD1, "ParseOdfMeshMANM_43FBD1");
-  hnh_Hook(0x40E500, hook_CHanaObj__NewMateAnimT3F7, "CHanaObj__NewMateAnimT3F7_40E500");
-  hnh_Hook(0x40E782, hook_HanaMateAnim_SetMaterial, "HanaMateAnim_SetMaterial_40E782");
-  hnh_Hook(0x4044D9, hook_HanaAnimSet_AddMaterialAnimRef, "HanaAnimSet_AddMaterialAnimRef_4044D9");
-  hnh_Hook(0x43F460, hook_ParseOdfMeshTEXT_43F460, "ParseOdfMeshTEXT_43F460");
-  hnh_Hook(0x418103, hook_HanaVert_SetTexture, "HanaVert_SetTexture_418103");
-  hnh_Hook(0x4181B5, hook_HanaVert_ReleaseTexture, "HanaVert_ReleaseTexture_4181B5");
-  hnh_Hook(0x40BC13, hook_FindObjByType_40BC13, "FindObjByType_40BC13");
-  hnh_Hook(0x43FDEC, hook_ParseOdfMeshVFLG_43FDEC, "ParseOdfMeshVFLG_43FDEC");
+  hnh_Hook(0x440288, hook_ParseVERT_440288, "ParseVERT_440288"); // [OK]
+  hnh_Hook(0x43F8FE, hook_ParseOdfMeshMATE_43F8FE, "ParseOdfMeshMATE_43F8FE"); // [OK]
+  hnh_Hook(0x43FDEC, hook_ParseOdfMeshVFLG_43FDEC, "ParseOdfMeshVFLG_43FDEC"); // [OK]
+  hnh_Hook(0x43FBD1, hook_ParseOdfMeshMANM_43FBD1, "ParseOdfMeshMANM_43FBD1"); // [OK]
+  hnh_Hook(0x43F460, hook_ParseOdfMeshTEXT_43F460, "ParseOdfMeshTEXT_43F460"); // [OK]
 
   hnh_HookOff();
     hnh_Hook(0x441A5D, hook_ParseODFContent_441A5D, "ParseODFContent_441A5D"); // [OK] 
@@ -2838,5 +2820,21 @@ void register_ParseODFContent_441A5D() {
     hnh_Hook(0x40E969, hook_ApplyMateAnimMaterial, "ApplyMateAnimMaterial_40E969"); // [OK]
     hnh_Hook(0x40283C, hook_InterpolateHanaAnimFrame, "InterpolateHanaAnimFrame_40283C"); // [OK]
     hnh_Hook(0x40344A, hook_HanaAnim_FindInterpolationFrame, "HanaAnim_FindInterpolationFrame_40344A"); // [OK]
+    hnh_Hook(0x4069DD, hook_MtxMult_4069DD, "MtxMult_4069DD"); // [OK]
+    hnh_Hook(0x439982, hook_HanaMorp_InitSubObject, "HanaMorp_InitSubObject_439982"); // [OK]
+    hnh_Hook(0x434370, hook_HanaMorp_AddVertexRef, "HanaMorp_AddVertexRef_434370"); // [OK]
+    hnh_Hook(0x433DA7, hook_CHanaObj__NewMorpT457, "CHanaObj__NewMorpT457_433DA7"); // [OK]
+    hnh_Hook(0x4400C3, hook_GetVertByName_4400C3, "GetVertByName_4400C3"); // [OK]
+    hnh_Hook(0x416CE0, hook_CHanaObj__NewVertT3EA, "CHanaObj__NewVertT3EA_416CE0"); // [OK]
+    hnh_Hook(0x416E65, hook_CHanaObj__FillVertexBufferT3EA, "CHanaObj__FillVertexBufferT3EA_416E65"); // [OK]
+    hnh_Hook(0x418221, hook_HanaVert_SetMaterial, "HanaVert_SetMaterial_418221"); // [OK]
+    hnh_Hook(0x41828C, hook_FreeMate_41828C, "FreeMate_41828C"); // [OK]
+    hnh_Hook(0x40E7DA, hook_HanaMateAnim_InsertKeyframe, "HanaMateAnim_InsertKeyframe_40E7DA"); // [OK]
+    hnh_Hook(0x40E500, hook_CHanaObj__NewMateAnimT3F7, "CHanaObj__NewMateAnimT3F7_40E500"); // [OK]
+    hnh_Hook(0x40E782, hook_HanaMateAnim_SetMaterial, "HanaMateAnim_SetMaterial_40E782"); // [OK]
+    hnh_Hook(0x4044D9, hook_HanaAnimSet_AddMaterialAnimRef, "HanaAnimSet_AddMaterialAnimRef_4044D9"); // [OK]
+    hnh_Hook(0x418103, hook_HanaVert_SetTexture, "HanaVert_SetTexture_418103"); // [OK]
+    hnh_Hook(0x4181B5, hook_HanaVert_ReleaseTexture, "HanaVert_ReleaseTexture_4181B5"); // [OK]
+    hnh_Hook(0x40BC13, hook_FindObjByType_40BC13, "FindObjByType_40BC13"); // [OK]
   hnh_HookOn();
 }
