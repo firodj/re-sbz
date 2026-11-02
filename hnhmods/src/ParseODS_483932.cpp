@@ -869,13 +869,7 @@ CHanaFrameT3EC_S354 *__cdecl hook_CHanaFrameT3EC__FindByName_483650(CHanaFrameT3
 }
 
 void register_ParseODS_483932() {
-  hnh_Hook(0x401039, hook_ParseSekFile_401039, "ParseSekFile_401039");
-  hnh_Hook(0x40d875, hook_SekHeader_CloneClean, "SekHeader_CloneClean_40D875");
-  hnh_Hook(0x40179d, hook_CSekBody__PlayAnim_40179D, "CSekBody__PlayAnim_40179D");
-  hnh_Hook(0x483704, hook_ParseOds3DON_483704, "ParseOds3DON_483704");
-  hnh_Hook(0x483650, hook_CHanaFrameT3EC__FindByName_483650, "CHanaFrameT3EC__FindByName_483650");
-  hnh_Hook(0x40fceb, hook_HanaMesh_AddVertexReference, "HanaMesh_AddVertexReference_40FCEB");
-
+  
   hnh_HookOff();
     hnh_Hook(0x483567, hook_ReadStrFile_483567, "ReadStrFile_483567"); // [OK]
     hnh_Hook(0x47E999, hook_FindFrameByName_47E999, "FindFrameByName_47E999"); // [OK]
@@ -889,5 +883,12 @@ void register_ParseODS_483932() {
     hnh_Hook(0x436300, hook_HanaVert_LerpMorph, "HanaVert_LerpMorph_436300"); // [OK]
     hnh_Hook(0x441F19, hook_ParseODFFile_441F19, "ParseODFFile_441F19"); // [OK]
     hnh_Hook(0x483932, hook_ParseODS_483932, "ParseODS_483932"); // [OK]
+    hnh_Hook(0x40d875, hook_SekHeader_CloneClean, "SekHeader_CloneClean_40D875"); // [OK]
+    hnh_Hook(0x40179d, hook_CSekBody__PlayAnim_40179D, "CSekBody__PlayAnim_40179D"); // [OK]
+    hnh_Hook(0x483650, hook_CHanaFrameT3EC__FindByName_483650, "CHanaFrameT3EC__FindByName_483650"); // [OK]
+    hnh_Hook(0x40fceb, hook_HanaMesh_AddVertexReference, "HanaMesh_AddVertexReference_40FCEB"); // [OK]
+    hnh_Hook(0x401039, hook_ParseSekFile_401039, "ParseSekFile_401039"); // [OK]
+    hnh_Hook(0x483704, hook_ParseOds3DON_483704, "ParseOds3DON_483704"); // [OK]
+
   hnh_HookOn();
 }
