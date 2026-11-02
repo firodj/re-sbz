@@ -40,11 +40,7 @@
 int (__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
     float fCurHP, float fMaxHP, CSceneState sceneState) =
     reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER, int, int, float, float, CSceneState)>(0x4655AB);
-void (__cdecl*SysMenu_SaveMenu_462135)(CSceneState sceneStates[], CHAR *arrSceneName,
-    LPDIRECTDRAWSURFACE7 arrSurf[], CHanaSpriteT3F6_S1FC *pCursor, CHanaSpriteT3F6_S1FC *pYesNo,
-    int nMouseX, int nMouseY, int bPressed) =
-    reinterpret_cast<void(__cdecl*)(CSceneState *, CHAR *, LPDIRECTDRAWSURFACE7 *,
-      CHanaSpriteT3F6_S1FC *, CHanaSpriteT3F6_S1FC *, int, int, int)>(0x462135);
+// SysMenu_SaveMenu_462135 lives in src/SysMenu_SaveMenu_462135.cpp (extern in shared.hpp)
 int (__cdecl*SysMenu_LoadMenu_462851)(CSceneState *arrScene, CHAR *arrSceneName,
     LPDIRECTDRAWSURFACE7 *arrSurf, CHanaSpriteT3F6_S1FC *pCursor, CHanaSpriteT3F6_S1FC *pYesNo,
     int nMouseX, int nMouseY, int bPressed) =

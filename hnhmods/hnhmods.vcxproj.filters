@@ -66,6 +66,9 @@
     <ClCompile Include="src\SystemMenu_4655AB.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\SysMenu_SaveMenu_462135.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="src\PlayScreenFade.cpp">
       <Filter>src</Filter>
     </ClCompile>

@@ -86,8 +86,17 @@ extern HRESULT (__cdecl*SetFogMode_40E02D)(int bFogTableEnable, DWORD dwFogMode)
 extern HRESULT (__cdecl*SetFogColor_40E0B4)(DWORD dwFogColor);
 extern HRESULT (__cdecl*SetFogRange_40E0E2)(DWORD dwFogStart, DWORD dwFogEnd);
 
-extern void(__cdecl* CHanaSpriteT3F6__SetSrcRect_414B28)(CHanaSpriteT3F6_S1FC* pSprite, LPRECT lpRect);
-extern void(__cdecl* LoadDataFiles_461557)(CSceneState* pDataBuffer, char* pszTimestamps);
+extern void(__cdecl* DrawTextOnSurfaceSpaced_419B05)(LPDIRECTDRAWSURFACE7 pSurface, int a2, int y, int a4, LPCSTR lpString, COLORREF color);
+extern void (__cdecl * DrawTextOnSurface)( LPDIRECTDRAWSURFACE7 pSurface, int x, int y, int reserved, LPCSTR lpString, COLORREF color);
+extern int (__cdecl * IntPow_44AF15)(int nBase, int nExp);
+extern void (__cdecl * CHanaSpriteT3F6__SetScale_414B09)(CHanaSpriteT3F6_S1FC *pSprite, float scale);
+extern void (__cdecl * CHanaSpriteT3F6__SetSrcRect_414B28)(CHanaSpriteT3F6_S1FC *pSprite, LPRECT lpRect);
+extern double (__cdecl * CHanaSpriteT3F6__GetAlpha_414AFB)(CHanaSpriteT3F6_S1FC *pSprite);
+extern void (__cdecl * ShowFadeDialog_46164C)(CHanaSpriteT3F6_S1FC *pSprite, CHanaSpriteT3F6_S1FC *pPanelSprite, LPCSTR szText);
+extern CHAR * (__cdecl * ZeroPadNumberToString_4612B0)(int nValue, int nDigits);
+extern void (__cdecl * FormatFileLastWriteTime_461397)(CHAR *pszFileName, CHAR *pszOutBuf);
+extern void (__cdecl * LoadDataFiles_461557)(CSceneState *pDataBuffer, char *pszTimestamps);
+
 
 // === DEFINED CheckInstalledDirRoot.cpp ===
 
@@ -237,7 +246,7 @@ extern int(__cdecl* ConvertFrom640AsInt)(int nNum);
 extern double(__cdecl*ConvertFrom640AsFloat)(float fNum);
 extern int(__cdecl* ConvertFrom1024AsInt)(int nNum);
 extern double(__cdecl* ConvertFrom1024AsFloat)(float fNum);
-
+extern CSceneSlot(&g_arrSceneNo_4C6F78)[10];
 extern BYTE &g_nAviVolumeIndex_530266;
 #endif
 
@@ -283,6 +292,22 @@ extern DWORD& g_dwDSStatus_5185C8;
 
 extern int(__cdecl* SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
   float fCurHP, float fMaxHP, CSceneState sceneState);
+extern int(__cdecl* ShowYesNoDialog_461A9E)(CHanaSpriteT3F6_S1FC* pCursor,
+  CHanaSpriteT3F6_S1FC* pDialog, LPCSTR szCaption);
+
+// === DEFINED SysMenu_SaveMenu_462135.cpp ===
+
+extern void(__cdecl* SysMenu_SaveMenu_462135)(CSceneState* sceneStates, CHAR* arrSceneName,
+  LPDIRECTDRAWSURFACE7* arrSurf, CHanaSpriteT3F6_S1FC* pCursor, CHanaSpriteT3F6_S1FC* pYesNo,
+  int nMouseX, int nMouseY, int bPressed);
+extern void(__cdecl* DrawTextOnSurface)(LPDIRECTDRAWSURFACE7 pSurface, int x, int y,
+  int reserved, LPCSTR lpString, COLORREF color);
+extern void(__cdecl* ShowFadeDialog_46164C)(CHanaSpriteT3F6_S1FC* pSprite,
+  CHanaSpriteT3F6_S1FC* pPanelSprite, LPCSTR szText);
+
+extern DWORD& g_dwUnlockedSaveSlots_530260;
+extern int(&g_arrSceneStepThresholds_4B5970)[40];
+extern char(&g_szSceneInfoText_4B5A10)[64000];
 
 // === DEFINED MenuCharSelect.cpp ===
 
