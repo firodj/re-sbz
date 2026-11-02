@@ -40,7 +40,7 @@ void __cdecl hook_SysMenu_SaveMenu_462135(CSceneState sceneStates[], CHAR *arrSc
     int nHoverCell, nConfirm;              // v44 / v45
     int i, j;
 
-    DebugLog("[HNH:SUB] SysMenu_SaveMenu_462135\n");
+    ONCELOG("[HNH:SUB] SysMenu_SaveMenu_462135\n");
 
     nHoverCell = 0;
     nConfirm = 0;
@@ -177,5 +177,5 @@ void __cdecl hook_SysMenu_SaveMenu_462135(CSceneState sceneStates[], CHAR *arrSc
 }
 
 void register_SysMenu_SaveMenu_462135() {
-    hnh_Hook(0x462135, hook_SysMenu_SaveMenu_462135, "SysMenu_SaveMenu_462135");
+    hnh_Hook(0x462135, hook_SysMenu_SaveMenu_462135, "SysMenu_SaveMenu_462135");  // [OK]
 }

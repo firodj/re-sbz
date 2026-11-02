@@ -69,6 +69,21 @@
     <ClCompile Include="src\SysMenu_SaveMenu_462135.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\SysMenu_LoadMenu_462851.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SysMenu_GirlStatusCheck_464919.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SysMenu_Options_462FE9.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SysMenu_Graphics_46380D.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShowYesNoDialog_461A9E.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="src\PlayScreenFade.cpp">
       <Filter>src</Filter>
     </ClCompile>

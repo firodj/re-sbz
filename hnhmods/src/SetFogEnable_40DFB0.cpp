@@ -438,7 +438,7 @@ void __cdecl hook_LoadDataFiles_461557(CSceneState *pDataBuffer, char *pszTimest
 }
 
 void register_SetFogEnable_40DFB0() {
-  hnh_Hook(0x419B05, hook_DrawTextOnSurfaceSpaced_419B05, "DrawTextOnSurfaceSpaced_419B05");
+  
   hnh_Hook(0x4612B0, hook_ZeroPadNumberToString_4612B0, "ZeroPadNumberToString_4612B0");
 
   hnh_HookOff();
@@ -454,5 +454,6 @@ void register_SetFogEnable_40DFB0() {
   hnh_Hook(0x461397, hook_FormatFileLastWriteTime_461397, "FormatFileLastWriteTime_461397"); // [OK]
   hnh_Hook(0x461557, hook_LoadDataFiles_461557, "LoadDataFiles_461557"); // [OK]
   hnh_Hook(0x46164C, hook_ShowFadeDialog_46164C, "ShowFadeDialog_46164C"); // [OK]
+  hnh_Hook(0x419B05, hook_DrawTextOnSurfaceSpaced_419B05, "DrawTextOnSurfaceSpaced_419B05");  // [OK]
   hnh_HookOn();
 }

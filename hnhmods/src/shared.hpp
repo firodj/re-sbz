@@ -248,6 +248,8 @@ extern int(__cdecl* ConvertFrom1024AsInt)(int nNum);
 extern double(__cdecl* ConvertFrom1024AsFloat)(float fNum);
 extern CSceneSlot(&g_arrSceneNo_4C6F78)[10];
 extern BYTE &g_nAviVolumeIndex_530266;
+extern BYTE& g_nAviFrameMultipler_530267;
+
 #endif
 
 extern BYTE &g_sceneProgressFlag_530269;
@@ -292,6 +294,9 @@ extern DWORD& g_dwDSStatus_5185C8;
 
 extern int(__cdecl* SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
   float fCurHP, float fMaxHP, CSceneState sceneState);
+
+// === DEFINED ShowYesNoDialog_461A9E.cpp ===
+
 extern int(__cdecl* ShowYesNoDialog_461A9E)(CHanaSpriteT3F6_S1FC* pCursor,
   CHanaSpriteT3F6_S1FC* pDialog, LPCSTR szCaption);
 
@@ -308,6 +313,34 @@ extern void(__cdecl* ShowFadeDialog_46164C)(CHanaSpriteT3F6_S1FC* pSprite,
 extern DWORD& g_dwUnlockedSaveSlots_530260;
 extern int(&g_arrSceneStepThresholds_4B5970)[40];
 extern char(&g_szSceneInfoText_4B5A10)[64000];
+
+// === DEFINED SysMenu_LoadMenu_462851.cpp ===
+
+extern int(__cdecl* SysMenu_LoadMenu_462851)(CSceneState* arrScene, CHAR* arrSceneName,
+  LPDIRECTDRAWSURFACE7* arrSurf, CHanaSpriteT3F6_S1FC* pCursor, CHanaSpriteT3F6_S1FC* pYesNo,
+  int nMouseX, int nMouseY, int bPressed);
+
+// === DEFINED SysMenu_GirlStatusCheck_464919.cpp ===
+
+extern int(__cdecl* SysMenu_GirlStatusCheck_464919)(LPDIRECTDRAWSURFACE7* arrSurf,
+  CHanaSpriteT3F6_S1FC* pCursor, CHanaSpriteT3F6_S1FC* pYesNo, int nMouseX, int nMouseY,
+  int bPressed, int* pnSceneStep, float fCurHP, float fMaxHP, QWORD* pSceneFlags);
+
+// === DEFINED SysMenu_Options_462FE9.cpp ===
+
+extern void(__cdecl* SysMenu_Options_462FE9)(CSceneState* sceneStates,
+  LPDIRECTDRAWSURFACE7* arrSurf, CHanaSpriteT3F6_S1FC* pCursor, CHanaSpriteT3F6_S1FC* pYesNo,
+  int nMouseX, int nMouseY, int bPressed);
+
+extern BYTE& g_mapFrameFlag_530264;
+extern BYTE& g_nEffectLevel_530265;
+extern BYTE& g_btoggleC_530268;
+
+// === DEFINED SysMenu_Graphics_46380D.cpp ===
+
+extern void(__cdecl* SysMenu_Graphics_46380D)(int* arrGfxOpts, CSceneState* arrSceneStates,
+  LPDIRECTDRAWSURFACE7* arrSurf, CHanaSpriteT3F6_S1FC* pCursor, CHanaSpriteT3F6_S1FC* pYesNo,
+  int nMouseX, int nMouseY, int bPressed);
 
 // === DEFINED MenuCharSelect.cpp ===
 

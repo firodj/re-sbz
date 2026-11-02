@@ -103,6 +103,11 @@ void register_ParseODS_483932();
 void register_ProcessFrame_40600C();
 void register_SystemMenu_4655AB();
 void register_SysMenu_SaveMenu_462135();
+void register_SysMenu_LoadMenu_462851();
+void register_SysMenu_GirlStatusCheck_464919();
+void register_SysMenu_Options_462FE9();
+void register_SysMenu_Graphics_46380D();
+void register_ShowYesNoDialog_461A9E();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -149,6 +154,11 @@ void InitHNH() {
 	register_ProcessFrame_40600C();
 	register_SystemMenu_4655AB();
 	register_SysMenu_SaveMenu_462135();
+	register_SysMenu_LoadMenu_462851();
+	register_SysMenu_GirlStatusCheck_464919();
+	register_SysMenu_Options_462FE9();
+	register_SysMenu_Graphics_46380D();
+	register_ShowYesNoDialog_461A9E();
 
 
 	DebugLog("[HNH] All hooking done !\n");

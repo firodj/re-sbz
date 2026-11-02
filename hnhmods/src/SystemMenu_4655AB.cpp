@@ -41,27 +41,11 @@ int (__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nM
     float fCurHP, float fMaxHP, CSceneState sceneState) =
     reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER, int, int, float, float, CSceneState)>(0x4655AB);
 // SysMenu_SaveMenu_462135 lives in src/SysMenu_SaveMenu_462135.cpp (extern in shared.hpp)
-int (__cdecl*SysMenu_LoadMenu_462851)(CSceneState *arrScene, CHAR *arrSceneName,
-    LPDIRECTDRAWSURFACE7 *arrSurf, CHanaSpriteT3F6_S1FC *pCursor, CHanaSpriteT3F6_S1FC *pYesNo,
-    int nMouseX, int nMouseY, int bPressed) =
-    reinterpret_cast<int(__cdecl*)(CSceneState *, CHAR *, LPDIRECTDRAWSURFACE7 *,
-      CHanaSpriteT3F6_S1FC *, CHanaSpriteT3F6_S1FC *, int, int, int)>(0x462851);
-int (__cdecl*SysMenu_GirlStatusCheck_464919)(LPDIRECTDRAWSURFACE7 *arrSurf,
-    CHanaSpriteT3F6_S1FC *pCursor, CHanaSpriteT3F6_S1FC *pYesNo, int nMouseX, int nMouseY,
-    int bPressed, int *pnSceneStep, float fCurHP, float fMaxHP, QWORD *pSceneFlags) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTDRAWSURFACE7 *, CHanaSpriteT3F6_S1FC *,
-      CHanaSpriteT3F6_S1FC *, int, int, int, int *, float, float, QWORD *)>(0x464919);
-void (__cdecl*SysMenu_Options_462FE9)(CSceneState *sceneStates, LPDIRECTDRAWSURFACE7 *arrSurf, CHanaSpriteT3F6_S1FC *pCursor, CHanaSpriteT3F6_S1FC *pYesNo, int nMouseX, int nMouseY, int bPressed) =
-    reinterpret_cast<void(__cdecl*)(CSceneState *sceneStates, LPDIRECTDRAWSURFACE7 *arrSurf, CHanaSpriteT3F6_S1FC *pCursor, CHanaSpriteT3F6_S1FC *pYesNo, int nMouseX, int nMouseY, int bPressed)>(0x462FE9);
-void (__cdecl*SysMenu_Graphics_46380D)(int *arrGfxOpts, CSceneState *arrSceneStates,
-    LPDIRECTDRAWSURFACE7 *arrSurf, CHanaSpriteT3F6_S1FC *pCursor, CHanaSpriteT3F6_S1FC *pYesNo,
-    int nMouseX, int nMouseY, int bPressed) =
-    reinterpret_cast<void(__cdecl*)(int *, CSceneState *, LPDIRECTDRAWSURFACE7 *,
-      CHanaSpriteT3F6_S1FC *, CHanaSpriteT3F6_S1FC *, int, int, int)>(0x46380D);
-int (__cdecl*ShowYesNoDialog_461A9E)(CHanaSpriteT3F6_S1FC *pCursor,
-    CHanaSpriteT3F6_S1FC *pDialog, LPCSTR szCaption) =
-    reinterpret_cast<int(__cdecl*)(CHanaSpriteT3F6_S1FC *, CHanaSpriteT3F6_S1FC *, LPCSTR)>(0x461A9E);
-
+// SysMenu_LoadMenu_462851 lives in src/SysMenu_LoadMenu_462851.cpp (extern in shared.hpp)
+// SysMenu_GirlStatusCheck_464919 lives in src/SysMenu_GirlStatusCheck_464919.cpp (extern in shared.hpp)
+// SysMenu_Options_462FE9 lives in src/SysMenu_Options_462FE9.cpp (extern in shared.hpp)
+// SysMenu_Graphics_46380D lives in src/SysMenu_Graphics_46380D.cpp (extern in shared.hpp)
+// ShowYesNoDialog_461A9E lives in src/ShowYesNoDialog_461A9E.cpp (extern in shared.hpp)
 // === FUNCTIONS ===
 int __cdecl hook_SystemMenu_4655AB(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
                                    float fCurHP, float fMaxHP, CSceneState sceneState)
@@ -83,7 +67,7 @@ int __cdecl hook_SystemMenu_4655AB(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int
     int pnSceneStep;
     BOOL bFadedIn, bRightClickExit;
 
-    DebugLog("[HNH:SUB] SystemMenu_4655AB\n");
+    ONCELOG("[HNH:SUB] SystemMenu_4655AB\n");
 
     bFadedIn = 0;
     bRightClickExit = FALSE;

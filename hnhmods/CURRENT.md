@@ -134,7 +134,7 @@ Starting from 0x49f0e1
     │   ├──0x43aaf2 return1_18                                                                  <- [todo]
     │   ├──0x47f013 GameMainLoop_47F013                                                         <- [HOOK+PTR GameMainLoop_47F013.cpp]
     │   │   ├──0x47df0d MainMenu                                                                <- [HOOK+PTR InGameMenu_4799E2.cpp]
-    │   │   │   ├──0x47d163 MenuMusicSelect                                                     <- [HOOK+PTR MenuMusicSelect.cpp]
+    │   │   │   ├──0x47d163 MenuMusicSelect                                                     <- [HOOK+PTR MenuCharSelect.cpp]
     │   │   │   │   ├──0x47e680 ConvertFrom1024AsInt                                            <- [HOOK+PTR GameMainLoop_47F013.cpp]
     │   │   │   │   ├──0x40bf01 PresentFrame                                                    <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   ├──0x40be03 RecoverLostDevice                                           <- [HOOK+PTR InGameMenu_4799E2.cpp]
@@ -168,9 +168,9 @@ Starting from 0x49f0e1
     │   │   │   │   │   ├──0x4815ec MutexThreadWait_4815EC                                      <- [HOOK+PTR StopAndRestartThread.cpp]
     │   │   │   │   │   └──0x481b37 GetInputState_481B37                                        <- [HOOK+PTR StopAndRestartThread.cpp]
     │   │   │   │   ├──0x47e69b ConvertFrom1024AsFloat                                          <- [HOOK+PTR GameMainLoop_47F013.cpp]
-    │   │   │   │   ├──0x4655ab SystemMenu_4655AB                                               <- [PTR InGameMenu_4799E2.cpp]
+    │   │   │   │   ├──0x4655ab SystemMenu_4655AB                                               <- [HOOK+PTR SystemMenu_4655AB.cpp]
     │   │   │   │   │   ├──0x414589 DrawSpriteLTRB                                              <- [HOOK+PTR PlayScreenFade.cpp]
-    │   │   │   │   │   ├──0x46380d SysMenu_Graphics_46380D                                     <- [todo]
+    │   │   │   │   │   ├──0x46380d SysMenu_Graphics_46380D                                     <- [HOOK+PTR SysMenu_Graphics_46380D.cpp]
     │   │   │   │   │   │   ├──0x419b05 DrawTextOnSurfaceSpaced_419B05                          <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
     │   │   │   │   │   │   │   └──0x4188b4 GetDC_4188B4                                        <- [HOOK+PTR GameMainLoop_47F013.cpp]
     │   │   │   │   │   │   ├──0x47e6c6 ConvertFrom640AsFloat                                   <- [HOOK+PTR GameMainLoop_47F013.cpp]
@@ -184,21 +184,21 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   │   ├──0x4133d0 CHanaObj__NewSprite3F6byWH                          <- [HOOK+PTR CHanaObj__NewFrameT3EC_S354.cpp]
     │   │   │   │   │   │   │   └──0x419a1a GetSurfaceWH                                        <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   │   └──0x414a5d CHanaSpriteT3F6__SetPos_414A5D                          <- [HOOK+PTR InGameMenu_4799E2.cpp]
-    │   │   │   │   │   ├──0x464919 SysMenu_GirlStatusCheck_464919                              <- [todo]
+    │   │   │   │   │   ├──0x464919 SysMenu_GirlStatusCheck_464919                              <- [HOOK+PTR SysMenu_GirlStatusCheck_464919.cpp]
     │   │   │   │   │   │   ├──0x419a4b DrawTextOnSurface                                       <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
     │   │   │   │   │   │   ├──0x44af15 IntPow_44AF15                                           <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
-    │   │   │   │   │   ├──0x461a9e ShowYesNoDialog_461A9E                                      <- [todo]
+    │   │   │   │   │   ├──0x461a9e ShowYesNoDialog_461A9E                                      <- [HOOK+PTR ShowYesNoDialog_461A9E.cpp]
     │   │   │   │   │   │   ├──0x414b09 CHanaSpriteT3F6__SetScale_414B09                        <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
     │   │   │   │   │   │   ├──0x414b28 CHanaSpriteT3F6__SetSrcRect_414B28                      <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
     │   │   │   │   │   │   ├──0x414aba CHanaObj__SetAlpha3F6                                   <- [HOOK+PTR PlayScreenFade.cpp]
     │   │   │   │   │   │   ├──0x481550 DoPeekMessages                                          <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   │   └──0x414afb CHanaSpriteT3F6__GetAlpha_414AFB                        <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
-    │   │   │   │   │   ├──0x462135 SysMenu_SaveMenu_462135                                     <- [todo]
+    │   │   │   │   │   ├──0x462135 SysMenu_SaveMenu_462135                                     <- [HOOK+PTR SysMenu_SaveMenu_462135.cpp]
     │   │   │   │   │   │   ├──0x46164c ShowFadeDialog_46164C                                   <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
     │   │   │   │   │   │   ├──0x461557 LoadDataFiles_461557                                    <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
     │   │   │   │   │   │   │   ├──0x461397 FormatFileLastWriteTime_461397                      <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
     │   │   │   │   │   │   │   │   ├──0x4612b0 ZeroPadNumberToString_4612B0                    <- [HOOK+PTR SetFogEnable_40DFB0.cpp]
-    │   │   │   │   │   ├──0x462851 SysMenu_LoadMenu_462851                                     <- [todo]
+    │   │   │   │   │   ├──0x462851 SysMenu_LoadMenu_462851                                     <- [HOOK+PTR SysMenu_LoadMenu_462851.cpp]
     │   │   │   │   │   ├──0x413a5e LoadBmpWithMask_413A5E                                      <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   │   ├──0x43ea05 CreateTextureFromSurfaceWithAlphaMask                   <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   │   ├──0x4874de PlayScreenFade                                              <- [HOOK+PTR PlayScreenFade.cpp]
@@ -239,7 +239,7 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   │   │   └──0x4811fa GetCursorPos_4811FA                             <- [HOOK+PTR StopAndRestartThread.cpp]
     │   │   │   │   │   │   │   ├──0x481637 InputThread_Relative_481637                         <- [HOOK StopAndRestartThread.cpp]
     │   │   │   │   │   │   └──0x481a35 TerminateThreadGracefully                               <- [HOOK+PTR StopAndRestartThread.cpp]
-    │   │   │   │   │   ├──0x462fe9 SysMenu_Options_462FE9                                      <- [todo]
+    │   │   │   │   │   ├──0x462fe9 SysMenu_Options_462FE9                                      <- [HOOK+PTR SysMenu_Options_462FE9.cpp]
     │   │   │   │   ├──0x4863c3 nop_4863C3                                                      <- [todo]
     │   │   │   │   ├──0x45a4d8 GetMouseXY_45A4D8                                               <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   ├──0x481170 IsMenuKeyPressed_481170                                         <- [HOOK+PTR MenuCharSelect.cpp]
@@ -300,8 +300,8 @@ Starting from 0x49f0e1
     │   │   │   │   │   ├──0x4857ca ResetSceneBodies_4857CA                                     <- [todo]
     │   │   │   │   │   ├──0x48564b LoadOdsEx_48564B                                            <- [todo]
     │   │   │   │   │   │   ├──0x484a38 ParseOdsEx_484A38                                       <- [todo]
-    │   │   │   │   │   │   │   ├──0x483704 ParseOds3DON_483704                                 <- [PTR ParseODS_483932.cpp]
-    │   │   │   │   │   │   │   │   ├──0x483650 CHanaFrameT3EC::FindByName_483650               <- [todo]
+    │   │   │   │   │   │   │   ├──0x483704 ParseOds3DON_483704                                 <- [HOOK+PTR ParseODS_483932.cpp]
+    │   │   │   │   │   │   │   │   ├──0x483650 CHanaFrameT3EC::FindByName_483650               <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   │   │   │   └──0x42277e LoadWavToDS3DBuffer_42277E                      <- [HOOK+PTR LoadSoundEffects_47EB7F.cpp]
     │   │   │   │   │   │   │   ├──0x441f19 ParseODFFile_441F19                                 <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   │   │   │   ├──0x403a00 CHanaObj::NewAnimSetT3F1_S150                   <- [HOOK+PTR ParseODS_483932.cpp]
@@ -310,7 +310,7 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   │   │   │   │   ├──0x436300 HanaVert_LerpMorph                      <- [HOOK ParseODS_483932.cpp]
     │   │   │   │   │   │   │   │   │   │   ├──0x434fe0 GetT3F5FromObj_434FE0                   <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   │   │   │   │   │   │   ├──0x40fca0 CHanaObj::NewMeshT3F5               <- [HOOK+PTR ParseODS_483932.cpp]
-    │   │   │   │   │   │   │   │   │   │   │   ├──0x40fceb HanaMesh_AddVertexReference         <- [PTR ParseODS_483932.cpp]
+    │   │   │   │   │   │   │   │   │   │   │   ├──0x40fceb HanaMesh_AddVertexReference         <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   │   │   │   │   │   ├──0x4363a3 HanaVert_CopyMorph                      <- [HOOK ParseODS_483932.cpp]
     │   │   │   │   │   │   │   │   │   │   ├──0x4417eb HanaFrame_FindByName                    <- [HOOK+PTR CheckInstalledDirRoot_4869A7.cpp]
     │   │   │   │   │   │   │   │   ├──0x441a5d ParseODFContent_441A5D                          <- [HOOK+PTR ParseODFContent_441A5D.cpp]
@@ -347,9 +347,9 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   │   │   │   │   ├──0x434370 HanaMorp_AddVertexRef                   <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   │   ├──0x44189c ParseOdf3DON_44189C                         <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   └──0x441e7e HanaFrame_PropagateFogToChildren                <- [HOOK+PTR ParseODS_483932.cpp]
-    │   │   │   │   │   │   │   ├──0x40179d CSekBody::PlayAnim_40179D                           <- [PTR ParseODS_483932.cpp]
-    │   │   │   │   │   │   │   ├──0x401039 ParseSekFile_401039                                 <- [PTR ParseODS_483932.cpp]
-    │   │   │   │   │   │   │   │   └──0x40d875 SekHeader_CloneClean                            <- [todo]
+    │   │   │   │   │   │   │   ├──0x40179d CSekBody::PlayAnim_40179D                           <- [HOOK+PTR ParseODS_483932.cpp]
+    │   │   │   │   │   │   │   ├──0x401039 ParseSekFile_401039                                 <- [HOOK+PTR ParseODS_483932.cpp]
+    │   │   │   │   │   │   │   │   └──0x40d875 SekHeader_CloneClean                            <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   │   │   ├──0x483567 ReadStrFile_483567                                  <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   │   └──0x481c5f CHanaObj__NewSceneT458_S504                             <- [todo]
     │   │   │   │   │   ├──0x4843cf LoadOds_4843CF                                              <- [todo]
@@ -391,7 +391,7 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   ├──0x4698e8 SoundSE_ManageEffectsAndPlay                            <- [todo]
     │   │   │   │   │   │   ├──0x467e72 AnimSet_MatchAndSortKutiRTibusaLFrames                  <- [todo]
     │   │   │   │   │   │   ├──0x4686f8 UpdateCutInSceneCameraFollow                            <- [todo]
-    │   │   │   ├──0x47ad8d MenuGallery                                                         <- [HOOK+PTR MenuGallery.cpp]
+    │   │   │   ├──0x47ad8d MenuGallery                                                         <- [HOOK+PTR MenuCharSelect.cpp]
     │   │   ├──0x44c38d PlayHunting_44C38D                                                      <- [PTR GameMainLoop_47F013.cpp]
     │   │   │   ├──0x455183 PlayVictoryCutscene_455183                                          <- [todo]
     │   │   │   │   ├──0x458b3a UpdateVoicePlayback_458B3A                                      <- [todo]
@@ -462,7 +462,7 @@ Starting from 0x49f0e1
     │   │   │   ├──0x4593e0 SetupHeroEntry_4593E0                                               <- [todo]
     │   │   │   ├──0x459768 CheckSceneTransition_459768                                         <- [todo]
     │   │   │   └──0x45b2fb DrawSpriteListEcho_45B2FB                                           <- [todo]
-    │   │   ├──0x4795ce ShowBackdropAndWait_4795CE                                              <- [PTR GameMainLoop_47F013.cpp]
+    │   │   ├──0x4795ce ShowBackdropAndWait_4795CE                                              <- [HOOK+PTR GameMainLoop_47F013.cpp]
     │   │   ├──0x4799e2 InGameMenu_4799E2                                                       <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   ├──0x47eeec ReleaseSoundEffects                                                     <- [HOOK+PTR LoadSoundEffects_47EB7F.cpp]
     │   │   └──0x47eb7f LoadSoundEffects_47EB7F                                                 <- [HOOK+PTR LoadSoundEffects_47EB7F.cpp]
@@ -481,11 +481,11 @@ Done 460
 ## Stats
 
 - tree functions:      460
-- hooked:              284 (HOOK or HOOK+PTR)
-- pinned:              293 (PTR or HOOK+PTR)
-- fully covered:       278 (HOOK+PTR)
+- hooked:              298 (HOOK or HOOK+PTR)
+- pinned:              301 (PTR or HOOK+PTR)
+- fully covered:       292 (HOOK+PTR)
 - implemented only:    1
-- untouched:           160
+- untouched:           152
 
 ## Per-file status (scan_cpp.py)
 
@@ -523,12 +523,10 @@ SUMMARY
 structs:              0
   globals:              7 (7 func-ptr imports)
   functions:            8 (7 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   6/7
+  DebugLog [HNH:SUB]:   7/7
   hnh_Hook-registered:  7/7
-  func-ptrs declared:   3/6
-  func-ptrs w/o hook:   3/7
-  no hook function for: CHanaObj__NewFrameT3EC_S354, CHanaObj__NewFrameRootT3EC_S2D4, CHanaObj__NewMateT3EE_S184
-  missing DebugLog:     hook_MtxStackRecursiveMulLocal_4075B0
+  func-ptrs declared:   7/7
+  func-ptrs w/o hook:   0/7
 ```
 
 ### hnhmods/src/CheckInstalledDirRoot_4869A7.cpp
@@ -594,12 +592,12 @@ structs:              0
 SUMMARY
 structs:              0
   globals:              28 (15 func-ptr imports)
-  functions:            11 (10 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   10/10
-  hnh_Hook-registered:  10/10
-  func-ptrs declared:   10/10
-  func-ptrs w/o hook:   5/15
-  no hook function for: PlayOdsDialogueScene_477F90, PlayMapBattle_45BCAE, RunDuelBattle_44C38D, RunPracticeScene_4703AE, ShowBackdropAndWait_4795CE
+  functions:            12 (11 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   11/11
+  hnh_Hook-registered:  11/11
+  func-ptrs declared:   11/11
+  func-ptrs w/o hook:   4/15
+  no hook function for: PlayOdsDialogueScene_477F90, PlayMapBattle_45BCAE, RunDuelBattle_44C38D, RunPracticeScene_4703AE
 ```
 
 ### hnhmods/src/InGameMenu_4799E2.cpp
@@ -607,13 +605,12 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              23 (20 func-ptr imports)
+  globals:              22 (19 func-ptr imports)
   functions:            21 (20 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   19/20
   hnh_Hook-registered:  19/20
   func-ptrs declared:   19/19
-  func-ptrs w/o hook:   1/20
-  no hook function for: SystemMenu_4655AB
+  func-ptrs w/o hook:   0/19
   missing DebugLog:     ApplyMenuBgmVolume
   not registered:       ApplyMenuBgmVolume
 ```
@@ -662,40 +659,14 @@ structs:              0
 
 ```
 SUMMARY
-structs:              0
-  globals:              10 (6 func-ptr imports)
-  functions:            6 (5 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   5/5
-  hnh_Hook-registered:  5/5
-  func-ptrs declared:   5/5
-  func-ptrs w/o hook:   1/6
-  no hook function for: PlayAssault_4703AE
-```
-
-### hnhmods/src/MenuGallery.cpp
-
-```
-SUMMARY
-structs:              0
-  globals:              2 (1 func-ptr imports)
-  functions:            2 (1 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   1/1
-  hnh_Hook-registered:  1/1
-  func-ptrs declared:   1/1
-  func-ptrs w/o hook:   0/1
-```
-
-### hnhmods/src/MenuMusicSelect.cpp
-
-```
-SUMMARY
 structs:              1
-  globals:              2 (1 func-ptr imports)
-  functions:            2 (1 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   1/1
-  hnh_Hook-registered:  1/1
-  func-ptrs declared:   1/1
-  func-ptrs w/o hook:   0/1
+  globals:              14 (8 func-ptr imports)
+  functions:            8 (7 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   7/7
+  hnh_Hook-registered:  7/7
+  func-ptrs declared:   7/7
+  func-ptrs w/o hook:   1/8
+  no hook function for: PlayAssault_4703AE
 ```
 
 ### hnhmods/src/MtxStackRecursiveMulLocal.cpp
@@ -728,15 +699,12 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              18 (14 func-ptr imports)
-  functions:            14 (13 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   12/13
-  hnh_Hook-registered:  12/13
-  func-ptrs declared:   10/12
-  func-ptrs w/o hook:   3/14
-  no hook function for: ParseSekFile_401039, CSekBody__PlayAnim_40179D, ParseOds3DON_483704
-  missing DebugLog:     hook_HanaMesh_AddVertexReference
-  not registered:       hook_HanaMesh_AddVertexReference
+  globals:              20 (16 func-ptr imports)
+  functions:            19 (18 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   18/18
+  hnh_Hook-registered:  18/18
+  func-ptrs declared:   16/18
+  func-ptrs w/o hook:   0/16
 ```
 
 ### hnhmods/src/PlayScreenFade.cpp
@@ -795,6 +763,19 @@ structs:              0
   func-ptrs w/o hook:   0/5
 ```
 
+### hnhmods/src/ShowYesNoDialog_461A9E.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              1 (1 func-ptr imports)
+  functions:            2 (1 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/1
+  hnh_Hook-registered:  1/1
+  func-ptrs declared:   1/1
+  func-ptrs w/o hook:   0/1
+```
+
 ### hnhmods/src/StopAndRestartThread.cpp
 
 ```
@@ -820,6 +801,86 @@ structs:              0
   func-ptrs declared:   0/0
   missing DebugLog:     AssertHanaStructSize
   not registered:       AssertHanaStructSize
+```
+
+### hnhmods/src/SysMenu_GirlStatusCheck_464919.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              1 (1 func-ptr imports)
+  functions:            2 (1 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/1
+  hnh_Hook-registered:  1/1
+  func-ptrs declared:   1/1
+  func-ptrs w/o hook:   0/1
+```
+
+### hnhmods/src/SysMenu_Graphics_46380D.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              1 (1 func-ptr imports)
+  functions:            3 (2 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/2
+  hnh_Hook-registered:  1/2
+  func-ptrs declared:   1/1
+  func-ptrs w/o hook:   0/1
+  missing DebugLog:     DrawTip
+  not registered:       DrawTip
+```
+
+### hnhmods/src/SysMenu_LoadMenu_462851.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              1 (1 func-ptr imports)
+  functions:            2 (1 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/1
+  hnh_Hook-registered:  1/1
+  func-ptrs declared:   1/1
+  func-ptrs w/o hook:   0/1
+```
+
+### hnhmods/src/SysMenu_Options_462FE9.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              4 (1 func-ptr imports)
+  functions:            2 (1 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/1
+  hnh_Hook-registered:  1/1
+  func-ptrs declared:   1/1
+  func-ptrs w/o hook:   0/1
+```
+
+### hnhmods/src/SysMenu_SaveMenu_462135.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              4 (1 func-ptr imports)
+  functions:            2 (1 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/1
+  hnh_Hook-registered:  1/1
+  func-ptrs declared:   1/1
+  func-ptrs w/o hook:   0/1
+```
+
+### hnhmods/src/SystemMenu_4655AB.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              1 (1 func-ptr imports)
+  functions:            2 (1 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/1
+  hnh_Hook-registered:  1/1
+  func-ptrs declared:   1/1
+  func-ptrs w/o hook:   0/1
 ```
 
 ### hnhmods/src/WinMain_485CE0.cpp
