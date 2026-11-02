@@ -3,31 +3,6 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-// PlayOdsDialogueScene_477F90 -- the main story/ending dialogue scene player
-// (GameMainLoop dispatches nSceneType 1 here). nOdsIndex selects from a
-// 47-entry path table (built below from the strcpy/memset noise): p02/p05/
-// p04/p03/p01 chapter files "pNN\pNN_sXX" (+ _h01 scenes, bare "PNN" branch
-// stubs) and e00/e01/e02 endings; "<name>.ods" resolved through the ODS dir
-// (1002). Load fails -> -1.
-//
-// Setup: antialias off; LoadOds + ResetSceneBodies post-init; mouse.bmp
-// cursor; timer scale 15; projection FOV 0.5; exec-state primed by running
-// UpdateSceneAtTime twice at t=1 then ParseExecStr at t=5 (x2, WCurNum=5).
-//
-// Main loop: menu key -> PauseSceneAudio + SystemMenu (BGM = scene's
-// pSndBuf, vol offset = field_470, mode 0, protagonist HP pair from
-// g_sceneState); >= 1 exits. Middle-click TOGGLES bSkipMode (skips the
-// script and the dialogue window/cursor); right-click (btn 3) multiplies
-// frame time x5 while held; a left-click while text is still scrolling
-// (by_461 && !by_460) completes the line, and otherwise speeds the script
-// x1000 for that frame. Scene advance: UpdateSceneTimer + UpdateSceneAtTime
-// (0 = scene over) + ParseExecStr (0 = over). Background: while flt_480
-// < 1 a crossfade from pUnk_47C toward pSurface_468 via
-// Surface_AlphaBlendRect(alpha = flt_480*100, advancing /25 per frame),
-// else a plain Blt; Lock/Unlock around blits (DDRAW sync quirk); D3DX
-// Clear(2) with a bg / Clear(3) without; 3D pass with ALPHABLEND off
-// around HanaFrame_Draw. Dialogue window + cursor drawn only when not
-// skipping. Teardown restores the timer scale and frees scene + cursor.
 
 // 20-char path-table entry (IDA: String20)
 struct String20 { char str[20]; };
@@ -57,8 +32,8 @@ void (__cdecl*DrawDialogueWindow_480B2D)(CHanaSceneT458_S504 *pScene,
 
 void (__cdecl *DrawAdvanceDialogueText_47FA84)(CHanaSceneT458_S504 *pScene, int, int, __int16)
 = reinterpret_cast<void (__cdecl*)(CHanaSceneT458_S504 *pScene, int, int, __int16)>(0x47fa84);
-
-
+void (__cdecl*DrawDialogueText_4803B5)(CHanaSceneT458_S504 *pScene, float fFrameTime) =
+reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, float)>(0x4803B5);
 void (__cdecl *CHanaObj__NewSceneT458_S504)(CHanaSceneT458_S504 **ppOut)
 = reinterpret_cast<void (__cdecl*)(CHanaSceneT458_S504 **ppOut)>(0x481c5f);
 void (__cdecl *CSekBody__CutToAnim_4018E1)(CSekBody *pSekBody, int nIndex)
@@ -74,8 +49,42 @@ void (__cdecl *HanaAnim_UpdateBoneTransform)(CHanaAnimT3F0_S240 *pAnim, float fW
 void (__cdecl *SekBody__UpdateTo2_401647)(CSekBody *pSekBody, int nIndex)
 = reinterpret_cast<void (__cdecl*)(CSekBody *pSekBody, int nIndex)>(0x401647);
 
+void (__cdecl*Surface_AlphaBlendRect)(LPDIRECTDRAWSURFACE7 pDestSurface, int nDestX, int nDestY,
+  LPDIRECTDRAWSURFACE7 pSrcSurface, LPRECT pSrcRect, int nBlendWeight, char bSkipColorKey) =
+  reinterpret_cast<void(__cdecl*)(LPDIRECTDRAWSURFACE7, int, int, LPDIRECTDRAWSURFACE7,
+    LPRECT, int, char)>(0x41A039);
+LPVOID (__cdecl*Surface_LockAndGetPointer)(LPDIRECTDRAWSURFACE7 pSurface) =
+reinterpret_cast<LPVOID(__cdecl*)(LPDIRECTDRAWSURFACE7)>(0x4196FD);
+
 
 // === FUNCTIONS ===
+
+// PlayOdsDialogueScene_477F90 -- the main story/ending dialogue scene player
+// (GameMainLoop dispatches nSceneType 1 here). nOdsIndex selects from a
+// 47-entry path table (built below from the strcpy/memset noise): p02/p05/
+// p04/p03/p01 chapter files "pNN\pNN_sXX" (+ _h01 scenes, bare "PNN" branch
+// stubs) and e00/e01/e02 endings; "<name>.ods" resolved through the ODS dir
+// (1002). Load fails -> -1.
+//
+// Setup: antialias off; LoadOds + ResetSceneBodies post-init; mouse.bmp
+// cursor; timer scale 15; projection FOV 0.5; exec-state primed by running
+// UpdateSceneAtTime twice at t=1 then ParseExecStr at t=5 (x2, WCurNum=5).
+//
+// Main loop: menu key -> PauseSceneAudio + SystemMenu (BGM = scene's
+// pSndBuf, vol offset = field_470, mode 0, protagonist HP pair from
+// g_sceneState); >= 1 exits. Middle-click TOGGLES bSkipMode (skips the
+// script and the dialogue window/cursor); right-click (btn 3) multiplies
+// frame time x5 while held; a left-click while text is still scrolling
+// (by_461 && !by_460) completes the line, and otherwise speeds the script
+// x1000 for that frame. Scene advance: UpdateSceneTimer + UpdateSceneAtTime
+// (0 = scene over) + ParseExecStr (0 = over). Background: while flt_480
+// < 1 a crossfade from pUnk_47C toward pSurface_468 via
+// Surface_AlphaBlendRect(alpha = flt_480*100, advancing /25 per frame),
+// else a plain Blt; Lock/Unlock around blits (DDRAW sync quirk); D3DX
+// Clear(2) with a bg / Clear(3) without; 3D pass with ALPHABLEND off
+// around HanaFrame_Draw. Dialogue window + cursor drawn only when not
+// skipping. Teardown restores the timer scale and frees scene + cursor.
+
 int __cdecl hook_PlayOdsDialogueScene_477F90(int nOdsIndex)
 {
     CHanaSceneT458_S504 *pHanaScene;        // [esp+238h] [ebp-400h]
@@ -1019,17 +1028,368 @@ void __cdecl hook_DrawAdvanceDialogueText_47FA84(CHanaSceneT458_S504 *pScene, in
   }
 }
 
+
+// DrawDialogueText_4803B5 -- scrolling dialogue-text renderer (glyph half of
+// DrawDialogueWindow_480B2D; called with the frame time x speed multiplier).
+//
+// Global scroll counter g_dwFontRenderFlag (@0x52F1B0, float in a DWORD
+// global) advances fFrameTime*30 per call; scroll/100 = number of glyphs
+// revealed. Empty scene (no ptrStrData_260) clears by_460/by_461 and bails.
+// (The original's NULL-pScene branch writes through the NULL pointer -- a
+// crash bug that is never hit; collapsed into the guard here.)
+//
+// The 4x29 text-sprite grid pScene->textSprites_264 is walked in two passes
+// sharing the i/j cursor:
+//   PASS 1 (settled glyphs): draw every fully-revealed glyph (alpha =
+//   flt_454 * flt_450), 22-px grid cells converted from 640-space, each
+//   drawn TWICE (double-alpha compounding), counting v18 = glyph index;
+//   stops early (v20 = "still scrolling") when scroll/100 < v18, or at a
+//   sprite with bOk_10C == 1 (v25 = page-end marker).
+//   PASS 2 (fading tail): up to 5 glyphs per frame fade in with a
+//   triangular window fade = |1 - (index - scroll/100)/5| clamped [0,1];
+//   each glyph slides into place (right/left edges (1-fade)*10, top/bottom
+//   (1-fade)*4/32 px), alpha = flt_450 * fade * flt_454, drawn twice.
+//   Quirk kept: hitting the 5-glyph budget mid-row jumps to the NEXT ROW
+//   (remaining columns of the current row are deferred a frame).
+//
+// Cursor sprites (pSprWindowBmp[2] = static base, [1] = bobbing arrow at
+// x 624): hidden while text is still scrolling or by_461 == 0; otherwise
+// [2]'s alpha ramps fFrameTime/100 up to 1 (copied to [1]) and [1] bobs at
+// y = sin(scroll/180)*5 + 432. D3DTSS_ADDRESS is set to 3 (CLAMP) around
+// the glyph drawing and restored after.
+
+// === FUNCTIONS ===
+void __cdecl hook_DrawDialogueText_4803B5(CHanaSceneT458_S504 *pScene, float fFrameTime)
+{
+  RECT rc;                               // [esp+50h] [ebp-28h]
+  RECT rcGlyph;                          // [esp+60h] [ebp-18h]
+  DWORD dwTssAddress;
+  float fGlyphIndex, fFade, fFadeCount;  // v18 / v26 / v17
+  int i, j, bStillScrolling, bPageEnd;
+
+  ONCELOG("[HNH:SUB] DrawDialogueText_4803B5\n");
+
+  fGlyphIndex = 0.0f;
+  fFadeCount = 0.0f;
+  bStillScrolling = 0;
+  bPageEnd = 0;
+  *(float *)&g_dwFontRenderFlag = *(float *)&g_dwFontRenderFlag + fFrameTime * 30.0f;
+
+  // (the original's NULL-pScene / always-true pointer branches are dead
+  // code; behaviorally only this guard matters)
+  if (!pScene->ptrStrData_260)
+  {
+    pScene->by_460 = 0;
+    pScene->by_461 = 0;
+    return;
+  }
+
+  g_pD3DDevice_4D6C78->GetTextureStageState(0, D3DTSS_ADDRESS, &dwTssAddress);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ADDRESS, 3);   // CLAMP
+  SetRect(&rc, 0, 0, 24, 24);
+
+  // --- pass 1: settled glyphs --------------------------------------------
+  for (i = 0; i < 4; ++i)
+  {
+    for (j = 0; j < 29; ++j)
+    {
+      if (pScene->textSprites_264[i][j])
+      {
+        SetRect(&rcGlyph, 22 * j, 22 * i, 22 * (j + 1) + 2, 22 * (i + 1) + 2);
+        if (*(float *)&g_dwFontRenderFlag / 100.0f < fGlyphIndex)
+        {
+          bStillScrolling = 1;    // reveal not caught up yet
+          break;
+        }
+        if (pScene->textSprites_264[i][j]->bOk_10C == 1)
+        {
+          bPageEnd = 1;           // page-end marker glyph
+          break;
+        }
+        fGlyphIndex += 1.0f;
+        g_pD3DDevice_4D6C78->SetTexture(0, NULL);
+        CHanaObj__SetAlpha3F6(pScene->textSprites_264[i][j],
+          pScene->flt_454 * pScene->flt_450);
+        SetRect(&rcGlyph,
+          ConvertFrom640AsInt(22 * (j + 1)),
+          ConvertFrom640AsInt(22 * i + 380),
+          ConvertFrom640AsInt(22 * (j + 2) + 2),
+          ConvertFrom640AsInt(22 * (i + 1) + 382));
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);   // SRCALPHA
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);  // INVSRCALPHA
+        // drawn twice (double alpha compounding), as the original
+        DrawSpriteLTRB(pScene->textSprites_264[i][j],
+          rcGlyph.left, rcGlyph.top, rcGlyph.right, rcGlyph.bottom);
+        DrawSpriteLTRB(pScene->textSprites_264[i][j],
+          rcGlyph.left, rcGlyph.top, rcGlyph.right, rcGlyph.bottom);
+      }
+    }
+    if (bStillScrolling == 1 || bPageEnd == 1)
+      break;
+  }
+
+  // --- pass 2: fading tail (continues the shared i/j cursor) --------------
+  while (i < 4)
+  {
+    if (j >= 29)
+    {
+      j = 0;                          // row done -> next row
+      if (fFadeCount == 5.0f)
+        break;                      // glyph budget for this frame
+      ++i;
+      continue;
+    }
+    if (pScene->textSprites_264[i][j])
+    {
+      fFade = fabsf(1.0f - (fGlyphIndex - *(float *)&g_dwFontRenderFlag / 100.0f) / 5.0f);
+      if (fFade <= 1.0f)
+      {
+        if (fFade < 0.0f)
+          goto nextGlyph;         // not in the fade window yet
+      }
+      else
+      {
+        fFade = 1.0f;
+      }
+      CHanaObj__SetAlpha3F6(pScene->textSprites_264[i][j],
+        pScene->flt_450 * fFade * pScene->flt_454);
+      SetRect(&rcGlyph,
+        ConvertFrom640AsInt((int)((1.0f - fFade) * 10.0f) + 22 * (j + 1)),
+        ConvertFrom640AsInt((int)((1.0f - fFade) * 4.0f) + 22 * i + 380),
+        ConvertFrom640AsInt(22 * (j + 2) - (int)((1.0f - fFade) * 10.0f) + 2),
+        ConvertFrom640AsInt(22 * (i + 1) + (int)((1.0f - fFade) * 32.0f) + 382));
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);   // SRCALPHA
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);  // INVSRCALPHA
+      DrawSpriteLTRB(pScene->textSprites_264[i][j],
+        rcGlyph.left, rcGlyph.top, rcGlyph.right, rcGlyph.bottom);
+      DrawSpriteLTRB(pScene->textSprites_264[i][j],
+        rcGlyph.left, rcGlyph.top, rcGlyph.right, rcGlyph.bottom);
+      if (fFadeCount == 5.0f)
+      {
+        // budget exhausted mid-row: the original jumps to the NEXT
+        // row (rest of this row waits a frame)
+        j = 0;
+        if (fFadeCount == 5.0f)
+          break;
+        ++i;
+        continue;
+      }
+      fGlyphIndex += 1.0f;
+      fFadeCount += 1.0f;
+    }
+  nextGlyph:
+    ++j;
+  }
+
+  // --- "more text" cursor sprites ----------------------------------------
+  if (pScene->pSprWindowBmp[1] && pScene->pSprWindowBmp[2])
+  {
+    if (bStillScrolling || !pScene->by_461)
+    {
+      pScene->pSprWindowBmp[2]->fAlpha_144 = 0.0f;   // hidden
+      pScene->pSprWindowBmp[1]->fAlpha_144 = 0.0f;
+    }
+    else
+    {
+      pScene->by_460 = 0;
+      pScene->pSprWindowBmp[2]->fAlpha_144 =
+        fFrameTime / 100.0f + pScene->pSprWindowBmp[2]->fAlpha_144;
+      pScene->pSprWindowBmp[1]->fAlpha_144 = pScene->pSprWindowBmp[2]->fAlpha_144;
+      if (pScene->pSprWindowBmp[2]->fAlpha_144 > 1.0f)
+      {
+        pScene->pSprWindowBmp[2]->fAlpha_144 = 1.0f;
+        pScene->pSprWindowBmp[1]->fAlpha_144 = 1.0f;
+      }
+      // static base indicator
+      CHanaSpriteT3F6__SetPos_414A5D(pScene->pSprWindowBmp[2],
+        (float)(int)ConvertFrom640AsFloat(624.0f),
+        (float)(int)ConvertFrom640AsFloat(464.0f));
+      DrawSprite2D(pScene->pSprWindowBmp[2]);
+      // bobbing arrow
+      CHanaSpriteT3F6__SetPos_414A5D(pScene->pSprWindowBmp[1],
+        (float)(int)ConvertFrom640AsFloat(624.0f),
+        (float)(int)ConvertFrom640AsFloat(
+          sinf(*(float *)&g_dwFontRenderFlag / 180.0f) * 5.0f + 432.0f));
+      DrawSprite2D(pScene->pSprWindowBmp[1]);
+    }
+  }
+
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ADDRESS, dwTssAddress);
+}
+
+
+// per-channel blend: ((100-w)*dst + w*src)/100, channels isolated by the
+// G/R/B bit masks (same expression the original inlines six times)
+static DWORD BlendPixel(DWORD dwDst, DWORD dwSrc, int nW, int nInvW)
+{
+  return (g_dwGBitMask & ((nInvW * (g_dwGBitMask & dwDst) + nW * (g_dwGBitMask & dwSrc)) / 100))
+    | (g_dwRBitMask & ((nInvW * (g_dwRBitMask & dwDst) + nW * (g_dwRBitMask & dwSrc)) / 100))
+    | (g_dwRGBBitMask & ((nInvW * (g_dwRGBBitMask & dwDst) + nW * (g_dwRGBBitMask & dwSrc)) / 100));
+}
+
+// Surface_AlphaBlendRect_41A039 -- software alpha-blend of a rect between
+// locked DirectDraw surfaces (used for the scene-background crossfade).
+// out = ((100-nBlendWeight)*dst + nBlendWeight*src) / 100 per channel,
+// channel masks = g_dwGBitMask / g_dwRBitMask / g_dwRGBBitMask (G/R/B) so
+// the same code serves 565/555/888. Bit depth from g_dwPixelFormat:
+// 16 (WORD stores), 24 (WORD + byte stores), else 32 (DWORD stores).
+// bSkipColorKey & 1: source pixels equal to the surface's DD color key
+// (GetColorKey type 8) are left untouched. Same-surface blends lock once
+// and unlock once; two-surface blends lock src (Pointer) + dst (pSrcRow)
+// and unlock both. Pitches come from each GetSurfaceDesc's lPitch /
+// g_dwBytesPerPixel, then scaled to bytes per depth. The 16/24-bit paths
+// READ the source as a DWORD (one pixel beyond the rect on the last
+// column -- harmless, all channel masks fit the low bits; kept faithful).
+
+void __cdecl hook_Surface_AlphaBlendRect(LPDIRECTDRAWSURFACE7 pDestSurface, int nDestX, int nDestY,
+  LPDIRECTDRAWSURFACE7 pSrcSurface, LPRECT pSrcRect,
+  int nBlendWeight, char bSkipColorKey)
+{
+  DDSURFACEDESC2 ddsd;                   // [ebp-84h]
+  DDCOLORKEY colorKey;                   // [ebp-A0h]
+  BYTE *pSrcBase, *pDstBase;             // locked pointers
+  DWORD dwSrcPitch, dwDstPitch;          // byte pitches
+  DWORD dwKey;                           // key color (low bits per depth)
+  DWORD dwSrc, dwDst, dwBlend;
+  UINT nBpp;                             // bytes per pixel: 2/3/4
+  int nInvBlendWeight, nRectHeight, nRectWidthBytes;
+  int nSrcLeftBytes, nDestLeftBytes;
+  int i, y;
+  BOOL bSameSurface;
+
+  DebugLog("[HNH:SUB] Surface_AlphaBlendRect_41A039\n");
+
+  bSameSurface = 0;
+  nInvBlendWeight = 100 - nBlendWeight;
+
+  if (pSrcSurface == pDestSurface)
+  {
+    ddsd.dwSize = sizeof(DDSURFACEDESC2);              // 124
+    pSrcSurface->GetSurfaceDesc(&ddsd);
+    dwDstPitch = dwSrcPitch = (DWORD)ddsd.lPitch / g_dwBytesPerPixel;
+    pSrcSurface->GetColorKey(DDCKEY_SRCBLT /*8*/, &colorKey);
+    pSrcBase = (BYTE *)Surface_LockAndGetPointer(pSrcSurface);
+    pDstBase = pSrcBase;                               // one lock
+    bSameSurface = 1;
+  }
+  else
+  {
+    ddsd.dwSize = sizeof(DDSURFACEDESC2);
+    pDestSurface->GetSurfaceDesc(&ddsd);
+    dwDstPitch = (DWORD)ddsd.lPitch / g_dwBytesPerPixel;
+    ddsd.dwSize = sizeof(DDSURFACEDESC2);
+    pSrcSurface->GetSurfaceDesc(&ddsd);
+    dwSrcPitch = (DWORD)ddsd.lPitch / g_dwBytesPerPixel;
+    pSrcSurface->GetColorKey(DDCKEY_SRCBLT, &colorKey);
+    pSrcBase = (BYTE *)Surface_LockAndGetPointer(pSrcSurface);
+    pDstBase = (BYTE *)Surface_LockAndGetPointer(pDestSurface);
+  }
+
+  nRectHeight = pSrcRect->bottom - pSrcRect->top;
+  dwKey = colorKey.dwColorSpaceLowValue;
+
+  if (g_dwPixelFormat == 16)
+  {
+    nBpp = 2;
+    nRectWidthBytes = 2 * (pSrcRect->right - pSrcRect->left);
+    nSrcLeftBytes   = 2 * pSrcRect->left;
+    nDestLeftBytes  = 2 * nDestX;
+    dwSrcPitch *= 2;
+    dwDstPitch *= 2;
+    // (the original's dwColorKeyFlags = 6/8 dance is dead)
+
+    for (y = 0; y < nRectHeight; ++y)
+    {
+      BYTE *pSrc = pSrcBase + (pSrcRect->top + y) * dwSrcPitch + nSrcLeftBytes;
+      BYTE *pDst = pDstBase + (nDestY + y) * dwDstPitch + nDestLeftBytes;
+      for (i = 0; i < nRectWidthBytes; i += 2)
+      {
+        // source is READ as a DWORD in the original (straddles into
+        // the next pixel; the masks keep only the current one)
+        dwSrc = *(DWORD *)(pSrc + i);
+        if ((bSkipColorKey & 1) && *(WORD *)(pSrc + i) == (WORD)dwKey)
+          continue;                              // key pixel: skip
+        dwDst = *(DWORD *)(pDst + i);
+        *(WORD *)(pDst + i) = (WORD)BlendPixel(dwDst, dwSrc, nBlendWeight, nInvBlendWeight);
+      }
+    }
+  }
+  else if (g_dwPixelFormat == 24)
+  {
+    nRectWidthBytes = 3 * (pSrcRect->right - pSrcRect->left);
+    nSrcLeftBytes   = 3 * pSrcRect->left;
+    nDestLeftBytes  = 3 * nDestX;
+    dwSrcPitch *= 3;
+    dwDstPitch *= 3;
+    dwKey &= 0xFFFFFF;                                 // 24-bit key
+
+    for (y = 0; y < nRectHeight; ++y)
+    {
+      BYTE *pSrc = pSrcBase + (pSrcRect->top + y) * dwSrcPitch + nSrcLeftBytes;
+      BYTE *pDst = pDstBase + (nDestY + y) * dwDstPitch + nDestLeftBytes;
+      for (i = 0; i < nRectWidthBytes; i += 3)
+      {
+        dwSrc = *(DWORD *)(pSrc + i) & 0xFFFFFF;    // dword read (see above)
+        if ((bSkipColorKey & 1) && dwSrc == dwKey)
+          continue;
+        dwDst = *(DWORD *)(pDst + i);
+        // 24-bit store: low WORD + third byte
+        dwBlend = BlendPixel(dwDst, dwSrc, nBlendWeight, nInvBlendWeight);
+        *(WORD *)(pDst + i) = (WORD)dwBlend;
+        *(BYTE *)(pDst + i + 2) = (BYTE)(dwBlend >> 16);
+      }
+    }
+  }
+  else                                                   // 32-bit
+  {
+    nRectWidthBytes = 4 * (pSrcRect->right - pSrcRect->left);
+    nSrcLeftBytes   = 4 * pSrcRect->left;
+    nDestLeftBytes  = 4 * nDestX;
+    dwSrcPitch *= 4;
+    dwDstPitch *= 4;
+
+    for (y = 0; y < nRectHeight; ++y)
+    {
+      BYTE *pSrc = pSrcBase + (pSrcRect->top + y) * dwSrcPitch + nSrcLeftBytes;
+      BYTE *pDst = pDstBase + (nDestY + y) * dwDstPitch + nDestLeftBytes;
+      for (i = 0; i < nRectWidthBytes; i += 4)
+      {
+        if ((bSkipColorKey & 1) && *(DWORD *)(pSrc + i) == dwKey)
+          continue;
+        dwSrc = *(DWORD *)(pSrc + i);
+        dwDst = *(DWORD *)(pDst + i);
+        *(DWORD *)(pDst + i) = BlendPixel(dwDst, dwSrc, nBlendWeight, nInvBlendWeight);
+      }
+    }
+  }
+
+  pSrcSurface->Unlock(NULL);
+  if (!bSameSurface)
+    pDestSurface->Unlock(NULL);
+}
+
+LPVOID __cdecl hook_Surface_LockAndGetPointer(LPDIRECTDRAWSURFACE7 pSurface)
+{
+  DDSURFACEDESC2 surfaceDesc; // [esp+10h] [ebp-7Ch] BYREF
+  ONCELOG("[HNH:SUB] Surface_LockAndGetPointer_4196FD\n");
+ 
+  surfaceDesc.dwSize = 124;
+  while ( pSurface->Lock(0, &surfaceDesc, 2049, 0) )
+    ;
+  return surfaceDesc.lpSurface;
+}
+
 void register_PlayOdsDialogueScene_477F90() {
     hnh_Hook(0x477F90, hook_PlayOdsDialogueScene_477F90, "PlayOdsDialogueScene_477F90"); // [OK]
-    hnh_Hook(0x43a371, hook_CHanaAnimSetT3F1__BeginBlend_43A371, "CHanaAnimSetT3F1__BeginBlend_43A371");
-    hnh_Hook(0x43a43f, hook_HanaAnim_UpdateBoneTransform, "HanaAnim_UpdateBoneTransform_43A43F");
-    hnh_Hook(0x401647, hook_SekBody__UpdateTo2_401647, "SekBody__UpdateTo2_401647");
     hnh_Hook(0x47fa84, hook_DrawAdvanceDialogueText_47FA84, "DrawAdvanceDialogueText_47FA84");
-
+    
     hnh_HookOff();
     hnh_Hook(0x4843cf, hook_LoadOds_4843CF, "LoadOds_4843CF"); // [OK]
     hnh_Hook(0x4018e1, hook_CSekBody__CutToAnim_4018E1, "CSekBody__CutToAnim_4018E1"); // [OK]
     hnh_Hook(0x4019e1, hook_CSekBody__UpdateAnim_4019E1, "CSekBody__UpdateAnim_4019E1"); // [OK]
+    hnh_Hook(0x401647, hook_SekBody__UpdateTo2_401647, "SekBody__UpdateTo2_401647");  // [OK]
     hnh_Hook(0x43a643, hook_CHanaAnimSetT3F1__BlendStep_43A643, "CHanaAnimSetT3F1__BlendStep_43A643"); // [OK]
     hnh_Hook(0x4857ca, hook_ResetSceneBodies_4857CA, "ResetSceneBodies_4857CA"); // [OK]
     hnh_Hook(0x481c5f, hook_CHanaObj__NewSceneT458_S504, "CHanaObj__NewSceneT458_S504_481C5F"); // [OK]
@@ -1038,6 +1398,10 @@ void register_PlayOdsDialogueScene_477F90() {
     hnh_Hook(0x40dca3, hook_SetProjectionFov_40DCA3, "SetProjectionFov_40DCA3"); // [OK]
     hnh_Hook(0x480b2d, hook_DrawDialogueWindow_480B2D, "DrawDialogueWindow_480B2D"); // [OK]
     hnh_Hook(0x4825d5, hook_UpdateSceneAtTime_4825D5, "UpdateSceneAtTime_4825D5");  // [OK]
-
+    hnh_Hook(0x4803B5, hook_DrawDialogueText_4803B5, "DrawDialogueText_4803B5"); // [OK]
+    hnh_Hook(0x41A039, hook_Surface_AlphaBlendRect, "Surface_AlphaBlendRect_41A039"); // [OK]
+    hnh_Hook(0x4196fd, hook_Surface_LockAndGetPointer, "Surface_LockAndGetPointer_4196FD"); // [OK]
+    hnh_Hook(0x43a371, hook_CHanaAnimSetT3F1__BeginBlend_43A371, "CHanaAnimSetT3F1__BeginBlend_43A371"); // [OK]
+    hnh_Hook(0x43a43f, hook_HanaAnim_UpdateBoneTransform, "HanaAnim_UpdateBoneTransform_43A43F"); // [OK]
     hnh_HookOn();
 }
