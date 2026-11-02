@@ -3,29 +3,6 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-// InGameMenu_4799E2 / MainMenu_47DF0D -- the two menu shells around the scene
-// chapters (both called only from GameMainLoop_47F013).
-//
-// InGameMenu is the four-option title menu over Title.bmp/TitleBt.bmp:
-//   0 Start from Beginning -> scene step := 1, returns 0
-//   1 Continue             -> SystemMenu_4655AB (load/config); -1 or 2 there
-//                             returns 0 here, other values fall back to idle
-//   2 (locked while g_sceneProgressFlag_530269 == 0) -> returns 999, which
-//                             GameMainLoop maps to MainMenu + op.avi replay
-//   3 End                  -> returns 1 = quit
-// It keeps rendering while its BGM (s001.wav) plays; when the BGM stops it
-// exits with -1 (GameMainLoop then replays op.avi). Option rows are hit-tested
-// from the mouse; row 2 unlocks after the backdrop/ending was seen.
-//
-// MainMenu is the 3-state extra menu entered via option 2 (mouse.bmp cursor +
-// s004.wav BGM): -3 character select -> -2 gallery -> -1 music/sound options;
-// any state >= 0 exits back to InGameMenu.
-//
-// Menu BGM volume = g_fVolumeDbTable[g_nAviVolumeIndex_530266] - 1000, clamped
-// to [-10000, 0] dB (note: unlike the UI effects, these buffers CAN be
-// volume-controlled -- LoadWav_422E7B creates them without DSBCAPS_CTRLVOLUME,
-// so the clamp silently fails too; kept faithful).
-
 // === PINNED GAME FUNCTIONS ===
 
 void (__cdecl*DSBufferPlay)(LPDIRECTSOUNDBUFFER pDSBuf, int dwPlayFlags) =
@@ -160,6 +137,30 @@ void __cdecl hook_MainMenu_47DF0D(void)
         PlayScreenFade(0, 0, g_pPrimaryBuffer_4D6C88, 25.0f, 0);
 }
 
+
+// InGameMenu_4799E2 / MainMenu_47DF0D -- the two menu shells around the scene
+// chapters (both called only from GameMainLoop_47F013).
+//
+// InGameMenu is the four-option title menu over Title.bmp/TitleBt.bmp:
+//   0 Start from Beginning -> scene step := 1, returns 0
+//   1 Continue             -> SystemMenu_4655AB (load/config); -1 or 2 there
+//                             returns 0 here, other values fall back to idle
+//   2 Bonus (locked while g_sceneProgressFlag_530269 == 0) -> returns 999, which
+//                             GameMainLoop maps to MainMenu + op.avi replay
+//   3 End                  -> returns 1 = quit
+// It keeps rendering while its BGM (s001.wav) plays; when the BGM stops it
+// exits with -1 (GameMainLoop then replays op.avi). Option rows are hit-tested
+// from the mouse; row 2 unlocks after the backdrop/ending was seen.
+//
+// MainMenu is the 3-state extra menu entered via option 2 (mouse.bmp cursor +
+// s004.wav BGM): -3 character select -> -2 gallery -> -1 music/sound options;
+// any state >= 0 exits back to InGameMenu.
+//
+// Menu BGM volume = g_fVolumeDbTable[g_nAviVolumeIndex_530266] - 1000, clamped
+// to [-10000, 0] dB (note: unlike the UI effects, these buffers CAN be
+// volume-controlled -- LoadWav_422E7B creates them without DSBCAPS_CTRLVOLUME,
+// so the clamp silently fails too; kept faithful).
+
 int __cdecl hook_InGameMenu_4799E2(void)
 {
     CHAR szFileName[256];                  // [esp+D0h] [ebp-174h]
@@ -271,7 +272,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
                     break;
                 }
             }
-            if (nMenuSelected == 2)                         // -> MainMenu (999)
+            if (nMenuSelected == 2)                         // -> Bonus / MainMenu (999)
             {
                 nMenuSelected = 999;
                 PlayScreenFade(0, 0xFFFFFFFF, pTitleSurface, 25.0f, 0);

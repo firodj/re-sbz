@@ -300,6 +300,10 @@ extern int(__cdecl* SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset,
 extern int(__cdecl* ShowYesNoDialog_461A9E)(CHanaSpriteT3F6_S1FC* pCursor,
   CHanaSpriteT3F6_S1FC* pDialog, LPCSTR szCaption);
 
+// === DEFINED PlayOdsDialogueScene_477F90.cpp ===
+
+extern int(__cdecl* PlayOdsDialogueScene_477F90)(int nOdsIndex);
+
 // === DEFINED SysMenu_SaveMenu_462135.cpp ===
 
 extern void(__cdecl* SysMenu_SaveMenu_462135)(CSceneState* sceneStates, CHAR* arrSceneName,
@@ -402,11 +406,13 @@ extern void (__cdecl * ConfigureLight)( CHanaLightT3EF_S1A0 *pHanaLight, float p
 extern void (__cdecl * HanaFrame_GetCenterPosition_408C3E)( CHanaFrameRootT3EC_S2D4 *pFrame, CHanaFrameRootT3EC_S2D4 *pRelFrame, float *pOutX, float *pOutY, float *pOutZ);
 extern BOOL(__cdecl* GetSoundBufferAverageLevel)(LPDIRECTSOUNDBUFFER pDSBuffer, float* pfPlayPos);
 extern void(__cdecl* CalcFrameBound_404B80)(CHanaFrameT3EC_S354* pFrameT3EC, CHanaMorpT457_S40C* pMorpT3F5);
+extern void(__cdecl* CHanaAnimSetT3F1__SetTime_403D61)(CHanaAnimSetT3F1_S150* pHanaT3F1, float t2);
 
 // === DEFINED ParseODS.cpp ===
 
 extern int(__cdecl*ParseODS_483932)(LPBYTE pBuf, CHanaSceneT458_S504 *pScene);
 extern void(__cdecl* CHanaObj__NewMeshT3F5)(CHanaMeshT3F5_S138** pOut);
+extern void(__cdecl* CHanaObj__NewAnimSetT3F1_S150)(CHanaAnimSetT3F1_S150** ppOut);
 
 // === DEFINED CHanaObj__NewFrameT3EC_S354.cpp ===
 

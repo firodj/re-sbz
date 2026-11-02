@@ -84,6 +84,9 @@
     <ClCompile Include="src\ShowYesNoDialog_461A9E.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\PlayOdsDialogueScene_477F90.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="src\PlayScreenFade.cpp">
       <Filter>src</Filter>
     </ClCompile>

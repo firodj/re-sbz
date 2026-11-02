@@ -38,8 +38,7 @@ double(__cdecl* ConvertFrom1024AsFloat)(float fNum) = reinterpret_cast<double(__
 void (__cdecl*PlayVideoWith3DAudio_4791A3)(const char* szMoviePath, int bLoopFlags) =
     reinterpret_cast<void(__cdecl*)(const char*, int)>(0x4791A3);
 // InGameMenu_4799E2 / MainMenu_47DF0D live in src/InGameMenu_4799E2.cpp (extern in shared.hpp)
-int (__cdecl*PlayOdsDialogueScene_477F90)(int nOdsIndex) =
-    reinterpret_cast<int(__cdecl*)(int)>(0x477F90);
+// PlayOdsDialogueScene_477F90 lives in src/PlayOdsDialogueScene_477F90.cpp (extern in shared.hpp)
 int (__cdecl*PlayMapBattle_45BCAE)(int nStrIndex) =
     reinterpret_cast<int(__cdecl*)(int)>(0x45BCAE);
 int (__cdecl*RunDuelBattle_44C38D)(int nDuelIndex) =

@@ -41,8 +41,8 @@ void (__cdecl*InterpolateHanaAnimFrame)(CHanaAnimT3F0_S240 *pAnim, float fTime) 
     reinterpret_cast<void(__cdecl*)(CHanaAnimT3F0_S240 *, float)>(0x40283C);
 bool (__cdecl*CHanaAnimSetT3F1__AddAnimT3F0_403C15)(CHanaAnimSetT3F1_S150 *pAnimSet, CHanaAnimT3F0_S240 *pAnim) =
     reinterpret_cast<bool(__cdecl*)(CHanaAnimSetT3F1_S150 *, CHanaAnimT3F0_S240 *)>(0x403C15);
-int (__cdecl*CHanaAnimSetT3F1__SetTime_403D61)(CHanaAnimSetT3F1_S150 *pHanaT3F1, float t2) =
-    reinterpret_cast<int(__cdecl*)(CHanaAnimSetT3F1_S150 *, float)>(0x403D61);
+void (__cdecl*CHanaAnimSetT3F1__SetTime_403D61)(CHanaAnimSetT3F1_S150 *pHanaT3F1, float t2) =
+    reinterpret_cast<void(__cdecl*)(CHanaAnimSetT3F1_S150 *, float)>(0x403D61);
 
 int (__cdecl*ParseVERT_440288)(LPBYTE *ppBuf, CHanaVertT3EA_S1FC **ppVert,
     CHanaAnimSetT3F1_S150 *pAnimSetT3F1, CHanaFrameT3EC_S354 *pRootFrameT3EC) =
@@ -301,7 +301,7 @@ CHanaFrameT3EC_S354 *__cdecl hook_ParseOdfFRAM_44106A(LPBYTE *ppBuf,
     LPBYTE pBuf, pScan;                      // [ebp-10h] / [ebp-Ch]
     WORD wFrameFlags;                             // [esp+8h] [ebp-198h]
 
-    DebugLog("[HNH:SUB] ParseOdfFRAM_44106A\n");
+    ONCELOG("[HNH:SUB] ParseOdfFRAM_44106A\n");
 
     pBuf = *ppBuf;
     pParentList = (CHAR (*)[256])*ppParentList;
@@ -434,7 +434,7 @@ BOOL __cdecl hook_ParseOdfANIM_4414EB(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAni
   DWORD *pBuf;                             // [esp+10Ch] [ebp-Ch]
   DWORD i, nCount;                         // [ebp-14h] / [ebp-4h]
 
-  DebugLog("[HNH:SUB] ParseOdfANIM_4414EB\n");
+  ONCELOG("[HNH:SUB] ParseOdfANIM_4414EB\n");
 
   pBuf = (DWORD *)*ppBuf;
   pAnimT3F0 = NULL;
@@ -513,7 +513,7 @@ int __cdecl hook_ParseOdfMESH_44068C(LPBYTE *ppBuf, CHanaMeshT3F5_S138 **ppOut,
   int nRand1, nRand2, nRand3;
   BOOL bStopped = FALSE;
 
-  DebugLog("[HNH:SUB] ParseOdfMESH_44068C\n");
+  ONCELOG("[HNH:SUB] ParseOdfMESH_44068C\n");
 
   pBuf = *ppBuf;
   pVertT3EA = NULL;
@@ -613,7 +613,7 @@ int __cdecl hook_ParseOdfMORP_440896(LPBYTE *ppBuf, CHanaMorpT457_S40C **ppOut,
   int i, j;
   unsigned int k, idx;
 
-  DebugLog("[HNH:SUB] ParseOdfMORP_440896\n");
+  ONCELOG("[HNH:SUB] ParseOdfMORP_440896\n");
 
   pBuf = *ppBuf;
   pMorpT457 = NULL;
@@ -795,7 +795,7 @@ int __cdecl hook_ParseOdf3DON_44189C(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pHana
   LPBYTE pBuf, pWavName, pFrameName;      // one reused scan cursor [ebp-8h]
   unsigned int i;
 
-  DebugLog("[HNH:SUB] ParseOdf3DON_44189C\n");
+  ONCELOG("[HNH:SUB] ParseOdf3DON_44189C\n");
 
   pBuf = *ppBuf + 4;                      // skip the tag-size dword
   pHanaT3F1->nCount_148 = *(int *)pBuf;
@@ -2790,18 +2790,18 @@ void __cdecl hook_ParseOdfMeshVFLG_43FDEC(char **ppBuf, CHanaVertT3EA_S1FC *pHan
 }
 
 void register_ParseODFContent_441A5D() {
-  hnh_Hook(0x44106A, hook_ParseOdfFRAM_44106A, "ParseOdfFRAM_44106A"); // [OK]
-  hnh_Hook(0x4414EB, hook_ParseOdfANIM_4414EB, "ParseOdfANIM_4414EB"); // [OK]
-  hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C"); // [OK]
-  hnh_Hook(0x440896, hook_ParseOdfMORP_440896, "ParseOdfMORP_440896"); // [OK]
-  hnh_Hook(0x44189C, hook_ParseOdf3DON_44189C, "ParseOdf3DON_44189C"); // [OK]
-  hnh_Hook(0x440288, hook_ParseVERT_440288, "ParseVERT_440288"); // [OK]
-  hnh_Hook(0x43F8FE, hook_ParseOdfMeshMATE_43F8FE, "ParseOdfMeshMATE_43F8FE"); // [OK]
-  hnh_Hook(0x43FDEC, hook_ParseOdfMeshVFLG_43FDEC, "ParseOdfMeshVFLG_43FDEC"); // [OK]
-  hnh_Hook(0x43FBD1, hook_ParseOdfMeshMANM_43FBD1, "ParseOdfMeshMANM_43FBD1"); // [OK]
-  hnh_Hook(0x43F460, hook_ParseOdfMeshTEXT_43F460, "ParseOdfMeshTEXT_43F460"); // [OK]
-
   hnh_HookOff();
+    hnh_Hook(0x44106A, hook_ParseOdfFRAM_44106A, "ParseOdfFRAM_44106A"); // [OK]
+    hnh_Hook(0x4414EB, hook_ParseOdfANIM_4414EB, "ParseOdfANIM_4414EB"); // [OK]
+    hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C"); // [OK]
+    hnh_Hook(0x440896, hook_ParseOdfMORP_440896, "ParseOdfMORP_440896"); // [OK]
+    hnh_Hook(0x44189C, hook_ParseOdf3DON_44189C, "ParseOdf3DON_44189C"); // [OK]
+    hnh_Hook(0x440288, hook_ParseVERT_440288, "ParseVERT_440288"); // [OK]
+    hnh_Hook(0x43F8FE, hook_ParseOdfMeshMATE_43F8FE, "ParseOdfMeshMATE_43F8FE"); // [OK]
+    hnh_Hook(0x43FDEC, hook_ParseOdfMeshVFLG_43FDEC, "ParseOdfMeshVFLG_43FDEC"); // [OK]
+    hnh_Hook(0x43FBD1, hook_ParseOdfMeshMANM_43FBD1, "ParseOdfMeshMANM_43FBD1"); // [OK]
+    hnh_Hook(0x43F460, hook_ParseOdfMeshTEXT_43F460, "ParseOdfMeshTEXT_43F460"); // [OK]
+
     hnh_Hook(0x441A5D, hook_ParseODFContent_441A5D, "ParseODFContent_441A5D"); // [OK] 
     hnh_Hook(0x409510, hook_ConfigureLight,"ConfigureLight_409510"); // [OK] 
     hnh_Hook(0x40539D, hook_AssignLigthtToFrame_40539D, "AssignLigthtToFrame_40539D"); // [OK] 
