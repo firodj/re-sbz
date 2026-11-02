@@ -105,6 +105,15 @@ extern CHAR (&g_szDATAPath)[256];
 extern void (__cdecl * SetupDirPath_486630)(void);
 extern bool (__cdecl * CheckInstalledDirRoot_4869A7)(HWND hWnd);
 extern BOOL (__cdecl*IsFileExists_47E8EE)(CHAR* pszFilePath);
+extern void(__cdecl* ParseStrChunkText_47FF01)(CHanaSceneT458_S504* pScene);
+extern void (__cdecl * Scene_CreateFontTextureFromStringData)(CHanaSceneT458_S504 *pScene);
+extern int (__cdecl * FindCharUntil_487D46)(char *pBuf, int charToFind, int charToFind2OrEnd);
+
+extern void(__cdecl* CHanaObj__NewFrameArrayT3EDFromChildT3EC)(CHanaFrameT3EC_S354* pFrame_a1, CHanaFrameArrayT3ED_S138** ppFrameArray);
+extern int (__cdecl*CHanaObj__GetFramesCountT3ED_408E75)(CHanaFrameArrayT3ED_S138 *pFrameArray);
+extern HRESULT (__cdecl*CHanaObj__GetFrameAtIndexT3ED)(CHanaFrameArrayT3ED_S138 *pFrameArray, unsigned int nIndex, CHanaFrameT3EC_S354 **ppOut);
+extern void (__cdecl * Character_ApplyAnimationParamsToChildren)( CHanaFrameT3EC_S354 *pRootFrame, char bIsEaseAnimation, int nTimeFrom, int nTimeTo, int nEaseFrom, int nEaseTo);
+extern void (__cdecl * CHanaObj__NewFrameArrayT3ED)(CHanaFrameArrayT3ED_S138 **ppFrameArray);
 
 // === DEFINED CheckRunGame.cpp ===
 

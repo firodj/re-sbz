@@ -23,6 +23,20 @@ uint32_t &g_dwFontRenderFlag = *(uint32_t *)0x52F1B0; // WRITABLE
 BOOL (__cdecl*IsFileExists_47E8EE)(CHAR* pszFilePath) = reinterpret_cast<BOOL (__cdecl*)(CHAR*)>(0x47E8EE);
 void (__cdecl * SetupDirPath_486630)() = reinterpret_cast<void(__cdecl*)()>(0x486630);
 bool(__cdecl* CheckInstalledDirRoot_4869A7)(HWND hWnd) = reinterpret_cast<bool(__cdecl*)(HWND hWnd)>(0x4869A7);
+void (__cdecl * ParseStrChunkText_47FF01)(CHanaSceneT458_S504 *pScene) = reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *pScene)>(0x47FF01);
+void (__cdecl * Scene_CreateFontTextureFromStringData)(CHanaSceneT458_S504 *pScene) = reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *pScene)>(0x47F460);
+int (__cdecl * FindCharUntil_487D46)(char *pBuf, int charToFind, int charToFind2OrEnd) = reinterpret_cast<int(__cdecl*)(char *pBuf, int charToFind, int charToFind2OrEnd)>(0x487D46);
+
+void (__cdecl*CHanaObj__NewFrameArrayT3EDFromChildT3EC)(CHanaFrameT3EC_S354 *pFrame_a1, CHanaFrameArrayT3ED_S138 **ppFrameArray)
+  = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaFrameArrayT3ED_S138 **)>(0x405A0A);
+int (__cdecl*CHanaObj__GetFramesCountT3ED_408E75)(CHanaFrameArrayT3ED_S138 *pFrameArray)
+  = reinterpret_cast<int(__cdecl*)(CHanaFrameArrayT3ED_S138 *)>(0x408E75);
+HRESULT (__cdecl*CHanaObj__GetFrameAtIndexT3ED)(CHanaFrameArrayT3ED_S138 *pFrameArray, unsigned int nIndex, CHanaFrameT3EC_S354 **ppOut)
+  = reinterpret_cast<HRESULT(__cdecl*)(CHanaFrameArrayT3ED_S138 *, unsigned int, CHanaFrameT3EC_S354 **)>(0x408E1B);
+void (__cdecl * Character_ApplyAnimationParamsToChildren)( CHanaFrameT3EC_S354 *pRootFrame, char bIsEaseAnimation, int nTimeFrom, int nTimeTo, int nEaseFrom, int nEaseTo)
+  = reinterpret_cast<void(__cdecl*)( CHanaFrameT3EC_S354 *pRootFrame, char bIsEaseAnimation, int nTimeFrom, int nTimeTo, int nEaseFrom, int nEaseTo)>(0x487267);
+void (__cdecl * CHanaObj__NewFrameArrayT3ED)(CHanaFrameArrayT3ED_S138 **ppFrameArray)
+  = reinterpret_cast<void(__cdecl*)(CHanaFrameArrayT3ED_S138 **ppFrameArray)>(0x408DD0);
 
 // === FUNCTION IMPLEMENTATIONS ===
 
@@ -327,14 +341,274 @@ void __cdecl hook_ParseStrChunkText_47FF01(CHanaSceneT458_S504 *pScene)
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, dwSavedAntialias);
 }
 
+void __cdecl hook_Scene_CreateFontTextureFromStringData(CHanaSceneT458_S504 *pScene)
+{
+  struct IDirectDrawSurface7 *pFontSurface; // [esp+4h] [ebp-244h]
+  int i; // [esp+8h] [ebp-240h]
+  int nSrcIndex; // [esp+Ch] [ebp-23Ch]
+  int nCharIndex; // [esp+Ch] [ebp-23Ch]
+  int nSpriteIndex; // [esp+Ch] [ebp-23Ch]
+  int j; // [esp+14h] [ebp-234h]
+  int k; // [esp+18h] [ebp-230h]
+  LPDIRECTDRAWSURFACE7 pTempSurface; // [esp+1Ch] [ebp-22Ch] BYREF
+  struct tagRECT rcChar; // [esp+20h] [ebp-228h] BYREF
+  struct tagRECT rcDest; // [esp+30h] [ebp-218h] BYREF
+  LPDIRECTDRAWSURFACE7 pCharSurface; // [esp+40h] [ebp-208h]
+  int nCurrentPos; // [esp+44h] [ebp-204h]
+  char szTextBuffer[512]; // [esp+48h] [ebp-200h] BYREF
 
+  ONCELOG("[HNH:SUB] Scene_CreateFontTextureFromStringData_47F460\n");
+
+  rcChar.left = 1;
+  rcChar.top = 1;
+  rcChar.right = 31;
+  rcChar.bottom = 31;
+  nCurrentPos = 0;
+  pTempSurface = 0;
+  pFontSurface = CreateSurfaceWH(0x280u, 0xC8u);
+  pCharSurface = CreateSurfaceWH(0x1Cu, 0x1Cu);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MINFILTER, 1);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MAGFILTER, 1);
+  if ( pFontSurface && pScene && pScene->ptrStrData_260 )
+  {
+    BltSurface(pFontSurface, 0, 0, 640, 200, 0);
+    BltSurface(pCharSurface, 0, 0, 28, 28, 0);
+    g_dwFontRenderFlag = 0;
+    memset(szTextBuffer, 538976288, 0xFAu);
+    szTextBuffer[251] = 0;
+    nSrcIndex = 0;
+    for ( i = pScene->dwPtrCurrent_448; i < pScene->dwPtrSize_44C; i += 2 )
+    {
+      if ( *((_BYTE *)pScene->ptrStrData_260 + i) == ',' )
+      {
+        nSrcIndex += 54 - nSrcIndex % 54;
+        --i;
+      }
+      else
+      {
+        if ( *((_BYTE *)pScene->ptrStrData_260 + i) == ';'
+          || *((_BYTE *)pScene->ptrStrData_260 + i) == '*'
+          || *((char *)pScene->ptrStrData_260 + i) >= 'A' && *((char *)pScene->ptrStrData_260 + i) <= 'z' )
+        {
+          break;
+        }
+        szTextBuffer[nSrcIndex] = *((_BYTE *)pScene->ptrStrData_260 + i);
+        nCharIndex = nSrcIndex + 1;
+        szTextBuffer[nCharIndex] = *((_BYTE *)pScene->ptrStrData_260 + i + 1);
+        nSrcIndex = nCharIndex + 1;
+      }
+    }
+    pScene->dwPtrCurrent_448 = i + 1;
+    SetRect(&rcDest, 0, 0, 640, 180);
+    BltSurface(pFontSurface, 0, 0, 640, 200, 0);
+    DrawText_43BCAE(pFontSurface, szTextBuffer, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom);
+    pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
+    g_pD3DDevice_4D6C78->SetTexture(0, 0);
+    nSpriteIndex = 0;
+    for ( j = 0; j < 4; ++j )
+    {
+      for ( k = 0; k < 29; ++k )
+      {
+        if ( pScene->textSprites_264[j][k] )
+        {
+          CHanaSpriteT3F6__SetSrcRect_414B28(pScene->textSprites_264[j][k], &rcChar);
+          CHanaObj__SetAlpha3F6(pScene->textSprites_264[j][k], 0.0);
+          SetRect(
+            &rcDest,
+            26 * (nSpriteIndex % 24),
+            26 * (nSpriteIndex / 24),
+            26 * (nSpriteIndex % 24 + 1) + 2,
+            26 * (nSpriteIndex / 24 + 1) + 2);
+          ++nSpriteIndex;
+          pCharSurface->BltFast(0, 0, pFontSurface, &rcDest, 16);
+          pTempSurface = CreateTextureFromSurfaceWithAlphaMask(pCharSurface, pCharSurface);
+          if ( pTempSurface )
+          {
+            CHanaObj__ReplaceTexture3F6(pScene->textSprites_264[j][k], &pTempSurface);
+            pScene->textSprites_264[j][k]->bOk_10C = 0;
+            pTempSurface = 0;
+          }
+        }
+      }
+    }
+  }
+  if ( pCharSurface )
+    pCharSurface->Release();
+  pCharSurface = 0;
+  if ( pFontSurface )
+    pFontSurface->Release();
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MINFILTER, 2);
+  g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_MAGFILTER, 2);
+  CHanaObj__SetAlpha3F6(pScene->pSprWindowBmp[3], 0.0);
+}
+
+int __cdecl hook_FindCharUntil_487D46(char *pBuf, int charToFind, int charToFind2OrEnd)
+{
+  int i; // [esp+0h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] FindCharUntil_487D46\n");
+
+  for ( i = 0; i < 20 && pBuf[i] != charToFind && pBuf[i] != charToFind2OrEnd; ++i )
+    ;
+  return i;
+}
+
+// CreateObject (sets type 0x3ED, AddRef)  
+int __cdecl hook_CHanaObj__NewFrameArrayT3ED(CHanaFrameArrayT3ED_S138 **ppFrameArray)
+{
+  CHanaFrameArrayT3ED_S138 *pFrameArray; // [esp+0h] [ebp-4h]
+  ONCELOG("[HNH:SUB] CHanaObj__NewFrameArrayT3ED_408DD0\n");
+
+  pFrameArray = (CHanaFrameArrayT3ED_S138 *)MemAlloc_40DEF7(0x138u);
+  memset(pFrameArray, 0, sizeof(CHanaFrameArrayT3ED_S138));
+  pFrameArray->dwType = 0x3ED;
+  CHanaObj__AddRef_40BFC3(pFrameArray);
+  *ppFrameArray = pFrameArray;
+  return 0;
+}
+
+// Idiomatic with IDirect3DRMFrame::GetChildren() - walks pFirstChildNode linked list,
+// flattens nCountChild children into array; fails (NULL) if no children
+void __cdecl hook_CHanaObj__NewFrameArrayT3EDFromChildT3EC(
+  CHanaFrameT3EC_S354 *pFrame,
+  CHanaFrameArrayT3ED_S138 **ppFrameArray)
+{
+  unsigned int i; // [esp+0h] [ebp-Ch]
+  CHanaFrameArrayT3ED_S138 *pFrameArray; // [esp+4h] [ebp-8h] BYREF
+  CHanaNode *pFirstChildNode; // [esp+8h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] CHanaObj__NewFrameArrayT3EDFromChildT3EC_405A0A\n");
+
+  pFrameArray = 0;
+  if ( pFrame->nCountChild )
+  {
+    CHanaObj__NewFrameArrayT3ED(&pFrameArray);
+    pFrameArray->nFrameCount = pFrame->nCountChild;
+    pFrameArray->arrFrames = (CHanaFrameT3EC_S354 **)MemAlloc_40DEF7(4 * pFrameArray->nFrameCount);
+    pFirstChildNode = pFrame->pFirstChildNode;
+    for ( i = 0; i < pFrame->nCountChild; ++i )
+    {
+      pFrameArray->arrFrames[i] = pFirstChildNode->pData;
+      pFirstChildNode = pFirstChildNode->pNext;
+    }
+    *ppFrameArray = pFrameArray;
+  }
+  else
+  {
+    *ppFrameArray = 0;
+  }
+}
+
+// Idiomatic with IDirect3DRMFrameArray::GetSize()
+int __cdecl hook_CHanaObj__GetFramesCountT3ED_408E75(CHanaFrameArrayT3ED_S138 *pFrameArray)
+{
+  ONCELOG("[HNH:SUB] CHanaObj__GetFramesCountT3ED_408E75\n");
+
+  if ( pFrameArray )
+    return pFrameArray->nFrameCount;
+  else
+    return 0;
+}
+
+// Idiomatic with IDirect3DRMFrameArray::GetElement() - bounds-checked, AddRefs returned frame;
+// NULL input ¨ NULL out, success (D3DRM returns S_FALSE there) 
+HRESULT __cdecl hook_CHanaObj__GetFrameAtIndexT3ED(
+  CHanaFrameArrayT3ED_S138 *pFrameArray,
+  unsigned int nIndex,
+  CHanaFrameT3EC_S354 **ppOut)
+{
+  ONCELOG("[HNH:SUB] hook_CHanaObj__GetFrameAtIndexT3ED_408E1B\n");
+
+  if ( pFrameArray )
+  {
+    if ( pFrameArray->nFrameCount >= nIndex )
+    {
+      *ppOut = pFrameArray->arrFrames[nIndex];
+      CHanaObj__AddRef_40BFC3(*ppOut);
+      return 0;
+    }
+    else
+    {
+      *ppOut = 0;
+      return E_FAIL;
+    }
+  }
+  else
+  {
+    *ppOut = 0;
+    return 0;
+  }
+}
+
+void __cdecl hook_Character_ApplyAnimationParamsToChildren(
+  CHanaFrameT3EC_S354 *pRootFrame,
+  char bIsEaseAnimation,
+  int nTimeFrom,
+  int nTimeTo,
+  int nEaseFrom,
+  int nEaseTo)
+{
+  CHanaMorpT457_S40C *pMorp; // [esp+8h] [ebp-14h]
+  CHanaFrameArrayT3ED_S138 *pFrameLists; // [esp+Ch] [ebp-10h] BYREF
+  unsigned int i; // [esp+10h] [ebp-Ch]
+  CHanaFrameT3EC_S354 *pChildFrame; // [esp+14h] [ebp-8h] BYREF
+  unsigned int FramesCountT3ED_408E75; // [esp+18h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] Character_ApplyAnimationParamsToChildren_487267\n");
+
+  CHanaObj__NewFrameArrayT3EDFromChildT3EC(pRootFrame, &pFrameLists);
+  FramesCountT3ED_408E75 = CHanaObj__GetFramesCountT3ED_408E75(pFrameLists);
+  for ( i = 0; i < FramesCountT3ED_408E75; ++i )
+  {
+    CHanaObj__GetFrameAtIndexT3ED(pFrameLists, i, &pChildFrame);
+    if ( pChildFrame->pAttachedObj_20C && pChildFrame->pAttachedObj_20C->dwType == 0x457 )
+    {
+      pMorp = pChildFrame->pAttachedObj_20C;
+      if ( bIsEaseAnimation == 1 && pMorp->dwEaseEnabled_358 )
+      {
+        pMorp->nEaseFrom_35C = nEaseFrom;
+        pMorp->nEaseTo_360 = nEaseTo;
+        pMorp->dwEaseEnabled_358 = 2;
+        pMorp->field_364 = nEaseFrom;
+        pMorp->field_368 = nEaseTo;
+        pMorp->fEaseProgress_384 = (float)timeGetTime();
+      }
+      else if ( !bIsEaseAnimation && pMorp->nTimeState_36C )
+      {
+        pMorp->nTimeFrom_370 = nTimeFrom;
+        pMorp->nTimeTo_374 = nTimeTo;
+        pMorp->dwClockStart_380 = timeGetTime();
+        pMorp->nTimeState_36C = 2;
+        pMorp->nNextFrom_378 = nEaseFrom;
+        pMorp->nNextTo_37C = nEaseTo;
+      }
+    }
+    Character_ApplyAnimationParamsToChildren(pChildFrame, bIsEaseAnimation, nTimeFrom, nTimeTo, nEaseFrom, nEaseTo);
+    if ( pChildFrame )
+    {
+      CHanaObj__Free_40C1E4(pChildFrame);
+      pChildFrame = 0;
+    }
+  }
+  if ( pFrameLists )
+    CHanaObj__Free_40C1E4(pFrameLists);
+}
 
 void register_CheckInstalledDirRoot_4869A7() {
-  hnh_Hook(0x47FF01, hook_ParseStrChunkText_47FF01, "ParseStrChunkText_47FF01");
-
+ 
+  hnh_Hook(0x47F460, hook_Scene_CreateFontTextureFromStringData, "Scene_CreateFontTextureFromStringData_47F460");
+   
   hnh_HookOff();
   hnh_Hook(0x4869A7, hook_CheckInstalledDirRoot_4869A7, "CheckInstalledDirRoot_4869A7"); // [OK] 
   hnh_Hook(0x486630, hook_SetupDirPath_486630, "SetupDirPath_486630"); // [OK] 
   hnh_Hook(0x47E8EE, hook_IsFileExists_47E8EE, "IsFileExists_47E8EE"); // [OK] 
+  hnh_Hook(0x408E75, hook_CHanaObj__GetFramesCountT3ED_408E75, "CHanaObj__GetFramesCountT3ED_408E75"); // [OK]
+  hnh_Hook(0x405A0A, hook_CHanaObj__NewFrameArrayT3EDFromChildT3EC, "CHanaObj__NewFrameArrayT3EDFromChildT3EC_405A0A"); // [OK]
+  hnh_Hook(0x408DD0, hook_CHanaObj__NewFrameArrayT3ED, "CHanaObj__NewFrameArrayT3ED_408DD0"); // [OK]
+  hnh_Hook(0x47FF01, hook_ParseStrChunkText_47FF01, "ParseStrChunkText_47FF01"); // [OK]
+  hnh_Hook(0x487D46, hook_FindCharUntil_487D46, "FindCharUntil_487D46"); // [OK]
+  hnh_Hook(0x487267, hook_Character_ApplyAnimationParamsToChildren, "Character_ApplyAnimationParamsToChildren_487267"); // [OK]
+  hnh_Hook(0x408E1B, hook_CHanaObj__GetFrameAtIndexT3ED, "CHanaObj__GetFrameAtIndexT3ED_408E1B"); // [OK]
+
   hnh_HookOn();
 }

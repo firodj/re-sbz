@@ -325,8 +325,9 @@ void __cdecl hook_DrawText_43BCAE(LPDIRECTDRAWSURFACE7 pSurface, char *szText, i
 
 void register_MenuCharSelect_47A324() {
   hnh_Hook(0x47A324, hook_MenuCharSelect, "MenuCharSelect_47A324"); // [OK]
-
-  hnh_Hook(0x43BFFA, hook_CheckSpecialJpChar_43BFFA, "CheckSpecialJpChar_43BFFA");
-  hnh_Hook(0x4198E0, hook_Surface_SetColorKeyRGB, "Surface_SetColorKeyRGB_4198E0");
-  hnh_Hook(0x43BCAE, hook_DrawText_43BCAE, "DrawText_43BCAE");
+  hnh_HookOff();
+  hnh_Hook(0x43BFFA, hook_CheckSpecialJpChar_43BFFA, "CheckSpecialJpChar_43BFFA"); // [OK]
+  hnh_Hook(0x4198E0, hook_Surface_SetColorKeyRGB, "Surface_SetColorKeyRGB_4198E0"); // [OK]
+  hnh_Hook(0x43BCAE, hook_DrawText_43BCAE, "DrawText_43BCAE");  // [OK]
+  hnh_HookOn();
 }

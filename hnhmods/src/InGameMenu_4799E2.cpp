@@ -1398,7 +1398,7 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
 void register_InGameMenu_4799E2() {
   hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D"); // [OK]
   hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
-  hnh_Hook(0x40CEEC, hook_HanaVert_DrawBatch, "HanaVert_DrawBatch_40CEEC");
+  
 
   hnh_HookOff();
   hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2"); // [OK] 
@@ -1417,5 +1417,6 @@ void register_InGameMenu_4799E2() {
   hnh_Hook(0x418905, hook_CreateSurfaceWH, "CreateSurfaceWH_418905");   // [OK] 
   hnh_Hook(0x40BF01, hook_PresentFrame, "PresentFrame_40BF01"); // [OK] 
   hnh_Hook(0x4147ED, hook_DrawSpriteAtRect, "DrawSpriteAtRect_4147ED"); // [OK]
+  hnh_Hook(0x40CEEC, hook_HanaVert_DrawBatch, "HanaVert_DrawBatch_40CEEC"); // [OK]
   hnh_HookOn();
 }

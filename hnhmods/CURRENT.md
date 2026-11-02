@@ -259,7 +259,7 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   ├──0x487d46 FindCharUntil_487D46                                    <- [todo]
     │   │   │   │   │   │   ├──0x487267 Character_ApplyAnimationParamsToChildren                <- [todo]
     │   │   │   │   │   │   │   ├──0x405a0a CHanaObj__NewFrameArrayT3EDFromChildT3EC            <- [PTR ParseODFContent_441A5D.cpp]
-    │   │   │   │   │   │   │   │   ├──0x408dd0 CHanaObj::NewFrameArrayT3ED                     <- [todo]
+    │   │   │   │   │   │   │   │   ├──0x408dd0 CHanaObj__NewFrameArrayT3ED                     <- [todo]
     │   │   │   │   │   │   │   ├──0x408e75 CHanaObj__GetFramesCountT3ED_408E75                 <- [PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   └──0x408e1b CHanaObj__GetFrameAtIndexT3ED                       <- [PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   ├──0x46f37e RunModeSelectScreen                                         <- [todo]

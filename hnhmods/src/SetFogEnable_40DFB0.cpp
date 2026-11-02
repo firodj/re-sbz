@@ -340,23 +340,21 @@ CHAR *__cdecl hook_ZeroPadNumberToString_4612B0(int nValue, int nDigits)
   char cDigit; // [esp+0h] [ebp-14h]
   int i; // [esp+4h] [ebp-10h]
   int nPlaceValue; // [esp+Ch] [ebp-8h]
-  CHAR chChar; // [esp+10h] [ebp-4h] BYREF
-  char cAccum = 0; // [esp+11h] [ebp-3h]
+  CHAR chChar[4]; // [esp+10h] [ebp-4h] BYREF
 
-  ONCELOG("[HNH:SUB] ZeroPadNumberToString_4612B0\n");
-
+  chChar[2] = 0;
   memset(g_szPaddedNum_52EFBC, 0, 0x12u);
   while ( nDigits > 0 )
   {
     nPlaceValue = 1;
     for ( i = 0; i < nDigits - 1; ++i )
       nPlaceValue *= 10;
-    wsprintfA(&chChar, "‚O");
+    wsprintfA(chChar, "‚O");
     cDigit = nValue % (10 * nPlaceValue) / nPlaceValue;
     if ( cDigit > 10 )
       cDigit -= nValue % (100 * nPlaceValue) / (10 * nPlaceValue);
-    cAccum += cDigit;
-    wsprintfA(g_szPaddedNum_52EFBC, "%s%s", g_szPaddedNum_52EFBC, &chChar);
+    chChar[1] += cDigit;
+    wsprintfA(g_szPaddedNum_52EFBC, "%s%s", g_szPaddedNum_52EFBC, chChar);
     --nDigits;
   }
   return g_szPaddedNum_52EFBC;
@@ -441,21 +439,21 @@ void __cdecl hook_LoadDataFiles_461557(CSceneState *pDataBuffer, char *pszTimest
 
 void register_SetFogEnable_40DFB0() {
   hnh_Hook(0x419B05, hook_DrawTextOnSurfaceSpaced_419B05, "DrawTextOnSurfaceSpaced_419B05");
-  hnh_Hook(0x419A4B, hook_DrawTextOnSurface, "DrawTextOnSurface_419A4B");
-  hnh_Hook(0x44AF15, hook_IntPow_44AF15, "IntPow_44AF15");
-  hnh_Hook(0x414B09, hook_CHanaSpriteT3F6__SetScale_414B09, "CHanaSpriteT3F6__SetScale_414B09");
-  hnh_Hook(0x414B28, hook_CHanaSpriteT3F6__SetSrcRect_414B28, "CHanaSpriteT3F6__SetSrcRect_414B28");
-  hnh_Hook(0x414AFB, hook_CHanaSpriteT3F6__GetAlpha_414AFB, "CHanaSpriteT3F6__GetAlpha_414AFB");
-  hnh_Hook(0x46164C, hook_ShowFadeDialog_46164C, "ShowFadeDialog_46164C");
+
   hnh_Hook(0x4612B0, hook_ZeroPadNumberToString_4612B0, "ZeroPadNumberToString_4612B0");
-  hnh_Hook(0x461397, hook_FormatFileLastWriteTime_461397, "FormatFileLastWriteTime_461397");
-  hnh_Hook(0x461557, hook_LoadDataFiles_461557, "LoadDataFiles_461557");
 
   hnh_HookOff();
   hnh_Hook(0x40DFB0, hook_SetFogEnable_40DFB0, "SetFogEnable_40DFB0"); // [OK] 
   hnh_Hook(0x40E02D, hook_SetFogMode_40E02D, "SetFogMode_40E02D"); // [OK] 
   hnh_Hook(0x40E0B4, hook_SetFogColor_40E0B4, "SetFogColor_40E0B4"); // [OK] 
   hnh_Hook(0x40E0E2, hook_SetFogRange_40E0E2, "SetFogRange_40E0E2"); // [OK]
-  
+  hnh_Hook(0x419A4B, hook_DrawTextOnSurface, "DrawTextOnSurface_419A4B"); // [OK]
+  hnh_Hook(0x44AF15, hook_IntPow_44AF15, "IntPow_44AF15"); // [OK]
+  hnh_Hook(0x414B09, hook_CHanaSpriteT3F6__SetScale_414B09, "CHanaSpriteT3F6__SetScale_414B09"); // [OK]
+  hnh_Hook(0x414B28, hook_CHanaSpriteT3F6__SetSrcRect_414B28, "CHanaSpriteT3F6__SetSrcRect_414B28"); // [OK]
+  hnh_Hook(0x414AFB, hook_CHanaSpriteT3F6__GetAlpha_414AFB, "CHanaSpriteT3F6__GetAlpha_414AFB"); // [OK]
+  hnh_Hook(0x461397, hook_FormatFileLastWriteTime_461397, "FormatFileLastWriteTime_461397"); // [OK]
+  hnh_Hook(0x461557, hook_LoadDataFiles_461557, "LoadDataFiles_461557"); // [OK]
+  hnh_Hook(0x46164C, hook_ShowFadeDialog_46164C, "ShowFadeDialog_46164C"); // [OK]
   hnh_HookOn();
 }

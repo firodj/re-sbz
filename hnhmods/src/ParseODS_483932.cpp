@@ -315,10 +315,47 @@ void __cdecl hook_ReadStrFile_483567(CHanaSceneT458_S504 *pScene, const char *sz
   }
 }
 
+CHanaFrameT3EC_S354 *__cdecl hook_FindFrameByName_47E999(CHanaFrameT3EC_S354 *pRootFrame, LPCSTR pszName)
+{
+  int nNameLen; // [esp+0h] [ebp-1Ch]
+  int i; // [esp+4h] [ebp-18h]
+  CHanaFrameT3EC_S354 *pFound; // [esp+8h] [ebp-14h]
+  unsigned int j; // [esp+Ch] [ebp-10h]
+  int nThisNameLen; // [esp+14h] [ebp-8h]
+  CHanaNode *pChildNode; // [esp+18h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] FindFrameByName_47E999\n");
+
+  pFound = 0;
+  nNameLen = lstrlenA(pszName);
+  nThisNameLen = lstrlenA(pRootFrame->szName_8);
+  for ( i = 0; i <= nThisNameLen - nNameLen; ++i )
+  {
+    if ( !_strnicmp(&pRootFrame->szName_8[i], pszName, nNameLen) )
+      return pRootFrame;
+  }
+  if ( pRootFrame->nCountChild )
+  {
+    pChildNode = pRootFrame->pFirstChildNode;
+    for ( j = 0; j < pRootFrame->nCountChild; ++j )
+    {
+      if ( pChildNode->pData )
+      {
+        pFound = FindFrameByName_47E999(pChildNode->pData, pszName);
+        if ( pFound )
+          break;
+      }
+      pChildNode = pChildNode->pNext;
+    }
+  }
+  return pFound;
+}
+
 void register_ParseODS_483932() {
     hnh_Hook(0x483932, hook_ParseODS_483932, "ParseODS_483932"); // [OK]
-
+   
     hnh_HookOff();
-    hnh_Hook(0x483567, hook_ReadStrFile_483567, "ReadStrFile_483567"); // [OK] 
+    hnh_Hook(0x483567, hook_ReadStrFile_483567, "ReadStrFile_483567"); // [OK]
+    hnh_Hook(0x47E999, hook_FindFrameByName_47E999, "FindFrameByName_47E999"); // [OK]
     hnh_HookOn();
 }

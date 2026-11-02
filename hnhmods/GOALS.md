@@ -246,7 +246,7 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   ├──0x487d46 FindCharUntil_487D46
     │   │   │   │   │   │   ├──0x487267 Character_ApplyAnimationParamsToChildren
     │   │   │   │   │   │   │   ├──0x405a0a CHanaObj__NewFrameArrayT3EDFromChildT3EC
-    │   │   │   │   │   │   │   │   ├──0x408dd0 CHanaObj::NewFrameArrayT3ED
+    │   │   │   │   │   │   │   │   ├──0x408dd0 CHanaObj__NewFrameArrayT3ED
     │   │   │   │   │   │   │   ├──0x408e75 CHanaObj__GetFramesCountT3ED_408E75
     │   │   │   │   │   │   │   └──0x408e1b CHanaObj__GetFrameAtIndexT3ED
     │   │   │   │   │   ├──0x46f37e RunModeSelectScreen
