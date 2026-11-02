@@ -6,6 +6,14 @@
 
 #ifndef HNHMAIN
 
+
+// 50-char sound-name table entry (g_ascSndFileNames_4C78A0 is [200] of
+// these; only 1..14 are used by this screen)
+struct String50 { char str[50]; };
+
+// 20-char path-table entry (IDA: String20)
+struct String20 { char str[20]; };
+
 struct CHanaMKey_S8
 {
     int nParam;

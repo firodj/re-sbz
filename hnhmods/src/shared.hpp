@@ -39,6 +39,13 @@ extern DDPIXELFORMAT& g_ddPixFormat;
 extern CObjItemRef_S208* &g_pObjectTable;
 extern int &g_nObjectTableCount;
 extern int &g_bDSInited_5185C4;
+
+// persistent scene-flags copy @0x530238 (IDA g_sceneFlag CSceneFlag_28;
+// written by ParseExecStr HITEMGET, memcpy'd into sceneState by MainMenu)
+extern int (&g_Src)[10];
+// 50-char name tables (entries: "GNN.GP" picture / sound wav names)
+extern char (&g_aG00Gp_4C9FB0)[100][50];       // READ-ONLY @0x4C9FB0
+extern String50 (&g_ascSndFileNames_4C78A0)[200]; // READ-ONLY @0x4C78A0
 extern uint32_t &g_dwBytesPerPixel;
 extern uint32_t &g_bInited_4D6C6C;
 extern CHanaLightT3EF_S1A0* &g_pLight_4D6CE0;
@@ -256,6 +263,7 @@ extern double(__cdecl* ConvertFrom1024AsFloat)(float fNum);
 extern CSceneSlot(&g_arrSceneNo_4C6F78)[10];
 extern BYTE &g_nAviVolumeIndex_530266;
 extern BYTE& g_nAviFrameMultipler_530267;
+extern BYTE(&g_byData0Dat_530170)[256];
 
 #endif
 
@@ -322,6 +330,10 @@ extern void(__cdecl* Surface_AlphaBlendRect)(LPDIRECTDRAWSURFACE7 pDestSurface, 
   int nDestY, LPDIRECTDRAWSURFACE7 pSrcSurface, LPRECT pSrcRect, int nBlendWeight,
   char bSkipColorKey);
 
+// === DEFINED ParseExecStr_487D89.cpp ===
+
+extern BOOL(__cdecl* ParseExecStr_487D89)(CHanaSceneT458_S504* pScene, float* pfExecTime);
+
 
 // === DEFINED SysMenu_SaveMenu_462135.cpp ===
 
@@ -372,10 +384,10 @@ extern bool(__cdecl*IsMenuKeyPressed_481170)(void);
 extern HRESULT(__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF color);
 extern int(__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab);
 extern void(__cdecl* DrawText_43BCAE)(LPDIRECTDRAWSURFACE7 pSurface, char* szText, int left, int top, int right, int bottom);
-
 extern int(__cdecl* MenuMusicSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite);
-
 extern int(__cdecl* MenuGallery)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite);
+
+extern char(&g_arrGalleryUnlocked_5301A2)[150];
 
 // === DEFINED PlayScreenFade.cpp ===
 

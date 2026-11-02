@@ -3,10 +3,6 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-
-// 20-char path-table entry (IDA: String20)
-struct String20 { char str[20]; };
-
 // === PINNED GAME FUNCTIONS ===
 int (__cdecl*PlayOdsDialogueScene_477F90)(int nOdsIndex) =
     reinterpret_cast<int(__cdecl*)(int)>(0x477F90);
@@ -19,8 +15,7 @@ bool (__cdecl*UpdateSceneAtTime_4825D5)(CHanaSceneT458_S504 *pScene, float *pfEx
     reinterpret_cast<bool(__cdecl*)(CHanaSceneT458_S504 *, float *, float)>(0x4825D5);
 void (__cdecl*UpdateSceneTimer_4827FE)(CHanaSceneT458_S504 *pScene, float *pfExecTime, float fDelta) =
     reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, float *, float)>(0x4827FE);
-BOOL (__cdecl*ParseExecStr_487D89)(CHanaSceneT458_S504 *pScene, float *pfExecTime) =
-    reinterpret_cast<BOOL(__cdecl*)(CHanaSceneT458_S504 *, float *)>(0x487D89);
+// ParseExecStr_487D89 lives in src/ParseExecStr_487D89.cpp (extern in shared.hpp)
 void (__cdecl*PauseSceneAudio_46A2A0)(CHanaSceneT458_S504 *pScene, int bPause) =
     reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, int)>(0x46A2A0);
 void (__cdecl*SetProjectionFov_40DCA3)(float fFov) =

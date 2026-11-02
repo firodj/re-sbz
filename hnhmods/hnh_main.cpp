@@ -109,6 +109,7 @@ void register_SysMenu_Options_462FE9();
 void register_SysMenu_Graphics_46380D();
 void register_ShowYesNoDialog_461A9E();
 void register_PlayOdsDialogueScene_477F90();
+void register_ParseExecStr_487D89();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -161,6 +162,7 @@ void InitHNH() {
 	register_SysMenu_Graphics_46380D();
 	register_ShowYesNoDialog_461A9E();
 	register_PlayOdsDialogueScene_477F90();
+	register_ParseExecStr_487D89();
 
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)
