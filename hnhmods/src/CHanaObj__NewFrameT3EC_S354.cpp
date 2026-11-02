@@ -19,11 +19,11 @@ void (__cdecl*CHanaObj__NewSprite3F6byWH)(CHanaSpriteT3F6_S1FC** ppOut, DWORD w,
 // Creates and initializes a new CHanaFrameT3EC_S354 object (size 0x354 bytes)
 // Attaches it to parent frame or scene root if no parent
 
-void __cdecl hook_CHanaObj__NewFrameT3EC_S354_404720(CHanaFrameT3EC_S354 *pParent, CHanaFrameT3EC_S354 **ppOutFrame)
+void __cdecl hook_CHanaObj__NewFrameT3EC_S354(CHanaFrameT3EC_S354 *pParent, CHanaFrameT3EC_S354 **ppOutFrame)
 {
     CHanaFrameT3EC_S354 *pNewFrame;
 
-    DebugLog("[HNH:SUB] %s\n", "CHanaObj__NewFrameT3EC_S354_404720");
+    ONCELOG("[HNH:SUB] CHanaObj__NewFrameT3EC_S354_404720\n");
 
     // Allocate memory (0x354 bytes = 852 decimal)
     // Note: memset only clears 0x2D4 bytes (same as FrameRoot size), leaving extra 0x80 bytes uninitialized
@@ -76,12 +76,7 @@ void __cdecl hook_MtxStackRecursiveMulLocal_4075B0(CHanaFrameT3EC_S354 *pFrame)
   unsigned int i;
   CHanaNode *pChildNode;
 
-  static int log_MtxStackRecursiveMulLocal_4075B0 = 1;
-  log_MtxStackRecursiveMulLocal_4075B0--;
-  if (!log_MtxStackRecursiveMulLocal_4075B0) {
-    DebugLog("[HNHS:SUB] %s\n", "MtxStackRecursiveMulLocal_4075B0");
-    log_MtxStackRecursiveMulLocal_4075B0 = 10000;
-  }
+  ONCELOG("[HNH:SUB] MtxStackRecursiveMulLocal_4075B0\n");
 
   // Copy current stack top (parent's world matrix) to frame's mat4x4_before
   qmemcpy(
@@ -122,11 +117,11 @@ void __cdecl hook_MtxStackRecursiveMulLocal_4075B0(CHanaFrameT3EC_S354 *pFrame)
 // CHanaObj__NewFrameRootT3EC_S2D4 at 0x404908
 // Creates and initializes a new CHanaFrameRootT3EC_S2D4 object (size 0x2D4 bytes)
 
-void __cdecl hook_CHanaObj__NewFrameRootT3EC_S2D4_404908(CHanaFrameRootT3EC_S2D4 **ppOutFrameRoot)
+void __cdecl hook_CHanaObj__NewFrameRootT3EC_S2D4(CHanaFrameRootT3EC_S2D4 **ppOutFrameRoot)
 {
   CHanaFrameRootT3EC_S2D4 *pFrameRoot;
 
-  DebugLog("[HNH:SUB] %s\n", "CHanaObj__NewFrameRootT3EC_S2D4_404908");
+  ONCELOG("[HNH:SUB] CHanaObj__NewFrameRootT3EC_S2D4_404908\n");
 
   // Allocate memory (0x2D4 bytes = 724 decimal)
   pFrameRoot = (CHanaFrameRootT3EC_S2D4*) MemAlloc_40DEF7(0x2D4u);
@@ -176,12 +171,7 @@ void __cdecl hook_MtxStackStartMultLocal_4074EF()
   unsigned int i;
   CHanaNode *pChildNode;
 
-  static int log_MtxStackStartMultLocal_4074EF = 1;
-  log_MtxStackStartMultLocal_4074EF--;
-  if (!log_MtxStackStartMultLocal_4074EF) {
-    DebugLog("[HNH:SUB] %s\n", "MtxStackStartMultLocal_4074EF");
-    log_MtxStackStartMultLocal_4074EF = 1000;
-  }
+  ONCELOG("[HNH:SUB] MtxStackStartMultLocal_4074EF\n");
 
   // Create matrix stack
   D3DXCreateMatrixStack(0, &g_pMatrixStack_4CD77C);
@@ -214,7 +204,7 @@ void __cdecl hook_AttachChild_4055FD(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFram
 {
   CHanaNode *pNewNode;
 
-  DebugLog("[HNH:SUB] %s\n", "AttachChild_4055FD");
+  ONCELOG("[HNH:SUB] AttachChild_4055FD\n");
 
   // If child is already attached to this parent, do nothing
   if (pChild->pParent == pParent)
@@ -258,11 +248,11 @@ void __cdecl hook_AttachChild_4055FD(CHanaFrameRootT3EC_S2D4 *pParent, CHanaFram
 // CHanaObj__NewMateT3EE_S184 at 0x40F720
 // Creates and initializes a new CHanaMateT3EE_S184 object (size 0x184 bytes)
 
-void __cdecl hook_CHanaObj__NewMateT3EE_S184_40F720(CHanaMateT3EE_S184 **ppOutMate)
+void __cdecl hook_CHanaObj__NewMateT3EE_S184(CHanaMateT3EE_S184 **ppOutMate)
 {
   CHanaMateT3EE_S184 *pMate;
 
-  DebugLog("[HNH:SUB] %s\n", "CHanaObj__NewMateT3EE_S184_40F720");
+  ONCELOG("[HNH:SUB] CHanaObj__NewMateT3EE_S184_40F720\n");
 
   // Allocate memory (0x184 bytes = 388 decimal)
   pMate = (CHanaMateT3EE_S184 *)MemAlloc_40DEF7(0x184u);
@@ -309,7 +299,7 @@ void hook_CHanaObj__NewSprite3F6byWH(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWOR
   CHanaSpriteT3F6_S1FC *pSprite; // [esp+14h] [ebp-8h]
   HRESULT hr; // [esp+18h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] CHanaObj__NewSprite3F6byWH_4133D0\n");
+  ONCELOG("[HNH:SUB] CHanaObj__NewSprite3F6byWH_4133D0\n");
 
   pixelformat = D3DX_SF_R8G8B8;
   flags = 256;
@@ -349,10 +339,10 @@ void register_CHanaObj__NewFrameT3EC_S354_404720() {
   hnh_HookOff();
   hnh_Hook(0x4074EF, hook_MtxStackStartMultLocal_4074EF, "MtxStackStartMultLocal_4074EF"); // [OK] 
   hnh_Hook(0x4075B0, hook_MtxStackRecursiveMulLocal_4075B0, "MtxStackRecursiveMulLocal_4075B0"); // [OK] 
-  hnh_Hook(0x404720, hook_CHanaObj__NewFrameT3EC_S354_404720, "CHanaObj__NewFrameT3EC_S354_404720"); // [OK] 
+  hnh_Hook(0x404720, hook_CHanaObj__NewFrameT3EC_S354, "CHanaObj__NewFrameT3EC_S354_404720"); // [OK] 
   hnh_Hook(0x4055FD, hook_AttachChild_4055FD, "AttachChild_4055FD"); // [OK] 
-  hnh_Hook(0x404908, hook_CHanaObj__NewFrameRootT3EC_S2D4_404908, "CHanaObj__NewFrameRootT3EC_S2D4_404908"); // [OK] 
-  hnh_Hook(0x40F720, hook_CHanaObj__NewMateT3EE_S184_40F720, "CHanaObj__NewMateT3EE_S184_40F720"); // [OK] 
+  hnh_Hook(0x404908, hook_CHanaObj__NewFrameRootT3EC_S2D4, "CHanaObj__NewFrameRootT3EC_S2D4_404908"); // [OK] 
+  hnh_Hook(0x40F720, hook_CHanaObj__NewMateT3EE_S184, "CHanaObj__NewMateT3EE_S184_40F720"); // [OK] 
   hnh_Hook(0x4133D0, hook_CHanaObj__NewSprite3F6byWH, "CHanaObj__NewSprite3F6byWH_4133D0"); // [OK] 
   hnh_HookOn();
 }

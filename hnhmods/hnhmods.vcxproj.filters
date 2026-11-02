@@ -75,12 +75,6 @@
     <ClCompile Include="src\ProcessFrame_40600C.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\MenuMusicSelect.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MenuGallery.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

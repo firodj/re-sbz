@@ -91,12 +91,19 @@ def print_hook_name(func):
     
     type_result = get_tif.get_c_type(start_ea)
 
-    pattern = r"^(.*?)\s*(__[a-zA-Z0-9_]+)\s*\((.*)\)$"
+    pattern = r"^(.*?)(?:\s*(__[a-zA-Z0-9_]+))?\s*\((.*?)\)$"
+
     match = re.match(pattern, type_result["type_str"])
     if match:
         return_type = match.group(1).strip()
-        convention = match.group(2).strip()
+        convention = match.group(2)
+        convention = convention.strip() if convention else "__cdecl"
         params_str = match.group(3).strip()
+        if not params_str or params_str.lower() == 'void':
+            params_list = []
+        else:
+            params_list = [p.strip() for p in params_str.split(',')]
+
         print(f"{return_type} ({convention} *{orig_func_name})({params_str})")
         print(f"  = reinterpret_cast<{return_type} ({convention}*)({params_str})>({start_ea:#06x});")
     print(f"----------")

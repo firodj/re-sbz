@@ -444,11 +444,134 @@ void __cdecl hook_PlayVideoWith3DAudio_4791A3(const char* szMoviePath, int bLoop
   // reinterpret_cast<void(__cdecl*)(const char* szMoviePath, int bLoopFlags)>(orig_PlayVideoWith3DAudio_4791A3)(szMoviePath, bLoopFlags);
 }
 
+
+// ShowBackdropAndWait_4795CE()
+// 
+// Ending/epilogue backdrop screen (GameMainLoop scene-type case 6, right after the aEdAvi
+// ending-video of case 5).
+//   1. Loads the full-screen background "gov.gp" via GetRealPath(1007) and scales it to the
+//      640x480->real resolution with LoadBmpScaled_4203B3(pszBmp, w, h).
+//   2. Loads the paired "s014.wav" via GetRealPath(1006) + LoadWav_422E7B; volume is taken
+//      from g_fVolumeDbTable[g_nAviVolumeIndex_530266] (clamped to [-10000, 0]).
+//   3. Fades the screen in (PlayScreenFade) over a 0xFF2626FF maroon while the WAV plays
+//      (DSBufferPlay).
+//   4. Pump loop (StopAndRestartThread(2) around it): DoPeekMessages + poll mouse button/XY;
+//      each frame blits the backdrop into the back buffer (DDBLT_WAIT 0x1000000) and
+//      PresentFrame + HanaVert_DrawBatch. Breaks when a mouse button is pressed, when the
+//      WAV has stopped (GetStatus & DSB_PLAYING cleared), or after a 500-frame cap when no
+//      sound. Sleep(10ms) per frame.
+//   5. Fades out (PlayScreenFade, 0xFFFFFFFF), releases the surface + sound buffer,
+//      StopAndRestartThread(0), and restores the saved D3DRS_ANTIALIAS state.
+void hook_ShowBackdropAndWait_4795CE()
+{
+  DWORD nW; // eax
+  DWORD nH; // [esp-4h] [ebp-138h]
+  DWORD dwAntialiasInner; // [esp+4h] [ebp-130h] BYREF
+  struct IDirectDrawSurface7 *pDdSurface; // [esp+8h] [ebp-12Ch]
+  //int v5; // [esp+Ch] [ebp-128h]
+  CHAR szPath[256]; // [esp+10h] [ebp-124h] BYREF
+  //__int16 v7; // [esp+110h] [ebp-24h]
+  LPDIRECTSOUNDBUFFER pSndBuf; // [esp+114h] [ebp-20h]
+  int nFrame = 0; // [esp+118h] [ebp-1Ch]
+  DWORD dwAntialias; // [esp+11Ch] [ebp-18h] BYREF
+  //int v11; // [esp+120h] [ebp-14h]
+  //int v12; // [esp+124h] [ebp-10h]
+  DWORD nMouseY; // [esp+128h] [ebp-Ch] BYREF
+  DWORD nMouseX; // [esp+12Ch] [ebp-8h] BYREF
+  WORD nBtnMouse; // [esp+130h] [ebp-4h] BYREF
+  ONCELOG("[HNH:SUB] ShowBackdropAndWait_4795CE\n");
+  //v11 = 0;
+  pDdSurface = 0;
+  //v5 = 0;
+  //v12 = 0;
+  pSndBuf = 0;
+  g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_ANTIALIAS, &dwAntialias);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 0);
+  wsprintfA(szPath, "gov.gp");
+  CHanaObj__GetRealPath_486D9A(szPath, 1007);
+  nH = ConvertFrom640AsInt(480);
+  nW = ConvertFrom640AsInt(640);
+  pDdSurface = LoadBmpScaled_4203B3(szPath, nW, nH);
+  wsprintfA(szPath, "s014.wav");
+  CHanaObj__GetRealPath_486D9A(szPath, 1006);
+  pSndBuf = LoadWav_422E7B(szPath);
+  if ( pSndBuf )
+    pSndBuf->SetVolume(-1000);
+  PlayScreenFade(0, 0xFF2626FF, 0, 25.0, 0);
+  if ( pSndBuf )
+  {
+    if ( (int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] >= -10000 )
+    {
+      if ( (int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] <= 0 )
+        pSndBuf->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266]);
+      else
+        pSndBuf->SetVolume(0);
+    }
+    else
+    {
+      pSndBuf->SetVolume(-10000);
+    }
+    DSBufferPlay(pSndBuf, 0);
+  }
+  PlayScreenFade(1, 0xFF2626FF, pDdSurface, 1.0, 0);
+  StopAndRestartThread(2u);
+  while ( 1 )
+  {
+    DoPeekMessages();
+    //v7 = nBtnMouse;
+    GetMouseBtn_45A41B(&nBtnMouse);
+    GetMouseXY_45A4D8(&nMouseX, &nMouseY);
+    //v11 = 1;
+    if ( nBtnMouse )
+      break;
+    if ( pSndBuf )
+    {
+      if ( pSndBuf->GetStatus(&g_dwDSStatus_5185C8) || (g_dwDSStatus_5185C8 & 1) == 0 )
+        break;
+    }
+    else if ( ++nFrame > 500 )
+    {
+      break;
+    }
+    Sleep(0xAu);
+    if ( pDdSurface )
+    {
+      g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_ANTIALIAS, &dwAntialiasInner);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 0);
+      FlushD3DAndTouchSurface(g_pBackBuffer_4D6C90);
+      g_pBackBuffer_4D6C90->Blt(0, pDdSurface, 0, 0x1000000, 0);
+      FlushD3DAndTouchSurface(g_pBackBuffer_4D6C90);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, dwAntialiasInner);
+    }
+    // nop_4863C3();
+    PresentFrame();
+    HanaVert_DrawBatch(0);
+  }
+  PlayScreenFade(0, 0xFFFFFFFF, pDdSurface, 1.0, 0);
+  if ( pDdSurface )
+  {
+    pDdSurface->Release();
+    pDdSurface = 0;
+  }
+  if ( pSndBuf )
+  {
+    pSndBuf->Stop();
+    if ( pSndBuf )
+    {
+      pSndBuf->Release();
+      pSndBuf = 0;
+    }
+  }
+  StopAndRestartThread(0);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, dwAntialias);
+}
+
 void register_GameMainLoop_47F013() {
   orig_PlayVideoWith3DAudio_4791A3 = hnh_Hook(0x4791A3, hook_PlayVideoWith3DAudio_4791A3, "PlayVideoWith3DAudio_4791A3");
 
   hnh_Hook(0x421BD5, hook_BMP_DitherRGB24ToRGB565, "BMP_DitherRGB24ToRGB565");
   hnh_Hook(0x421FF4, hook_BMP_Convert24bitTo16bitWithDither, "BMP_Convert24bitTo16bitWithDither");
+  hnh_Hook(0x4795ce, hook_ShowBackdropAndWait_4795CE, "ShowBackdropAndWait_4795CE");
 
   hnh_HookOff();
   hnh_Hook(0x47F013, hook_GameMainLoop_47F013, "GameMainLoop_47F013"); // [OK] 
