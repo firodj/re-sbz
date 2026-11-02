@@ -78,6 +78,23 @@ BOOL (__cdecl * FindMateAnimKeyframeBounds)( CHanaMateAnimT3F7_S148 *pMateAnim, 
 void(__cdecl*ApplyMateAnimMaterial)(CHanaMateAnimT3F7_S148* pMateAnim, float fNum)
 = reinterpret_cast<void(__cdecl*)(CHanaMateAnimT3F7_S148 * pMateAnim, float fNum)>(0x40E969);
 
+HRESULT (__cdecl * CHanaObj__FillVertexBufferT3EA)( CHanaVertT3EA_S1FC *pHanaT3EA, const void *pBufVertices, int dwNumVertices, WORD *pVtxIndices, unsigned int dwNumIndices) = reinterpret_cast<HRESULT(__cdecl*)( CHanaVertT3EA_S1FC *pHanaT3EA, const void *pBufVertices, int dwNumVertices, WORD *pVtxIndices, unsigned int dwNumIndices)>(0x416E65);
+HRESULT (__cdecl * CHanaObj__NewVertT3EA)(CHanaVertT3EA_S1FC **ppOut, DWORD fvf, DWORD dwNumVertices) = reinterpret_cast<HRESULT(__cdecl*)(CHanaVertT3EA_S1FC **ppOut, DWORD fvf, DWORD dwNumVertices)>(0x416CE0);
+CHanaVertT3EA_S1FC * (__cdecl * GetVertByName_4400C3)(LPCSTR lpName, CHanaFrameT3EC_S354 *pMeshOrMorp) = reinterpret_cast<CHanaVertT3EA_S1FC *(__cdecl*)(LPCSTR lpName, CHanaFrameT3EC_S354 *pMeshOrMorp)>(0x4400C3);
+void (__cdecl * ParseOdfMeshMATE_43F8FE)(char **ppBuf, CHanaVertT3EA_S1FC *pVertT3EA) = reinterpret_cast<void(__cdecl*)(char **ppBuf, CHanaVertT3EA_S1FC *pVertT3EA)>(0x43F8FE);
+void (__cdecl * HanaVert_SetMaterial)(CHanaVertT3EA_S1FC *pVertT3EA, CHanaMateT3EE_S184 *pMateT3EE) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVertT3EA, CHanaMateT3EE_S184 *pMateT3EE)>(0x418221);
+void (__cdecl * FreeMate_41828C)(CHanaVertT3EA_S1FC *pHanaT3EA) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pHanaT3EA)>(0x41828C);
+void (__cdecl * HanaMateAnim_InsertKeyframe)(CHanaMateAnimT3F7_S148 *pHanaT3F7, float fNum, D3DMATERIAL7 *pD3DMaterial) = reinterpret_cast<void(__cdecl*)(CHanaMateAnimT3F7_S148 *pHanaT3F7, float fNum, D3DMATERIAL7 *pD3DMaterial)>(0x40E7DA);
+void (__cdecl * ParseOdfMeshMANM_43FBD1)(char **ppBuf, CHanaVertT3EA_S1FC *pVertT3EA, CHanaAnimSetT3F1_S150 *pAnimSetT3F1) = reinterpret_cast<void(__cdecl*)(char **ppBuf, CHanaVertT3EA_S1FC *pVertT3EA, CHanaAnimSetT3F1_S150 *pAnimSetT3F1)>(0x43FBD1);
+void (__cdecl * HanaMateAnim_SetMaterial)(CHanaMateAnimT3F7_S148 *pMatAnim, CHanaMateT3EE_S184 *pMate) = reinterpret_cast<void(__cdecl*)(CHanaMateAnimT3F7_S148 *pMatAnim, CHanaMateT3EE_S184 *pMate)>(0x40E782);
+void (__cdecl * CHanaObj__NewMateAnimT3F7)(CHanaMateAnimT3F7_S148 **ppOut) = reinterpret_cast<void(__cdecl*)(CHanaMateAnimT3F7_S148 **ppOut)>(0x40E500);
+void (__cdecl * HanaAnimSet_AddMaterialAnimRef)(CHanaAnimSetT3F1_S150 *pAnimSet, CHanaMateAnimT3F7_S148 *pMatAnim) = reinterpret_cast<void(__cdecl*)(CHanaAnimSetT3F1_S150 *pAnimSet, CHanaMateAnimT3F7_S148 *pMatAnim)>(0x4044D9);
+void (__cdecl * ParseOdfMeshTEXT_43F460)(char **ppBuf, CHanaVertT3EA_S1FC *pVertT3EA) = reinterpret_cast<void(__cdecl*)(char **ppBuf, CHanaVertT3EA_S1FC *pVertT3EA)>(0x43F460);
+void (__cdecl * HanaVert_SetTexture)(CHanaVertT3EA_S1FC *pVert, CHanaTextureT3EB_S2CC *pTex) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert, CHanaTextureT3EB_S2CC *pTex)>(0x418103);
+void (__cdecl * HanaVert_ReleaseTexture)(CHanaVertT3EA_S1FC *pHanaT3EA) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pHanaT3EA)>(0x4181B5);
+CHanaBase_S130 * (__cdecl * FindObjByType_40BC13)(char *szName, int dwType) = reinterpret_cast<CHanaBase_S130 *(__cdecl*)(char *szName, int dwType)>(0x40BC13);
+void (__cdecl * ParseOdfMeshVFLG_43FDEC)(char **ppBuf, CHanaVertT3EA_S1FC *pHanaT3EA) = reinterpret_cast<void(__cdecl*)(char **ppBuf, CHanaVertT3EA_S1FC *pHanaT3EA)>(0x43FDEC);
+
 // === FUNCTIONS ===
 
 typedef char String256[256];
@@ -1504,7 +1521,7 @@ void __cdecl hook_InterpolateHanaAnimFrame(CHanaAnimT3F0_S240 *pAnim, float fTim
   float startTy; // [esp+54h] [ebp-48h]
   float startTz; // [esp+58h] [ebp-44h]
 
-  ONCELOG("[HNH:SUN] InterpolateHanaAnimFrame_40283C\n");
+  ONCELOG("[HNH:SUB] InterpolateHanaAnimFrame_40283C\n");
 
   pStartKeyframe = 0;
   pEndKeyframe = 0;
@@ -1930,13 +1947,878 @@ BOOL __cdecl hook_FindMateAnimKeyframeBounds(
   }
 }
 
+void __cdecl hook_MtxMult_4069DD(
+  CHanaFrameT3EC_S354 *pCameraFrame,
+  CHanaFrameT3EC_S354 *pSceneFrame,
+  float x,
+  float y,
+  float z)
+{
+  D3DXMATRIX pM2; // [esp+8h] [ebp-C0h] BYREF
+  D3DXMATRIX pOut; // [esp+48h] [ebp-80h] BYREF
+  D3DXMATRIX pM1; // [esp+88h] [ebp-40h] BYREF
+
+  ONCELOG("[HNH:SUB] MtxMult_4069DD");
+
+  D3DXMatrixTranslation(&pOut, x, y, z);
+  D3DXMatrixMultiply(&pOut, &pOut, &pSceneFrame->mat4x4_after);
+  qmemcpy(&pM1, &pCameraFrame->mat4x4_after, sizeof(pM1));
+  *(_QWORD *)&pM1.m[3][0] = *(_QWORD *)&pOut.m[3][0];
+  pM1._43 = pOut._43;
+  D3DXMatrixInverse(&pM2, 0, &pCameraFrame->mat4x4_before);
+  D3DXMatrixMultiply(&pM1, &pM1, &pM2);
+  *(_QWORD *)&pCameraFrame->mat4x4_fmrx.m[3][0] = *(_QWORD *)&pM1.m[3][0];
+  pCameraFrame->mat4x4_fmrx._43 = pM1._43;
+  D3DXMatrixMultiply(&pCameraFrame->mat4x4_after, &pCameraFrame->mat4x4_fmrx, &pCameraFrame->mat4x4_before);
+}
+
+void __cdecl hook_HanaMorp_InitSubObject(
+  CHanaMorpT457_S40C *pMorp,
+  int unused,
+  int n1,
+  int n0,
+  int n2,
+  int n3,
+  CHanaSubObj_S2C *parrS2C,
+  int nCountS2C,
+  const char *pszName,
+  int index)
+{
+  if (!pMorp) return;
+
+  ONCELOG("[HNH:SUB] HanaMorp_InitSubObject_439982\n");
+ 
+  if ( !pMorp->arrSubObj_144[index].pSubObj_0 )
+    pMorp->arrSubObj_144[index].pSubObj_0 = (CHanaSubObj_S120 *)MemAlloc_40DEF7(0x120u);
+  if ( pMorp->arrSubObj_144[index].pSubObj_0->parrS2C )
+  {
+    MemFree_40DF64(pMorp->arrSubObj_144[index].pSubObj_0->parrS2C);
+    pMorp->arrSubObj_144[index].pSubObj_0->parrS2C = 0;
+  }
+  pMorp->arrSubObj_144[index].pSubObj_0->n1 = n1;
+  pMorp->arrSubObj_144[index].pSubObj_0->n0 = n0;
+  pMorp->arrSubObj_144[index].pSubObj_0->n2 = n2;
+  pMorp->arrSubObj_144[index].pSubObj_0->n3 = n3;
+  wsprintfA(pMorp->arrSubObj_144[index].pSubObj_0->szName_18, "%s", pszName);
+  pMorp->arrSubObj_144[index].pSubObj_0->parrS2C = parrS2C;
+  pMorp->arrSubObj_144[index].pSubObj_0->nCountS2C_0 = nCountS2C;
+  pMorp->arrSubObj_144[index].pSubObj_0->pVert_14 = 0;
+  ++pMorp->nCount_344;
+}
+
+void __cdecl hook_HanaMorp_AddVertexRef(CHanaMorpT457_S40C *pMorp, CHanaVertT3EA_S1FC *pVert)
+{
+  CHanaVertT3EA_S1FC **ppOldVertexRefs; // [esp+0h] [ebp-Ch]
+  int loopVar; // [esp+4h] [ebp-8h]
+
+  ONCELOG("[HNH:SUB] HanaMorp_AddVertexRef_434370\n");
+
+  if (!pMorp || !pVert) return;
+
+  
+  for ( loopVar = 0; loopVar < pMorp->nCountVertT3EA_138; ++loopVar )
+  {
+    if ( !strcmp(pMorp->refsVertT3EA_13C[loopVar]->szName_8, pVert->szName_8) )
+      return;
+  }
+  ++pMorp->nCountVertT3EA_138;
+  if ( pMorp->refsVertT3EA_13C )
+  {
+    ppOldVertexRefs = pMorp->refsVertT3EA_13C;
+    pMorp->refsVertT3EA_13C = (CHanaVertT3EA_S1FC **)MemAlloc_40DEF7(4 * pMorp->nCountVertT3EA_138 + 128);
+    memcpy(pMorp->refsVertT3EA_13C, ppOldVertexRefs, 4 * pMorp->nCountVertT3EA_138 - 4);
+    if ( ppOldVertexRefs )
+      MemFree_40DF64(ppOldVertexRefs);
+  }
+  else
+  {
+    pMorp->refsVertT3EA_13C = (CHanaVertT3EA_S1FC **)MemAlloc_40DEF7(0x84u);
+  }
+  pMorp->refsVertT3EA_13C[pMorp->nCountVertT3EA_138 - 1] = pVert;
+  CHanaObj__AddRef_40BFC3(pVert);
+}
+
+BOOL __cdecl hook_CHanaObj__NewMorpT457(CHanaMorpT457_S40C **ppOut, CHanaMeshT3F5_S138 *pMesh)
+{
+  CHanaMorpT457_S40C *pMorp; // [esp+4h] [ebp-4h]
+
+  if ( !pMesh )
+    return 0;
+
+  ONCELOG("[HNH:SUB] CHanaObj__NewMorpT457_433DA7\n");
+
+  pMorp = (CHanaMorpT457_S40C *)MemAlloc_40DEF7(0x40Cu);
+  memset(pMorp, 0, 0x138u);
+  pMorp->dwType = 1111;
+  CHanaObj__AddRef_40BFC3(pMorp);
+  pMorp->pMeshT3F5_138 = pMesh;
+  CHanaObj__AddRef_40BFC3(pMesh);
+  pMorp->pArrObjs_140 = 0;
+  pMorp->arrMKeyT3EA_34C = (CHanaMKey_S8 **)MemAlloc_40DEF7(4 * pMorp->pMeshT3F5_138->nCountVertT3EA_130 + 128);
+  pMorp->arrMKeyT3EASize_348 = (int *)MemAlloc_40DEF7(4 * pMorp->pMeshT3F5_138->nCountVertT3EA_130 + 128);
+  pMorp->fEaseRate_388 = 2.0;
+  *ppOut = pMorp;
+  return 1;
+}
+
+void __cdecl hook_ParseVERT_440288(
+  LPBYTE *ppBuf,
+  CHanaVertT3EA_S1FC **ppVert,
+  CHanaAnimSetT3F1_S150 *pAnimSetT3F1,
+  CHanaFrameT3EC_S354 *pRootFrameT3EC)
+{
+  int name_len_v4; // eax
+  int nCurIndex_v6; // [esp-4h] [ebp-230h]
+  char *pBuf_v7; // [esp+4h] [ebp-228h]
+  DWORD dwNumVertices_v8; // [esp+8h] [ebp-224h]
+  CHanaVertT3EA_S1FC *pVertT3EA; // [esp+Ch] [ebp-220h] BYREF
+  CHAR szVertName2[256]; // [esp+10h] [ebp-21Ch] BYREF
+  CHAR szVertName[256]; // [esp+110h] [ebp-11Ch] BYREF
+  WORD *pBuf_v12; // [esp+210h] [ebp-1Ch]
+  int nIndex_v13; // [esp+214h] [ebp-18h]
+  int bFound; // [esp+218h] [ebp-14h]
+  char *pBuf; // [esp+21Ch] [ebp-10h] BYREF
+  unsigned int dwNumIndices_v16; // [esp+220h] [ebp-Ch]
+  unsigned int name_len_v17; // [esp+224h] [ebp-8h]
+  int v17; // [esp+228h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] ParseVERT_440288\n");
+
+  pBuf = (char *)*ppBuf;
+  v17 = 0;
+  pVertT3EA = *ppVert;
+  memset(szVertName, 0, 0xFFu);
+  name_len_v17 = *(_DWORD *)pBuf;
+  pBuf += 4;
+  wsprintfA(szVertName, "%s", pBuf);
+  name_len_v4 = lstrlenA(pBuf);
+  pBuf += name_len_v4 + 1;
+  dwNumVertices_v8 = *(_DWORD *)pBuf;
+  pBuf += 4;
+  pBuf_v7 = pBuf;
+  pBuf += 32 * dwNumVertices_v8;
+  dwNumIndices_v16 = *(_DWORD *)pBuf;
+  pBuf += 4;
+  pBuf_v12 = (WORD *)pBuf;
+  pBuf += 2 * dwNumIndices_v16;
+  nIndex_v13 = 1;
+  bFound = 0;
+  wsprintfA(szVertName2, "%s", szVertName);
+  while ( 1 )
+  {
+    pVertT3EA = GetVertByName_4400C3(szVertName, pRootFrameT3EC);
+    if ( !pVertT3EA )
+      break;
+    if ( pVertT3EA->dwNumVertices_134 == dwNumVertices_v8 && pVertT3EA->dwNumIndices_140 == dwNumIndices_v16 )
+    {
+      bFound = 1;
+      break;
+    }
+    CHanaObj__Free_40C1E4(pVertT3EA);
+    pVertT3EA = 0;
+    nCurIndex_v6 = nIndex_v13++;
+    wsprintfA(szVertName, "%s(%d)", szVertName2, nCurIndex_v6);// if duplicate name, check by vertices numbers
+  }
+  if ( bFound != 1 )
+  {
+    if ( pVertT3EA )
+    {
+      CHanaObj__Free_40C1E4(pVertT3EA);
+      pVertT3EA = 0;
+    }
+    CHanaObj__NewVertT3EA(&pVertT3EA, D3DFVF_VERTEX, dwNumVertices_v8);// vertices format hardcoded to 0x112
+    CHanaObj__FillVertexBufferT3EA(pVertT3EA, pBuf_v7, dwNumVertices_v8, pBuf_v12, dwNumIndices_v16);
+    AttachHanaObj_40BAB8(pVertT3EA, szVertName);
+  }
+  while ( 1 )
+  {
+    while ( 1 )
+    {
+      while ( 1 )
+      {
+        while ( 1 )
+        {
+          while ( !memcmp(pBuf, "MATE", 4u) )
+          {
+            pBuf += 4;
+            ParseOdfMeshMATE_43F8FE(&pBuf, pVertT3EA);
+          }
+          if ( memcmp(pBuf, "MANM", 4u) )
+            break;
+          pBuf += 4;
+          ParseOdfMeshMANM_43FBD1(&pBuf, pVertT3EA, pAnimSetT3F1);
+        }
+        if ( memcmp(pBuf, "TEXT", 4u) )
+          break;
+        pBuf += 4;
+        ParseOdfMeshTEXT_43F460(&pBuf, pVertT3EA);
+      }
+      if ( memcmp(pBuf, "VFLG", 4u) )
+        break;
+      pBuf += 4;
+      ParseOdfMeshVFLG_43FDEC(&pBuf, pVertT3EA);
+    }
+    if ( !memcmp(pBuf, "Mkey", 4u)
+      || !memcmp(pBuf, "MPPL", 4u)
+      || !memcmp(pBuf, "ANIM", 4u)
+      || !memcmp(pBuf, "VERT", 4u)
+      || !memcmp(pBuf, "FRAM", 4u)
+      || !memcmp(pBuf, "MESH", 4u)
+      || !memcmp(pBuf, "MORP", 4u)
+      || !memcmp(pBuf, "ファイルは終了", 14u) )
+    {
+      break;
+    }
+    ++pBuf;
+  }
+  *ppBuf = (LPBYTE)pBuf;
+  *ppVert = pVertT3EA;
+}
+
+HRESULT __cdecl hook_CHanaObj__FillVertexBufferT3EA(
+  CHanaVertT3EA_S1FC *pHanaT3EA,
+  const void *pBufVertices,
+  int dwNumVertices,
+  WORD *pVtxIndices,
+  unsigned int dwNumIndices)
+{
+  unsigned int i; // [esp+10h] [ebp-Ch]
+  HRESULT hr; // [esp+14h] [ebp-8h]
+  void *pData; // [esp+18h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] CHanaObj__FillVertexBufferT3EA_416E65\n")
+
+  hr = pHanaT3EA->pD3DVtxBuf_130->Lock(0x801, &pData, 0);
+  if ( hr < 0 )
+    return hr;
+  qmemcpy(pData, pBufVertices, pHanaT3EA->dwVertexSize * dwNumVertices);
+  pHanaT3EA->pD3DVtxBuf_130->Unlock();
+  pHanaT3EA->dwNumVertices_134 = dwNumVertices;
+  pHanaT3EA->dwNumIndices_140 = dwNumIndices;
+  pHanaT3EA->pVtxIndices = (WORD *)MemAlloc_40DEF7(2 * dwNumIndices + 128);
+  for ( i = 0; i < dwNumIndices; ++i )
+    pHanaT3EA->pVtxIndices[i] = pVtxIndices[i];
+  return 0;
+}
+
+HRESULT __cdecl hook_CHanaObj__NewVertT3EA(CHanaVertT3EA_S1FC **ppOut, DWORD fvf, DWORD dwNumVertices)
+{
+  DWORD dwCaps; // eax
+  CHanaVertT3EA_S1FC *pVert; // [esp+1Ch] [ebp-100h]
+  D3DDEVICEDESC7 d3dDeviceDesc; // [esp+20h] [ebp-FCh] BYREF
+  D3DVERTEXBUFFERDESC d3dVtxBufDesc; // [esp+10Ch] [ebp-10h] BYREF
+  ONCELOG("[HNH:SUB] CHanaObj__NewVertT3EA_416CE0\n");
+
+  pVert = (CHanaVertT3EA_S1FC *)MemAlloc_40DEF7(0x1FCu);
+  memset(pVert, 0, sizeof(CHanaVertT3EA_S1FC));
+  pVert->dwType = 0x3EA;
+  if ( g_pD3DDevice_4D6C78->GetCaps(&d3dDeviceDesc) < 0 )
+    return E_FAIL;
+  d3dVtxBufDesc.dwSize = 16;
+  d3dVtxBufDesc.dwCaps = 0;
+  d3dVtxBufDesc.dwFVF = fvf;
+  d3dVtxBufDesc.dwNumVertices = dwNumVertices;
+  pVert->dwFVF = fvf;
+  pVert->dwNumVertices_134 = dwNumVertices;
+  dwCaps = d3dVtxBufDesc.dwCaps;
+  BYTE1(dwCaps) = BYTE1(d3dVtxBufDesc.dwCaps) | 8;
+  d3dVtxBufDesc.dwCaps = dwCaps;
+  if ( g_pD3D_4D6C84->CreateVertexBuffer(&d3dVtxBufDesc, &pVert->pD3DVtxBuf_130, 0) < 0 )
+    return E_FAIL;
+  d3dVtxBufDesc.dwNumVertices = 8;
+  pVert->dwVertexSize = CalculateVertexSize(fvf);
+  pVert->pTexT3EB = 0;
+  pVert->pMateT3EE = 0;
+  CHanaObj__AddRef_40BFC3(pVert);
+  *ppOut = pVert;
+  return 0;
+}
+
+CHanaVertT3EA_S1FC *__cdecl hook_GetVertByName_4400C3(LPCSTR lpName, CHanaFrameT3EC_S354 *pMeshOrMorp)
+{
+  int len_v2; // eax
+  int len_v4; // eax
+  CHanaMorpT457_S40C *pMorpT457_20C; // [esp+0h] [ebp-20h]
+  CHanaMeshT3F5_S138 *pMeshT3F5; // [esp+4h] [ebp-1Ch]
+  CHanaVertT3EA_S1FC *pVert; // [esp+8h] [ebp-18h]
+  CHanaVertT3EA_S1FC *pVert2; // [esp+8h] [ebp-18h]
+  CHanaVertT3EA_S1FC *pVert1; // [esp+8h] [ebp-18h]
+  unsigned int i; // [esp+Ch] [ebp-14h]
+  unsigned int j; // [esp+Ch] [ebp-14h]
+  unsigned int k; // [esp+10h] [ebp-10h]
+  CHanaNode *pFirstChildNode; // [esp+1Ch] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] GetVertByName_4400C3\n");
+
+  pVert = 0;
+  if ( pMeshOrMorp->pAttachedObj_20C )
+  {
+    if ( pMeshOrMorp->pAttachedObj_20C->dwType == 0x3F5 )
+    {
+      pMeshT3F5 = (CHanaMeshT3F5_S138 *)pMeshOrMorp->pAttachedObj_20C;
+      for ( i = 0; i < pMeshT3F5->nCountVertT3EA_130; ++i )
+      {
+        len_v2 = lstrlenA(lpName);
+        if ( !memcmp(pMeshT3F5->refsVertT3EA[i]->szName_8, lpName, len_v2 + 1) )
+        {
+          pVert2 = pMeshT3F5->refsVertT3EA[i];
+          CHanaObj__AddRef_40BFC3(pVert2);
+          return pVert2;
+        }
+      }
+    }
+    if ( pMeshOrMorp->pAttachedObj_20C->dwType == 0x457 )
+    {
+      pMorpT457_20C = pMeshOrMorp->pAttachedObj_20C;
+      for ( j = 0; j < pMorpT457_20C->nCountVertT3EA_138; ++j )
+      {
+        len_v4 = lstrlenA(lpName);
+        if ( !memcmp(pMorpT457_20C->refsVertT3EA_13C[j]->szName_8, lpName, len_v4 + 1) )
+        {
+          pVert1 = pMorpT457_20C->refsVertT3EA_13C[j];
+          CHanaObj__AddRef_40BFC3(pVert1);
+          return pVert1;
+        }
+      }
+    }
+  }
+  pFirstChildNode = pMeshOrMorp->pFirstChildNode;
+  for ( k = 0; k < pMeshOrMorp->nCountChild; ++k )
+  {
+    if ( pFirstChildNode->pData )
+      pVert = GetVertByName_4400C3(lpName, pFirstChildNode->pData);
+    if ( pVert )
+      break;
+    pFirstChildNode = pFirstChildNode->pNext;
+  }
+  return pVert;
+}
+
+void __cdecl hook_ParseOdfMeshMATE_43F8FE(char **ppBuf, CHanaVertT3EA_S1FC *pVertT3EA)
+{
+  int name_len_v2; // eax
+  CHAR String[256]; // [esp+0h] [ebp-110h] BYREF
+  float *pBuf2; // [esp+100h] [ebp-10h]
+  CHanaMateT3EE_S184 *pMateT3EE; // [esp+104h] [ebp-Ch] BYREF
+  LPDWORD pBuf; // [esp+108h] [ebp-8h]
+  DWORD v7; // [esp+10Ch] [ebp-4h]
+  ONCELOG("[HNH:SUB] ParseOdfMeshMATE_43F8FE\n")
+  pMateT3EE = 0;
+  v7 = 0;
+  pBuf = (LPDWORD)*ppBuf;
+  v7 = *pBuf++;
+  CHanaObj__NewMateT3EE_S184(&pMateT3EE);
+  wsprintfA(String, "%s", (const char *)pBuf);
+  name_len_v2 = lstrlenA((LPCSTR)pBuf);
+  pBuf = (LPDWORD)((char *)pBuf + name_len_v2 + 1);
+  AttachHanaObj_40BAB8(pMateT3EE, String);
+  pBuf2 = (float *)pBuf;
+  LODWORD(pMateT3EE->d3dMaterial_130.ambient.a) = *pBuf;
+  ++pBuf2;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.ambient.r = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.ambient.g = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.ambient.b = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.diffuse.a = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.diffuse.r = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.diffuse.g = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.diffuse.b = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.emissive.a = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.emissive.r = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.emissive.g = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.emissive.b = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.specular.a = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.specular.r = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.specular.g = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.specular.b = *pBuf2++;
+  ++pBuf;
+  pMateT3EE->d3dMaterial_130.power = *pBuf2;
+  ++pBuf;
+  HanaVert_SetMaterial(pVertT3EA, pMateT3EE);
+  if ( pMateT3EE )
+  {
+    CHanaObj__Free_40C1E4(pMateT3EE);
+    pMateT3EE = 0;
+  }
+  *ppBuf = (char *)pBuf;
+}
+
+void __cdecl hook_HanaVert_SetMaterial(CHanaVertT3EA_S1FC *pVertT3EA, CHanaMateT3EE_S184 *pMateT3EE)
+{
+  ONCELOG("[HNH:SUB] HanaVert_SetMaterial_418221\n")
+
+  if ( pVertT3EA->pMateT3EE )
+    FreeMate_41828C(pVertT3EA);
+  pVertT3EA->pMateT3EE = pMateT3EE;
+  if ( pMateT3EE )
+    CHanaObj__AddRef_40BFC3(pMateT3EE);
+}
+
+void __cdecl hook_FreeMate_41828C(CHanaVertT3EA_S1FC *pHanaT3EA)
+{
+  ONCELOG("[HNH:SUB] FreeMate_41828C\n")
+
+  if ( pHanaT3EA->pMateT3EE )
+  {
+    CHanaObj__Free_40C1E4(pHanaT3EA->pMateT3EE);
+    pHanaT3EA->pMateT3EE = 0;
+  }
+}
+
+void __cdecl hook_HanaMateAnim_InsertKeyframe(CHanaMateAnimT3F7_S148 *pHanaT3F7, float fNum, D3DMATERIAL7 *pD3DMaterial)
+{
+  CHanaMateAnimKeyT3F7_S50 *pRight; // [esp+28h] [ebp-Ch] BYREF
+  CHanaMateAnimKeyT3F7_S50 *pNewNode; // [esp+2Ch] [ebp-8h]
+  CHanaMateAnimKeyT3F7_S50 *pLeft; // [esp+30h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] HanaMateAnim_InsertKeyframe_40E7DA\n");
+
+  if ( pHanaT3F7->fLoopEnd_134 < (double)fNum )
+    pHanaT3F7->fLoopEnd_134 = fNum;
+  if ( FindMateAnimKeyframeBounds(pHanaT3F7, fNum, &pLeft, &pRight) )
+  {
+    qmemcpy(&pLeft->d3dMat7_4, pD3DMaterial, sizeof(pLeft->d3dMat7_4));
+  }
+  else if ( pRight )
+  {
+    ++pHanaT3F7->nKeyCount_138;
+    pNewNode = (CHanaMateAnimKeyT3F7_S50 *)MemAlloc_40DEF7(0x50u);
+    memset(pNewNode, 0, sizeof(CHanaMateAnimKeyT3F7_S50));
+    pRight->pPrevKey = pNewNode;
+    pLeft->pNextKey = pNewNode;
+    pNewNode->fTime = fNum;
+    qmemcpy(&pNewNode->d3dMat7_4, pD3DMaterial, sizeof(pNewNode->d3dMat7_4));
+    pNewNode->pPrevKey = pLeft;
+    pNewNode->pNextKey = pRight;
+  }
+  else
+  {
+    ++pHanaT3F7->nKeyCount_138;
+    pNewNode = (CHanaMateAnimKeyT3F7_S50 *)MemAlloc_40DEF7(0x50u);
+    memset(pNewNode, 0, sizeof(CHanaMateAnimKeyT3F7_S50));
+    pLeft->pNextKey = pNewNode;
+    pNewNode->fTime = fNum;
+    qmemcpy(&pNewNode->d3dMat7_4, pD3DMaterial, sizeof(pNewNode->d3dMat7_4));
+    pNewNode->pPrevKey = pLeft;
+    pNewNode->pNextKey = 0;
+    pHanaT3F7->pKeyTail_140 = pNewNode;
+  }
+}
+
+void __cdecl hook_ParseOdfMeshMANM_43FBD1(char **ppBuf, CHanaVertT3EA_S1FC *pVertT3EA, CHanaAnimSetT3F1_S150 *pAnimSetT3F1)
+{
+  D3DMATERIAL7 d3dMaterial7; // [esp+0h] [ebp-5Ch] BYREF
+  float fNum; // [esp+44h] [ebp-18h]
+  unsigned int i; // [esp+48h] [ebp-14h]
+  CHanaMateAnimT3F7_S148 *pMateAnimT3F7; // [esp+4Ch] [ebp-10h] BYREF
+  int v7; // [esp+50h] [ebp-Ch]
+  BYTE *pBuf; // [esp+54h] [ebp-8h]
+  int nCount_v10; // [esp+58h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] ParseOdfMeshMANM_43FBD1\n");
+
+  v7 = 0;
+  nCount_v10 = 0;
+  pBuf = (BYTE *)*ppBuf;
+  nCount_v10 = *(_DWORD *)pBuf;
+  pBuf += 4;
+  if ( pVertT3EA->pMateT3EE )
+  {
+    pMateAnimT3F7 = 0;
+    CHanaObj__NewMateAnimT3F7(&pMateAnimT3F7);
+    pVertT3EA->pMateT3EE->pManmT3F7 = pMateAnimT3F7;
+    HanaMateAnim_SetMaterial(pMateAnimT3F7, pVertT3EA->pMateT3EE);
+    HanaAnimSet_AddMaterialAnimRef(pAnimSetT3F1, pMateAnimT3F7);
+    for ( i = 0; i < nCount_v10; ++i )
+    {
+      fNum = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.ambient.a = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.ambient.r = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.ambient.g = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.ambient.b = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.diffuse.a = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.diffuse.r = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.diffuse.g = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.diffuse.b = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.emissive.a = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.emissive.r = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.emissive.g = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.emissive.b = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.specular.a = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.specular.r = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.specular.g = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.specular.b = *(float *)pBuf;
+      pBuf += 4;
+      d3dMaterial7.power = *(D3DVALUE *)pBuf;
+      pBuf += 4;
+      HanaMateAnim_InsertKeyframe(pMateAnimT3F7, fNum, &d3dMaterial7);
+    }
+    if ( pMateAnimT3F7 )
+    {
+      CHanaObj__Free_40C1E4(pMateAnimT3F7);
+      pMateAnimT3F7 = 0;
+    }
+  }
+  *ppBuf = (char *)pBuf;
+}
+
+void __cdecl hook_HanaMateAnim_SetMaterial(CHanaMateAnimT3F7_S148 *pMatAnim, CHanaMateT3EE_S184 *pMate)
+{
+  ONCELOG("[HNH:SUB] HanaMateAnim_SetMaterial_40E782\n")
+
+  pMatAnim->pMateT3EE = pMate;
+  CHanaObj__AddRef_40BFC3(pMate);
+  qmemcpy(&pMatAnim->pKeyHead_13C->d3dMat7_4, &pMate->d3dMaterial_130, sizeof(pMatAnim->pKeyHead_13C->d3dMat7_4));
+}
+
+void __cdecl hook_CHanaObj__NewMateAnimT3F7(CHanaMateAnimT3F7_S148 **ppOut)
+{
+  CHanaMateAnimT3F7_S148 *pOut; // edi
+  D3DCOLORVALUE *p_diffuse; // eax
+  D3DCOLORVALUE *p_ambient; // ecx
+  D3DCOLORVALUE *p_specular; // edx
+  D3DCOLORVALUE *p_emissive; // eax
+
+  ONCELOG("[HNH:SUB] CHanaObj__NewMateAnimT3F7_40E500\n");
+
+  pOut = (CHanaMateAnimT3F7_S148 *)MemAlloc_40DEF7(0x148u);
+  memset(pOut, 0, sizeof(CHanaMateAnimT3F7_S148));
+  pOut->dwType = 0x3F7;
+  pOut->nKeyCount_138 = 1;
+  pOut->pKeyHead_13C = (CHanaMateAnimKeyT3F7_S50 *)MemAlloc_40DEF7(0x50u);
+  memset(pOut->pKeyHead_13C, 0, sizeof(CHanaMateAnimKeyT3F7_S50));
+  pOut->pKeyTail_140 = pOut->pKeyHead_13C;
+  p_diffuse = &pOut->pKeyHead_13C->d3dMat7_4.diffuse;
+  p_diffuse->r = 1.0;
+  p_diffuse->g = 1.0;
+  p_diffuse->b = 1.0;
+  p_diffuse->a = 1.0;
+  p_ambient = &pOut->pKeyHead_13C->d3dMat7_4.ambient;
+  p_ambient->r = 0.0;
+  p_ambient->g = 0.0;
+  p_ambient->b = 0.0;
+  p_ambient->a = 0.0;
+  p_specular = &pOut->pKeyHead_13C->d3dMat7_4.specular;
+  p_specular->r = 0.0;
+  p_specular->g = 0.0;
+  p_specular->b = 0.0;
+  p_specular->a = 0.0;
+  p_emissive = &pOut->pKeyHead_13C->d3dMat7_4.emissive;
+  p_emissive->r = 0.0;
+  p_emissive->g = 0.0;
+  p_emissive->b = 0.0;
+  p_emissive->a = 0.0;
+  pOut->pKeyHead_13C->d3dMat7_4.power = 0.0;
+  pOut->fLoopEnd_134 = 0.0;
+  CHanaObj__AddRef_40BFC3(pOut);
+  *ppOut = pOut;
+}
+
+void __cdecl hook_HanaAnimSet_AddMaterialAnimRef(CHanaAnimSetT3F1_S150 *pAnimSet, CHanaMateAnimT3F7_S148 *pMatAnim)
+{
+  CHanaMateAnimT3F7_S148 **ppOldManmRefs; // [esp+14h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] HanaAnimSet_AddMaterialAnimRef_4044D9\n");
+
+  ++pAnimSet->nManmCount_140;
+  if ( pAnimSet->pRefsManmT3F7 )
+  {
+    ppOldManmRefs = pAnimSet->pRefsManmT3F7;
+    pAnimSet->pRefsManmT3F7 = (CHanaMateAnimT3F7_S148 **)MemAlloc_40DEF7(4 * pAnimSet->nManmCount_140);
+    qmemcpy(pAnimSet->pRefsManmT3F7, ppOldManmRefs, 4 * ((4 * pAnimSet->nManmCount_140 - 4) >> 2));
+    MemFree_40DF64(ppOldManmRefs);
+  }
+  else
+  {
+    pAnimSet->pRefsManmT3F7 = (CHanaMateAnimT3F7_S148 **)MemAlloc_40DEF7(4u);
+  }
+  pAnimSet->pRefsManmT3F7[pAnimSet->nManmCount_140 - 1] = pMatAnim;
+  CHanaObj__AddRef_40BFC3(pMatAnim);
+}
+
+void __cdecl hook_ParseOdfMeshTEXT_43F460(char **ppBuf, CHanaVertT3EA_S1FC *pVertT3EA)
+{
+  int len; // eax
+  int i; // [esp+0h] [ebp-468h]
+  CHAR imageBmp[512]; // [esp+4h] [ebp-464h] BYREF
+  CHanaTextureT3EB_S2CC *pHanaTexture_v2; // [esp+204h] [ebp-264h]
+  int bSelfBlitMask; // [esp+208h] [ebp-260h]
+  LPDIRECTDRAWSURFACE7 pDDMaskSurf; // [esp+20Ch] [ebp-25Ch]
+  struct IDirectDrawSurface7 *pDDFinalSurf; // [esp+210h] [ebp-258h]
+  int bSelfBlitImage; // [esp+214h] [ebp-254h]
+  LPDIRECTDRAWSURFACE7 pDDImageSurf; // [esp+218h] [ebp-250h]
+  CHanaTextureT3EB_S2CC *pHanaTexture_v1; // [esp+21Ch] [ebp-24Ch]
+  LPBYTE pBuf; // [esp+220h] [ebp-248h]
+  CHAR maskBmp[512]; // [esp+224h] [ebp-244h] BYREF
+  CHAR origName[64]; // [esp+424h] [ebp-44h] BYREF
+  int unk_v16; // [esp+464h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] ParseOdfMeshTEXT_43F460\n");
+
+  pBuf = (LPBYTE)*ppBuf;
+  unk_v16 = 0;
+  bSelfBlitImage = 0;
+  bSelfBlitMask = 0;
+  pDDImageSurf = 0;
+  pDDMaskSurf = 0;
+  pDDFinalSurf = 0;
+  memset(imageBmp, 0, 0x100u);
+  memset(maskBmp, 0, 0x100u);
+  unk_v16 = *(_DWORD *)pBuf;
+  pBuf += 4;
+  wsprintfA(imageBmp, "%s", (const char *)pBuf);
+  wsprintfA(origName, "%s", (const char *)pBuf);
+  pHanaTexture_v1 = (CHanaTextureT3EB_S2CC *)FindObjByType_40BC13(imageBmp, 0x3EB);
+  if ( pHanaTexture_v1 )
+  {
+    pHanaTexture_v2 = pHanaTexture_v1;
+    HanaVert_SetTexture(pVertT3EA, pHanaTexture_v1);
+    CHanaObj__Free_40C1E4(pHanaTexture_v1);
+  }
+  else
+  {
+    for ( i = lstrlenA(imageBmp) - 1; i; --i )
+    {
+      if ( !memcmp(&imageBmp[i], " & ", 3u) )
+      {
+        imageBmp[i] = 0;
+        imageBmp[i + 1] = 0;
+        imageBmp[i + 2] = 0;
+        wsprintfA(maskBmp, "%s", &imageBmp[i + 3]);
+        break;
+      }
+    }
+    for ( i = lstrlenA(imageBmp); i; --i )
+    {
+      if ( !_strnicmp(&imageBmp[i], ".bmp", 4u) )
+      {
+        if ( imageBmp[i + 4] == 'N' )
+          bSelfBlitImage = 1;
+        imageBmp[i + 4] = 0;
+        break;
+      }
+    }
+    for ( i = lstrlenA(maskBmp); i; --i )
+    {
+      if ( !_strnicmp(&maskBmp[i], ".bmp", 4u) )
+      {
+        if ( maskBmp[i + 4] == 'N' )
+          bSelfBlitMask = 1;
+        maskBmp[i + 4] = 0;
+        break;
+      }
+    }
+    pDDImageSurf = GetSurfaceFromBmp_419DE5(imageBmp);
+    if ( maskBmp[0] )
+      pDDMaskSurf = GetSurfaceFromBmp_419DE5(maskBmp);
+    if ( pDDImageSurf )
+    {
+      if ( bSelfBlitImage == 1 )
+        SelfBltDC(pDDImageSurf);
+      if ( bSelfBlitMask == 1 )
+        SelfBltDC(pDDMaskSurf);
+      pDDFinalSurf = CreateTextureFromSurfaceWithAlphaMask(pDDImageSurf, pDDMaskSurf);
+      pHanaTexture_v2 = (CHanaTextureT3EB_S2CC *)MemAlloc_40DEF7(0x2CCu);
+      memset(pHanaTexture_v2, 0, sizeof(CHanaTextureT3EB_S2CC));
+      pHanaTexture_v2->dwType = 0x3EB;
+      pHanaTexture_v2->ddSurfDesc.dwSize = 124;
+      pHanaTexture_v2->ddSurfDesc.dwFlags = 4102;
+      CHanaObj__AddRef_40BFC3(pHanaTexture_v2);
+      AttachHanaObj_40BAB8(pHanaTexture_v2, origName);
+      pHanaTexture_v2->pDDSurf = pDDFinalSurf;
+      if ( pDDMaskSurf )
+        pHanaTexture_v2->bHasMask = 1;
+      HanaVert_SetTexture(pVertT3EA, pHanaTexture_v2);
+      if ( pHanaTexture_v2 )
+      {
+        CHanaObj__Free_40C1E4(pHanaTexture_v2);
+        pHanaTexture_v2 = 0;
+      }
+    }
+    if ( pDDImageSurf )
+      pDDImageSurf->Release();
+    if ( pDDMaskSurf )
+      pDDMaskSurf->Release();
+    pDDImageSurf = 0;
+    pDDMaskSurf = 0;
+  }
+  len = lstrlenA((LPCSTR)pBuf);
+  pBuf += len + 1;
+  *ppBuf = (char *)pBuf;
+}
+
+void __cdecl hook_HanaVert_SetTexture(CHanaVertT3EA_S1FC *pVert, CHanaTextureT3EB_S2CC *pTex)
+{
+  ONCELOG("[HNH:SUB] HanaVert_SetTexture_418103\n");
+
+  if ( pVert->pTexT3EB )
+    HanaVert_ReleaseTexture(pVert);
+  pVert->pTexT3EB = pTex;
+  if ( pTex )
+    CHanaObj__AddRef_40BFC3(pTex);
+}
+
+void __cdecl hook_HanaVert_ReleaseTexture(CHanaVertT3EA_S1FC *pHanaT3EA)
+{
+  ONCELOG("[HNH:SUB] HanaVert_ReleaseTexture_4181B5\n");
+
+  if ( pHanaT3EA->pTexT3EB )
+  {
+    CHanaObj__Free_40C1E4(pHanaT3EA->pTexT3EB);
+    pHanaT3EA->pTexT3EB = 0;
+  }
+}
+
+CHanaBase_S130 *__cdecl hook_FindObjByType_40BC13(char *szName, int dwType)
+{
+  int i; // [esp+0h] [ebp-8h]
+  CObjItemRef_S208 *pObjItem; // [esp+4h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] FindObjByType_40BC13\n");
+
+  if ( !*szName )
+    return 0;
+  pObjItem = g_pObjectTable;
+  for ( i = 0; i < g_nObjectTableCount; ++i )
+  {
+    if ( dwType == pObjItem->dwObjType_204 && pObjItem->szName_0[0] > 0 && !strcmp(szName, pObjItem->szName_0) )
+    {
+      CHanaObj__AddRef_40BFC3(pObjItem->pObj_200);
+      return pObjItem->pObj_200;
+    }
+    ++pObjItem;
+  }
+  return 0;
+}
+
+void __cdecl hook_ParseOdfMeshVFLG_43FDEC(char **ppBuf, CHanaVertT3EA_S1FC *pHanaT3EA)
+{
+  WORD dwFlags_v3; // [esp+0h] [ebp-Ch]
+  LPBYTE pBuf; // [esp+4h] [ebp-8h]
+  LPBYTE pBuf2; // [esp+4h] [ebp-8h]
+  LPBYTE Buf2b; // [esp+4h] [ebp-8h]
+  LPBYTE Buf2c; // [esp+4h] [ebp-8h]
+  int dwSize; // [esp+8h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] ParseOdfMeshVFLG_43FDEC\n");
+
+  dwSize = *(DWORD *)*ppBuf;
+  pBuf = (LPBYTE)(*ppBuf + 4);
+  dwFlags_v3 = *(WORD *)pBuf;
+  pHanaT3EA->flg_1D4 = (*(WORD *)pBuf & 2) != 0;
+  pHanaT3EA->fFlatShade_1D8 = (dwFlags_v3 & 4) != 0;
+  pHanaT3EA->flg_1DC = (dwFlags_v3 & 0x80) != 0;
+  pHanaT3EA->bForceAlphaPass_1CC = (dwFlags_v3 & 0x100) != 0;
+  if ( (dwFlags_v3 & 0x200) != 0 )
+  {
+    pHanaT3EA->nBlendMode_1D0 = 1;
+  }
+  else if ( (dwFlags_v3 & 0x400) != 0 )
+  {
+    pHanaT3EA->nBlendMode_1D0 = -1;
+  }
+  else
+  {
+    pHanaT3EA->nBlendMode_1D0 = 0;
+  }
+  pHanaT3EA->bShadowOnly_1E0 = (dwFlags_v3 & 0x2000) != 0;
+  pHanaT3EA->bUnlit_1E4 = (dwFlags_v3 & 0x4000) != 0;
+  pHanaT3EA->bAlphaPass2_1E8 = (dwFlags_v3 & 0x8000) != 0;
+  pBuf2 = &pBuf[dwSize];
+  if ( !memcmp("BIAS", pBuf2, 4u) )
+  {
+    Buf2b = pBuf2 + 4;
+    pHanaT3EA->nFogDensity_1EC = *(unsigned __int16 *)Buf2b;
+    pBuf2 = Buf2b + 2;
+  }
+  else
+  {
+    pHanaT3EA->nFogDensity_1EC = 0;
+  }
+  if ( !memcmp("ADRS", pBuf2, 4u) )
+  {
+    Buf2c = pBuf2 + 4;
+    pHanaT3EA->nAlphaOpSel_1F0 = (char)*Buf2c++;
+    pHanaT3EA->fNoTexPersp_1F4 = (char)*Buf2c;
+    pBuf2 = Buf2c + 1;
+  }
+  else
+  {
+    pHanaT3EA->nAlphaOpSel_1F0 = 0;
+    pHanaT3EA->fNoTexPersp_1F4 = 0;
+  }
+  if ( !memcmp("ALPR", pBuf2, 4u) )
+  {
+    pHanaT3EA->alpr_1F8 = *((DWORD *)pBuf2 + 1);
+    pBuf2 += 8;
+  }
+  else
+  {
+    pHanaT3EA->alpr_1F8 = 0;
+  }
+  *ppBuf = (char *)pBuf2;
+}
+
 void register_ParseODFContent_441A5D() {
   hnh_Hook(0x44106A, hook_ParseOdfFRAM_44106A, "ParseOdfFRAM_44106A"); // [OK]
   hnh_Hook(0x4414EB, hook_ParseOdfANIM_4414EB, "ParseOdfANIM_4414EB"); // [OK]
   hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C"); // [OK]
   hnh_Hook(0x440896, hook_ParseOdfMORP_440896, "ParseOdfMORP_440896"); // [OK]
   hnh_Hook(0x44189C, hook_ParseOdf3DON_44189C, "ParseOdf3DON_44189C"); // [OK]
-  
+
+  hnh_Hook(0x4069DD, hook_MtxMult_4069DD, "MtxMult_4069DD");
+  hnh_Hook(0x439982, hook_HanaMorp_InitSubObject, "HanaMorp_InitSubObject_439982");
+  hnh_Hook(0x440288, hook_ParseVERT_440288, "ParseVERT_440288");
+  hnh_Hook(0x434370, hook_HanaMorp_AddVertexRef, "HanaMorp_AddVertexRef_434370");
+  hnh_Hook(0x433DA7, hook_CHanaObj__NewMorpT457, "CHanaObj__NewMorpT457_433DA7");
+
+  hnh_Hook(0x4400C3, hook_GetVertByName_4400C3, "GetVertByName_4400C3");
+  hnh_Hook(0x416CE0, hook_CHanaObj__NewVertT3EA, "CHanaObj__NewVertT3EA_416CE0");
+  hnh_Hook(0x416E65, hook_CHanaObj__FillVertexBufferT3EA, "CHanaObj__FillVertexBufferT3EA_416E65");
+  hnh_Hook(0x43F8FE, hook_ParseOdfMeshMATE_43F8FE, "ParseOdfMeshMATE_43F8FE");
+  hnh_Hook(0x418221, hook_HanaVert_SetMaterial, "HanaVert_SetMaterial_418221");
+  hnh_Hook(0x41828C, hook_FreeMate_41828C, "FreeMate_41828C");
+  hnh_Hook(0x40E7DA, hook_HanaMateAnim_InsertKeyframe, "HanaMateAnim_InsertKeyframe_40E7DA");
+  hnh_Hook(0x43FBD1, hook_ParseOdfMeshMANM_43FBD1, "ParseOdfMeshMANM_43FBD1");
+  hnh_Hook(0x40E500, hook_CHanaObj__NewMateAnimT3F7, "CHanaObj__NewMateAnimT3F7_40E500");
+  hnh_Hook(0x40E782, hook_HanaMateAnim_SetMaterial, "HanaMateAnim_SetMaterial_40E782");
+  hnh_Hook(0x4044D9, hook_HanaAnimSet_AddMaterialAnimRef, "HanaAnimSet_AddMaterialAnimRef_4044D9");
+  hnh_Hook(0x43F460, hook_ParseOdfMeshTEXT_43F460, "ParseOdfMeshTEXT_43F460");
+  hnh_Hook(0x418103, hook_HanaVert_SetTexture, "HanaVert_SetTexture_418103");
+  hnh_Hook(0x4181B5, hook_HanaVert_ReleaseTexture, "HanaVert_ReleaseTexture_4181B5");
+  hnh_Hook(0x40BC13, hook_FindObjByType_40BC13, "FindObjByType_40BC13");
+  hnh_Hook(0x43FDEC, hook_ParseOdfMeshVFLG_43FDEC, "ParseOdfMeshVFLG_43FDEC");
+
   hnh_HookOff();
     hnh_Hook(0x441A5D, hook_ParseODFContent_441A5D, "ParseODFContent_441A5D"); // [OK] 
     hnh_Hook(0x409510, hook_ConfigureLight,"ConfigureLight_409510"); // [OK] 
