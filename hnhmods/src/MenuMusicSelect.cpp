@@ -260,5 +260,5 @@ int __cdecl hook_MenuMusicSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3
 }
 
 void register_MenuMusicSelect() {
-    hnh_Hook(0x47D163, hook_MenuMusicSelect, "MenuMusicSelect_47D163");
+    hnh_Hook(0x47D163, hook_MenuMusicSelect, "MenuMusicSelect_47D163"); // [OK]
 }

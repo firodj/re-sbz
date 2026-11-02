@@ -4,9 +4,9 @@
 #include "shared.hpp"
 
 // === PINNED GAME FUNCTIONS ===
-int (__cdecl*ParseODFContent_441A5D)(LPBYTE pBuf1, CHanaFrameT3EC_S354 *pRootFrameT3EC,
+BOOL (__cdecl*ParseODFContent_441A5D)(LPBYTE pBuf1, CHanaFrameT3EC_S354 *pRootFrameT3EC,
     CHanaAnimSetT3F1_S150 *pAnimSetT3F1) =
-    reinterpret_cast<int(__cdecl*)(LPBYTE, CHanaFrameT3EC_S354 *, CHanaAnimSetT3F1_S150 *)>(0x441A5D);
+    reinterpret_cast<BOOL(__cdecl*)(LPBYTE, CHanaFrameT3EC_S354 *, CHanaAnimSetT3F1_S150 *)>(0x441A5D);
 CHanaFrameT3EC_S354 *(__cdecl*ParseOdfFRAM_44106A)(LPBYTE *ppBuf,
     CHanaFrameT3EC_S354 *pRootFrameT3EC, void **ppParentList, int nIndex) =
     reinterpret_cast<CHanaFrameT3EC_S354 *(__cdecl*)(LPBYTE *, CHanaFrameT3EC_S354 *,
@@ -49,8 +49,7 @@ int (__cdecl*ParseVERT_440288)(LPBYTE *ppBuf, CHanaVertT3EA_S1FC **ppVert,
     CHanaAnimSetT3F1_S150 *pAnimSetT3F1, CHanaFrameT3EC_S354 *pRootFrameT3EC) =
     reinterpret_cast<int(__cdecl*)(LPBYTE *, CHanaVertT3EA_S1FC **,
       CHanaAnimSetT3F1_S150 *, CHanaFrameT3EC_S354 *)>(0x440288);
-int (__cdecl*HanaMesh_AddVertexReference)(CHanaMeshT3F5_S138 *pMeshT3F5, CHanaVertT3EA_S1FC *pVertT3EA) =
-    reinterpret_cast<int(__cdecl*)(CHanaMeshT3F5_S138 *, CHanaVertT3EA_S1FC *)>(0x40FCEB);
+
 int (__cdecl*CHanaObj__NewMorpT457)(CHanaMorpT457_S40C **ppOut, CHanaMeshT3F5_S138 *pMeshT3F5) =
     reinterpret_cast<int(__cdecl*)(CHanaMorpT457_S40C **, CHanaMeshT3F5_S138 *)>(0x433DA7);
 int (__cdecl*HanaMorp_AddVertexRef)(CHanaMorpT457_S40C *pMorpT457, CHanaVertT3EA_S1FC *pVertT3EA) =
@@ -60,9 +59,6 @@ void (__cdecl*HanaMorp_InitSubObject)(CHanaMorpT457_S40C *pMorpT457, int zero,
     const char *sz, int idx) =
     reinterpret_cast<void(__cdecl*)(CHanaMorpT457_S40C *, int, int, int, int, int,
       CHanaSubObj_S2C *, int, const char *, int)>(0x439982);
-CHanaFrameT3EC_S354 *(__cdecl*HanaFrame_FindByName)(LPCSTR lpString,
-    CHanaFrameT3EC_S354 *pHanaT3EC_v1) =
-    reinterpret_cast<CHanaFrameT3EC_S354 *(__cdecl*)(LPCSTR, CHanaFrameT3EC_S354 *)>(0x4417EB);
 void (__cdecl*CalcFrameBound_404B80)(CHanaFrameT3EC_S354 *pFrameT3EC, CHanaMorpT457_S40C *pMorpT3F5) =
     reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaMorpT457_S40C *)>(0x404B80);
 

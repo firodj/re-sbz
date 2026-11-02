@@ -114,6 +114,8 @@ extern int (__cdecl*CHanaObj__GetFramesCountT3ED_408E75)(CHanaFrameArrayT3ED_S13
 extern HRESULT (__cdecl*CHanaObj__GetFrameAtIndexT3ED)(CHanaFrameArrayT3ED_S138 *pFrameArray, unsigned int nIndex, CHanaFrameT3EC_S354 **ppOut);
 extern void (__cdecl * Character_ApplyAnimationParamsToChildren)( CHanaFrameT3EC_S354 *pRootFrame, char bIsEaseAnimation, int nTimeFrom, int nTimeTo, int nEaseFrom, int nEaseTo);
 extern void (__cdecl * CHanaObj__NewFrameArrayT3ED)(CHanaFrameArrayT3ED_S138 **ppFrameArray);
+extern CHanaFrameT3EC_S354* (__cdecl* HanaFrame_FindByName)(LPCSTR lpString, CHanaFrameT3EC_S354* pHanaT3EC_v1);
+extern void(__cdecl* HanaMesh_AddVertexReference)(CHanaMeshT3F5_S138* pMeshT3F5, CHanaVertT3EA_S1FC* pVertT3EA);
 
 // === DEFINED CheckRunGame.cpp ===
 
@@ -333,6 +335,8 @@ extern uint32_t& g_fObjBatchActive;
 
 // === DEFINED ParseODFContent.cpp ===
 
+extern BOOL(__cdecl* ParseODFContent_441A5D)(LPBYTE pBuf1, CHanaFrameT3EC_S354* pRootFrameT3EC,
+  CHanaAnimSetT3F1_S150* pAnimSetT3F1);
 extern int(__cdecl*ParseOdfANIM_4414EB)(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAnimSetT3F1, CHanaFrameT3EC_S354 *pCurrentFramT3EC);
 extern void(__cdecl*AssignLigthtToFrame_40539D)(CHanaFrameT3EC_S354 *pHanaT3EC, CHanaLightT3EF_S1A0 *pHanaLight);
 extern void (__cdecl * ApplyQTS_4035B1)( D3DXMATRIX *pOut, D3DXQUATERNION *pQ, float x, float y, float z, float sx, float sy, float sz);

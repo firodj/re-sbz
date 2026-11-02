@@ -288,5 +288,5 @@ int __cdecl hook_MenuGallery(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F6_S
 }
 
 void register_MenuGallery() {
-    hnh_Hook(0x47AD8D, hook_MenuGallery, "MenuGallery_47AD8D");
+    // [!] hnh_Hook(0x47AD8D, hook_MenuGallery, "MenuGallery_47AD8D");
 }

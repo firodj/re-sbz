@@ -3,7 +3,7 @@ import ida_funcs
 import ida_hexrays
 import ida_typeinf
 
-TARGET_TYPE_NAME = "MenuState"  # Replace with the type you are looking for, e.g., "int" or a struct name
+TARGET_TYPE_NAME = "FnHanaMorp"  # Replace with the type you are looking for, e.g., "int" or a struct name
 
 def check_type_str(tinfo):
     if tinfo.empty():

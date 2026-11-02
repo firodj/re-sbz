@@ -106,10 +106,12 @@ struct CHanaSubObj_S120
     CHanaSubObj_S2C *parrS2C;
 };
 
+typedef void (__cdecl *FnHanaMorp)(float *Target, float *pSource, float fWeight);
+
 struct CHanaSubObj_S8
 {
     CHanaSubObj_S120 *pSubObj_0;
-    void (__cdecl **arrFun_4)(float *, float *, float);
+    FnHanaMorp *arrFun_4;
 };
 
 struct  CHanaMorpT457_S40C : public CHanaBase_S130

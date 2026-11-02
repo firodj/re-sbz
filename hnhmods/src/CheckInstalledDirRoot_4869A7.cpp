@@ -27,6 +27,9 @@ void (__cdecl * ParseStrChunkText_47FF01)(CHanaSceneT458_S504 *pScene) = reinter
 void (__cdecl * Scene_CreateFontTextureFromStringData)(CHanaSceneT458_S504 *pScene) = reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *pScene)>(0x47F460);
 int (__cdecl * FindCharUntil_487D46)(char *pBuf, int charToFind, int charToFind2OrEnd) = reinterpret_cast<int(__cdecl*)(char *pBuf, int charToFind, int charToFind2OrEnd)>(0x487D46);
 
+CHanaFrameT3EC_S354 *(__cdecl*HanaFrame_FindByName)(LPCSTR lpString, CHanaFrameT3EC_S354 *pHanaT3EC_v1)
+  = reinterpret_cast<CHanaFrameT3EC_S354 *(__cdecl*)(LPCSTR, CHanaFrameT3EC_S354 *)>(0x4417EB);
+
 void (__cdecl*CHanaObj__NewFrameArrayT3EDFromChildT3EC)(CHanaFrameT3EC_S354 *pFrame_a1, CHanaFrameArrayT3ED_S138 **ppFrameArray)
   = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaFrameArrayT3ED_S138 **)>(0x405A0A);
 int (__cdecl*CHanaObj__GetFramesCountT3ED_408E75)(CHanaFrameArrayT3ED_S138 *pFrameArray)
@@ -594,10 +597,43 @@ void __cdecl hook_Character_ApplyAnimationParamsToChildren(
     CHanaObj__Free_40C1E4(pFrameLists);
 }
 
+// HanaFrame_FindByName - recursively search the frame tree (starting at pFrame) for a frame whose szName_8 matches pName. Comparison is case-sensitive and full-length (lstrlenA + 1, so it includes the terminator). On a match it increments the frame's reference count (CHanaObj_AddRef_S130_40BFC3) and returns that frame; otherwise it recurses through every child (pChild->pData) and returns the first descendant found, or NULL if none match. Used by HanaMorpT457_SetupFuns to resolve a sub-object's source frame from its stored source name.
+CHanaFrameT3EC_S354 *__cdecl hook_HanaFrame_FindByName(LPCSTR pName, CHanaFrameT3EC_S354 *pFrame)
+{
+  int nLen; // eax
+  unsigned int i; // [esp+0h] [ebp-10h]
+  CHanaFrameT3EC_S354 *pFound; // [esp+8h] [ebp-8h]
+  CHanaNode *pChild; // [esp+Ch] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] HanaFrame_FindByName_4417EB\n");
+
+  pFound = 0;
+  nLen = lstrlenA(pName);
+  if ( !memcmp(pFrame->szName_8, pName, nLen + 1) )
+  {
+    CHanaObj__AddRef_40BFC3(pFrame);
+    return pFrame;
+  }
+  else
+  {
+    pChild = pFrame->pFirstChildNode;
+    for ( i = 0; i < pFrame->nCountChild; ++i )
+    {
+      if ( pChild->pData )
+        pFound = HanaFrame_FindByName(pName, pChild->pData);
+      if ( pFound )
+        break;
+      pChild = pChild->pNext;
+    }
+    return pFound;
+  }
+}
+
 void register_CheckInstalledDirRoot_4869A7() {
  
   hnh_Hook(0x47F460, hook_Scene_CreateFontTextureFromStringData, "Scene_CreateFontTextureFromStringData_47F460");
-   
+ 
+
   hnh_HookOff();
   hnh_Hook(0x4869A7, hook_CheckInstalledDirRoot_4869A7, "CheckInstalledDirRoot_4869A7"); // [OK] 
   hnh_Hook(0x486630, hook_SetupDirPath_486630, "SetupDirPath_486630"); // [OK] 
@@ -609,6 +645,6 @@ void register_CheckInstalledDirRoot_4869A7() {
   hnh_Hook(0x487D46, hook_FindCharUntil_487D46, "FindCharUntil_487D46"); // [OK]
   hnh_Hook(0x487267, hook_Character_ApplyAnimationParamsToChildren, "Character_ApplyAnimationParamsToChildren_487267"); // [OK]
   hnh_Hook(0x408E1B, hook_CHanaObj__GetFrameAtIndexT3ED, "CHanaObj__GetFrameAtIndexT3ED_408E1B"); // [OK]
-
+  hnh_Hook(0x4417EB, hook_HanaFrame_FindByName, "HanaFrame_FindByName_4417EB"); // [OK]
   hnh_HookOn();
 }
