@@ -111,6 +111,9 @@
     <ClCompile Include="src\SetupHeroEntry_4593E0.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\PlayHunting_44C38D.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

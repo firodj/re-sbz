@@ -113,6 +113,7 @@ void register_ParseExecStr_487D89();
 void register_RunModeSelectScreen();
 void register_PlayExploring_45BCAE();
 void register_SetupHeroEntry_4593E0();
+void register_PlayHunting_44C38D();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -169,6 +170,7 @@ void InitHNH() {
 	register_RunModeSelectScreen();
 	register_PlayExploring_45BCAE();
 	register_SetupHeroEntry_4593E0();
+	register_PlayHunting_44C38D();
 
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)

@@ -435,6 +435,11 @@ extern int(__cdecl* RunSceneSelectScreen)(CHanaSceneT458_S504* pScene,
 
 extern int(__cdecl* PlayExploring_45BCAE)(int nStageIndex);
 
+// === DEFINED PlayHunting_44C38D.cpp ===
+// (faithful pseudocode dump of the 0x6F3B-byte duel scene; helpers pinned in-file)
+
+extern int(__cdecl* PlayHunting_44C38D)(int nDuelIndex);
+
 // === DEFINED MenuCharSelect.cpp (continued) ===
 
 extern int(__cdecl* PlayAssault_4703AE)(int iModeId, int iMenuTab);
@@ -546,6 +551,10 @@ extern void(__cdecl* BuildViewportMatrix)();
 
 extern void(__cdecl* SetupHeroEntry_4593E0)(CHanaSceneT458_S504* pScene,
   CHanaFrameT3EC_S354* pHeroFrame, int nSubIndex);
+
+// === DEFINED PlayExploring.cpp ===
+extern int &g_dwBattleMode_52ED04;   // also pinned in PlayExploring
+
 
 #endif
 
