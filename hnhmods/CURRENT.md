@@ -262,15 +262,15 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   │   │   ├──0x408dd0 CHanaObj__NewFrameArrayT3ED                     <- [HOOK+PTR CheckInstalledDirRoot_4869A7.cpp]
     │   │   │   │   │   │   │   ├──0x408e75 CHanaObj__GetFramesCountT3ED_408E75                 <- [HOOK+PTR CheckInstalledDirRoot_4869A7.cpp]
     │   │   │   │   │   │   │   └──0x408e1b CHanaObj__GetFrameAtIndexT3ED                       <- [HOOK+PTR CheckInstalledDirRoot_4869A7.cpp]
-    │   │   │   │   │   ├──0x46f37e RunModeSelectScreen                                         <- [todo]
+    │   │   │   │   │   ├──0x46f37e RunModeSelectScreen                                         <- [HOOK+PTR RunModeSelectScreen.cpp]
     │   │   │   │   │   │   ├──0x47e999 FindFrameByName_47E999                                  <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   │   ├──0x46a2a0 PauseSceneAudio_46A2A0                                  <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
-    │   │   │   │   │   │   ├──0x467420 ApplyFrameEffectOption                                  <- [todo]
-    │   │   │   │   │   │   │   ├──0x46739d Frame_ApplyFadeRecursive                            <- [todo]
-    │   │   │   │   │   │   │   │   └──0x46724e FrameObject_SetAlpha                            <- [todo]
-    │   │   │   │   │   │   ├──0x46d7a7 DrawSpritePulse_46D7A7                                  <- [todo]
-    │   │   │   │   │   │   │   ├──0x414a7a CHanaSpriteT3F6::GetPos_414A7A                      <- [todo]
-    │   │   │   │   │   │   │   ├──0x414b1a CHanaSpriteT3F6::GetScale_414B1A                    <- [todo]
+    │   │   │   │   │   │   ├──0x467420 ApplyFrameEffectOption                                  <- [HOOK+PTR RunModeSelectScreen.cpp]
+    │   │   │   │   │   │   │   ├──0x46739d Frame_ApplyFadeRecursive                            <- [HOOK+PTR RunModeSelectScreen.cpp]
+    │   │   │   │   │   │   │   │   └──0x46724e FrameObject_SetAlpha                            <- [HOOK+PTR RunModeSelectScreen.cpp]
+    │   │   │   │   │   │   ├──0x46d7a7 DrawSpritePulse_46D7A7                                  <- [HOOK+PTR RunModeSelectScreen.cpp]
+    │   │   │   │   │   │   │   ├──0x414a7a CHanaSpriteT3F6::GetPos_414A7A                      <- [HOOK+PTR RunModeSelectScreen.cpp]
+    │   │   │   │   │   │   │   ├──0x414b1a CHanaSpriteT3F6::GetScale_414B1A                    <- [HOOK+PTR RunModeSelectScreen.cpp]
     │   │   │   │   │   │   ├──0x4825d5 UpdateSceneAtTime_4825D5                                <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   │   │   ├──0x403d61 CHanaAnimSetT3F1__SetTime_403D61                    <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   ├──0x40e969 ApplyMateAnimMaterial                           <- [HOOK+PTR ParseODFContent_441A5D.cpp]
@@ -287,7 +287,7 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   │   │   └──0x43a371 CHanaAnimSetT3F1::BeginBlend_43A371             <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   │   │   ├──0x401647 SekBody__UpdateTo2_401647                           <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   │   │   └──0x4069dd MtxMult_4069DD                                      <- [HOOK+PTR ParseODFContent_441A5D.cpp]
-    │   │   │   │   │   │   ├──0x467af3 SetFrameVisibilityAndGetHIndex                          <- [todo]
+    │   │   │   │   │   │   ├──0x467af3 SetFrameVisibilityAndGetHIndex                          <- [HOOK+PTR RunModeSelectScreen.cpp]
     │   │   │   │   │   │   └──0x4827fe UpdateSceneTimer_4827FE                                 <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   ├──0x40dca3 SetProjectionFov_40DCA3                                     <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   ├──0x4667a9 InitializePracticeAnimations_4667A9                         <- [todo]
@@ -296,7 +296,7 @@ Starting from 0x49f0e1
     │   │   │   │   │   ├──0x480b2d DrawDialogueWindow_480B2D                                   <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   │   ├──0x47fa84 DrawAdvanceDialogueText_47FA84                          <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   │   ├──0x4803b5 DrawDialogueText_4803B5                                 <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
-    │   │   │   │   │   ├──0x46d9af RunSceneSelectScreen                                        <- [todo]
+    │   │   │   │   │   ├──0x46d9af RunSceneSelectScreen                                        <- [HOOK+PTR RunModeSelectScreen.cpp]
     │   │   │   │   │   ├──0x4857ca ResetSceneBodies_4857CA                                     <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   ├──0x48564b LoadOdsEx_48564B                                            <- [todo]
     │   │   │   │   │   │   ├──0x484a38 ParseOdsEx_484A38                                       <- [todo]
@@ -481,11 +481,11 @@ Done 460
 ## Stats
 
 - tree functions:      460
-- hooked:              318 (HOOK or HOOK+PTR)
-- pinned:              320 (PTR or HOOK+PTR)
-- fully covered:       312 (HOOK+PTR)
+- hooked:              327 (HOOK or HOOK+PTR)
+- pinned:              329 (PTR or HOOK+PTR)
+- fully covered:       321 (HOOK+PTR)
 - implemented only:    1
-- untouched:           133
+- untouched:           124
 
 ## Per-file status (scan_cpp.py)
 
@@ -764,6 +764,19 @@ structs:              0
   no hook function for: HanaT3FB_Draw
   missing DebugLog:     VertNeedsAlphaPass, FixAlphaAndAddToPool, AlwaysTrue
   not registered:       VertNeedsAlphaPass, FixAlphaAndAddToPool, AlwaysTrue
+```
+
+### hnhmods/src/RunModeSelectScreen.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              10 (9 func-ptr imports)
+  functions:            10 (9 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   9/9
+  hnh_Hook-registered:  9/9
+  func-ptrs declared:   9/9
+  func-ptrs w/o hook:   0/9
 ```
 
 ### hnhmods/src/SetFogEnable_40DFB0.cpp
