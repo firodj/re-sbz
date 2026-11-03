@@ -249,7 +249,7 @@ Starting from 0x49f0e1
     │   │   │   │       └──0x4248a7 AllocMem                                                    <- [HOOK+PTR MemAlloc_40DEF7.cpp]
     │   │   │   │           └──0x427591 HeapAllocRef                                            <- [HOOK+PTR MemAlloc_40DEF7.cpp]
     │   │   │   ├──0x47a324 MenuCharSelect                                                      <- [HOOK+PTR MenuCharSelect.cpp]
-    │   │   │   │   ├──0x4703ae PlayAssault_4703AE                                              <- [PTR MenuCharSelect.cpp]
+    │   │   │   │   ├──0x4703ae PlayAssault_4703AE                                              <- [HOOK+PTR PlayAssault_4703AE.cpp]
     │   │   │   │   │   ├──0x487d89 ParseExecStr_487D89                                         <- [HOOK+PTR ParseExecStr_487D89.cpp]
     │   │   │   │   │   │   ├──0x47f460 Scene_CreateFontTextureFromStringData                   <- [HOOK+PTR CheckInstalledDirRoot_4869A7.cpp]
     │   │   │   │   │   │   │   ├──0x43bcae DrawText_43BCAE                                     <- [HOOK+PTR MenuCharSelect.cpp]
@@ -290,15 +290,15 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   ├──0x467af3 SetFrameVisibilityAndGetHIndex                          <- [HOOK+PTR RunModeSelectScreen.cpp]
     │   │   │   │   │   │   └──0x4827fe UpdateSceneTimer_4827FE                                 <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   ├──0x40dca3 SetProjectionFov_40DCA3                                     <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
-    │   │   │   │   │   ├──0x4667a9 InitializePracticeAnimations_4667A9                         <- [todo]
+    │   │   │   │   │   ├──0x4667a9 InitializePracticeAnimations_4667A9                         <- [PTR PlayAssault_4703AE.cpp]
     │   │   │   │   │   │   ├──0x466738 Frame_SetPracticeAnimRootRecursive                      <- [todo]
-    │   │   │   │   │   ├──0x46777d Scene_FindMapFrame                                          <- [todo]
+    │   │   │   │   │   ├──0x46777d Scene_FindMapFrame                                          <- [PTR PlayAssault_4703AE.cpp]
     │   │   │   │   │   ├──0x480b2d DrawDialogueWindow_480B2D                                   <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   │   ├──0x47fa84 DrawAdvanceDialogueText_47FA84                          <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   │   ├──0x4803b5 DrawDialogueText_4803B5                                 <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   ├──0x46d9af RunSceneSelectScreen                                        <- [HOOK+PTR RunModeSelectScreen.cpp]
     │   │   │   │   │   ├──0x4857ca ResetSceneBodies_4857CA                                     <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
-    │   │   │   │   │   ├──0x48564b LoadOdsEx_48564B                                            <- [todo]
+    │   │   │   │   │   ├──0x48564b LoadOdsEx_48564B                                            <- [PTR PlayAssault_4703AE.cpp]
     │   │   │   │   │   │   ├──0x484a38 ParseOdsEx_484A38                                       <- [todo]
     │   │   │   │   │   │   │   ├──0x483704 ParseOds3DON_483704                                 <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   │   │   │   ├──0x483650 CHanaFrameT3EC::FindByName_483650               <- [HOOK+PTR ParseODS_483932.cpp]
@@ -356,10 +356,10 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   ├──0x483932 ParseODS_483932                                         <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   ├──0x4445dd LoadSekAndOdf_4445DD                                        <- [PTR PlayExploring_45BCAE.cpp]
     │   │   │   │   │   │   ├──0x4014e4 SekBody::UpdateTo_4014E4                                <- [todo]
-    │   │   │   │   │   ├──0x47e3e1 ToggleWaitScreen                                            <- [todo]
+    │   │   │   │   │   ├──0x47e3e1 ToggleWaitScreen                                            <- [PTR PlayAssault_4703AE.cpp]
     │   │   │   │   │   │   ├──0x47e1a2 WaitScreenThreadProc                                    <- [todo]
-    │   │   │   │   │   ├──0x423c65 DSBufferGetVolume_423C65                                    <- [todo]
-    │   │   │   │   │   ├──0x46a76f PlayCutInScene_46A76F                                       <- [todo]
+    │   │   │   │   │   ├──0x423c65 DSBufferGetVolume_423C65                                    <- [PTR PlayAssault_4703AE.cpp]
+    │   │   │   │   │   ├──0x46a76f PlayCutInScene_46A76F                                       <- [PTR PlayAssault_4703AE.cpp]
     │   │   │   │   │   │   ├──0x46a503 UpdateSekBodyAnimationMatrix                            <- [todo]
     │   │   │   │   │   │   │   ├──0x46a3e9 UpdateFrameAnimationMatrix                          <- [todo]
     │   │   │   │   │   │   │   ├──0x404277 SetAnimSetTime                                      <- [todo]
@@ -392,15 +392,15 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   ├──0x467e72 AnimSet_MatchAndSortKutiRTibusaLFrames                  <- [todo]
     │   │   │   │   │   │   ├──0x4686f8 UpdateCutInSceneCameraFollow                            <- [todo]
     │   │   │   ├──0x47ad8d MenuGallery                                                         <- [HOOK+PTR MenuCharSelect.cpp]
-    │   │   ├──0x44c38d PlayHunting_44C38D                                                      <- [PTR GameMainLoop_47F013.cpp]
-    │   │   │   ├──0x455183 PlayVictoryCutscene_455183                                          <- [todo]
-    │   │   │   │   ├──0x458b3a UpdateVoicePlayback_458B3A                                      <- [todo]
-    │   │   │   │   ├──0x44b23b DrawRecViewfinder_44B23B                                        <- [todo]
+    │   │   ├──0x44c38d PlayHunting_44C38D                                                      <- [HOOK+PTR PlayHunting_44C38D.cpp]
+    │   │   │   ├──0x455183 PlayVictoryCutscene_455183                                          <- [PTR PlayHunting_44C38D.cpp]
+    │   │   │   │   ├──0x458b3a UpdateVoicePlayback_458B3A                                      <- [PTR PlayHunting_44C38D.cpp]
+    │   │   │   │   ├──0x44b23b DrawRecViewfinder_44B23B                                        <- [PTR PlayHunting_44C38D.cpp]
     │   │   │   │   │   ├──0x414344 DrawSprite3D                                                <- [todo]
     │   │   │   │   ├──0x44af5b DrawClockHud_44AF5B                                             <- [PTR PlayExploring_45BCAE.cpp]
     │   │   │   │   ├──0x407b73 HanaMatrix_BuildLookAtAndTransform                              <- [todo]
-    │   │   │   ├──0x456807 RenderDualBodyScene_456807                                          <- [todo]
-    │   │   │   ├──0x45460a PlayCinematicSequence_45460A                                        <- [todo]
+    │   │   │   ├──0x456807 RenderDualBodyScene_456807                                          <- [PTR PlayHunting_44C38D.cpp]
+    │   │   │   ├──0x45460a PlayCinematicSequence_45460A                                        <- [PTR PlayHunting_44C38D.cpp]
     │   │   │   │   ├──0x445525 UpdateCameraFollow_445525                                       <- [PTR PlayExploring_45BCAE.cpp]
     │   │   │   │   │   ├──0x443cc5 CheckFrameCollision_443CC5                                  <- [todo]
     │   │   │   │   │   │   ├──0x4423b0 HitSupportSurface_4423B0                                <- [todo]
@@ -412,30 +412,30 @@ Starting from 0x49f0e1
     │   │   │   │   ├──0x4532d0 DrawProgressFill_4532D0                                         <- [todo]
     │   │   │   │   ├──0x4542e0 UpdateBodiesInput_4542E0                                        <- [todo]
     │   │   │   │   ├──0x44b97b DrawHudSpriteNumber_44B97B                                      <- [todo]
-    │   │   │   ├──0x453b92 WanaAttack_Projectile_453B92                                        <- [todo]
+    │   │   │   ├──0x453b92 WanaAttack_Projectile_453B92                                        <- [PTR PlayHunting_44C38D.cpp]
     │   │   │   │   ├──0x4581b0 StepWanaProjectile_4581B0                                       <- [todo]
-    │   │   │   ├──0x445b12 BuildMapCollisionGrid_445B12                                        <- [todo]
+    │   │   │   ├──0x445b12 BuildMapCollisionGrid_445B12                                        <- [PTR PlayHunting_44C38D.cpp]
     │   │   │   ├──0x44451f UpdateCameraLinkedObjects_44451F                                    <- [PTR PlayExploring_45BCAE.cpp]
-    │   │   │   ├──0x45669f DrawFadeOutSpark_45669F                                             <- [todo]
+    │   │   │   ├──0x45669f DrawFadeOutSpark_45669F                                             <- [PTR PlayHunting_44C38D.cpp]
     │   │   │   ├──0x4490a7 InitHudResources_4490A7                                             <- [PTR PlayExploring_45BCAE.cpp]
     │   │   │   │   ├──0x4135ed HanaTexture_CreateFromFile                                      <- [todo]
-    │   │   │   ├──0x44c028 UpdateCameraFollow_44C028                                           <- [todo]
-    │   │   │   ├──0x446a38 UpdateFoeAI_446A38                                                  <- [todo]
+    │   │   │   ├──0x44c028 UpdateCameraFollow_44C028                                           <- [PTR PlayHunting_44C38D.cpp]
+    │   │   │   ├──0x446a38 UpdateFoeAI_446A38                                                  <- [PTR PlayHunting_44C38D.cpp]
     │   │   │   │   ├──0x4460ad HanaGrid_FloodFill                                              <- [todo]
     │   │   │   │   │   └──0x445c12 HanaGrid_DFSPath                                            <- [todo]
     │   │   │   │   ├──0x45804c StepFoeSpin_45804C                                              <- [todo]
     │   │   │   │   ├──0x457ee0 StepFoeTurn_457EE0                                              <- [todo]
-    │   │   │   ├──0x44474e UpdateHeroBody_44474E                                               <- [todo]
-    │   │   │   ├──0x4539d1 WanaAttack_Charged_4539D1                                           <- [todo]
+    │   │   │   ├──0x44474e UpdateHeroBody_44474E                                               <- [PTR PlayHunting_44C38D.cpp]
+    │   │   │   ├──0x4539d1 WanaAttack_Charged_4539D1                                           <- [PTR PlayHunting_44C38D.cpp]
     │   │   │   ├──0x4573cf ShowMouseSelectDialog_4573CF                                        <- [PTR PlayExploring_45BCAE.cpp]
     │   │   │   ├──0x443dd5 BuildMapSubFrames_443DD5                                            <- [PTR PlayExploring_45BCAE.cpp]
     │   │   │   │   ├──0x407e5b Frame_ComputeWorldAABB                                          <- [todo]
-    │   │   │   ├──0x4535de WanaAttack_Close_4535DE                                             <- [todo]
-    │   │   │   ├──0x455be2 PlayResultsCutscene_455BE2                                          <- [todo]
+    │   │   │   ├──0x4535de WanaAttack_Close_4535DE                                             <- [PTR PlayHunting_44C38D.cpp]
+    │   │   │   ├──0x455be2 PlayResultsCutscene_455BE2                                          <- [PTR PlayHunting_44C38D.cpp]
     │   │   │   │   ├──0x455b0e HanaSurface_CreateAndFade                                       <- [todo]
-    │   │   │   ├──0x448c72 BindSceneActors_448C72                                              <- [todo]
-    │   │   │   ├──0x4536f6 WanaAttack_Knockback_4536F6                                         <- [todo]
-    │   │   │   ├──0x448b78 IsFoeWithinHeroRange_448B78                                         <- [todo]
+    │   │   │   ├──0x448c72 BindSceneActors_448C72                                              <- [PTR PlayHunting_44C38D.cpp]
+    │   │   │   ├──0x4536f6 WanaAttack_Knockback_4536F6                                         <- [PTR PlayHunting_44C38D.cpp]
+    │   │   │   ├──0x448b78 IsFoeWithinHeroRange_448B78                                         <- [PTR PlayHunting_44C38D.cpp]
     │   │   ├──0x477f90 PlayOdsDialogueScene_477F90                                             <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   ├──0x41a039 Surface_AlphaBlendRect                                              <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   └──0x4196fd Surface_LockAndGetPointer                                       <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
@@ -459,7 +459,7 @@ Starting from 0x49f0e1
     │   │   │   ├──0x45a2ba ApplyTargetEffect_45A2BA                                            <- [PTR PlayExploring_45BCAE.cpp]
     │   │   │   ├──0x45953b UpdateLockonEvent_45953B                                            <- [PTR PlayExploring_45BCAE.cpp]
     │   │   │   ├──0x45b5bd PrepareTargetSelect_45B5BD                                          <- [PTR PlayExploring_45BCAE.cpp]
-    │   │   │   ├──0x4593e0 SetupHeroEntry_4593E0                                               <- [PTR PlayExploring_45BCAE.cpp]
+    │   │   │   ├──0x4593e0 SetupHeroEntry_4593E0                                               <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
     │   │   │   ├──0x459768 CheckSceneTransition_459768                                         <- [PTR PlayExploring_45BCAE.cpp]
     │   │   │   └──0x45b2fb DrawSpriteListEcho_45B2FB                                           <- [PTR PlayExploring_45BCAE.cpp]
     │   │   ├──0x4795ce ShowBackdropAndWait_4795CE                                              <- [HOOK+PTR GameMainLoop_47F013.cpp]
@@ -481,11 +481,11 @@ Done 460
 ## Stats
 
 - tree functions:      460
-- hooked:              328 (HOOK or HOOK+PTR)
-- pinned:              348 (PTR or HOOK+PTR)
-- fully covered:       322 (HOOK+PTR)
+- hooked:              331 (HOOK or HOOK+PTR)
+- pinned:              371 (PTR or HOOK+PTR)
+- fully covered:       325 (HOOK+PTR)
 - implemented only:    1
-- untouched:           105
+- untouched:           82
 
 ## Per-file status (scan_cpp.py)
 
@@ -591,13 +591,12 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              25 (12 func-ptr imports)
+  globals:              24 (11 func-ptr imports)
   functions:            12 (11 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   11/11
   hnh_Hook-registered:  11/11
   func-ptrs declared:   11/11
-  func-ptrs w/o hook:   1/12
-  no hook function for: PlayHunting_44C38D
+  func-ptrs w/o hook:   0/11
 ```
 
 ### hnhmods/src/InGameMenu_4799E2.cpp
@@ -722,18 +721,46 @@ structs:              0
   func-ptrs w/o hook:   0/16
 ```
 
+### hnhmods/src/PlayAssault_4703AE.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              6 (6 func-ptr imports)
+  functions:            2 (1 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/1
+  hnh_Hook-registered:  1/1
+  func-ptrs declared:   0/1
+  func-ptrs w/o hook:   6/6
+  no hook function for: ToggleWaitScreen_47E3E1, Scene_FindMapFrame_46777D, InitializePracticeAnimations_4667A9, LoadOdsEx_48564B, DSBufferGetVolume_423C65, PlayCutInScene_46A76F
+```
+
 ### hnhmods/src/PlayExploring_45BCAE.cpp
 
 ```
 SUMMARY
 structs:              0
-  globals:              21 (20 func-ptr imports)
+  globals:              20 (19 func-ptr imports)
   functions:            2 (1 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   1/1
   hnh_Hook-registered:  1/1
   func-ptrs declared:   1/1
-  func-ptrs w/o hook:   19/20
-  no hook function for: LoadSekAndOdf_4445DD, UpdateCameraLinkedObjects_44451F, BuildMapSubFrames_443DD5, InitHudResources_4490A7, UpdateCameraFollow_445525, SetupHeroEntry_4593E0, SetupItemBodies_459F81, UpdateHeroControl_45A513, FindTargetInRange_45A1AD, ApplyTargetEffect_45A2BA, UpdateLockonEvent_45953B, CheckSceneTransition_459768, GetSceneEventTime_459CA2, UpdateHudGauge_44BC36, DrawClockHud_44AF5B, PrepareTargetSelect_45B5BD, ShowMouseSelectDialog_4573CF, DrawSpriteListEcho_45B2FB, nop_4863C3
+  func-ptrs w/o hook:   18/19
+  no hook function for: LoadSekAndOdf_4445DD, UpdateCameraLinkedObjects_44451F, BuildMapSubFrames_443DD5, InitHudResources_4490A7, UpdateCameraFollow_445525, SetupItemBodies_459F81, UpdateHeroControl_45A513, FindTargetInRange_45A1AD, ApplyTargetEffect_45A2BA, UpdateLockonEvent_45953B, CheckSceneTransition_459768, GetSceneEventTime_459CA2, UpdateHudGauge_44BC36, DrawClockHud_44AF5B, PrepareTargetSelect_45B5BD, ShowMouseSelectDialog_4573CF, DrawSpriteListEcho_45B2FB, nop_4863C3
+```
+
+### hnhmods/src/PlayHunting_44C38D.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              21 (18 func-ptr imports)
+  functions:            2 (1 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/1
+  hnh_Hook-registered:  1/1
+  func-ptrs declared:   1/1
+  func-ptrs w/o hook:   17/18
+  no hook function for: UpdateHeroBody_44474E, UpdateFoeAI_446A38, UpdateVoicePlayback_458B3A, WanaAttack_Close_4535DE, WanaAttack_Knockback_4536F6, WanaAttack_Charged_4539D1, WanaAttack_Projectile_453B92, IsFoeWithinHeroRange_448B78, PlayCinematicSequence_45460A, RenderDualBodyScene_456807, PlayResultsCutscene_455BE2, PlayVictoryCutscene_455183, DrawRecViewfinder_44B23B, DrawFadeOutSpark_45669F, BuildMapCollisionGrid_445B12, BindSceneActors_448C72, UpdateCameraFollow_44C028
 ```
 
 ### hnhmods/src/PlayOdsDialogueScene_477F90.cpp
@@ -805,6 +832,19 @@ structs:              0
   func-ptrs declared:   13/13
   func-ptrs w/o hook:   0/14
   missing DebugLog:     hook_ZeroPadNumberToString_4612B0
+```
+
+### hnhmods/src/SetupHeroEntry_4593E0.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              1 (1 func-ptr imports)
+  functions:            2 (1 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/1
+  hnh_Hook-registered:  1/1
+  func-ptrs declared:   1/1
+  func-ptrs w/o hook:   0/1
 ```
 
 ### hnhmods/src/ShowTitleMenu.cpp

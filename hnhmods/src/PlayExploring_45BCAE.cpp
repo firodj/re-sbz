@@ -1030,5 +1030,8 @@ LABEL_149:
 }
 
 void register_PlayExploring_45BCAE() {
-  hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE");
+  hnh_HookOff();
+  
+  hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK] <wrong object placed>
+  hnh_HookOn();
 }

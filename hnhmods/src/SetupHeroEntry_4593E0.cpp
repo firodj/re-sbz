@@ -70,5 +70,5 @@ void __cdecl hook_SetupHeroEntry_4593E0(CHanaSceneT458_S504 *pScene, CHanaFrameT
 }
 
 void register_SetupHeroEntry_4593E0() {
-  hnh_Hook(0x4593e0, hook_SetupHeroEntry_4593E0, "SetupHeroEntry_4593E0");
+  hnh_Hook(0x4593e0, hook_SetupHeroEntry_4593E0, "SetupHeroEntry_4593E0"); // [OK]
 }
