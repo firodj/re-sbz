@@ -39,12 +39,10 @@ void (__cdecl*PlayVideoWith3DAudio_4791A3)(const char* szMoviePath, int bLoopFla
     reinterpret_cast<void(__cdecl*)(const char*, int)>(0x4791A3);
 // InGameMenu_4799E2 / MainMenu_47DF0D live in src/InGameMenu_4799E2.cpp (extern in shared.hpp)
 // PlayOdsDialogueScene_477F90 lives in src/PlayOdsDialogueScene_477F90.cpp (extern in shared.hpp)
-int (__cdecl*PlayExploring_45BCAE)(int nStrIndex) =
-    reinterpret_cast<int(__cdecl*)(int)>(0x45BCAE);
+// PlayExploring_45BCAE lives in src/PlayExploring_45BCAE.cpp (extern in shared.hpp)
 int (__cdecl*PlayHunting_44C38D)(int nDuelIndex) =
     reinterpret_cast<int(__cdecl*)(int)>(0x44C38D);
-int (__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab) =
-    reinterpret_cast<int(__cdecl*)(int, int)>(0x4703AE);
+// PlayAssault_4703AE lives in src/MenuCharSelect.cpp (extern in shared.hpp)
 void (__cdecl*ShowBackdropAndWait_4795CE)(void) = reinterpret_cast<void(__cdecl*)()>(0x4795CE);
 void (__cdecl*GameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)()>(0x47F013);
 int(__cdecl* BMP_DitherRGB24ToRGB565)(char, char, char, int, int) = reinterpret_cast<int(__cdecl*)(char, char, char, int, int)>(0x421BD5);

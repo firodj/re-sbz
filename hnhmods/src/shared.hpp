@@ -391,6 +391,27 @@ extern void(__cdecl* UpdateSceneTimer_4827FE)(CHanaSceneT458_S504* pScene, float
   float fDelta);
 extern void(__cdecl* PauseSceneAudio_46A2A0)(CHanaSceneT458_S504* pScene, int bPause);
 
+// === more cross-file pins (needed by PlayExploring_45BCAE.cpp) ===
+// defined in ParseODS_483932.cpp:
+extern int(__cdecl* ParseODFFile_441F19)(LPCSTR lpFileName, CHanaFrameT3EC_S354** pOutRootFrameT3EC,
+  CHanaAnimSetT3F1_S150** pOutT3F1);
+extern void(__cdecl* CSekBody__PlayAnim_40179D)(CSekBody* pSekBody, int nMode);
+extern CHanaFrameT3EC_S354*(__cdecl* CHanaFrameT3EC__FindByName_483650)(CHanaFrameT3EC_S354* pRoot,
+  LPCSTR lpString);
+// defined in PlayOdsDialogueScene_477F90.cpp:
+extern BOOL(__cdecl* LoadOds_4843CF)(LPCSTR lpFileName, CHanaSceneT458_S504** ppScene);
+extern void(__cdecl* ResetSceneBodies_4857CA)(CHanaSceneT458_S504* pScene);
+extern void(__cdecl* SetProjectionFov_40DCA3)(float fFov);
+extern void(__cdecl* DrawDialogueWindow_480B2D)(CHanaSceneT458_S504* pScene,
+  float frameTimeMultiplied, int xMouse, int yMouse, short btnMouse);
+extern BOOL(__cdecl* CSekBody__UpdateAnim_4019E1)(CSekBody* pSekBody, float fDelta);
+extern void(__cdecl* CSekBody__CutToAnim_4018E1)(CSekBody* pSekBody, int nIndex);
+extern void(__cdecl* SekBody__UpdateTo2_401647)(CSekBody* pSekBody, int nIndex);
+// defined in CHanaObj__Free_40C1E4.cpp:
+extern void(__cdecl* CSekBody__Release_4012FE)(CSekBody* pSekBody);
+// defined in ProcessFrame_40600C.cpp:
+extern void(__cdecl* ProjectToScreen_40E2A5)(D3DXMATRIX* pM, POINT* pOut);
+
 // === DEFINED RunModeSelectScreen.cpp ===
 
 extern int(__cdecl* RunModeSelectScreen)(CHanaSceneT458_S504* pScene,
@@ -408,6 +429,15 @@ extern LPDIRECTSOUNDBUFFER& g_pDSBuf_52EFD0;
 extern int(__cdecl* RunSceneSelectScreen)(CHanaSceneT458_S504* pScene,
   CHanaSpriteT3F6_S1FC** arrModeSprites, CHanaSpriteT3F6_S1FC** arrMouseSprites, int* piSelected,
   int iSceneGroup, unsigned __int64* pSelMask, int iMenuTab);
+
+// === DEFINED PlayExploring_45BCAE.cpp ===
+// (faithful pseudocode dump of the 0x55FB-byte map scene; helpers pinned in-file)
+
+extern int(__cdecl* PlayExploring_45BCAE)(int nStageIndex);
+
+// === DEFINED MenuCharSelect.cpp (continued) ===
+
+extern int(__cdecl* PlayAssault_4703AE)(int iModeId, int iMenuTab);
 extern HRESULT(__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF color);
 extern int(__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab);
 extern void(__cdecl* DrawText_43BCAE)(LPDIRECTDRAWSURFACE7 pSurface, char* szText, int left, int top, int right, int bottom);
