@@ -416,19 +416,16 @@ extern void(__cdecl* ProjectToScreen_40E2A5)(D3DXMATRIX* pM, POINT* pOut);
 
 extern int(__cdecl* RunModeSelectScreen)(CHanaSceneT458_S504* pScene,
   CHanaSpriteT3F6_S1FC** arrModeSprites, CHanaSpriteT3F6_S1FC** arrMouseSprites, int* piSelected,
-  int iModeId, unsigned __int64* pSelMask, int iMenuTab);
+  int iModeId, QWORD* pSelMask, int iMenuTab);
 extern int(__cdecl* SetFrameVisibilityAndGetHIndex)(CHanaSceneT458_S504* pScene, int iVisState);
 extern void(__cdecl* CameraLookAtFrame)(CHanaFrameT3EC_S354* pCameraFrame,
   CHanaFrameT3EC_S354* pTargetFrame, CHanaFrameT3EC_S354* pSceneFrame, short iMode);
 extern void (__cdecl* ApplyFrameEffectOption)(CHanaSceneT458_S504* pScene);
 extern void(__cdecl* DrawSpritePulse_46D7A7)(CHanaSpriteT3F6_S1FC* pSprite, float fPhase);
 extern LPDIRECTSOUNDBUFFER& g_pDSBuf_52EFD0;
-
-// === DEFINED RunSceneSelectScreen.cpp ===
-
 extern int(__cdecl* RunSceneSelectScreen)(CHanaSceneT458_S504* pScene,
   CHanaSpriteT3F6_S1FC** arrModeSprites, CHanaSpriteT3F6_S1FC** arrMouseSprites, int* piSelected,
-  int iSceneGroup, unsigned __int64* pSelMask, int iMenuTab);
+  int iSceneGroup, QWORD* pSelMask, int iMenuTab);
 
 // === DEFINED PlayExploring_45BCAE.cpp ===
 // (faithful pseudocode dump of the 0x55FB-byte map scene; helpers pinned in-file)

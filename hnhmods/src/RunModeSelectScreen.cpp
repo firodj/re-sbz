@@ -6,9 +6,9 @@
 // === PINNED GAME FUNCTIONS ===
 int (__cdecl*RunModeSelectScreen)(CHanaSceneT458_S504 *pScene,
     CHanaSpriteT3F6_S1FC **arrModeSprites, CHanaSpriteT3F6_S1FC **arrMouseSprites,
-    int *piSelected, int iModeId, unsigned __int64 *pSelMask, int iMenuTab) =
+    int *piSelected, int iModeId, QWORD *pSelMask, int iMenuTab) =
     reinterpret_cast<int(__cdecl*)(CHanaSceneT458_S504 *, CHanaSpriteT3F6_S1FC **,
-      CHanaSpriteT3F6_S1FC **, int *, int, unsigned __int64 *, int)>(0x46F37E);
+      CHanaSpriteT3F6_S1FC **, int *, int, QWORD *, int)>(0x46F37E);
 
 int (__cdecl*SetFrameVisibilityAndGetHIndex)(CHanaSceneT458_S504 *pScene, int iVisState) =
     reinterpret_cast<int(__cdecl*)(CHanaSceneT458_S504 *, int)>(0x467AF3);
@@ -20,9 +20,9 @@ void (__cdecl*DrawSpritePulse_46D7A7)(CHanaSpriteT3F6_S1FC *pSprite, float fPhas
 
 int (__cdecl*RunSceneSelectScreen)(CHanaSceneT458_S504 *pScene,
   CHanaSpriteT3F6_S1FC **arrModeSprites, CHanaSpriteT3F6_S1FC **arrMouseSprites,
-  int *piSelected, int iSceneGroup, unsigned __int64 *pSelMask, int iMenuTab) =
+  int *piSelected, int iSceneGroup, QWORD *pSelMask, int iMenuTab) =
   reinterpret_cast<int(__cdecl*)(CHanaSceneT458_S504 *, CHanaSpriteT3F6_S1FC **,
-    CHanaSpriteT3F6_S1FC **, int *, int, unsigned __int64 *, int)>(0x46D9AF);
+    CHanaSpriteT3F6_S1FC **, int *, int, QWORD *, int)>(0x46D9AF);
 
 
 void (__cdecl *Frame_ApplyFadeRecursive)(CHanaFrameT3EC_S354 *pFrame, float alpha)
@@ -84,7 +84,7 @@ LPDIRECTSOUNDBUFFER &g_pDSBuf_52EFD0 = *(LPDIRECTSOUNDBUFFER *)0x52EFD0;  // WRI
 
 int __cdecl hook_RunModeSelectScreen(CHanaSceneT458_S504 *pScene,
     CHanaSpriteT3F6_S1FC **arrModeSprites, CHanaSpriteT3F6_S1FC **arrMouseSprites,
-    int *piSelected, int iModeId, unsigned __int64 *pSelMask, int iMenuTab)
+    int *piSelected, int iModeId, QWORD *pSelMask, int iMenuTab)
 {
     CSceneState sceneSnapshot;              // [ebp-434h] SystemMenu arg copy
     CHanaFrameT3EC_S354 *pTargetFrame;      // [ebp-24h] "mune" frame
@@ -370,7 +370,7 @@ int __cdecl hook_RunModeSelectScreen(CHanaSceneT458_S504 *pScene,
 
 int __cdecl hook_RunSceneSelectScreen(CHanaSceneT458_S504 *pScene,
   CHanaSpriteT3F6_S1FC **arrModeSprites, CHanaSpriteT3F6_S1FC **arrMouseSprites,
-  int *piSelected, int iSceneGroup, unsigned __int64 *pSelMask, int iMenuTab)
+  int *piSelected, int iSceneGroup, QWORD *pSelMask, int iMenuTab)
 {
   CSceneState sceneSnapshot;              // [ebp-C88h] SystemMenu arg copy
   CHanaFrameT3EC_S354 *pTargetFrame;      // [ebp-24h] "mune" frame
@@ -379,7 +379,7 @@ int __cdecl hook_RunSceneSelectScreen(CHanaSceneT458_S504 *pScene,
   int nResult, nPage, nHoverBtn, i, j;
   int xMouse, yMouse;
   WORD nMouseBtn = 0, nPrevBtn;
-  unsigned __int64 qwSelMask;
+  QWORD qwSelMask;
 
   // page geometry {x, y, alphaTarget} for sprites 0..8 (pages 0..2 and 4
   // identical; page 3 parks buttons 7/8 offscreen -- they output -1)
@@ -963,12 +963,12 @@ void __cdecl hook_CHanaSpriteT3F6__GetPos_414A7A(CHanaSpriteT3F6_S1FC *pSprite, 
 }
 
 void register_RunModeSelectScreen() {
-  hnh_Hook(0x46D9AF, hook_RunSceneSelectScreen, "RunSceneSelectScreen_46D9AF");
+  hnh_Hook(0x46D9AF, hook_RunSceneSelectScreen, "RunSceneSelectScreen_46D9AF"); // [OK}
   hnh_Hook(0x46F37E, hook_RunModeSelectScreen, "RunModeSelectScreen_46F37E");
-  hnh_Hook(0x467af3, hook_SetFrameVisibilityAndGetHIndex, "SetFrameVisibilityAndGetHIndex_467AF3");
-  hnh_Hook(0x467420, hook_ApplyFrameEffectOption, "ApplyFrameEffectOption_467420");
+  hnh_Hook(0x467af3, hook_SetFrameVisibilityAndGetHIndex, "SetFrameVisibilityAndGetHIndex_467AF3"); // [OK]
+  hnh_Hook(0x467420, hook_ApplyFrameEffectOption, "ApplyFrameEffectOption_467420"); // [OK]
   hnh_Hook(0x46739d, hook_Frame_ApplyFadeRecursive, "Frame_ApplyFadeRecursive_46739D");
-  hnh_Hook(0x46724e, hook_FrameObject_SetAlpha, "FrameObject_SetAlpha_46724E");
+  hnh_Hook(0x46724e, hook_FrameObject_SetAlpha, "FrameObject_SetAlpha_46724E"); // [OK]
   hnh_Hook(0x46d7a7, hook_DrawSpritePulse_46D7A7, "DrawSpritePulse_46D7A7");
 
   hnh_Hook(0x414b1a, hook_CHanaSpriteT3F6__GetScale_414B1A, "CHanaSpriteT3F6__GetScale_414B1A");
