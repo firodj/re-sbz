@@ -399,7 +399,7 @@ extern int(__cdecl* RunModeSelectScreen)(CHanaSceneT458_S504* pScene,
 extern int(__cdecl* SetFrameVisibilityAndGetHIndex)(CHanaSceneT458_S504* pScene, int iVisState);
 extern void(__cdecl* CameraLookAtFrame)(CHanaFrameT3EC_S354* pCameraFrame,
   CHanaFrameT3EC_S354* pTargetFrame, CHanaFrameT3EC_S354* pSceneFrame, short iMode);
-extern CHanaFrameT3EC_S354*(__cdecl* ApplyFrameEffectOption)(CHanaSceneT458_S504* pScene);
+extern void (__cdecl* ApplyFrameEffectOption)(CHanaSceneT458_S504* pScene);
 extern void(__cdecl* DrawSpritePulse_46D7A7)(CHanaSpriteT3F6_S1FC* pSprite, float fPhase);
 extern LPDIRECTSOUNDBUFFER& g_pDSBuf_52EFD0;
 

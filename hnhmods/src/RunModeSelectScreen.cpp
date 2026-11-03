@@ -13,8 +13,8 @@ int (__cdecl*RunModeSelectScreen)(CHanaSceneT458_S504 *pScene,
 int (__cdecl*SetFrameVisibilityAndGetHIndex)(CHanaSceneT458_S504 *pScene, int iVisState) =
     reinterpret_cast<int(__cdecl*)(CHanaSceneT458_S504 *, int)>(0x467AF3);
 
-CHanaFrameT3EC_S354 *(__cdecl*ApplyFrameEffectOption)(CHanaSceneT458_S504 *pScene) =
-    reinterpret_cast<CHanaFrameT3EC_S354 *(__cdecl*)(CHanaSceneT458_S504 *)>(0x467420);
+void(__cdecl*ApplyFrameEffectOption)(CHanaSceneT458_S504 *pScene) =
+    reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *)>(0x467420);
 void (__cdecl*DrawSpritePulse_46D7A7)(CHanaSpriteT3F6_S1FC *pSprite, float fPhase) =
     reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *, float)>(0x46D7A7);
 
@@ -23,6 +23,21 @@ int (__cdecl*RunSceneSelectScreen)(CHanaSceneT458_S504 *pScene,
   int *piSelected, int iSceneGroup, unsigned __int64 *pSelMask, int iMenuTab) =
   reinterpret_cast<int(__cdecl*)(CHanaSceneT458_S504 *, CHanaSpriteT3F6_S1FC **,
     CHanaSpriteT3F6_S1FC **, int *, int, unsigned __int64 *, int)>(0x46D9AF);
+
+
+void (__cdecl *Frame_ApplyFadeRecursive)(CHanaFrameT3EC_S354 *pFrame, float alpha)
+= reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFrame, float alpha)>(0x46739d);
+
+void (__cdecl *FrameObject_SetAlpha)(CHanaFrameT3EC_S354 *pFrame, float alpha)
+= reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFrame, float alpha)>(0x46724e);
+
+
+double (__cdecl *CHanaSpriteT3F6__GetScale_414B1A)(CHanaSpriteT3F6_S1FC *pSprite)
+= reinterpret_cast<double (__cdecl*)(CHanaSpriteT3F6_S1FC *pSprite)>(0x414b1a);
+
+void (__cdecl *CHanaSpriteT3F6__GetPos_414A7A)(CHanaSpriteT3F6_S1FC *pSprite, float *pOutX, float *pOutY)
+= reinterpret_cast<void (__cdecl*)(CHanaSpriteT3F6_S1FC *pSprite, float *pOutX, float *pOutY)>(0x414a7a);
+
 
 // === PINNED GLOBALS ===
 LPDIRECTSOUNDBUFFER &g_pDSBuf_52EFD0 = *(LPDIRECTSOUNDBUFFER *)0x52EFD0;  // WRITABLE
@@ -89,7 +104,7 @@ int __cdecl hook_RunModeSelectScreen(CHanaSceneT458_S504 *pScene,
         { 320.0f, 240.0f, 1.0f },
     };
 
-    DebugLog("[HNH:SUB] RunModeSelectScreen_46F37E\n");
+    ONCELOG("[HNH:SUB] RunModeSelectScreen_46F37E\n");
 
     pTargetFrame = NULL;
     nResult = 0;
@@ -689,7 +704,275 @@ int __cdecl hook_RunSceneSelectScreen(CHanaSceneT458_S504 *pScene,
   }
 }
 
+// SetFrameVisibilityAndGetHIndex(pScene, iVisState)
+// Sets the visibility of the scene's top-level frames and returns the index of the
+// character ('h\\') root frame within pScene->refsFrames_134.
+// pScene: CHanaSceneT458_S504. iVisState: 0 = show (flag_130 = 0), 1 = hide
+// (flag_130 = 1), >= 2 = visibility left unchanged.
+// 1. If iVisState < 2: flag_130 = iVisState on every top-level frame whose
+//    szName_8 does NOT start with "map\\" (aMapPrefix) - the map/background frame
+//    is never touched.
+// 2. Returns the index of the first frame whose name starts with "h\\"
+//    (aHFramePrefix, 2-byte _memicmp), or -1 if none.
+// Callers: sub_46A76F x2 (push 1 = hide world, then push 0 = show world; return
+// value discarded there), sub_46D9AF / sub_46F37E (push 1000 = query only; index
+// used as pScene->refsFrames_134[i] for FindFrameByName_47E999(aMune)).
+// Related: ApplyFrameEffectOption uses the same "h\\h" root-frame convention.
+int __cdecl hook_SetFrameVisibilityAndGetHIndex(CHanaSceneT458_S504 *pScene, int iVisState)
+{
+  unsigned int i; // [esp+0h] [ebp-8h]
+  unsigned int j; // [esp+0h] [ebp-8h]
+  int result; // [esp+4h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] SetFrameVisibilityAndGetHIndex_467AF3\n");
+
+  result = -1;
+  if ( iVisState < 2 )
+  {
+    for ( i = 0; i < pScene->dwCount_130; ++i )
+    {
+      if ( _memicmp(pScene->refsFrames_134[i]->szName_8, "Map\\", 4u) )
+        pScene->refsFrames_134[i]->bAlphaDeferred_130 = iVisState;
+    }
+  }
+  for ( j = 0; j < pScene->dwCount_130; ++j )
+  {
+    if ( !_memicmp(pScene->refsFrames_134[j]->szName_8, "h\\", 2u) )
+      return j;
+  }
+  return result;
+}
+
+// ApplyFrameEffectOption(pScene)
+// Re-applies the user's 5-level effect option (g_nEffectLevel_530265, 0-4, set on the System menu options page - SysMenu_Options_462FE9) to the scene's overlay frames. Returns the last frame left visible (flag_130==0), NULL otherwise; all 6 callers (sub_46D9AF, sub_46F37E, Scene4_4703AE x4) discard it.
+// pScene: CHanaSceneT458_S504 (NULL -> returns NULL).
+// 1. Root frame: first pScene->refsFrames_134[i] whose szName_8 starts with "h\h" (aHhFramePrefix, 3-char _strnicmp). No root -> NULL.
+// 2. Frames "_h00_all" and "_p00_" (szFrameNames table):
+//    level != 0: flag_130 = 1 (hidden; sub_46739D's flag guard makes it a no-op), iAlpha1000_120/124 = 0
+//    level  == 0: flag_130 = 0, sub_46739D(frame, 1.0) sets material alpha recursively on the subtree, iAlpha1000_120/124 = 1000
+// 3. Frame "_d00_all": flag_130 = (level==0 || level==4); alpha = fAlphaByLevel[level] = {0.0, 0.8, 0.5, 0.2, 0.0}[level];
+//    hidden -> iAlpha1000_120/124 = 0; visible -> iAlpha1000_120/124 = alpha*1000
+// iAlpha1000_120/124 (CHanaBase_S130) = frame alpha as int/1000 (1000 = opaque).
+// Called right after the System menu closes (sub_46D9AF/sub_46F37E, after SystemMenu_4655AB returns) and on Scene4_4703AE transitions, re-syncing any option the user changed. Sibling sub_468B99 applies the same option to g_pSceneFrame with a base-alpha factor.
+void __cdecl hook_ApplyFrameEffectOption(CHanaSceneT458_S504 *pScene)
+{
+  float alpha[5] = { 0.0, 0.80000001, 0.5, 0.2, 0.0 }; // [esp+4h] [ebp-C0h]
+  CHanaFrameT3EC_S354 *pFrame; // [esp+18h] [ebp-ACh]
+  CHanaFrameT3EC_S354 *FrameByName_47E999; // [esp+1Ch] [ebp-A8h]
+  CHanaFrameT3EC_S354 *v4; // [esp+20h] [ebp-A4h]
+  int i; // [esp+24h] [ebp-A0h]
+  CHanaFrameT3EC_S354 *pRootFrame; // [esp+28h] [ebp-9Ch]
+  char String[3][50] = { "_h00_all", "_p00_" }; // [esp+2Ch] [ebp-98h] BYREF
+
+  ONCELOG("[HNH:SUB] ApplyFrameEffectOption_467420\n");
+
+  v4 = 0;
+  pRootFrame = 0;
+  pFrame = 0;
+  FrameByName_47E999 = 0;
+ 
+  if ( pScene )
+  {
+    for ( i = 0; i < pScene->dwCount_130; ++i )
+    {
+      if ( !_strnicmp(pScene->refsFrames_134[i]->szName_8, "h\\h", 3u) )
+      {
+        pRootFrame = pScene->refsFrames_134[i];
+        break;
+      }
+    }
+    if ( pRootFrame )
+    {
+      for ( i = 0; i < 2; ++i )
+      {
+        pFrame = FindFrameByName_47E999(pRootFrame, String[i]);
+        if ( pFrame )
+        {
+          if ( g_nEffectLevel_530265 )
+          {
+            pFrame->bAlphaDeferred_130 = 1;
+            Frame_ApplyFadeRecursive(pFrame, 0.0);
+            pFrame->iAlpha1000_124 = 0;
+            pFrame->iAlpha1000_120 = 0;
+          }
+          else
+          {
+            pFrame->bAlphaDeferred_130 = 0;
+            Frame_ApplyFadeRecursive(pFrame, 1.0);
+            v4 = pFrame;
+            pFrame->iAlpha1000_124 = 1000;
+            pFrame->iAlpha1000_120 = 1000;
+          }
+        }
+      }
+      FrameByName_47E999 = FindFrameByName_47E999(pRootFrame, "_d00_all");
+      if ( FrameByName_47E999 )
+      {
+        FrameByName_47E999->bAlphaDeferred_130 = !g_nEffectLevel_530265 || g_nEffectLevel_530265 == 4;
+        Frame_ApplyFadeRecursive(FrameByName_47E999, alpha[(unsigned __int8)g_nEffectLevel_530265]);
+        if ( FrameByName_47E999->bAlphaDeferred_130 )
+        {
+          FrameByName_47E999->iAlpha1000_124 = 0;
+          FrameByName_47E999->iAlpha1000_120 = 0;
+        }
+        else
+        {
+          v4 = FrameByName_47E999;
+          FrameByName_47E999->iAlpha1000_124 = (__int64)(alpha[(unsigned __int8)g_nEffectLevel_530265] * 1000.0);
+          FrameByName_47E999->iAlpha1000_120 = FrameByName_47E999->iAlpha1000_124;
+        }
+      }
+    }
+  }
+}
+
+// Recursively applies alpha to a frame and all its children, skipping frames already under effect control
+void __cdecl hook_Frame_ApplyFadeRecursive(CHanaFrameT3EC_S354 *pFrame, float alpha)
+{
+  CHanaNode *pFirstChildNode; // [esp+4h] [ebp-8h]
+  unsigned int i; // [esp+8h] [ebp-4h]
+  ONCELOG("[HNH:SUB] Frame_ApplyFadeRecursive_46739D\n");
+ 
+  if ( pFrame->bAlphaDeferred_130 != 1 )        // Skip if already controlled by effect system
+  {
+    FrameObject_SetAlpha(pFrame, alpha);        // Apply alpha to frame's meshes/materials
+    if ( pFrame->nCountChild )
+    {
+      pFirstChildNode = pFrame->pFirstChildNode;
+      for ( i = 0; i < pFrame->nCountChild; ++i )
+      {
+        Frame_ApplyFadeRecursive(pFirstChildNode->pData, alpha);
+        pFirstChildNode = pFirstChildNode->pNext;
+      }
+    }
+  }
+}
+
+// Sets the alpha component on a frame's associated mesh/material objects. Handles three object types
+void __cdecl hook_FrameObject_SetAlpha(CHanaFrameT3EC_S354 *pFrame, float alpha)
+{
+  unsigned int childCount; // [esp+8h] [ebp-1Ch]
+  CHanaMeshT3F5_S138 *pMesh; // [esp+Ch] [ebp-18h]
+  unsigned int childCount2; // [esp+14h] [ebp-10h]
+  CHanaMeshT3F5_S138 *pMeshObj; // [esp+18h] [ebp-Ch]
+  unsigned int i; // [esp+20h] [ebp-4h]
+  unsigned int j; // [esp+20h] [ebp-4h]
+  CHanaVertT3EA_S1FC *pVert;
+
+  ONCELOG("[HNH:SUB] FrameObject_SetAlpha_46724E\n");
+
+  if (!pFrame->pAttachedObj_20C) return; // CHanaMorpT457_S40C *pAttachedObj_20C
+
+  if ( CHanaObj__GetType_40BBF4(pFrame->pAttachedObj_20C) == 0x3EA )// Set alpha on material's D3DMATERIAL7
+  {
+    // *((float *)pFrame->pAttachedObj_20C->arrSubObj_144[0].arrFun_4 + 79) = alpha;
+    pVert = (CHanaVertT3EA_S1FC*)pFrame->pAttachedObj_20C;
+    pVert->pMateT3EE->d3dMaterial_130.diffuse.a = alpha;
+  }
+  else if ( CHanaObj__GetType_40BBF4(pFrame->pAttachedObj_20C) == 0x3F5 )// Set alpha on all vertex materials
+  {
+    pMeshObj = (CHanaMeshT3F5_S138 *)pFrame->pAttachedObj_20C;
+    childCount2 = CHanaObj__GetChildCountT3F5_40FF0F(pMeshObj);
+    for ( i = 0; i < childCount2; ++i )
+      pMeshObj->refsVertT3EA[i]->pMateT3EE->d3dMaterial_130.diffuse.a = alpha;
+  }
+  else if ( CHanaObj__GetType_40BBF4(pFrame->pAttachedObj_20C) == 0x457 )// Set alpha on sprite's sub-mesh materials
+  {
+    pMesh = pFrame->pAttachedObj_20C->pMeshT3F5_138;
+    childCount = CHanaObj__GetChildCountT3F5_40FF0F(pMesh);
+    for ( j = 0; j < childCount; ++j )
+      pMesh->refsVertT3EA[j]->pMateT3EE->d3dMaterial_130.diffuse.a = alpha;
+  }
+}
+
+// DrawSpritePulse(pSprite, fPhase)
+// Animated pulse/echo of a single sprite. v13 = (|fPhase|*10 % 1000)/1000 drives a 4-frame
+// loop that oscillates scale (base from sub_414B1A +/- per-frame), alpha (0.75 * (1-|v13-0.5|*2)
+// * fAlpha), and X position (base + (40 - 120*v13)) via DrawSprite2D each frame; restores
+// alpha/scale/pos at the end.
+void __cdecl hook_DrawSpritePulse_46D7A7(CHanaSpriteT3F6_S1FC *pSprite, float fPhase)
+{
+  double fAbsHalf; // st7
+  float fDriftX; // [esp+24h] [ebp-2Ch]
+  float fEchoScale; // [esp+28h] [ebp-28h]
+  float X_4; // [esp+28h] [ebp-28h]
+  float fAlphaBase; // [esp+30h] [ebp-20h]
+  float fPosX; // [esp+3Ch] [ebp-14h] BYREF
+  int iEcho; // [esp+40h] [ebp-10h]
+  float fSavedAlpha; // [esp+44h] [ebp-Ch]
+  float fBaseScale; // [esp+48h] [ebp-8h]
+  float fPosY; // [esp+4Ch] [ebp-4h] BYREF
+  float fPhaseNorm; // [esp+5Ch] [ebp+Ch]
+
+  ONCELOG("[HNH:SUB] DrawSpritePulse_46D7A7\n");
+  
+  fPhaseNorm = (double)((int)(__int64)(fabs(fPhase) * 10.0) % 1000) / 1000.0;
+  fSavedAlpha = CHanaSpriteT3F6__GetAlpha_414AFB(pSprite);
+  fBaseScale = CHanaSpriteT3F6__GetScale_414B1A(pSprite);
+  CHanaSpriteT3F6__GetPos_414A7A(pSprite, &fPosX, &fPosY);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 2);
+  for ( iEcho = 0; iEcho < 4; ++iEcho )
+  {
+    if ( (double)iEcho / 5.0 + 0.60000002 - (fPhaseNorm + fPhaseNorm) <= 0.0 )
+    {
+      CHanaSpriteT3F6__SetScale_414B09(pSprite, fBaseScale);
+    }
+    else
+    {
+      fEchoScale = (double)iEcho / 5.0 + 0.60000002 - (fPhaseNorm + fPhaseNorm) + fBaseScale;
+      CHanaSpriteT3F6__SetScale_414B09(pSprite, fEchoScale);
+    }
+    fAlphaBase = pSprite->fAlpha_144 * 0.75;
+    fAbsHalf = fabs(fPhaseNorm - 0.5);
+    X_4 = (1.0 - (fAbsHalf + fAbsHalf)) * fAlphaBase;
+    CHanaObj__SetAlpha3F6(pSprite, X_4);
+    if ( -120.0 * fPhaseNorm + 40.0 < 0.0 )
+    {
+      fDriftX = -120.0 * fPhaseNorm + 40.0 + pSprite->destWHZ_138.x;
+      CHanaSpriteT3F6__SetPos_414A5D(pSprite, fDriftX, pSprite->destWHZ_138.y);
+    }
+    DrawSprite2D(pSprite);
+  }
+  CHanaObj__SetAlpha3F6(pSprite, fSavedAlpha);
+  CHanaSpriteT3F6__SetScale_414B09(pSprite, fBaseScale);
+  CHanaSpriteT3F6__SetPos_414A5D(pSprite, fPosX, fPosY);
+}
+
+
+// CHanaSpriteT3F6::GetScale(pSprite)
+// Returns the sprite's uniform scale (fScale_148 at 0x148) as a float. Inverse of SetScale_414B09.
+double __cdecl hook_CHanaSpriteT3F6__GetScale_414B1A(CHanaSpriteT3F6_S1FC *pSprite)
+{
+  ONCELOG("[HNH:SUB] CHanaSpriteT3F6__GetScale_414B1A\n");
+  return pSprite->fScale_148;
+}
+
+
+// CHanaSpriteT3F6::GetPos(pSprite, pnX, pnY)
+// Reads the sprite's current screen position into out-params:
+// *pnX = *(pSprite+0x138) (nPosX), *pnY = *(pSprite+0x13C) (nPosY).
+// Inverse of SetPos_414A5D; returns pnY. Callers: sub_45B2FB (fade/echo loop), sub_46D7A7.
+void __cdecl hook_CHanaSpriteT3F6__GetPos_414A7A(CHanaSpriteT3F6_S1FC *pSprite, float *pOutX, float *pOutY)
+{
+  ONCELOG("[HNH:SUB] CHanaSpriteT3F6__GetPos_414A7A\n");
+
+  *pOutX = pSprite->destWHZ_138.x;
+  *pOutY = pSprite->destWHZ_138.y;
+}
+
 void register_RunModeSelectScreen() {
   hnh_Hook(0x46D9AF, hook_RunSceneSelectScreen, "RunSceneSelectScreen_46D9AF");
   hnh_Hook(0x46F37E, hook_RunModeSelectScreen, "RunModeSelectScreen_46F37E");
+  hnh_Hook(0x467af3, hook_SetFrameVisibilityAndGetHIndex, "SetFrameVisibilityAndGetHIndex_467AF3");
+  hnh_Hook(0x467420, hook_ApplyFrameEffectOption, "ApplyFrameEffectOption_467420");
+  hnh_Hook(0x46739d, hook_Frame_ApplyFadeRecursive, "Frame_ApplyFadeRecursive_46739D");
+  hnh_Hook(0x46724e, hook_FrameObject_SetAlpha, "FrameObject_SetAlpha_46724E");
+  hnh_Hook(0x46d7a7, hook_DrawSpritePulse_46D7A7, "DrawSpritePulse_46D7A7");
+
+  hnh_Hook(0x414b1a, hook_CHanaSpriteT3F6__GetScale_414B1A, "CHanaSpriteT3F6__GetScale_414B1A");
+
+  hnh_Hook(0x414a7a, hook_CHanaSpriteT3F6__GetPos_414A7A, "CHanaSpriteT3F6__GetPos_414A7A");
+  
 }
