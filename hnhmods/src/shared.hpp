@@ -381,6 +381,33 @@ extern void(__cdecl* SysMenu_Graphics_46380D)(int* arrGfxOpts, CSceneState* arrS
 
 extern int(__cdecl* MenuCharSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite);
 extern bool(__cdecl*IsMenuKeyPressed_481170)(void);
+
+// === scene-engine pins defined in ParseODS / PlayOdsDialogueScene ===
+extern CHanaFrameT3EC_S354* (__cdecl* FindFrameByName_47E999)(CHanaFrameT3EC_S354* pRootFrame,
+  LPCSTR pszName);
+extern bool(__cdecl* UpdateSceneAtTime_4825D5)(CHanaSceneT458_S504* pScene, float* pfExecTime,
+  float fDelta);
+extern void(__cdecl* UpdateSceneTimer_4827FE)(CHanaSceneT458_S504* pScene, float* pfExecTime,
+  float fDelta);
+extern void(__cdecl* PauseSceneAudio_46A2A0)(CHanaSceneT458_S504* pScene, int bPause);
+
+// === DEFINED RunModeSelectScreen.cpp ===
+
+extern int(__cdecl* RunModeSelectScreen)(CHanaSceneT458_S504* pScene,
+  CHanaSpriteT3F6_S1FC** arrModeSprites, CHanaSpriteT3F6_S1FC** arrMouseSprites, int* piSelected,
+  int iModeId, unsigned __int64* pSelMask, int iMenuTab);
+extern int(__cdecl* SetFrameVisibilityAndGetHIndex)(CHanaSceneT458_S504* pScene, int iVisState);
+extern void(__cdecl* CameraLookAtFrame)(CHanaFrameT3EC_S354* pCameraFrame,
+  CHanaFrameT3EC_S354* pTargetFrame, CHanaFrameT3EC_S354* pSceneFrame, short iMode);
+extern CHanaFrameT3EC_S354*(__cdecl* ApplyFrameEffectOption)(CHanaSceneT458_S504* pScene);
+extern void(__cdecl* DrawSpritePulse_46D7A7)(CHanaSpriteT3F6_S1FC* pSprite, float fPhase);
+extern LPDIRECTSOUNDBUFFER& g_pDSBuf_52EFD0;
+
+// === DEFINED RunSceneSelectScreen.cpp ===
+
+extern int(__cdecl* RunSceneSelectScreen)(CHanaSceneT458_S504* pScene,
+  CHanaSpriteT3F6_S1FC** arrModeSprites, CHanaSpriteT3F6_S1FC** arrMouseSprites, int* piSelected,
+  int iSceneGroup, unsigned __int64* pSelMask, int iMenuTab);
 extern HRESULT(__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF color);
 extern int(__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab);
 extern void(__cdecl* DrawText_43BCAE)(LPDIRECTDRAWSURFACE7 pSurface, char* szText, int left, int top, int right, int bottom);
@@ -473,7 +500,7 @@ extern void(__cdecl* StopAndRestartThread)(DWORD nThreadType);
 // === DEFINED ProcessFrame.cpp ===
 
 extern void(__cdecl*ProcessFrame)(CHanaFrameT3EC_S354* pChildFrame, int nAmbient, DWORD* qwBitLightEnables);
-
+extern void(__cdecl* CameraLookAtFrame)(CHanaFrameT3EC_S354* pCameraFrame, CHanaFrameT3EC_S354* pTargetFrame, CHanaFrameT3EC_S354* pSceneFrame, __int16 iMode);
 extern void(__cdecl* UpdateBoneTransform)(CHanaFrameT3EC_S354* boneStruct, CHanaFrameT3EC_S354* parentStruct, CHanaFrameT3EC_S354* pSceneFrame);
 extern void (__cdecl*AddObjectToPool)(D3DXMATRIX *mat4x4After, CHanaFrameT3EC_S354 *pChildFrame, CHanaVertT3EA_S1FC *pVert, int nAmbient, QWORD qwBitLightEnables);
 extern DWORD (__cdecl*CHanaObj__GetChildCountT3F5_40FF0F)(CHanaMeshT3F5_S138 *pHanaT3F5);

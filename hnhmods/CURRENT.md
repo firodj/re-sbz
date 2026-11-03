@@ -1,6 +1,6 @@
 # CURRENT - GOALS coverage in hnhmods/src
 
-Generated 2026-11-02 by `py tools/gen_current.py` from `hnhmods/GOALS.md`
+Generated 2026-11-03 by `py tools/gen_current.py` from `hnhmods/GOALS.md`
 vs `hnhmods/src/*.cpp` (function data via `tools/scan_cpp.py`).
 
 Legend:
@@ -250,7 +250,7 @@ Starting from 0x49f0e1
     │   │   │   │           └──0x427591 HeapAllocRef                                            <- [HOOK+PTR MemAlloc_40DEF7.cpp]
     │   │   │   ├──0x47a324 MenuCharSelect                                                      <- [HOOK+PTR MenuCharSelect.cpp]
     │   │   │   │   ├──0x4703ae PlayAssault_4703AE                                              <- [PTR GameMainLoop_47F013.cpp]
-    │   │   │   │   │   ├──0x487d89 ParseExecStr_487D89                                         <- [todo]
+    │   │   │   │   │   ├──0x487d89 ParseExecStr_487D89                                         <- [HOOK+PTR ParseExecStr_487D89.cpp]
     │   │   │   │   │   │   ├──0x47f460 Scene_CreateFontTextureFromStringData                   <- [HOOK+PTR CheckInstalledDirRoot_4869A7.cpp]
     │   │   │   │   │   │   │   ├──0x43bcae DrawText_43BCAE                                     <- [HOOK+PTR MenuCharSelect.cpp]
     │   │   │   │   │   │   │   │   ├──0x4198e0 Surface_SetColorKeyRGB                          <- [HOOK+PTR MenuCharSelect.cpp]
@@ -264,14 +264,14 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   │   └──0x408e1b CHanaObj__GetFrameAtIndexT3ED                       <- [HOOK+PTR CheckInstalledDirRoot_4869A7.cpp]
     │   │   │   │   │   ├──0x46f37e RunModeSelectScreen                                         <- [todo]
     │   │   │   │   │   │   ├──0x47e999 FindFrameByName_47E999                                  <- [HOOK+PTR ParseODS_483932.cpp]
-    │   │   │   │   │   │   ├──0x46a2a0 PauseSceneAudio_46A2A0                                  <- [todo]
+    │   │   │   │   │   │   ├──0x46a2a0 PauseSceneAudio_46A2A0                                  <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   │   ├──0x467420 ApplyFrameEffectOption                                  <- [todo]
     │   │   │   │   │   │   │   ├──0x46739d Frame_ApplyFadeRecursive                            <- [todo]
     │   │   │   │   │   │   │   │   └──0x46724e FrameObject_SetAlpha                            <- [todo]
     │   │   │   │   │   │   ├──0x46d7a7 DrawSpritePulse_46D7A7                                  <- [todo]
     │   │   │   │   │   │   │   ├──0x414a7a CHanaSpriteT3F6::GetPos_414A7A                      <- [todo]
     │   │   │   │   │   │   │   ├──0x414b1a CHanaSpriteT3F6::GetScale_414B1A                    <- [todo]
-    │   │   │   │   │   │   ├──0x4825d5 UpdateSceneAtTime_4825D5                                <- [todo]
+    │   │   │   │   │   │   ├──0x4825d5 UpdateSceneAtTime_4825D5                                <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   │   │   ├──0x403d61 CHanaAnimSetT3F1__SetTime_403D61                    <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   ├──0x40e969 ApplyMateAnimMaterial                           <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   │   └──0x40ef23 FindMateAnimKeyframeBounds                  <- [HOOK+PTR ParseODFContent_441A5D.cpp]
@@ -280,24 +280,24 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   │   │   │   ├──0x40344a HanaAnim_FindInterpolationFrame             <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   │   ├──0x402d0e CHanaAnimT3F0__BakeKeyframesT3F0_402D0E     <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   │   │   │   │   ├──0x4035b1 ApplyQTS_4035B1                         <- [HOOK+PTR ParseODFContent_441A5D.cpp]
-    │   │   │   │   │   │   │   ├──0x4019e1 CSekBody::UpdateAnim_4019E1                         <- [todo]
-    │   │   │   │   │   │   │   │   ├──0x4018e1 CSekBody::CutToAnim_4018E1                      <- [todo]
-    │   │   │   │   │   │   │   │   ├──0x43a643 CHanaAnimSetT3F1::BlendStep_43A643              <- [todo]
-    │   │   │   │   │   │   │   │   │   └──0x43a43f HanaAnim_UpdateBoneTransform                <- [todo]
-    │   │   │   │   │   │   │   │   └──0x43a371 CHanaAnimSetT3F1::BeginBlend_43A371             <- [todo]
-    │   │   │   │   │   │   │   ├──0x401647 SekBody__UpdateTo2_401647                           <- [todo]
+    │   │   │   │   │   │   │   ├──0x4019e1 CSekBody::UpdateAnim_4019E1                         <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
+    │   │   │   │   │   │   │   │   ├──0x4018e1 CSekBody::CutToAnim_4018E1                      <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
+    │   │   │   │   │   │   │   │   ├──0x43a643 CHanaAnimSetT3F1::BlendStep_43A643              <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
+    │   │   │   │   │   │   │   │   │   └──0x43a43f HanaAnim_UpdateBoneTransform                <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
+    │   │   │   │   │   │   │   │   └──0x43a371 CHanaAnimSetT3F1::BeginBlend_43A371             <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
+    │   │   │   │   │   │   │   ├──0x401647 SekBody__UpdateTo2_401647                           <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   │   │   └──0x4069dd MtxMult_4069DD                                      <- [HOOK+PTR ParseODFContent_441A5D.cpp]
     │   │   │   │   │   │   ├──0x467af3 SetFrameVisibilityAndGetHIndex                          <- [todo]
-    │   │   │   │   │   │   └──0x4827fe UpdateSceneTimer_4827FE                                 <- [todo]
-    │   │   │   │   │   ├──0x40dca3 SetProjectionFov_40DCA3                                     <- [todo]
+    │   │   │   │   │   │   └──0x4827fe UpdateSceneTimer_4827FE                                 <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
+    │   │   │   │   │   ├──0x40dca3 SetProjectionFov_40DCA3                                     <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   ├──0x4667a9 InitializePracticeAnimations_4667A9                         <- [todo]
     │   │   │   │   │   │   ├──0x466738 Frame_SetPracticeAnimRootRecursive                      <- [todo]
     │   │   │   │   │   ├──0x46777d Scene_FindMapFrame                                          <- [todo]
-    │   │   │   │   │   ├──0x480b2d DrawDialogueWindow_480B2D                                   <- [todo]
-    │   │   │   │   │   │   ├──0x47fa84 DrawAdvanceDialogueText_47FA84                          <- [todo]
-    │   │   │   │   │   │   ├──0x4803b5 DrawDialogueText_4803B5                                 <- [todo]
+    │   │   │   │   │   ├──0x480b2d DrawDialogueWindow_480B2D                                   <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
+    │   │   │   │   │   │   ├──0x47fa84 DrawAdvanceDialogueText_47FA84                          <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
+    │   │   │   │   │   │   ├──0x4803b5 DrawDialogueText_4803B5                                 <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   ├──0x46d9af RunSceneSelectScreen                                        <- [todo]
-    │   │   │   │   │   ├──0x4857ca ResetSceneBodies_4857CA                                     <- [todo]
+    │   │   │   │   │   ├──0x4857ca ResetSceneBodies_4857CA                                     <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   ├──0x48564b LoadOdsEx_48564B                                            <- [todo]
     │   │   │   │   │   │   ├──0x484a38 ParseOdsEx_484A38                                       <- [todo]
     │   │   │   │   │   │   │   ├──0x483704 ParseOds3DON_483704                                 <- [HOOK+PTR ParseODS_483932.cpp]
@@ -351,8 +351,8 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   │   ├──0x401039 ParseSekFile_401039                                 <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   │   │   │   └──0x40d875 SekHeader_CloneClean                            <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   │   │   ├──0x483567 ReadStrFile_483567                                  <- [HOOK+PTR ParseODS_483932.cpp]
-    │   │   │   │   │   │   └──0x481c5f CHanaObj__NewSceneT458_S504                             <- [todo]
-    │   │   │   │   │   ├──0x4843cf LoadOds_4843CF                                              <- [todo]
+    │   │   │   │   │   │   └──0x481c5f CHanaObj__NewSceneT458_S504                             <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
+    │   │   │   │   │   ├──0x4843cf LoadOds_4843CF                                              <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   │   │   ├──0x483932 ParseODS_483932                                         <- [HOOK+PTR ParseODS_483932.cpp]
     │   │   │   │   │   ├──0x4445dd LoadSekAndOdf_4445DD                                        <- [todo]
     │   │   │   │   │   │   ├──0x4014e4 SekBody::UpdateTo_4014E4                                <- [todo]
@@ -436,9 +436,9 @@ Starting from 0x49f0e1
     │   │   │   ├──0x448c72 BindSceneActors_448C72                                              <- [todo]
     │   │   │   ├──0x4536f6 WanaAttack_Knockback_4536F6                                         <- [todo]
     │   │   │   ├──0x448b78 IsFoeWithinHeroRange_448B78                                         <- [todo]
-    │   │   ├──0x477f90 PlayOdsDialogueScene_477F90                                             <- [PTR GameMainLoop_47F013.cpp]
-    │   │   │   ├──0x41a039 Surface_AlphaBlendRect                                              <- [todo]
-    │   │   │   │   └──0x4196fd Surface_LockAndGetPointer                                       <- [todo]
+    │   │   ├──0x477f90 PlayOdsDialogueScene_477F90                                             <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
+    │   │   │   ├──0x41a039 Surface_AlphaBlendRect                                              <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
+    │   │   │   │   └──0x4196fd Surface_LockAndGetPointer                                       <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   ├──0x4791a3 PlayVideoWith3DAudio_4791A3                                             <- [HOOK+PTR GameMainLoop_47F013.cpp]
     │   │   │   ├──0x43a863 AviWndSetVolume_43A863                                              <- [todo]
     │   │   │   ├──0x43a889 AviGetVolume_43A889                                                 <- [todo]
@@ -481,11 +481,11 @@ Done 460
 ## Stats
 
 - tree functions:      460
-- hooked:              298 (HOOK or HOOK+PTR)
-- pinned:              301 (PTR or HOOK+PTR)
-- fully covered:       292 (HOOK+PTR)
+- hooked:              318 (HOOK or HOOK+PTR)
+- pinned:              320 (PTR or HOOK+PTR)
+- fully covered:       312 (HOOK+PTR)
 - implemented only:    1
-- untouched:           152
+- untouched:           133
 
 ## Per-file status (scan_cpp.py)
 
@@ -591,13 +591,13 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              28 (15 func-ptr imports)
+  globals:              27 (14 func-ptr imports)
   functions:            12 (11 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   11/11
   hnh_Hook-registered:  11/11
   func-ptrs declared:   11/11
-  func-ptrs w/o hook:   4/15
-  no hook function for: PlayOdsDialogueScene_477F90, PlayMapBattle_45BCAE, RunDuelBattle_44C38D, RunPracticeScene_4703AE
+  func-ptrs w/o hook:   3/14
+  no hook function for: PlayMapBattle_45BCAE, RunDuelBattle_44C38D, RunPracticeScene_4703AE
 ```
 
 ### hnhmods/src/InGameMenu_4799E2.cpp
@@ -659,7 +659,7 @@ structs:              0
 
 ```
 SUMMARY
-structs:              1
+structs:              0
   globals:              14 (8 func-ptr imports)
   functions:            8 (7 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   7/7
@@ -679,6 +679,21 @@ structs:              0
   DebugLog [HNH:SUB]:   0/0
   hnh_Hook-registered:  0/0
   func-ptrs declared:   0/0
+```
+
+### hnhmods/src/ParseExecStr_487D89.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              2 (1 func-ptr imports)
+  functions:            4 (3 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   1/3
+  hnh_Hook-registered:  1/3
+  func-ptrs declared:   1/1
+  func-ptrs w/o hook:   0/1
+  missing DebugLog:     GotoLabel107, CompareByte
+  not registered:       GotoLabel107, CompareByte
 ```
 
 ### hnhmods/src/ParseODFContent_441A5D.cpp
@@ -705,6 +720,21 @@ structs:              0
   hnh_Hook-registered:  18/18
   func-ptrs declared:   16/18
   func-ptrs w/o hook:   0/16
+```
+
+### hnhmods/src/PlayOdsDialogueScene_477F90.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              22 (19 func-ptr imports)
+  functions:            21 (20 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   19/20
+  hnh_Hook-registered:  19/20
+  func-ptrs declared:   19/19
+  func-ptrs w/o hook:   0/19
+  missing DebugLog:     BlendPixel
+  not registered:       BlendPixel
 ```
 
 ### hnhmods/src/PlayScreenFade.cpp
