@@ -502,7 +502,7 @@ struct CHanaSceneT458_S504: public CHanaBase_S130
   CHanaAnimSetT3F1_S150 *pAnimSet_148;
   CHanaSpriteT3F6_S1FC *pSprWindowBmp[5];
   char szName_160[256];
-  void *ptrStrData_260;
+  char *ptrStrData_260;
   CHanaSpriteT3F6_S1FC *textSprites_264[4][29];
   int gap434[4];
   int dwPtrPos_444;

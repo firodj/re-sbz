@@ -322,7 +322,7 @@ void __cdecl hook_ReadStrFile_483567(CHanaSceneT458_S504 *pScene, const char *sz
     {
       pScene->dwPtrSize_44C = nNumberOfBytesToReadAlign50;
       nNumberOfBytesToReadAlign50 = 50 * (nNumberOfBytesToReadAlign50 / 50 + 1);
-      pScene->ptrStrData_260 = MemAlloc_40DEF7(nNumberOfBytesToReadAlign50);
+      pScene->ptrStrData_260 = (char*)MemAlloc_40DEF7(nNumberOfBytesToReadAlign50);
       ReadFile(hFile, pScene->ptrStrData_260, nNumberOfBytesToReadAlign50, &NumberOfBytesRead, 0);
       CloseHandle(hFile);
     }
