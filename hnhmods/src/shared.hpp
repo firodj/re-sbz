@@ -541,6 +541,12 @@ extern void(__cdecl*SetLightEnableMask)(QWORD bitLightEnables);
 extern void(__cdecl*UpdateVertTextureFromFrame)(CHanaVertT3EA_S1FC* pVertArg, CHanaFrameT3EC_S354* pFrameArg);
 extern void(__cdecl* UpdateBoneLookAtTransform)(CHanaFrameT3EC_S354* pBoneFrame, CHanaFrameT3EC_S354* pParentFrame, float dirForwardX, float dirForwardY, float dirForwardZ, float dirUpX, float dirUpY, float dirUpZ);
 extern void(__cdecl* BuildViewportMatrix)();
+
+// === DEFINED SetupHeroEntry_4593E0.cpp ===
+
+extern void(__cdecl* SetupHeroEntry_4593E0)(CHanaSceneT458_S504* pScene,
+  CHanaFrameT3EC_S354* pHeroFrame, int nSubIndex);
+
 #endif
 
 // == MACROS

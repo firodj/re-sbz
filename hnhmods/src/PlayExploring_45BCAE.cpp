@@ -77,9 +77,6 @@ void (__cdecl*UpdateCameraFollow_445525)(CHanaFrameT3EC_S354 *pHeroFrame,
     reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *,
       CHanaFrameT3EC_S354 *, float, int)>(0x445525);
 
-void (__cdecl*SetupHeroEntry_4593E0)(CHanaSceneT458_S504 *pScene,
-    CHanaFrameT3EC_S354 *pHeroFrame, int nSubIndex) =
-    reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, CHanaFrameT3EC_S354 *, int)>(0x4593E0);
 
 void (__cdecl*SetupItemBodies_459F81)(CHanaSceneT458_S504 *pScene, CSekBody **pItemBodies,
     DWORD *arrItemPlaceData, int nMapIndex) =
