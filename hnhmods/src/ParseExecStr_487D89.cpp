@@ -560,17 +560,26 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
   CHAR szFileName[256]; // [esp+168h] [ebp-108h] BYREF
   int bResult; // [esp+268h] [ebp-8h]
   __int16 nCmpVal; // [esp+26Ch] [ebp-4h]
+  
+  
   ONCELOG("[HNH:SUB] ParseExecStr_487D89\n");
+  
+  
   bResult = 1;
   if ( pScene && pScene->by_462 )
     RenderFlush_4874A5();
-  if ( pScene && pScene->ptrStrData_260 )
+  
+  if (!pScene || !pScene->ptrStrData_260)
+    return bResult;
+  
+  if ( pScene->by_463 == 1 )
   {
-    if ( pScene->by_463 == 1 )
-    {
-      *pfExecTime = pScene->WCurNum;
-      return bResult;
-    }
+    *pfExecTime = pScene->WCurNum;
+    return bResult;
+  }
+
+  while ( 1 )
+  {
     while ( 1 )
     {
       while ( 1 )
@@ -583,220 +592,206 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
             {
               while ( 1 )
               {
-                while ( 1 )
+                if ( pScene->dwPtrCurrent_448 >= (unsigned int)pScene->dwPtrSize_44C
+                  || *pfExecTime <= (double)pScene->WCurNum && pScene->WCurNum != 0.0 )
                 {
-                  while ( 1 )
-                  {
-                    while ( 1 )
-                    {
-                      while ( 1 )
-                      {
-                        while ( 1 )
-                        {
-                          while ( 1 )
-                          {
-                            while ( 1 )
-                            {
-                              while ( 1 )
-                              {
-                                while ( 1 )
-                                {
-                                  while ( 1 )
-                                  {
-                                    if ( pScene->dwPtrCurrent_448 >= (unsigned int)pScene->dwPtrSize_44C
-                                      || *pfExecTime <= (double)pScene->WCurNum && pScene->WCurNum != 0.0 )
-                                    {
-                                      return bResult;
-                                    }
-                                    if ( pScene->by_460 || pScene->by_461 )// skip reading further
-                                    {
-                                      pScene->pAnimSet_148->field_130 = pScene->WCurNum;
-                                      *pfExecTime = pScene->pAnimSet_148->field_130;
-                                      return bResult;
-                                    }
-                                    if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 + 1) != '\n' )
-                                      break;
-                                    pScene->dwPtrCurrent_448 += 2;
-                                    pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
-                                  }
-                                  if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) != '\n' )
-                                    break;
-                                  pScene->dwPtrPos_444 = ++pScene->dwPtrCurrent_448;
-                                }
-                                if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) != 'W' )
-                                  break;
-                                pScene->WCurNum = atof((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
-                                pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                                  (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
-                                  ';',
-                                  0)
-                                  + 1;
-                                pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
-                              }
-                              if ( pScene->WCurNum >= (double)pScene->flt_464 || pScene->flt_464 == 0.0 )
-                                break;
-                              ++pScene->dwPtrCurrent_448;
-                              *pfExecTime = pScene->flt_464;
-                            }
-                            if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "TEXT=", 5u) )
-                              break;
-                            pScene->dwPtrCurrent_448 += 5;// chunk == 'TEXT='
-                            pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
-                            ParseStrChunkText_47FF01(pScene);
-                            pScene->by_461 = 1;
-                            pScene->by_460 = 1;
-                            FrameTimer_EndFrame();
-                          }
-                          if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "HITEMGET", 8u) )
-                            break;
-                          pScene->dwPtrCurrent_448 += 8;// chunk == 'HITEMGET'
-                          nItemBit = 1 << atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-                          v2 = ((unsigned __int64)nItemBit >> 32)
-                            | g_sceneState_52F7E0.sceneFlags_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage
-                            + 1];
-                          bMaxSubStage = (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage;
-                          g_sceneState_52F7E0.sceneFlags_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
-                          g_sceneState_52F7E0.sceneFlags_98[2 * bMaxSubStage + 1] = v2;
-                          v4 = ((unsigned __int64)nItemBit >> 32)
-                            | g_Src[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage + 1];
-                          v5 = (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage;
-                          g_Src[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
-                          g_Src[2 * v5 + 1] = v4;
-                          pScene->dwPtrCurrent_448 += 2;
-                        }
-                        if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "GETBOOK", 7u) )
-                          break;
-                        pScene->dwPtrCurrent_448 += 7;// chunk == 'GETBOOK'
-                        nBookIdx = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-                        g_byData0Dat_530170[nBookIdx] = 1;
-                        g_dwUnlockedSaveSlots_530260 |= (__int16)(1 << nBookIdx);
-                        pScene->dwPtrCurrent_448 += 2;
-                      }
-                      if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "KUTI", 4u) )
-                        break;
-                      pScene->dwPtrCurrent_448 += 4;// chunk == 'KUTI'
-                      nKutiIdx = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-                      pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                        (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
-                        ',',
-                        0)
-                        + 1;
-                      nKutiKw1 = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-                      pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                        (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
-                        ',',
-                        0)
-                        + 1;
-                      nKutiKw2 = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-                      pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                        (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
-                        ';',
-                        0)
-                        + 1;
-                      if ( pScene->dwCount_130 > (unsigned int)nKutiIdx )
-                        Character_ApplyAnimationParamsToChildren(
-                          pScene->refsFrames_134[nKutiIdx],
-                          1,
-                          0,
-                          0,
-                          nKutiKw1,
-                          nKutiKw2);
-                      pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
-                    }
-                    if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "ME", 2u) )
-                      break;
-                    pScene->dwPtrCurrent_448 += 2;// chunk == 'ME'
-                    nMeIdx = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-                    pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                      (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
-                      44,
-                      0)
-                      + 1;
-                    nMeStart = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-                    pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                      (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
-                      44,
-                      0)
-                      + 1;
-                    nMeEnd = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-                    pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                      (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
-                      44,
-                      0)
-                      + 1;
-                    nMeKw1 = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-                    pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                      (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
-                      44,
-                      0)
-                      + 1;
-                    nMeKw2 = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-                    pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                      (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
-                      59,
-                      0)
-                      + 1;
-                    if ( pScene->dwCount_130 > (unsigned int)nMeIdx )
-                      Character_ApplyAnimationParamsToChildren(
-                        pScene->refsFrames_134[nMeIdx],
-                        0,
-                        nMeStart,
-                        nMeEnd,
-                        nMeKw1,
-                        nMeKw2);
-                    pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
-                  }
-                  if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) != 'M' )
-                    break;
-                  ++pScene->dwPtrCurrent_448;
-                  if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) == '+'
-                    || *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) == '-' )
-                  {
-                    pScene->flt_458 = atof((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-                  }
-                  else if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) == '=' )
-                  {
-                    pScene->flt_454 = atof((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
-                  }
+                  return bResult;
+                }
+                if ( pScene->by_460 || pScene->by_461 )// skip reading further
+                {
+                  pScene->pAnimSet_148->field_130 = pScene->WCurNum;
+                  *pfExecTime = pScene->pAnimSet_148->field_130;
+                  return bResult;
+                }
+                if (*((_BYTE*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 + 1) == '\n') {
+                  pScene->dwPtrCurrent_448 += 2;
+                  pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
+                  continue;
+                }
+                if (*((_BYTE*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) == '\n') {
+                  pScene->dwPtrPos_444 = ++pScene->dwPtrCurrent_448;
+                  continue;
+                }
+                if (*((_BYTE*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) == 'W') {
+                  pScene->WCurNum = atof((const char*)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
                   pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                    (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                    (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
                     ';',
                     0)
                     + 1;
                   pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
+                  continue;
                 }
-                if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "GO,", 3u)
-                  && memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "GI,", 3u) )
-                {
+                if (pScene->WCurNum < (double)pScene->flt_464 && pScene->flt_464 != 0.0) {
+                  ++pScene->dwPtrCurrent_448;
+                  *pfExecTime = pScene->flt_464;
+                  continue;
+                } 
+                if (memcmp((char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "TEXT=", 5u) == 0) {
+                  pScene->dwPtrCurrent_448 += 5;// chunk == 'TEXT='
+                  pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
+                  ParseStrChunkText_47FF01(pScene);
+                  pScene->by_461 = 1;
+                  pScene->by_460 = 1;
+                  FrameTimer_EndFrame();
+                  continue;
+                }
+                if (memcmp((char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "HITEMGET", 8u) == 0) {
+                  pScene->dwPtrCurrent_448 += 8;// chunk == 'HITEMGET'
+                  nItemBit = 1 << atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+                  v2 = ((unsigned __int64)nItemBit >> 32)
+                    | g_sceneState_52F7E0.sceneFlags_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage
+                    + 1];
+                  bMaxSubStage = (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage;
+                  g_sceneState_52F7E0.sceneFlags_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
+                  g_sceneState_52F7E0.sceneFlags_98[2 * bMaxSubStage + 1] = v2;
+                  v4 = ((unsigned __int64)nItemBit >> 32)
+                    | g_Src[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage + 1];
+                  v5 = (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage;
+                  g_Src[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
+                  g_Src[2 * v5 + 1] = v4;
+                  pScene->dwPtrCurrent_448 += 2;
+                  continue;
+                }
+                if (memcmp((char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "GETBOOK", 7u) == 0) {
+                  pScene->dwPtrCurrent_448 += 7;// chunk == 'GETBOOK'
+                  nBookIdx = atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+                  g_byData0Dat_530170[nBookIdx] = 1;
+                  g_dwUnlockedSaveSlots_530260 |= (__int16)(1 << nBookIdx);
+                  pScene->dwPtrCurrent_448 += 2;
+                  continue;
+                }
+                if (memcmp((char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "KUTI", 4u) == 0) {
+                  pScene->dwPtrCurrent_448 += 4;// chunk == 'KUTI'
+                  nKutiIdx = atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+                  pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
+                    (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                    ',',
+                    0)
+                    + 1;
+                  nKutiKw1 = atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+                  pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
+                    (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                    ',',
+                    0)
+                    + 1;
+                  nKutiKw2 = atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+                  pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
+                    (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                    ';',
+                    0)
+                    + 1;
+                  if (pScene->dwCount_130 > (unsigned int)nKutiIdx)
+                    Character_ApplyAnimationParamsToChildren(
+                      pScene->refsFrames_134[nKutiIdx],
+                      1,
+                      0,
+                      0,
+                      nKutiKw1,
+                      nKutiKw2);
+                  pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
+                  continue;
+                }
+                if (memcmp((char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "ME", 2u) == 0) {
+                  pScene->dwPtrCurrent_448 += 2;// chunk == 'ME'
+                  nMeIdx = atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+                  pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
+                    (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                    44,
+                    0)
+                    + 1;
+                  nMeStart = atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+                  pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
+                    (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                    44,
+                    0)
+                    + 1;
+                  nMeEnd = atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+                  pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
+                    (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                    44,
+                    0)
+                    + 1;
+                  nMeKw1 = atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+                  pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
+                    (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                    44,
+                    0)
+                    + 1;
+                  nMeKw2 = atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+                  pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
+                    (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                    59,
+                    0)
+                    + 1;
+                  if (pScene->dwCount_130 > (unsigned int)nMeIdx)
+                    Character_ApplyAnimationParamsToChildren(
+                      pScene->refsFrames_134[nMeIdx],
+                      0,
+                      nMeStart,
+                      nMeEnd,
+                      nMeKw1,
+                      nMeKw2);
+                  pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
+                  continue;
+                } 
+
+                if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) != 'M' )
                   break;
+                else {
+                  ++pScene->dwPtrCurrent_448;
+                  if (*((_BYTE*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) == '+'
+                    || *((_BYTE*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) == '-')
+                  {
+                    pScene->flt_458 = atof((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+                  }
+                  else if (*((_BYTE*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) == '=')
+                  {
+                    pScene->flt_454 = atof((const char*)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
+                  }
+                  pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
+                    (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                    ';',
+                    0)
+                    + 1;
+                  pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
+                  continue;
                 }
-                bisGo = memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "GO,", 3u) == 0;// chunk == 'GO'
+
+              }
+              if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "GO,", 3u)
+                && memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "GI,", 3u) )
+              {
+                break;
+              }
+              else {
+                bisGo = memcmp((char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "GO,", 3u) == 0;// chunk == 'GO'
                 pScene->dwPtrCurrent_448 += 3;
-                pszColR = (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448++;
+                pszColR = (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448++;
                 nFadeR = atoi(pszColR);
                 pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                  (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                  (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
                   ',',
                   0)
                   + 1;
-                pszColG = (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448++;
+                pszColG = (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448++;
                 nFadeG = atoi(pszColG);
                 pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                  (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                  (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
                   ',',
                   0)
                   + 1;
-                pszColB = (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448++;
+                pszColB = (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448++;
                 nFadeB = atoi(pszColB);
                 pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                  (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                  (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
                   '_',
                   0)
                   + 1;
-                pszFadeTime = (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448++;
+                pszFadeTime = (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448++;
                 fFadeTime = atof(pszFadeTime);
                 pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                  (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                  (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
                   ';',
                   0)
                   + 1;
@@ -810,23 +805,26 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
                   fFadeTime,
                   pScene->by_462);
                 pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
+                continue;
               }
-              if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) != 'G'
-                || *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 + 1) < '0'
-                || *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 + 1) > '9' )
-              {
-                break;
-              }
-              nGpIndex = atoi((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
+            }
+            if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) != 'G'
+              || *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 + 1) < '0'
+              || *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 + 1) > '9' )
+            {
+              break;
+            }
+            else {
+              nGpIndex = atoi((const char*)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
               pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-                (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+                (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
                 ';',
                 0)
                 + 1;
               pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
               wsprintfA(szFileName, "%s", g_aG00Gp[nGpIndex].str);
               CHanaObj__GetRealPath_486D9A(szFileName, 1007);
-              switch ( nGpIndex )
+              switch (nGpIndex)
               {
               case 30:
                 g_sceneState_52F7E0.bMaxSubStage = 0;
@@ -850,10 +848,10 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
                 break;
               }
               pScene->flt_480 = 0.1;
-              if ( pScene->pUnk_47C )
+              if (pScene->pUnk_47C)
                 pScene->pUnk_47C->Release();
-              if ( nGpIndex <= 95 )
-                pScene->pUnk_47C = (IUnknown *)pScene->pSurface_468;
+              if (nGpIndex <= 95)
+                pScene->pUnk_47C = (IUnknown*)pScene->pSurface_468;
               else
                 pScene->pUnk_47C = 0;
               g_arrGalleryUnlocked_5301A2[nGpIndex] = 1;
@@ -861,39 +859,42 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
               nBgLoadW = ConvertFrom640AsInt(640);
               pScene->pSurface_468 = LoadBmpScaled_4203B3(szFileName, nBgLoadW, nBgLoadH);
               FrameTimer_EndFrame();
+              continue;
             }
-            if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) != '#' )
-              break;
-            sndFileIndex_v33 = atoi((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
+          }
+          if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) != '#' )
+            break;
+          else {
+            sndFileIndex_v33 = atoi((const char*)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
             pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-              (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+              (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
               ',',
               0)
               + 1;
-            sndVolIndex_v35 = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+            sndVolIndex_v35 = atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
             pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-              (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+              (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
               ';',
               0)
               + 1;
             pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
             wsprintfA(szFileName, "%s", g_ascSndFileNames_4C78A0[sndFileIndex_v33].str);
             CHanaObj__GetRealPath_486D9A(szFileName, 1006);
-            if ( pScene->pSndBuf_46C )
+            if (pScene->pSndBuf_46C)
             {
               pScene->pSndBuf_46C->Stop();
               pScene->pSndBuf_46C->Release();
               pScene->pSndBuf_46C = 0;
             }
             pScene->pSndBuf_46C = LoadWav_422E7B(szFileName);
-            if ( pScene->pSndBuf_46C )
+            if (pScene->pSndBuf_46C)
             {
               pScene->field_470 = sndVolIndex_v35 / 2;
-              if ( pScene->pSndBuf_46C )
+              if (pScene->pSndBuf_46C)
               {
-                if ( (int)(pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266]) >= -10000 )
+                if ((int)(pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266]) >= -10000)
                 {
-                  if ( (int)(pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266]) <= 0 )
+                  if ((int)(pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266]) <= 0)
                     pScene->pSndBuf_46C->SetVolume(
                       pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266]);
                   else
@@ -907,53 +908,59 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
               pScene->pSndBuf_46C->Play(0, 0, 1);
             }
             FrameTimer_EndFrame();
+            continue;
           }
-          if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) != 'N' )
-            break;
-          pScene->by_462 = atoi((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448) & 1;
+        }
+        if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) != 'N' )
+          break;
+        else {
+          pScene->by_462 = atoi((const char*)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448) & 1;
           pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-            (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+            (char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
             59,
             0)
             + 1;
           pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
+          continue;
         }
-        if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "FLG", 3u) )
-          break;
+      }
+      if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "FLG", 3u) )
+        break;
+      else {
         nFlgOp = 0;                             // chunk == 'FLG'
         pScene->dwPtrCurrent_448 += 3;
-        nFlgOfs = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-        for ( i = 0; i < 20; ++i )
+        nFlgOfs = atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+        for (i = 0; i < 20; ++i)
         {
-          if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 2, "+=", 2u) )
+          if (!memcmp((char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 2, "+=", 2u))
           {
             nFlgOp = 1;
             break;
           }
-          if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 2, "-=", 2u) )
+          if (!memcmp((char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 2, "-=", 2u))
           {
             nFlgOp = 2;
             break;
           }
-          if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 2, "*=", 2u) )
+          if (!memcmp((char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 2, "*=", 2u))
           {
             nFlgOp = 3;
             break;
           }
-          if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 2, "/=", 2u) )
+          if (!memcmp((char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 2, "/=", 2u))
           {
             nFlgOp = 4;
             break;
           }
-          if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1, "=", 1u) )
+          if (!memcmp((char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1, "=", 1u))
           {
             nFlgOp = 0;
             break;
           }
           ++pScene->dwPtrCurrent_448;
         }
-        nFlgVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-        switch ( nFlgOp )
+        nFlgVal = atoi((const char*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+        switch (nFlgOp)
         {
         case 0:
           *(&g_sceneState_52F7E0.bCurrentSubStage + nFlgOfs) = nFlgVal;
@@ -968,27 +975,40 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
           *(&g_sceneState_52F7E0.bCurrentSubStage + nFlgOfs) *= nFlgVal;
           break;
         case 4:
-          *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgOfs) /= nFlgVal;
+          *((char*)&g_sceneState_52F7E0.bCurrentSubStage + nFlgOfs) /= nFlgVal;
           break;
         default:
           break;
         }
-        for ( i = 0; i < 20 && *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) != ';'; ++i )
+        for (i = 0; i < 20 && *((_BYTE*)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) != ';'; ++i)
           ++pScene->dwPtrCurrent_448;
         pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
+        continue;
       }
-      if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "GOTO:", 5u) )
+    }
+    if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "GOTO:", 5u) )
+    {
+      pScene->dwPtrCurrent_448 += 5;          // chunk == 'GOTO'
+    LABEL_107:
+      for ( cchLabel = 0; cchLabel < 255; ++cchLabel )
       {
-        pScene->dwPtrCurrent_448 += 5;          // chunk == 'GOTO'
-      LABEL_107:
-        for ( cchLabel = 0; cchLabel < 255; ++cchLabel )
+        szLabel[cchLabel] = *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+        if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) == ';' )
+          break;
+        ++pScene->dwPtrCurrent_448;
+      }
+      for ( i = pScene->dwPtrCurrent_448; *((_BYTE *)pScene->ptrStrData_260 + i); ++i )
+      {
+        if ( *((_BYTE *)pScene->ptrStrData_260 + i) == 10
+          && !memcmp((char *)pScene->ptrStrData_260 + i + 1, szLabel, cchLabel) )
         {
-          szLabel[cchLabel] = *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-          if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) == ';' )
-            break;
-          ++pScene->dwPtrCurrent_448;
+          pScene->dwPtrCurrent_448 = i + 1;
+          break;
         }
-        for ( i = pScene->dwPtrCurrent_448; *((_BYTE *)pScene->ptrStrData_260 + i); ++i )
+      }
+      if ( !*((_BYTE *)pScene->ptrStrData_260 + i) )
+      {
+        for ( i = pScene->dwPtrCurrent_448; i >= 0; --i )
         {
           if ( *((_BYTE *)pScene->ptrStrData_260 + i) == 10
             && !memcmp((char *)pScene->ptrStrData_260 + i + 1, szLabel, cchLabel) )
@@ -997,197 +1017,186 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
             break;
           }
         }
-        if ( !*((_BYTE *)pScene->ptrStrData_260 + i) )
-        {
-          for ( i = pScene->dwPtrCurrent_448; i >= 0; --i )
-          {
-            if ( *((_BYTE *)pScene->ptrStrData_260 + i) == 10
-              && !memcmp((char *)pScene->ptrStrData_260 + i + 1, szLabel, cchLabel) )
-            {
-              pScene->dwPtrCurrent_448 = i + 1;
-              break;
-            }
-          }
-        }
-        pScene->dwPtrCurrent_448 += cchLabel;
-        FrameTimer_BeginFrame();
+      }
+      pScene->dwPtrCurrent_448 += cchLabel;
+      FrameTimer_BeginFrame();
+      pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
+    }
+    else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "IF(FLG", 6u) )
+    {
+      ++bResult;                              // -- chunk == 'IF(FLG'
+      pScene->dwPtrCurrent_448 += 6;
+      nFlgIdx = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+      for ( i = 0;
+        i < 20
+        && *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) >= 48
+        && *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) <= 57;
+        ++i )
+      {
+        ++pScene->dwPtrCurrent_448;
+      }
+      if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "==", 2u) )
+      {
+        pScene->dwPtrCurrent_448 += 2;
+        nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+        if ( *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgIdx) == nCmpVal )
+          bFlgCond = 1;
+      }
+      else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "!=", 2u) )
+      {
+        pScene->dwPtrCurrent_448 += 2;
+        nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+        if ( *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgIdx) != nCmpVal )
+          bFlgCond = 1;
+      }
+      else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, ">=", 2u) )
+      {
+        pScene->dwPtrCurrent_448 += 2;
+        nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+        if ( *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgIdx) >= nCmpVal )
+          bFlgCond = 1;
+      }
+      else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, ">", 1u) )
+      {
+        nCmpVal = atoi((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
+        if ( *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgIdx) > nCmpVal )
+          bFlgCond = 1;
+      }
+      else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "<=", 2u) )
+      {
+        pScene->dwPtrCurrent_448 += 2;
+        nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+        if ( *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgIdx) <= nCmpVal )
+          bFlgCond = 1;
+      }
+      else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "<", 1u) )
+      {
+        nCmpVal = atoi((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
+        if ( *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgIdx) < nCmpVal )
+          bFlgCond = 1;
+      }
+      for ( i = 0; i < 20 && *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) != ')'; ++i )
+        ++pScene->dwPtrCurrent_448;
+      if ( bFlgCond == 1 )
+        goto LABEL_107;
+      for ( i = 0; i < 20 && *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) != ';'; ++i )
+        ++pScene->dwPtrCurrent_448;
+    }
+    else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "IF(OFLG", 7u) )
+    {
+      ++bResult;                              // -- chunk == 'IF(OFLG'
+      pScene->dwPtrCurrent_448 += 7;
+      nOFlgIdx = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+      for ( i = 0;
+        i < 20
+        && *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) >= 48
+        && *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) <= 57;
+        ++i )
+      {
+        ++pScene->dwPtrCurrent_448;
+      }
+      if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "==", 2u) )
+      {
+        pScene->dwPtrCurrent_448 += 2;
+        nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+        if ( g_byData0Dat_530170[nOFlgIdx] == nCmpVal )
+          bOfCond = 1;
+      }
+      else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "!=", 2u) )
+      {
+        pScene->dwPtrCurrent_448 += 2;
+        nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+        if ( g_byData0Dat_530170[nOFlgIdx] != nCmpVal )
+          bOfCond = 1;
+      }
+      else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, ">=", 2u) )
+      {
+        pScene->dwPtrCurrent_448 += 2;
+        nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+        if ( g_byData0Dat_530170[nOFlgIdx] >= nCmpVal )
+          bOfCond = 1;
+      }
+      else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, ">", 1u) )
+      {
+        nCmpVal = atoi((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
+        if ( g_byData0Dat_530170[nOFlgIdx] > nCmpVal )
+          bOfCond = 1;
+      }
+      else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "<=", 2u) )
+      {
+        pScene->dwPtrCurrent_448 += 2;
+        nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
+        if ( g_byData0Dat_530170[nOFlgIdx] <= nCmpVal )
+          bOfCond = 1;
+      }
+      else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "<", 1u) )
+      {
+        nCmpVal = atoi((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
+        if ( g_byData0Dat_530170[nOFlgIdx] < nCmpVal )
+          bOfCond = 1;
+      }
+      for ( i = 0; i < 20 && *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) != ')'; ++i )
+        ++pScene->dwPtrCurrent_448;
+      if ( bOfCond == 1 )
+        goto LABEL_107;
+      for ( i = 0; i < 20 && *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) != ';'; ++i )
+        ++pScene->dwPtrCurrent_448;
+    }
+    else if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) == 'F' )
+    {
+      *pfExecTime = atof((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
+      pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
+        (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
+        59,
+        0)
+        + 1;
+    }
+    else
+    {
+      if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "SELECT=", 7u) )
+      {
+        pScene->dwPtrCurrent_448 += 7;        // chunk == 'SELECT='
+        pScene->by_463 = 1;
+        pScene->WCurNum = pScene->pAnimSet_148->field_130;
+        pScene->flt_458 = -0.050000001;
         pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
-      }
-      else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "IF(FLG", 6u) )
-      {
-        ++bResult;                              // -- chunk == 'IF(FLG'
-        pScene->dwPtrCurrent_448 += 6;
-        nFlgIdx = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-        for ( i = 0;
-          i < 20
-          && *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) >= 48
-          && *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) <= 57;
-          ++i )
-        {
-          ++pScene->dwPtrCurrent_448;
-        }
-        if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "==", 2u) )
-        {
-          pScene->dwPtrCurrent_448 += 2;
-          nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-          if ( *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgIdx) == nCmpVal )
-            bFlgCond = 1;
-        }
-        else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "!=", 2u) )
-        {
-          pScene->dwPtrCurrent_448 += 2;
-          nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-          if ( *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgIdx) != nCmpVal )
-            bFlgCond = 1;
-        }
-        else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, ">=", 2u) )
-        {
-          pScene->dwPtrCurrent_448 += 2;
-          nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-          if ( *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgIdx) >= nCmpVal )
-            bFlgCond = 1;
-        }
-        else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, ">", 1u) )
-        {
-          nCmpVal = atoi((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
-          if ( *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgIdx) > nCmpVal )
-            bFlgCond = 1;
-        }
-        else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "<=", 2u) )
-        {
-          pScene->dwPtrCurrent_448 += 2;
-          nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-          if ( *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgIdx) <= nCmpVal )
-            bFlgCond = 1;
-        }
-        else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "<", 1u) )
-        {
-          nCmpVal = atoi((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
-          if ( *((char *)&g_sceneState_52F7E0.bCurrentSubStage + nFlgIdx) < nCmpVal )
-            bFlgCond = 1;
-        }
-        for ( i = 0; i < 20 && *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) != ')'; ++i )
-          ++pScene->dwPtrCurrent_448;
-        if ( bFlgCond == 1 )
-          goto LABEL_107;
-        for ( i = 0; i < 20 && *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) != ';'; ++i )
-          ++pScene->dwPtrCurrent_448;
-      }
-      else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "IF(OFLG", 7u) )
-      {
-        ++bResult;                              // -- chunk == 'IF(OFLG'
-        pScene->dwPtrCurrent_448 += 7;
-        nOFlgIdx = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-        for ( i = 0;
-          i < 20
-          && *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) >= 48
-          && *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) <= 57;
-          ++i )
-        {
-          ++pScene->dwPtrCurrent_448;
-        }
-        if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "==", 2u) )
-        {
-          pScene->dwPtrCurrent_448 += 2;
-          nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-          if ( g_byData0Dat_530170[nOFlgIdx] == nCmpVal )
-            bOfCond = 1;
-        }
-        else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "!=", 2u) )
-        {
-          pScene->dwPtrCurrent_448 += 2;
-          nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-          if ( g_byData0Dat_530170[nOFlgIdx] != nCmpVal )
-            bOfCond = 1;
-        }
-        else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, ">=", 2u) )
-        {
-          pScene->dwPtrCurrent_448 += 2;
-          nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-          if ( g_byData0Dat_530170[nOFlgIdx] >= nCmpVal )
-            bOfCond = 1;
-        }
-        else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, ">", 1u) )
-        {
-          nCmpVal = atoi((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
-          if ( g_byData0Dat_530170[nOFlgIdx] > nCmpVal )
-            bOfCond = 1;
-        }
-        else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "<=", 2u) )
-        {
-          pScene->dwPtrCurrent_448 += 2;
-          nCmpVal = atoi((const char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448);
-          if ( g_byData0Dat_530170[nOFlgIdx] <= nCmpVal )
-            bOfCond = 1;
-        }
-        else if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "<", 1u) )
-        {
-          nCmpVal = atoi((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
-          if ( g_byData0Dat_530170[nOFlgIdx] < nCmpVal )
-            bOfCond = 1;
-        }
-        for ( i = 0; i < 20 && *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) != ')'; ++i )
-          ++pScene->dwPtrCurrent_448;
-        if ( bOfCond == 1 )
-          goto LABEL_107;
-        for ( i = 0; i < 20 && *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) != ';'; ++i )
-          ++pScene->dwPtrCurrent_448;
-      }
-      else if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) == 'F' )
-      {
-        *pfExecTime = atof((const char *)pScene->ptrStrData_260 + ++pScene->dwPtrCurrent_448);
+        Scene_CreateFontTextureFromStringData(pScene);
         pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-          (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448,
-          59,
+          (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 + 1,
+          '*',
           0)
           + 1;
+        return bResult;
+      }
+      if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "END;", 4u)
+        || !*((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) )
+      {
+        return 0;                             // chunk == 'END'
+      }
+      if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "LPU;", 4u)
+        && *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) )
+      {
+        if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "@", 2u)
+          && *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) <= '\b'
+          && (*((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) < 'A'
+            || *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) > 'z') )
+        {
+          return bResult;
+        }
+        ++pScene->dwPtrCurrent_448;
       }
       else
       {
-        if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "SELECT=", 7u) )
-        {
-          pScene->dwPtrCurrent_448 += 7;        // chunk == 'SELECT='
-          pScene->by_463 = 1;
-          pScene->WCurNum = pScene->pAnimSet_148->field_130;
-          pScene->flt_458 = -0.050000001;
-          pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
-          Scene_CreateFontTextureFromStringData(pScene);
-          pScene->dwPtrCurrent_448 += FindCharUntil_487D46(
-            (char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 + 1,
-            '*',
-            0)
-            + 1;
-          return bResult;
-        }
-        if ( !memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "END;", 4u)
-          || !*((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) )
-        {
-          return 0;                             // chunk == 'END'
-        }
-        if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "LPU;", 4u)
-          && *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) )
-        {
-          if ( memcmp((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448, "@", 2u)
-            && *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) <= '\b'
-            && (*((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) < 'A'
-              || *((char *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448) > 'z') )
-          {
-            return bResult;
-          }
-          ++pScene->dwPtrCurrent_448;
-        }
-        else
-        {
-          pScene->dwPtrCurrent_448 += 4;
-          g_sceneState_52F7E0.protCurrentHP_C0 = g_sceneState_52F7E0.protMaximumHP_C4 * 20.0 / 100.0
-            + g_sceneState_52F7E0.protCurrentHP_C0;
-          if ( g_sceneState_52F7E0.protCurrentHP_C0 > (double)g_sceneState_52F7E0.protMaximumHP_C4 )
-            g_sceneState_52F7E0.protCurrentHP_C0 = g_sceneState_52F7E0.protMaximumHP_C4;
-        }
+        pScene->dwPtrCurrent_448 += 4;
+        g_sceneState_52F7E0.protCurrentHP_C0 = g_sceneState_52F7E0.protMaximumHP_C4 * 20.0 / 100.0
+          + g_sceneState_52F7E0.protCurrentHP_C0;
+        if ( g_sceneState_52F7E0.protCurrentHP_C0 > (double)g_sceneState_52F7E0.protMaximumHP_C4 )
+          g_sceneState_52F7E0.protCurrentHP_C0 = g_sceneState_52F7E0.protMaximumHP_C4;
       }
     }
   }
-  return bResult;
+  
+  
 }
 
 void register_ParseExecStr_487D89() {
