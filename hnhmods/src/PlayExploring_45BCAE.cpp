@@ -182,7 +182,7 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
     CHanaSpriteT3F6_S1FC *pSprTimes[20]; // [ebp-A1Ch] HP gauge
     float fBlendTime;                    // [ebp-9A4h] blend-out timer after a target
     int nMenuResult;                     // [ebp-99Ch]
-    DWORD mapIndexTable[49];             // (stage -> map/sub index pairs)
+    DWORD mapIndexTable[50];             // (stage -> map/sub index pairs)
     DWORD subStageTable[15];             // [ebp-2D9Ch]
     CSekBody *pHeroBody;                 // [ebp-3A4h]
     int bDialogueMode;                   // [ebp-3A0h]
@@ -208,6 +208,7 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
 
     ONCELOG("[HNH:SUB] PlayExploring_45BCAE\n");
 
+    DebugLog("[HNH][PlayExploring] init variables\n");
     // --- path/name tables (entries [0]/[7]/[8..10] etc. are the runtime-empty
     // "" rows -- .data past the raw image, 0xFF in IDA, zero-filled at runtime)
     strcpy(szMapOdfPaths[0], "");            strcpy(szMapOdfPaths[7], "");
@@ -410,18 +411,20 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
     bSkipMode = 0;
     nTargetSprite = 0;
     pCamFrame = 0;
-    mapIndexTable[0] = 2;   mapIndexTable[1] = 22;
-    mapIndexTable[2] = 3;   mapIndexTable[3] = 22;
-    mapIndexTable[4] = 1;   mapIndexTable[5] = 22;
-    mapIndexTable[6] = 0;   mapIndexTable[7] = 22;
-    mapIndexTable[8] = 0;   mapIndexTable[9] = 2;
-    mapIndexTable[10] = 0;  mapIndexTable[11] = 23;
-    mapIndexTable[12] = 2;  mapIndexTable[13] = 8;
-    mapIndexTable[14] = 0;  mapIndexTable[15] = 16;
-    mapIndexTable[16] = 0;  mapIndexTable[17] = 16;
-    mapIndexTable[18] = 1;  mapIndexTable[19] = 5;
-    mapIndexTable[20] = 1;
-    memset(&mapIndexTable[21], 0, 28 * 4);
+
+    mapIndexTable[0] = 22;  mapIndexTable[1] = 2;
+    mapIndexTable[2] = 22;  mapIndexTable[3] = 3;
+    mapIndexTable[4] = 22;  mapIndexTable[5] = 1;
+    mapIndexTable[6] = 22;  mapIndexTable[7] = 0;
+    mapIndexTable[8] = 22;  mapIndexTable[9] = 0;
+    mapIndexTable[10] = 2;  mapIndexTable[11] = 0;
+    mapIndexTable[12] = 23; mapIndexTable[13] = 2;
+    mapIndexTable[14] = 8;  mapIndexTable[15] = 0;
+    mapIndexTable[16] = 16; mapIndexTable[17] = 0;
+    mapIndexTable[18] = 16; mapIndexTable[19] = 1;
+    mapIndexTable[20] = 5;  mapIndexTable[21] = 1;
+    memset(&mapIndexTable[22], 0, 28 * 4);
+
     subStageTable[0] = 0;  subStageTable[1] = 0;
     subStageTable[2] = 1;  subStageTable[3] = 1;
     subStageTable[4] = 2;  subStageTable[5] = 2;
@@ -446,8 +449,8 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
     memset(ppOut, 0, sizeof(ppOut));
     memcpy(&g_sceneState_52F7E0, &Src, sizeof(g_sceneState_52F7E0));  // (round-trip as-is)
 
-    pnMapIndex = mapIndexTable[2 * nStageIndex - 1];
-    pnSubIndex = mapIndexTable[2 * nStageIndex];
+    pnMapIndex = mapIndexTable[2 * nStageIndex];
+    pnSubIndex = mapIndexTable[2 * nStageIndex + 1];
     fHeroHp = g_sceneState_52F7E0.protCurrentHP_C0;
     fHeroHpMax = g_sceneState_52F7E0.protMaximumHP_C4;
     g_sceneState_52F7E0.bCurrentSubStage = subStageTable[nStageIndex];
@@ -455,6 +458,8 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
     nTimeLimit = timeLimitTable[nStageIndex];
     SetProjectionFov_40DCA3(1.2f);
     SetTimerScaleFactor(14.0f);
+
+    DebugLog("[HNH][PlayExploring] loading assets\n");
 
     // --- one-time loads: 10 SFX + BGM + HUD + mask sprites + bodies
     memset(pDSBuf, 0, sizeof(pDSBuf));
@@ -511,8 +516,10 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
     CHanaObj__GetRealPath_486D9A(pszFileName, 1005);          // ODF dir
     wsprintfA(String, "otoko\\otoko.odf");
     CHanaObj__GetRealPath_486D9A(String, 1005);
-    if (!LoadSekAndOdf_4445DD(pszFileName, String, &pHeroBody))
-        return -1;
+    if (!LoadSekAndOdf_4445DD(pszFileName, String, &pHeroBody)) {
+      DebugLog("[HNH][PlayExploring] error LoadSekAndOdf otoko\n");
+      return -1;
+    }
     pCamFrame = CHanaFrameT3EC__FindByName_483650(pHeroBody->pSekHeader_220->pFrameT3EC,
                                                   "Frame5_o00_02_head");
 
@@ -521,8 +528,10 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
     CHanaObj__GetRealPath_486D9A(pszFileName, 1005);
     wsprintfA(String, "lockon\\lock.odf");
     CHanaObj__GetRealPath_486D9A(String, 1005);
-    if (!LoadSekAndOdf_4445DD(pszFileName, String, &pSekBody))
-        return -1;
+    if (!LoadSekAndOdf_4445DD(pszFileName, String, &pSekBody)) {
+      DebugLog("[HNH][PlayExploring] error LoadSekAndOdf lock\n");
+      return -1;
+    }
     CSekBody__CutToAnim_4018E1(pSekBody, 0);
 
     // item bodies item\i11..i17
@@ -532,8 +541,10 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
         CHanaObj__GetRealPath_486D9A(pszFileName, 1005);
         wsprintfA(String, "%s.odf", szItemSekPaths[i]);
         CHanaObj__GetRealPath_486D9A(String, 1005);
-        if (!LoadSekAndOdf_4445DD(pszFileName, String, &pItemBodies[i]))
-            return -1;
+        if (!LoadSekAndOdf_4445DD(pszFileName, String, &pItemBodies[i])) {
+          DebugLog("[HNH][PlayExploring] error LoadSekAndOdf %d %s\n", i, szItemSekPaths[i]);
+          return -1;
+        }
         CSekBody__CutToAnim_4018E1(pItemBodies[i], 0);
     }
 
@@ -557,8 +568,10 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
         }
         wsprintfA(pszFileName, szMapOdfPaths[pnMapIndex]);
         CHanaObj__GetRealPath_486D9A(pszFileName, 1005);
-        if (!ParseODFFile_441F19(pszFileName, &pMapFrame, &pTmpAnimSet))
-            return -1;
+        if (!ParseODFFile_441F19(pszFileName, &pMapFrame, &pTmpAnimSet)) {
+          DebugLog("[HNH][PlayExploring] error ParseODFFile %d\n", pnMapIndex);
+          return -1;
+        }
         if (pTmpAnimSet)
         {
             CHanaObj__Free_40C1E4((CHanaBase_S130 *)pTmpAnimSet);
@@ -577,8 +590,10 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
         }
         wsprintfA(pszFileName, szSceneOdsPaths[pnMapIndex]);
         CHanaObj__GetRealPath_486D9A(pszFileName, 1002);      // ODS dir
-        if (!LoadOds_4843CF(pszFileName, &pScene))
-            return -1;
+        if (!LoadOds_4843CF(pszFileName, &pScene)) {
+          DebugLog("[HNH][PlayExploring] error LoadOds %d\n", pnMapIndex);
+          return -1;
+        }
         UpdateCameraLinkedObjects_44451F(g_pCameraFrame);
         SetupHeroEntry_4593E0(pScene, pHeroBody->pSekHeader_220->pFrameT3EC, pnSubIndex);
         SetupItemBodies_459F81(pScene, pItemBodies,
@@ -916,8 +931,8 @@ LABEL_125:
                     goto LABEL_149;      // (skips the HP write-back below)
                 }
                 // retry the stage with the newly picked target
-                pnMapIndex = mapIndexTable[2 * nStageIndex - 1];
-                pnSubIndex = mapIndexTable[2 * nStageIndex];
+                pnMapIndex = mapIndexTable[2 * nStageIndex];
+                pnSubIndex = mapIndexTable[2 * nStageIndex + 1];
                 memcpy(&g_sceneState_52F7E0, &Src, sizeof(g_sceneState_52F7E0));
                 g_sceneState_52F7E0.protCurrentHP_C0 =
                         g_sceneState_52F7E0.protMaximumHP_C4 * 15.0f / 100.0f
@@ -1023,12 +1038,59 @@ LABEL_149:
             ppOut[i] = 0;
         }
     }
+    DebugLog("[HNH][PlayExploring] normal return %d\n", nMenuResult);
     return nMenuResult;
 }
 
 int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex);
 
 void register_PlayExploring_45BCAE() {
-  // hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK] <wrong object placed>
-  hnh_Hook(0x45BCAE, hook_PlayExploring_V2_45BCAE, "PlayExploring_V2_45BCAE");
+  //hnh_Hook(0x45BCAE, hook_PlayExploring_V2_45BCAE, "PlayExploring_V2_45BCAE");
+  hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK]
+
+  hnh_HookOff();
+  hnh_HookOn();
 }
+
+/**
+
+NOTES: < when hook on >
+
+[HNH] GameMainLoop :: PlayOdsDialogueScene_477F90 result = 0
+[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=3.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=3.000000
+[HNH] GameMainLoop :: PlayOdsDialogueScene_477F90 result = 0
+[HNH:SUB] PlayExploring_V2_45BCAE
+[HNH] GameMainLoop :: PlayExploring_45BCAE result = -1
+[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=50.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=25.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=25.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=50.000000
+[HNH] GameMainLoop :: PlayHunting_44C38D result = 1
+[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=50.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=25.000000
+
+---
+
+[HNH] GameMainLoop :: PlayOdsDialogueScene_477F90 result = 0
+[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=3.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=3.000000
+[HNH] GameMainLoop :: PlayOdsDialogueScene_477F90 result = 0
+[HNH:SUB] SetupHeroEntry_4593E0
+[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=50.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=25.000000
+[HNH:SUB] SysMenu_SaveMenu_462135
+[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=25.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=50.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=50.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=10.000000
+[HNH] GameMainLoop :: PlayExploring_45BCAE result = 0
+[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=50.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=25.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=25.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=50.000000
+[HNH] GameMainLoop :: PlayHunting_44C38D result = 1
+[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=50.000000
+[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=25.000000
+
+  */

@@ -705,11 +705,12 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
           g_sceneState_52F7E0.protCurrentHP_C0 = g_sceneState_52F7E0.protMaximumHP_C4;
       }
     }
-  } // g
-  
-  
+  } // g 
 }
 
 void register_ParseExecStr_487D89() {
-    hnh_Hook(0x487D89, hook_ParseExecStr_487D89, "ParseExecStr_487D89"); // [OK]
+  hnh_Hook(0x487D89, hook_ParseExecStr_487D89, "ParseExecStr_487D89"); // [OK]
+
+  hnh_HookOff();
+  hnh_HookOn();
 }

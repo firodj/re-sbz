@@ -1377,10 +1377,11 @@ LPVOID __cdecl hook_Surface_LockAndGetPointer(LPDIRECTDRAWSURFACE7 pSurface)
 }
 
 void register_PlayOdsDialogueScene_477F90() {
-    hnh_Hook(0x477F90, hook_PlayOdsDialogueScene_477F90, "PlayOdsDialogueScene_477F90"); // [OK]
-    hnh_Hook(0x47fa84, hook_DrawAdvanceDialogueText_47FA84, "DrawAdvanceDialogueText_47FA84");
+  hnh_Hook(0x477F90, hook_PlayOdsDialogueScene_477F90, "PlayOdsDialogueScene_477F90"); // [OK]
+
+  hnh_Hook(0x47fa84, hook_DrawAdvanceDialogueText_47FA84, "DrawAdvanceDialogueText_47FA84");
     
-    hnh_HookOff();
+  hnh_HookOff();
     hnh_Hook(0x4843cf, hook_LoadOds_4843CF, "LoadOds_4843CF"); // [OK]
     hnh_Hook(0x4018e1, hook_CSekBody__CutToAnim_4018E1, "CSekBody__CutToAnim_4018E1"); // [OK]
     hnh_Hook(0x4019e1, hook_CSekBody__UpdateAnim_4019E1, "CSekBody__UpdateAnim_4019E1"); // [OK]
@@ -1398,5 +1399,5 @@ void register_PlayOdsDialogueScene_477F90() {
     hnh_Hook(0x4196fd, hook_Surface_LockAndGetPointer, "Surface_LockAndGetPointer_4196FD"); // [OK]
     hnh_Hook(0x43a371, hook_CHanaAnimSetT3F1__BeginBlend_43A371, "CHanaAnimSetT3F1__BeginBlend_43A371"); // [OK]
     hnh_Hook(0x43a43f, hook_HanaAnim_UpdateBoneTransform, "HanaAnim_UpdateBoneTransform_43A43F"); // [OK]
-    hnh_HookOn();
+  hnh_HookOn();
 }

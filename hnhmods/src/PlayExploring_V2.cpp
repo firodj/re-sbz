@@ -27,8 +27,8 @@ int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex)
   CSceneState pSceneState_v18; // [esp+8Ch] [ebp-2FFCh] BYREF
   float fTextSpeed; // [esp+21Ch] [ebp-2E6Ch]
   HGLOBAL pTmpAnimSet; // [esp+220h] [ebp-2E68h] BYREF
-  int v21; // [esp+224h] [ebp-2E64h]
-  _DWORD mapIndexTable[49]; // [esp+228h] [ebp-2E60h] BYREF
+  
+  _DWORD mapIndexTable[50]; // [esp+224h] [ebp-2E64h]
   _DWORD subStageTable[15]; // [esp+2ECh] [ebp-2D9Ch] BYREF
   String20 szSxxWav[3]; // [esp+328h] [ebp-2D60h] BYREF
   float pfExecTime; // [esp+364h] [ebp-2D24h] BYREF
@@ -90,7 +90,8 @@ int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex)
   WORD wBtnMouse; // [esp+3080h] [ebp-8h] BYREF
   int nTargetSprite; // [esp+3084h] [ebp-4h]
 
-  ONCELOG("[HNH:SUB] hook_PlayExploring_V2_45BCAE\n");
+  ONCELOG("[HNH:SUB] PlayExploring_V2_45BCAE\n");
+  DebugLog("[HNH] init variables\n");
 
   nMenuResult = -1;
   szMapOdfPaths[0][0] = 0;
@@ -769,29 +770,31 @@ int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex)
   bSkipMode = 0;
   nTargetSprite = 0;
   pCamFrame = 0;
-  v21 = 22;
-  mapIndexTable[0] = 2;
-  mapIndexTable[1] = 22;
-  mapIndexTable[2] = 3;
-  mapIndexTable[3] = 22;
-  mapIndexTable[4] = 1;
-  mapIndexTable[5] = 22;
-  mapIndexTable[6] = 0;
-  mapIndexTable[7] = 22;
-  mapIndexTable[8] = 0;
-  mapIndexTable[9] = 2;
-  mapIndexTable[10] = 0;
-  mapIndexTable[11] = 23;
-  mapIndexTable[12] = 2;
-  mapIndexTable[13] = 8;
-  mapIndexTable[14] = 0;
-  mapIndexTable[15] = 16;
-  mapIndexTable[16] = 0;
-  mapIndexTable[17] = 16;
-  mapIndexTable[18] = 1;
-  mapIndexTable[19] = 5;
-  mapIndexTable[20] = 1;
-  memset(&mapIndexTable[21], 0, 0x70u);
+ 
+  mapIndexTable[0] = 22;
+  mapIndexTable[1] = 2;
+  mapIndexTable[2] = 22;
+  mapIndexTable[3] = 3;
+  mapIndexTable[4] = 22;
+  mapIndexTable[5] = 1;
+  mapIndexTable[6] = 22;
+  mapIndexTable[7] = 0;
+  mapIndexTable[8] = 22;
+  mapIndexTable[9] = 0;
+  mapIndexTable[10] = 2;
+  mapIndexTable[11] = 0;
+  mapIndexTable[12] = 23;
+  mapIndexTable[13] = 2;
+  mapIndexTable[14] = 8;
+  mapIndexTable[15] = 0;
+  mapIndexTable[16] = 16;
+  mapIndexTable[17] = 0;
+  mapIndexTable[18] = 16;
+  mapIndexTable[19] = 1;
+  mapIndexTable[20] = 5;
+  mapIndexTable[21] = 1;
+  memset(&mapIndexTable[22], 0, 0x70u);
+
   subStageTable[0] = 0;
   subStageTable[1] = 0;
   subStageTable[2] = 1;
@@ -824,8 +827,8 @@ int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex)
   memset(pSpriteNames, 0, sizeof(pSpriteNames));
   memset(ppOut, 0, 0x28u);
   memcpy(&g_sceneState_52F7E0, Src, sizeof(g_sceneState_52F7E0));
-  pnMapIndex = mapIndexTable[2 * nStageIndex - 1];
-  pnSubIndex = mapIndexTable[2 * nStageIndex];
+  pnMapIndex = mapIndexTable[2 * nStageIndex];
+  pnSubIndex = mapIndexTable[2 * nStageIndex + 1];
   fHeroHp = g_sceneState_52F7E0.protCurrentHP_C0;
   fHeroHpMax = g_sceneState_52F7E0.protMaximumHP_C4;
   g_sceneState_52F7E0.bCurrentSubStage = subStageTable[nStageIndex];
@@ -835,28 +838,20 @@ int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex)
   SetTimerScaleFactor(14.0);
   memcpy(Src, &g_sceneState_52F7E0, sizeof(Src));
   memset(pDSBuf, 0, sizeof(pDSBuf));
+
+  DebugLog("[HNH] loading assets\n");
+  
   for ( i = 0; i < 10; ++i )
   {
     wsprintfA(pszFileName, "%s.wav", szSfxWavNames[i]);
     CHanaObj__GetRealPath_486D9A(pszFileName, 1009);// get g_szSEPath
-    Wav_422E7B = LoadWav_422E7B(pszFileName);
-    pDSBuf[i] = Wav_422E7B;
+    pDSBuf[i] = LoadWav_422E7B(pszFileName);
   }
+
   strcpy((char *)szSxxWav[0].str, "s007.wav");
-  *(_DWORD *)&szSxxWav[0].str[9] = 0;
-  *(_DWORD *)&szSxxWav[0].str[13] = 0;
-  *(_WORD *)&szSxxWav[0].str[17] = 0;
-  szSxxWav[0].str[19] = 0;
   strcpy((char *)szSxxWav[1].str, "s008.wav");
-  *(_DWORD *)&szSxxWav[1].str[9] = 0;
-  *(_DWORD *)&szSxxWav[1].str[13] = 0;
-  *(_WORD *)&szSxxWav[1].str[17] = 0;
-  szSxxWav[1].str[19] = 0;
   strcpy((char *)szSxxWav[2].str, "s009.wav");
-  *(_DWORD *)&szSxxWav[2].str[9] = 0;
-  *(_DWORD *)&szSxxWav[2].str[13] = 0;
-  *(_WORD *)&szSxxWav[2].str[17] = 0;
-  szSxxWav[2].str[19] = 0;
+  
   if ( !nStageIndex || nStageIndex == 2 || nStageIndex == 4 || nStageIndex == 6 || nStageIndex == 9 )
   {
     i = 0;
@@ -903,15 +898,19 @@ int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex)
   CHanaObj__GetRealPath_486D9A(pszFileName, 1005);// get g_szODFPath
   wsprintfA(String, "otoko\\otoko.odf");
   CHanaObj__GetRealPath_486D9A(String, 1005);   // get g_szODFPath
-  if ( !LoadSekAndOdf_4445DD(pszFileName, String, &pHeroBody) )
+  if (!LoadSekAndOdf_4445DD(pszFileName, String, &pHeroBody)) {
+    DebugLog("[HNH] PlayExploring_V2 :: failed LoadSekAndOdf_4445DD (%s, %s)\n", pszFileName, String);
     return -1;
+  }
   pCamFrame = CHanaFrameT3EC__FindByName_483650(pHeroBody->pSekHeader_220->pFrameT3EC, "Frame5_o00_02_head");
   wsprintfA(pszFileName, "lockon\\lock.sek");
   CHanaObj__GetRealPath_486D9A(pszFileName, 1005);// get g_szODFPath
   wsprintfA(String, "lockon\\lock.odf");
   CHanaObj__GetRealPath_486D9A(String, 1005);   // get g_szODFPath
-  if ( !LoadSekAndOdf_4445DD(pszFileName, String, &pSekBody) )
+  if (!LoadSekAndOdf_4445DD(pszFileName, String, &pSekBody)) {
+    DebugLog("[HNH] PlayExploring_V2 :: failed LoadSekAndOdf_4445DD (%s, %s)\n", pszFileName, String);
     return -1;
+  }
   CSekBody__CutToAnim_4018E1(pSekBody, 0);
   for ( i = 1; i <= 7; ++i )
   {
@@ -919,8 +918,10 @@ int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex)
     CHanaObj__GetRealPath_486D9A(pszFileName, 1005);// get g_szODFPath
     wsprintfA(String, "%s.odf", szItemSekNames[i]);
     CHanaObj__GetRealPath_486D9A(String, 1005); // get g_szODFPath
-    if ( !LoadSekAndOdf_4445DD(pszFileName, String, &pItemBodies[i]) )
+    if (!LoadSekAndOdf_4445DD(pszFileName, String, &pItemBodies[i])) {
+      DebugLog("[HNH] PlayExploring_V2 :: failed LoadSekAndOdf_4445DD <%d> (%s, %s)\n", i, pszFileName, String);
       return -1;
+    }
     CSekBody__CutToAnim_4018E1(pItemBodies[i], 0);
   }
   if ( pBgmBuffer )
@@ -942,8 +943,10 @@ int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex)
     }
     wsprintfA(pszFileName, szMapOdfPaths[pnMapIndex]);
     CHanaObj__GetRealPath_486D9A(pszFileName, 1005);
-    if ( !ParseODFFile_441F19(pszFileName, (CHanaFrameT3EC_S354 **)&pMapFrame, (CHanaAnimSetT3F1_S150 **)&pTmpAnimSet) )
+    if (!ParseODFFile_441F19(pszFileName, (CHanaFrameT3EC_S354**)&pMapFrame, (CHanaAnimSetT3F1_S150**)&pTmpAnimSet)) {
+      DebugLog("[HNH] PlayExploring_V2 :: failed ParseODFFile_441F19 (%s)\n", pszFileName);
       return -1;
+    }
     if ( pTmpAnimSet )
     {
       CHanaObj__Free_40C1E4((CHanaBase_S130 *)pTmpAnimSet);
@@ -968,8 +971,10 @@ int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex)
     }
     wsprintfA(pszFileName, szSceneOdsPaths[pnMapIndex]);
     CHanaObj__GetRealPath_486D9A(pszFileName, 1002);
-    if ( !LoadOds_4843CF(pszFileName, &pScene) )
+    if (!LoadOds_4843CF(pszFileName, &pScene)) {
+      DebugLog("[HNH] PlayExploring_V2 :: failed LoadOds_4843CF (%s)\n", pszFileName);
       return -1;
+    }
     UpdateCameraLinkedObjects_44451F(g_pCameraFrame);
     SetupHeroEntry_4593E0(pScene, pHeroBody->pSekHeader_220->pFrameT3EC, pnSubIndex);
     SetupItemBodies_459F81(pScene, pItemBodies, arrItemPlaceData[subStageTable[nStageIndex]][pnMapIndex], pnMapIndex);
@@ -1353,8 +1358,8 @@ int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex)
           nMenuResult = 1;
           goto LABEL_149;
         }
-        pnMapIndex = mapIndexTable[2 * nStageIndex - 1];
-        pnSubIndex = mapIndexTable[2 * nStageIndex];
+        pnMapIndex = mapIndexTable[2 * nStageIndex];
+        pnSubIndex = mapIndexTable[2 * nStageIndex + 1];
         memcpy(&g_sceneState_52F7E0, Src, sizeof(g_sceneState_52F7E0));
         g_sceneState_52F7E0.protCurrentHP_C0 = g_sceneState_52F7E0.protMaximumHP_C4 * 15.0 / 100.0
           + g_sceneState_52F7E0.protCurrentHP_C0;
@@ -1457,6 +1462,7 @@ LABEL_149:
       ppOut[i] = 0;
     }
   }
+  DebugLog("[HNH] PlayExploring_V2 :: normal return %d\n", nMenuResult);
   return nMenuResult;
 }
 

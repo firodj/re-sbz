@@ -1057,4 +1057,7 @@ LABEL_154:
 
 void register_PlayHunting_44C38D() {
   hnh_Hook(0x44C38D, hook_PlayHunting_44C38D, "PlayHunting_44C38D"); // [OK]
+
+  hnh_HookOff();
+  hnh_HookOn();
 }
