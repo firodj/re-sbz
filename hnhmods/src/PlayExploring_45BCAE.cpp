@@ -132,8 +132,6 @@ HRESULT (__cdecl*DrawSpriteListEcho_45B2FB)(CHanaSpriteT3F6_S1FC **arrSprites, i
     float fDeltaTime) =
     reinterpret_cast<HRESULT(__cdecl*)(CHanaSpriteT3F6_S1FC **, int, float)>(0x45B2FB);
 
-void (__cdecl*nop_4863C3)(void) = reinterpret_cast<void(__cdecl*)()>(0x4863C3);
-
 // === PINNED GLOBALS ===
 int &g_dwBattleMode_52ED04 = *(int *)0x52ED04; // WRITABLE
 
@@ -861,7 +859,6 @@ LABEL_84:
                 DrawClockHud_44AF5B(pSprNumbers, 100, -5, 100 * nTimeLimit - (int)nElapsed / 10);
             }
             DrawSpriteListEcho_45B2FB(ppOut, nTargetSprite, fDeltaTime);
-            nop_4863C3();
 
             if (bFirstFrameDone)
             {
@@ -1029,9 +1026,9 @@ LABEL_149:
     return nMenuResult;
 }
 
+int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex);
+
 void register_PlayExploring_45BCAE() {
-  hnh_HookOff();
-  
-  hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK] <wrong object placed>
-  hnh_HookOn();
+  // hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK] <wrong object placed>
+  hnh_Hook(0x45BCAE, hook_PlayExploring_V2_45BCAE, "PlayExploring_V2_45BCAE");
 }

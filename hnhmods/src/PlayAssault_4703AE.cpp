@@ -121,11 +121,6 @@ int (__cdecl*PlayCutInScene_46A76F)(CHanaSceneT458_S504 *pScene,
       CSekBody *, CSekBody *, int, CSoundStruct_8 **, CSoundStruct_8 **,
       CSekBody **, int)>(0x46A76F);
 
-// --- pinned in PlayExploring_45BCAE.cpp; extern here call-only ---
-
-extern int (__cdecl*LoadSekAndOdf_4445DD)(LPCSTR, LPCSTR, CSekBody **);
-extern void (__cdecl*nop_4863C3)(void);
-
 // === PINNED GLOBALS ===
 // (none new - g_pDSBuf_52EFD0 is pinned in RunModeSelectScreen.cpp; every
 //  other global used here is already extern in shared.hpp)
@@ -870,7 +865,6 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
                 }
                 g_pD3DDevice_4D6C78->EndScene();
             }
-            nop_4863C3();
             PresentFrame();
             HanaVert_DrawBatch(0);
 

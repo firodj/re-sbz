@@ -173,22 +173,6 @@ int (__cdecl*UpdateCameraFollow_44C028)(CSekBody *pHeroBody, CSekBody *pFoeBody,
     float fDeltaTime) =
     reinterpret_cast<int(__cdecl*)(CSekBody *, CSekBody *, float)>(0x44C028);
 
-// --- pinned in PlayExploring_45BCAE.cpp; extern here call-only ---
-
-extern int (__cdecl*LoadSekAndOdf_4445DD)(LPCSTR, LPCSTR, CSekBody **);
-extern CObjItemRef_S208 *(__cdecl*UpdateCameraLinkedObjects_44451F)(
-    CHanaFrameT3EC_S354 *);
-extern int (__cdecl*BuildMapSubFrames_443DD5)(CHanaFrameT3EC_S354 *);
-extern CHanaSpriteT3F6_S1FC *(__cdecl*InitHudResources_4490A7)(
-    CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **,
-    int);
-extern void (__cdecl*UpdateCameraFollow_445525)(CHanaFrameT3EC_S354 *,
-    CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *, float, int);
-extern HRESULT (__cdecl*DrawClockHud_44AF5B)(CHanaSpriteT3F6_S1FC **, int, int,
-    int);
-extern int (__cdecl*ShowMouseSelectDialog_4573CF)(CHanaSpriteT3F6_S1FC **,
-    LPDIRECTSOUNDBUFFER *);
-extern void (__cdecl*nop_4863C3)(void);
 
 // === PINNED GLOBALS ===
 
@@ -905,7 +889,6 @@ LABEL_68:
             DrawFadeOutSpark_45669F(arrSparkSprites, fDelta);
             if (bFirstFrameDone)
             {
-                nop_4863C3();
                 PresentFrame();
                 HanaVert_DrawBatch(0);
             }
