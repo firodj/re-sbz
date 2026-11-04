@@ -79,11 +79,7 @@ typedef double(__cdecl *WanaAttackFn)(CSekBody *pWanaBody, CSekBody *pHeroBody,
     float *pfHeroHp, float fDeltaTime, float fAttackParam,
     CHanaFrameT3EC_S354 *pMapFrame);
 
-char (__cdecl*UpdateHeroBody_44474E)(CSekBody *pHeroBody,
-    CHanaFrameT3EC_S354 *pMapFrame, float fDeltaTime, float *pfHeroHp,
-    float fHeroHpMax) =
-    reinterpret_cast<char(__cdecl*)(CSekBody *, CHanaFrameT3EC_S354 *, float,
-      float *, float)>(0x44474E);
+
 
 double (__cdecl*UpdateFoeAI_446A38)(CSekBody *pFoeBody, CSekBody *pHeroBody,
     CHanaFrameT3EC_S354 *pMapFrame, int *pOccGrid, float fDeltaTime,
