@@ -1,6 +1,6 @@
 # CURRENT - GOALS coverage in hnhmods/src
 
-Generated 2026-11-03 by `py tools/gen_current.py` from `hnhmods/GOALS.md`
+Generated 2026-11-04 by `py tools/gen_current.py` from `hnhmods/GOALS.md`
 vs `hnhmods/src/*.cpp` (function data via `tools/scan_cpp.py`).
 
 Legend:
@@ -240,7 +240,7 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   │   ├──0x481637 InputThread_Relative_481637                         <- [HOOK StopAndRestartThread.cpp]
     │   │   │   │   │   │   └──0x481a35 TerminateThreadGracefully                               <- [HOOK+PTR StopAndRestartThread.cpp]
     │   │   │   │   │   ├──0x462fe9 SysMenu_Options_462FE9                                      <- [HOOK+PTR SysMenu_Options_462FE9.cpp]
-    │   │   │   │   ├──0x4863c3 nop_4863C3                                                      <- [PTR PlayExploring_45BCAE.cpp]
+    │   │   │   │   ├──0x4863c3 nop_4863C3                                                      <- [todo]
     │   │   │   │   ├──0x45a4d8 GetMouseXY_45A4D8                                               <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   │   │   ├──0x481170 IsMenuKeyPressed_481170                                         <- [HOOK+PTR MenuCharSelect.cpp]
     │   │   │   │   └──0x422e7b LoadWav_422E7B                                                  <- [HOOK+PTR LoadSoundEffects_47EB7F.cpp]
@@ -482,10 +482,10 @@ Done 460
 
 - tree functions:      460
 - hooked:              331 (HOOK or HOOK+PTR)
-- pinned:              371 (PTR or HOOK+PTR)
+- pinned:              370 (PTR or HOOK+PTR)
 - fully covered:       325 (HOOK+PTR)
 - implemented only:    1
-- untouched:           82
+- untouched:           83
 
 ## Per-file status (scan_cpp.py)
 
@@ -740,13 +740,13 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              20 (19 func-ptr imports)
+  globals:              19 (18 func-ptr imports)
   functions:            2 (1 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   1/1
   hnh_Hook-registered:  1/1
   func-ptrs declared:   1/1
-  func-ptrs w/o hook:   18/19
-  no hook function for: LoadSekAndOdf_4445DD, UpdateCameraLinkedObjects_44451F, BuildMapSubFrames_443DD5, InitHudResources_4490A7, UpdateCameraFollow_445525, SetupItemBodies_459F81, UpdateHeroControl_45A513, FindTargetInRange_45A1AD, ApplyTargetEffect_45A2BA, UpdateLockonEvent_45953B, CheckSceneTransition_459768, GetSceneEventTime_459CA2, UpdateHudGauge_44BC36, DrawClockHud_44AF5B, PrepareTargetSelect_45B5BD, ShowMouseSelectDialog_4573CF, DrawSpriteListEcho_45B2FB, nop_4863C3
+  func-ptrs w/o hook:   17/18
+  no hook function for: LoadSekAndOdf_4445DD, UpdateCameraLinkedObjects_44451F, BuildMapSubFrames_443DD5, InitHudResources_4490A7, UpdateCameraFollow_445525, SetupItemBodies_459F81, UpdateHeroControl_45A513, FindTargetInRange_45A1AD, ApplyTargetEffect_45A2BA, UpdateLockonEvent_45953B, CheckSceneTransition_459768, GetSceneEventTime_459CA2, UpdateHudGauge_44BC36, DrawClockHud_44AF5B, PrepareTargetSelect_45B5BD, ShowMouseSelectDialog_4573CF, DrawSpriteListEcho_45B2FB
 ```
 
 ### hnhmods/src/PlayHunting_44C38D.cpp

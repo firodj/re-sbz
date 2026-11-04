@@ -950,79 +950,77 @@ void __cdecl hook_DrawAdvanceDialogueText_47FA84(CHanaSceneT458_S504 *pScene, in
   v13 = 0.0;
   alpha = 0.0;
   bIsOk = 0;
-  if ( pScene && pScene->pSprWindowBmp[3] && pScene->ptrStrData_260 )
+  if (!pScene || !pScene->pSprWindowBmp[3] || !pScene->ptrStrData_260) return;
+  
+  alpha = CHanaSpriteT3F6__GetAlpha_414AFB(pScene->pSprWindowBmp[3]);
+  SetRect(&rc, 0, 0, 24, 24);
+  for ( i = 0; i < 4; ++i )
   {
-    alpha = CHanaSpriteT3F6__GetAlpha_414AFB(pScene->pSprWindowBmp[3]);
-    SetRect(&rc, 0, 0, 24, 24);
-    for ( i = 0; i < 4; ++i )
+    for ( j = 0; j < 29; ++j )
     {
-      for ( j = 0; j < 29; ++j )
+      if ( pScene->textSprites_264[i][j] )
       {
-        if ( pScene->textSprites_264[i][j] )
+        SetRect(&rc1, 22 * j, 22 * i, 22 * (j + 1) + 2, 22 * (i + 1) + 2);
+        if ( pScene->textSprites_264[i][j]->bOk_10C == 1 )
         {
-          SetRect(&rc1, 22 * j, 22 * i, 22 * (j + 1) + 2, 22 * (i + 1) + 2);
-          if ( pScene->textSprites_264[i][j]->bOk_10C == 1 )
-          {
-            bIsOk = 1;
-            break;
-          }
-          v13 = v13 + 1.0;
-          g_pD3DDevice_4D6C78->SetTexture(0, 0);
-          CHanaObj__SetAlpha3F6(pScene->textSprites_264[i][j], alpha);
-          v10 = ConvertFrom640AsInt(22 * (i + 1) + 10 * i + 272);
-          v8 = ConvertFrom640AsInt(22 * (j + 2) + 67);
-          v6 = ConvertFrom640AsInt(32 * i + 270);
-          v4 = ConvertFrom640AsInt(22 * (j + 1) + 65);
-          SetRect(&rc1, v4, v6, v8, v10);
-          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
-          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
-          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
-          DrawSpriteLTRB(pScene->textSprites_264[i][j], rc1.left, rc1.top, rc1.right, rc1.bottom);
-          DrawSpriteLTRB(pScene->textSprites_264[i][j], rc1.left, rc1.top, rc1.right, rc1.bottom);
+          bIsOk = 1;
+          break;
         }
-      }
-      if ( bIsOk == 1 )
-        break;
-    }
-    for ( k = 0; k < 3; ++k )
-    {
-      if ( ConvertFrom640AsInt(32 * k + 270) <= yMouse && ConvertFrom640AsInt(22 * (k + 1) + 10 * k + 270) >= yMouse )
-      {
+        v13 = v13 + 1.0;
+        g_pD3DDevice_4D6C78->SetTexture(0, 0);
+        CHanaObj__SetAlpha3F6(pScene->textSprites_264[i][j], alpha);
+        v10 = ConvertFrom640AsInt(22 * (i + 1) + 10 * i + 272);
+        v8 = ConvertFrom640AsInt(22 * (j + 2) + 67);
+        v6 = ConvertFrom640AsInt(32 * i + 270);
+        v4 = ConvertFrom640AsInt(22 * (j + 1) + 65);
+        SetRect(&rc1, v4, v6, v8, v10);
         g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
         g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
-        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 2);
-        bottom1 = ConvertFrom640AsInt(22 * (k + 1) + 10 * k + 275);
-        right1 = ConvertFrom640AsInt(550);
-        top1 = ConvertFrom640AsInt(32 * k + 265);
-        left1 = ConvertFrom640AsInt(90);
-        SetRect(&rc1, left1, top1, right1, bottom1);
-        if ( pScene->pSprWindowBmp[4] )
-          DrawSpriteLTRB(pScene->pSprWindowBmp[4], rc1.left, rc1.top, rc1.right, rc1.bottom);
-        if ( wBtn == 1 )
-        {
-          currentk = 0;
-          for ( m = 0; m < 200; ++m )
-          {
-            if ( *((_BYTE *)pScene->ptrStrData_260 + pScene->dwPtrCurrent_448 - 1) == '*' )
-            {
-              if ( currentk == k )
-              {
-                pScene->by_463 = 0;
-                pScene->flt_454 = 0.0;
-                pScene->flt_458 = 0.050000001;
-                return;
-              }
-              ++currentk;
-            }
-            ++pScene->dwPtrCurrent_448;
-          }
-        }
-        return;
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
+        DrawSpriteLTRB(pScene->textSprites_264[i][j], rc1.left, rc1.top, rc1.right, rc1.bottom);
+        DrawSpriteLTRB(pScene->textSprites_264[i][j], rc1.left, rc1.top, rc1.right, rc1.bottom);
       }
+    }
+    if ( bIsOk == 1 )
+      break;
+  }
+  for ( k = 0; k < 3; ++k )
+  {
+    if ( ConvertFrom640AsInt(32 * k + 270) <= yMouse && ConvertFrom640AsInt(22 * (k + 1) + 10 * k + 270) >= yMouse )
+    {
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 2);
+      bottom1 = ConvertFrom640AsInt(22 * (k + 1) + 10 * k + 275);
+      right1 = ConvertFrom640AsInt(550);
+      top1 = ConvertFrom640AsInt(32 * k + 265);
+      left1 = ConvertFrom640AsInt(90);
+      SetRect(&rc1, left1, top1, right1, bottom1);
+      if ( pScene->pSprWindowBmp[4] )
+        DrawSpriteLTRB(pScene->pSprWindowBmp[4], rc1.left, rc1.top, rc1.right, rc1.bottom);
+      if ( wBtn == 1 )
+      {
+        currentk = 0;
+        for ( m = 0; m < 200; ++m )
+        {
+          if (pScene->ptrStrData_260[pScene->dwPtrCurrent_448 - 1] == '*')
+          {
+            if ( currentk == k )
+            {
+              pScene->by_463 = 0;
+              pScene->flt_454 = 0.0;
+              pScene->flt_458 = 0.050000001;
+              return;
+            }
+            ++currentk;
+          }
+          ++pScene->dwPtrCurrent_448;
+        }
+      }
+      return;
     }
   }
 }
-
 
 // DrawDialogueText_4803B5 -- scrolling dialogue-text renderer (glyph half of
 // DrawDialogueWindow_480B2D; called with the frame time x speed multiplier).
