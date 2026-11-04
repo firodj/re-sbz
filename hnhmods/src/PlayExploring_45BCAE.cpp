@@ -1042,55 +1042,10 @@ LABEL_149:
     return nMenuResult;
 }
 
-int __cdecl hook_PlayExploring_V2_45BCAE(int nStageIndex);
-
 void register_PlayExploring_45BCAE() {
-  //hnh_Hook(0x45BCAE, hook_PlayExploring_V2_45BCAE, "PlayExploring_V2_45BCAE");
+
   hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK]
 
   hnh_HookOff();
   hnh_HookOn();
 }
-
-/**
-
-NOTES: < when hook on >
-
-[HNH] GameMainLoop :: PlayOdsDialogueScene_477F90 result = 0
-[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=3.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=3.000000
-[HNH] GameMainLoop :: PlayOdsDialogueScene_477F90 result = 0
-[HNH:SUB] PlayExploring_V2_45BCAE
-[HNH] GameMainLoop :: PlayExploring_45BCAE result = -1
-[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=50.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=25.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=25.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=50.000000
-[HNH] GameMainLoop :: PlayHunting_44C38D result = 1
-[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=50.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=25.000000
-
----
-
-[HNH] GameMainLoop :: PlayOdsDialogueScene_477F90 result = 0
-[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=3.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=3.000000
-[HNH] GameMainLoop :: PlayOdsDialogueScene_477F90 result = 0
-[HNH:SUB] SetupHeroEntry_4593E0
-[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=50.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=25.000000
-[HNH:SUB] SysMenu_SaveMenu_462135
-[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=25.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=50.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=50.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=10.000000
-[HNH] GameMainLoop :: PlayExploring_45BCAE result = 0
-[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=50.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=25.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=25.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=50.000000
-[HNH] GameMainLoop :: PlayHunting_44C38D result = 1
-[HNH:SUB] PlayScreenFade_4874DE dir=1 scale=50.000000
-[HNH:SUB] PlayScreenFade_4874DE dir=0 scale=25.000000
-
-  */
