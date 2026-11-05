@@ -122,6 +122,7 @@ typedef int bool;       // we want to use bool in our C programs
 #ifndef LOWORD
 #define LOWORD(x)  WORDn(x,LOW_IND(x,_WORD))
 #endif
+#define LOWORD_(x)  WORDn(x,LOW_IND(x,_WORD))
 
 #define LODWORD(x) DWORDn(x,LOW_IND(x,_DWORD))
 

@@ -113,9 +113,6 @@ double (__cdecl*GetSceneEventTime_459CA2)(CHanaSceneT458_S504 *pScene,
 HRESULT (__cdecl*UpdateHudGauge_44BC36)(CHanaSpriteT3F6_S1FC **pHudRes, int nCurHp, int nMaxHp) =
     reinterpret_cast<HRESULT(__cdecl*)(CHanaSpriteT3F6_S1FC **, int, int)>(0x44BC36);
 
-HRESULT (__cdecl*DrawClockHud_44AF5B)(CHanaSpriteT3F6_S1FC **arrSprNumbers, int nX, int nY,
-    int nTimeLeft) =
-    reinterpret_cast<HRESULT(__cdecl*)(CHanaSpriteT3F6_S1FC **, int, int, int)>(0x44AF5B);
 
 int (__cdecl*PrepareTargetSelect_45B5BD)(CSekBody *pHeroBody, CSekBody **pItemBodies,
     CSekBody **pSpriteNames, CHanaFrameT3EC_S354 *pMapFrame, CHanaSpriteT3F6_S1FC **arrSprNumbers,

@@ -592,8 +592,7 @@ extern int (__cdecl*CheckSceneTransition_459768)(CHanaSceneT458_S504 *pScene,
 extern double (__cdecl*GetSceneEventTime_459CA2)(CHanaSceneT458_S504 *pScene,
   CHanaFrameT3EC_S354 *pHeroFrame, unsigned int *pnCursor, int nMapIndex);
 extern HRESULT(__cdecl* UpdateHudGauge_44BC36)(CHanaSpriteT3F6_S1FC** pHudRes, int nCurHp, int nMaxHp);
-extern HRESULT (__cdecl*DrawClockHud_44AF5B)(CHanaSpriteT3F6_S1FC **arrSprNumbers, int nX, int nY,
-  int nTimeLeft);
+
 extern int (__cdecl*PrepareTargetSelect_45B5BD)(CSekBody *pHeroBody, CSekBody **pItemBodies,
   CSekBody **pSpriteNames, CHanaFrameT3EC_S354 *pMapFrame, CHanaSpriteT3F6_S1FC **arrSprNumbers,
   CHanaSpriteT3F6_S1FC **arrSprTimes, float fHeroHp, float fHeroHpMax, int nTimeLimit,
@@ -606,7 +605,21 @@ extern void(__cdecl* HanaMatrix_BuildLookAtAndTransform)(CHanaFrameT3EC_S354* pF
 extern void(__cdecl* UpdateCameraFollowChase_445525)(CHanaFrameT3EC_S354* pHeroFrame,
   CHanaFrameT3EC_S354* pCameraFrame, CHanaFrameT3EC_S354* pMapFrame, float fTime, int bMove);
 
-extern void(__cdecl* InterpolateHanaAnimFrame)(CHanaAnimT3F0_S240* pAnim, float fTime); // in: ParseODFContent
+extern void(__cdecl* InterpolateHanaAnimFrame)(CHanaAnimT3F0_S240* pAnim, float fTime); // in: ParseODFContent.cpp
+
+extern void(__cdecl* HanaMate_SetMaterial)(CHanaMateT3EE_S184* pMate); // in: ProcessFrame.cpp
+extern double (*GetProjectionFov_40DCF6)(); // in: ProcessFrame.cpp
+
+extern void(__cdecl* PlayCinematicSequence_45460A)(CHanaSceneT458_S504* pOdsScene,
+  CSekBody* pHeroBody, CSekBody* pFoeBody, CHanaFrameT3EC_S354* pMapFrame,
+  CHanaSpriteT3F6_S1FC** pArrHudMeters, CHanaSpriteT3F6_S1FC** pArrSprites,
+  float* pfHeroHp, float fFieldC4, float* pfAggro, float fAggroMax,
+  int* pnClockBase, unsigned int* pdwElapsedMs, int dwClockBase2,
+  CSoundStruct_8** arrVoiceBufs, CHanaSpriteT3F6_S1FC* pMaskBmp); // in: PlayCinematicSequence.cpp
+extern void* (__cdecl* DrawRecViewfinder_44B23B)(CHanaSpriteT3F6_S1FC** pSprites,
+  int nHeroHp, int nHeroHpMax, int nAggro, int nAggroMax); // in: PlayHunting.cpp
+extern void(__cdecl* DrawClockHud_44AF5B)(CHanaSpriteT3F6_S1FC** arrSprNumbers, int nX, int nY,
+  int nTimeLeft); // in: PlayCinematicSequence.cpp
 #endif
 
 // == MACROS
