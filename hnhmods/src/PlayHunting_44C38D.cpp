@@ -3,6 +3,127 @@
 #include "console.hpp"
 #include "shared.hpp"
 
+// === PINNED GAME FUNCTIONS ===
+int (__cdecl*PlayHunting_44C38D)(int nDuelIndex) =
+    reinterpret_cast<int(__cdecl*)(int)>(0x44C38D);
+double (__cdecl*UpdateFoeAI_446A38)(CSekBody *pFoeBody, CSekBody *pHeroBody,
+  CHanaFrameT3EC_S354 *pMapFrame, char *pOccGrid, float fDeltaTime,
+  float *pfAggro, float *pfHeroHp, float fAggroMax, int nDuelIndex) =
+  reinterpret_cast<double(__cdecl*)(CSekBody *, CSekBody *,
+    CHanaFrameT3EC_S354 *, char *, float, float *, float *, float, int)>(0x446A38);
+
+
+// --- not yet extracted; pinned here call-only ---
+
+typedef double(__cdecl *WanaAttackFn)(CSekBody *pWanaBody, CSekBody *pHeroBody,
+    float *pfHeroHp, float fDeltaTime, float fAttackParam,
+    CHanaFrameT3EC_S354 *pMapFrame);
+
+
+double (__cdecl*WanaAttack_Close_4535DE)(CSekBody *pWanaBody, CSekBody *pHeroBody,
+    float *pfHeroHp, float fDeltaTime, float fAttackParam,
+    CHanaFrameT3EC_S354 *pMapFrame) = reinterpret_cast<WanaAttackFn>(0x4535DE);
+
+double (__cdecl*WanaAttack_Knockback_4536F6)(CSekBody *pWanaBody,
+    CSekBody *pHeroBody, float *pfHeroHp, float fDeltaTime, float fAttackParam,
+    CHanaFrameT3EC_S354 *pMapFrame) = reinterpret_cast<WanaAttackFn>(0x4536F6);
+
+double (__cdecl*WanaAttack_Charged_4539D1)(CSekBody *pWanaBody,
+    CSekBody *pHeroBody, float *pfHeroHp, float fDeltaTime, float fAttackParam,
+    CHanaFrameT3EC_S354 *pMapFrame) = reinterpret_cast<WanaAttackFn>(0x4539D1);
+
+double (__cdecl*WanaAttack_Projectile_453B92)(CSekBody *pWanaBody,
+    CSekBody *pHeroBody, float *pfHeroHp, float fDeltaTime, float fAttackParam,
+    CHanaFrameT3EC_S354 *pMapFrame) = reinterpret_cast<WanaAttackFn>(0x453B92);
+
+bool (__cdecl*IsFoeWithinHeroRange_448B78)(CSekBody *pHeroBody,
+    CSekBody *pFoeBody) =
+    reinterpret_cast<bool(__cdecl*)(CSekBody *, CSekBody *)>(0x448B78);
+
+void (__cdecl*PlayCinematicSequence_45460A)(CHanaSceneT458_S504 *pOdsScene,
+    CSekBody *pHeroBody, CSekBody *pFoeBody, CHanaFrameT3EC_S354 *pMapFrame,
+    CHanaSpriteT3F6_S1FC **pArrHudMeters, CHanaSpriteT3F6_S1FC **pArrSprites,
+    float *pfHeroHp, float fFieldC4, float *pfAggro, float fAggroMax,
+    int *pnClockBase, unsigned int *pdwElapsedMs, int dwClockBase2,
+    CSoundStruct_8 **arrVoiceBufs, CHanaSpriteT3F6_S1FC *pMaskBmp) =
+    reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, CSekBody *,
+      CSekBody *, CHanaFrameT3EC_S354 *, CHanaSpriteT3F6_S1FC **,
+      CHanaSpriteT3F6_S1FC **, float *, float, float *, float, int *, unsigned int *,
+      int, CSoundStruct_8 **, CHanaSpriteT3F6_S1FC *)>(0x45460A);
+
+void (__cdecl*RenderDualBodyScene_456807)(CHanaSceneT458_S504 *pScene,
+    CSekBody *pBodyA, CSekBody *pBodyB, CHanaSpriteT3F6_S1FC **pSprites,
+    CHanaSpriteT3F6_S1FC **pSounds) =
+    reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, CSekBody *,
+      CSekBody *, CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **)>(0x456807);
+
+int (__cdecl*PlayResultsCutscene_455BE2)(CSekBody *pHeroBody, CSekBody *pFoeBody,
+    CSekBody **pWanaBodies, CHanaFrameT3EC_S354 *pMapFrame, int *pHudClock,
+    int *pViewfinder, float fGauge, float fFieldC4, float fAggro,
+    float fTargetStart, int nClockBase, unsigned int dwElapsedMs) =
+    reinterpret_cast<int(__cdecl*)(CSekBody *, CSekBody *, CSekBody **,
+      CHanaFrameT3EC_S354 *, int *, int *, float, float, float, float, int,
+      unsigned int)>(0x455BE2);
+
+int (__cdecl*PlayVictoryCutscene_455183)(CHanaSceneT458_S504 *pOdsScene,
+    CSekBody *pHeroBody, CSekBody *pFoeBody, CHanaFrameT3EC_S354 *pMapFrame,
+    int *pHudSprites, int *pViewfinder, float fGauge, float fFieldC4,
+    float fAggro, float fTargetStart, int nClockBase, unsigned int dwElapsedMs,
+    int *pVoiceMem) =
+    reinterpret_cast<int(__cdecl*)(CHanaSceneT458_S504 *, CSekBody *,
+      CSekBody *, CHanaFrameT3EC_S354 *, int *, int *, float, float, float,
+      float, int, unsigned int, int *)>(0x455183);
+
+void *(__cdecl*DrawRecViewfinder_44B23B)(CHanaSpriteT3F6_S1FC **pSprites,
+    int nHeroHp, int nHeroHpMax, int nAggro, int nAggroMax) =
+    reinterpret_cast<void *(__cdecl*)(CHanaSpriteT3F6_S1FC **, int, int, int,
+      int)>(0x44B23B);
+
+void (__cdecl*DrawFadeOutSpark_45669F)(CHanaSpriteT3F6_S1FC **arrSparkSprites,
+    float fDeltaTime) =
+    reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC **, float)>(0x45669F);
+
+unsigned int (__cdecl*BindSceneActors_448C72)(CHanaSceneT458_S504 *pScene,
+    CHanaFrameT3EC_S354 **pActorFrames, unsigned int nCount) =
+    reinterpret_cast<unsigned int(__cdecl*)(CHanaSceneT458_S504 *,
+      CHanaFrameT3EC_S354 **, unsigned int)>(0x448C72);
+
+int (__cdecl*UpdateCameraFollowDuel_44C028)(CSekBody *pHeroBody, CSekBody *pFoeBody,
+    float fDeltaTime) =
+    reinterpret_cast<int(__cdecl*)(CSekBody *, CSekBody *, float)>(0x44C028);
+
+
+void (__cdecl *StepFoeTurn_457EE0)(CSekBody *pFoeBody, CSekBody *pHeroBody, CHanaFrameT3EC_S354 *pMapFrame, float fDelta, float fSpinRate, float fSpeed)
+= reinterpret_cast<void (__cdecl *)(CSekBody *, CSekBody *, CHanaFrameT3EC_S354 *, float, float, float)>(0x457EE0);
+void (__cdecl *StepFoeSpin_45804C)(CSekBody *pFoeBody, CSekBody *pHeroBody, CHanaFrameT3EC_S354 *pMapFrame, float fDelta, float fSpinRate, float fSpeed)
+= reinterpret_cast<void (__cdecl *)(CSekBody *, CSekBody *, CHanaFrameT3EC_S354 *, float, float, float)>(0x45804C);
+void (__cdecl *SekBody__UpdateTo_4014E4)(CSekBody *pSekBody, int nItem)
+= reinterpret_cast<void (__cdecl *)(CSekBody *, int)>(0x4014E4);
+
+BOOL (__cdecl *StepWanaProjectile_4581B0)(CSekBody *pWanaBody, CSekBody *pHeroBody, CHanaFrameT3EC_S354 *pMapFrame, float fDelta, float fSpinRate, float fProjSpeed, int bAlreadyLaunched, int bProjMode)
+= reinterpret_cast<BOOL (__cdecl*)(CSekBody *pWanaBody, CSekBody *pHeroBody, CHanaFrameT3EC_S354 *pMapFrame, float fDelta, float fSpinRate, float fProjSpeed, int bAlreadyLaunched, int bProjMode)>(0x4581b0);
+
+// === PINNED GLOBALS ===
+
+// UI/menu SFX slots 0..9 (0 Start, 1 GameOver, 2 On, 3 per-duel act\HitN)
+LPDIRECTSOUNDBUFFER (&g_pArrSndBuf_5244AC)[10] =
+    *(LPDIRECTSOUNDBUFFER(*)[10])0x5244AC;
+
+
+// foe 3D hit SFX (each foot wav loaded twice, one per side)
+CSoundStruct_8 *(&g_pFoeHitSfxB_5244D4)[4] = *(CSoundStruct_8 *(*)[4])0x5244D4; // WRITABLE (also pinned in PlayHunting)
+CSoundStruct_8 *(&g_pFoeHitSfxE_5244E4)[5] = *(CSoundStruct_8 *(*)[5])0x5244E4; // WRITABLE (also pinned in PlayHunting)
+
+int &g_dwFoeAiState_52ED20 = *(int *)0x52ED20; // WRITABLE
+int &g_bFoeCharging_52ED24 = *(int *)0x52ED24; // WRITABLE (dword store despite the b- name: C7 05 at 0x44767E)
+float &g_fFoeAiTimer_52ED28 = *(float *)0x52ED28; // WRITABLE
+float &g_fFoeCdTimer_52ED18 = *(float *)0x52ED18; // WRITABLE
+int &g_dwFoeCellXCache_52E4F8 = *(int *)0x52E4F8; // WRITABLE (right after g_arrFloodPathXY_5244F8, which spans 0x5244F8..0x52E4F8)
+int &g_dwFoeCellYCache_52E4FC = *(int *)0x52E4FC; // WRITABLE
+
+// === FUNCTIONS ===
+
+
 // PlayHunting_44C38D(nDuelIndex) -- GameMainLoop scene-type 3: the VS-battle/
 // duel screen (called with iModeId[2*stc9C.sceneSteps]; single arg). A duel
 // against one main foe plus up to 8 'wana' mobs, on a timed 3-minute clock.
@@ -69,117 +190,6 @@
 // Label map vs the original decompilation: LABEL_68 -> round start (top of
 // the outer while), LABEL_154 -> next-wana reveal scan.
 
-// === PINNED GAME FUNCTIONS ===
-int (__cdecl*PlayHunting_44C38D)(int nDuelIndex) =
-    reinterpret_cast<int(__cdecl*)(int)>(0x44C38D);
-
-// --- not yet extracted; pinned here call-only ---
-
-typedef double(__cdecl *WanaAttackFn)(CSekBody *pWanaBody, CSekBody *pHeroBody,
-    float *pfHeroHp, float fDeltaTime, float fAttackParam,
-    CHanaFrameT3EC_S354 *pMapFrame);
-
-
-
-double (__cdecl*UpdateFoeAI_446A38)(CSekBody *pFoeBody, CSekBody *pHeroBody,
-    CHanaFrameT3EC_S354 *pMapFrame, int *pOccGrid, float fDeltaTime,
-    float *pfAggro, float *pfHeroHp, float fAggroMax, int nDuelIndex) =
-    reinterpret_cast<double(__cdecl*)(CSekBody *, CSekBody *,
-      CHanaFrameT3EC_S354 *, int *, float, float *, float *, float, int)>(0x446A38);
-
-void (__cdecl*UpdateVoicePlayback_458B3A)(CSekBody *pFoeBody,
-    CHanaFrameRootT3EC_S2D4 *pFoeTalkFrame, CSoundStruct_8 **arrVoiceBufs,
-    float fDeltaTime) =
-    reinterpret_cast<void(__cdecl*)(CSekBody *, CHanaFrameRootT3EC_S2D4 *,
-      CSoundStruct_8 **, float)>(0x458B3A);
-
-double (__cdecl*WanaAttack_Close_4535DE)(CSekBody *pWanaBody, CSekBody *pHeroBody,
-    float *pfHeroHp, float fDeltaTime, float fAttackParam,
-    CHanaFrameT3EC_S354 *pMapFrame) = reinterpret_cast<WanaAttackFn>(0x4535DE);
-
-double (__cdecl*WanaAttack_Knockback_4536F6)(CSekBody *pWanaBody,
-    CSekBody *pHeroBody, float *pfHeroHp, float fDeltaTime, float fAttackParam,
-    CHanaFrameT3EC_S354 *pMapFrame) = reinterpret_cast<WanaAttackFn>(0x4536F6);
-
-double (__cdecl*WanaAttack_Charged_4539D1)(CSekBody *pWanaBody,
-    CSekBody *pHeroBody, float *pfHeroHp, float fDeltaTime, float fAttackParam,
-    CHanaFrameT3EC_S354 *pMapFrame) = reinterpret_cast<WanaAttackFn>(0x4539D1);
-
-double (__cdecl*WanaAttack_Projectile_453B92)(CSekBody *pWanaBody,
-    CSekBody *pHeroBody, float *pfHeroHp, float fDeltaTime, float fAttackParam,
-    CHanaFrameT3EC_S354 *pMapFrame) = reinterpret_cast<WanaAttackFn>(0x453B92);
-
-bool (__cdecl*IsFoeWithinHeroRange_448B78)(CSekBody *pHeroBody,
-    CSekBody *pFoeBody) =
-    reinterpret_cast<bool(__cdecl*)(CSekBody *, CSekBody *)>(0x448B78);
-
-void (__cdecl*PlayCinematicSequence_45460A)(CHanaSceneT458_S504 *pOdsScene,
-    CSekBody *pHeroBody, CSekBody *pFoeBody, CHanaFrameT3EC_S354 *pMapFrame,
-    CHanaSpriteT3F6_S1FC **pArrHudMeters, CHanaSpriteT3F6_S1FC **pArrSprites,
-    float *pfHeroHp, float fFieldC4, float *pfAggro, float fAggroMax,
-    int *pnClockBase, unsigned int *pdwElapsedMs, int dwClockBase2,
-    CSoundStruct_8 **arrVoiceBufs, CHanaSpriteT3F6_S1FC *pMaskBmp) =
-    reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, CSekBody *,
-      CSekBody *, CHanaFrameT3EC_S354 *, CHanaSpriteT3F6_S1FC **,
-      CHanaSpriteT3F6_S1FC **, float *, float, float *, float, int *, unsigned int *,
-      int, CSoundStruct_8 **, CHanaSpriteT3F6_S1FC *)>(0x45460A);
-
-void (__cdecl*RenderDualBodyScene_456807)(CHanaSceneT458_S504 *pScene,
-    CSekBody *pBodyA, CSekBody *pBodyB, CHanaSpriteT3F6_S1FC **pSprites,
-    CHanaSpriteT3F6_S1FC **pSounds) =
-    reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, CSekBody *,
-      CSekBody *, CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **)>(0x456807);
-
-int (__cdecl*PlayResultsCutscene_455BE2)(CSekBody *pHeroBody, CSekBody *pFoeBody,
-    CSekBody **pWanaBodies, CHanaFrameT3EC_S354 *pMapFrame, int *pHudClock,
-    int *pViewfinder, float fGauge, float fFieldC4, float fAggro,
-    float fTargetStart, int nClockBase, unsigned int dwElapsedMs) =
-    reinterpret_cast<int(__cdecl*)(CSekBody *, CSekBody *, CSekBody **,
-      CHanaFrameT3EC_S354 *, int *, int *, float, float, float, float, int,
-      unsigned int)>(0x455BE2);
-
-int (__cdecl*PlayVictoryCutscene_455183)(CHanaSceneT458_S504 *pOdsScene,
-    CSekBody *pHeroBody, CSekBody *pFoeBody, CHanaFrameT3EC_S354 *pMapFrame,
-    int *pHudSprites, int *pViewfinder, float fGauge, float fFieldC4,
-    float fAggro, float fTargetStart, int nClockBase, unsigned int dwElapsedMs,
-    int *pVoiceMem) =
-    reinterpret_cast<int(__cdecl*)(CHanaSceneT458_S504 *, CSekBody *,
-      CSekBody *, CHanaFrameT3EC_S354 *, int *, int *, float, float, float,
-      float, int, unsigned int, int *)>(0x455183);
-
-void *(__cdecl*DrawRecViewfinder_44B23B)(CHanaSpriteT3F6_S1FC **pSprites,
-    int nHeroHp, int nHeroHpMax, int nAggro, int nAggroMax) =
-    reinterpret_cast<void *(__cdecl*)(CHanaSpriteT3F6_S1FC **, int, int, int,
-      int)>(0x44B23B);
-
-void (__cdecl*DrawFadeOutSpark_45669F)(CHanaSpriteT3F6_S1FC **arrSparkSprites,
-    float fDeltaTime) =
-    reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC **, float)>(0x45669F);
-
-int (__cdecl*BuildMapCollisionGrid_445B12)(CHanaFrameT3EC_S354 *pMapFrame,
-    int **ppOutGrid) =
-    reinterpret_cast<int(__cdecl*)(CHanaFrameT3EC_S354 *, int **)>(0x445B12);
-
-unsigned int (__cdecl*BindSceneActors_448C72)(CHanaSceneT458_S504 *pScene,
-    CHanaFrameT3EC_S354 **pActorFrames, unsigned int nCount) =
-    reinterpret_cast<unsigned int(__cdecl*)(CHanaSceneT458_S504 *,
-      CHanaFrameT3EC_S354 **, unsigned int)>(0x448C72);
-
-int (__cdecl*UpdateCameraFollow_44C028)(CSekBody *pHeroBody, CSekBody *pFoeBody,
-    float fDeltaTime) =
-    reinterpret_cast<int(__cdecl*)(CSekBody *, CSekBody *, float)>(0x44C028);
-
-
-// === PINNED GLOBALS ===
-
-// UI/menu SFX slots 0..9 (0 Start, 1 GameOver, 2 On, 3 per-duel act\HitN)
-LPDIRECTSOUNDBUFFER (&g_pArrSndBuf_5244AC)[10] =
-    *(LPDIRECTSOUNDBUFFER(*)[10])0x5244AC;
-// foe 3D hit SFX (each foot wav loaded twice, one per side)
-CSoundStruct_8 *(&g_pFoeHitSfxB_5244D4)[4] = *(CSoundStruct_8 *(*)[4])0x5244D4;
-CSoundStruct_8 *(&g_pFoeHitSfxE_5244E4)[5] = *(CSoundStruct_8 *(*)[5])0x5244E4;
-
-// === FUNCTIONS ===
 
 int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
 {
@@ -215,7 +225,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
     CHanaSceneT458_S504 *pOdsScene;
     CSekBody *pHeroBody;
     CSekBody *pFoeBody;
-    int *pOccGrid;                       // map-object collision grid
+    char *pOccGrid;                       // map-object collision grid
     LPDIRECTSOUNDBUFFER pBgmBuf;
     CHAR pszFileName[256];
     CHAR String[256];
@@ -722,7 +732,7 @@ LABEL_68:
         UpdateBoneLookAtTransform(pFoeBody->pSekHeader_220->pFrameT3EC,
                 (CHanaFrameT3EC_S354 *)g_pSceneFrame,
                 pXpos, pYpos, pZpos, pXYrot, pYXrot, pZXrot);
-        UpdateCameraFollow_445525(pHeroBody->pSekHeader_220->pFrameT3EC,
+        UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC,
                                   g_pCameraFrame, pMapFrame, fDelta, 1);
         fAggroMax = arrFoeAggroMax[nDuelIndex];
         pFAggro = fAggroMax;
@@ -731,7 +741,7 @@ LABEL_68:
         bActing = 0;
         bCinematic = 0;
         dwElapsedMs = 0;
-        g_dwBattleMode_52ED04 = -1;
+        g_dwBattleMode = -1;
         CSekBody__CutToAnim_4018E1(pHeroBody, 1);
         CSekBody__UpdateAnim_4019E1(pHeroBody, 0.0f);
         CSekBody__PlayAnim_40179D(pHeroBody, 1);
@@ -824,12 +834,12 @@ LABEL_68:
                 }
                 if (pHeroBody->field_200 <= 6 && g_btoggleC_530268)
                 {
-                    UpdateCameraFollow_44C028(pHeroBody, pFoeBody, fDelta);
+                    UpdateCameraFollowDuel_44C028(pHeroBody, pFoeBody, fDelta);
                 }
                 else
                 {
                     pHeroBody->pSekHeader_220->pFrameT3EC->bAlphaDeferred_130 = 0;
-                    UpdateCameraFollow_445525(pHeroBody->pSekHeader_220->pFrameT3EC,
+                    UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC,
                                               g_pCameraFrame, pMapFrame, fDelta, 0);
                 }
                 updated = UpdateFoeAI_446A38(pFoeBody, pHeroBody, pMapFrame,
@@ -851,7 +861,7 @@ LABEL_68:
                         fActTimer = (float)(updated + fActTimer);
                     }
                 }
-                if (bActing && g_dwBattleMode_52ED04 >= 0)
+                if (bActing && g_dwBattleMode >= 0)
                     bCinematic = IsFoeWithinHeroRange_448B78(pHeroBody, pFoeBody);
             }
 
@@ -1051,8 +1061,1503 @@ LABEL_154:
     return nSysMenuResult;
 }
 
+
+// UpdateFoeAI -- the duel foe brain (one call per frame per foe)
+//
+//   Returns fHitImpact (0 normally, 122 when the foe lands its tackle).
+//
+//   Tuning table arrFoeTuning[20][10] (rows 0..11 inlined per duel, 12..19 zeroed) -- columns by usage:
+//
+//   +-----+----------------------------------------+
+//   | Col |          Meaning (from usage)          |
+//   +-----+----------------------------------------+
+//   | [0] | move speed multiplier                  |
+//   | [1] | tackle damage (*pFHeroHP -= 2000*[1])  |
+//   | [2] | engage radius (compared squared)       |
+//   | [3] | tackle lunge Z offset                  |
+//   | [4] | tackle hit radius                      |
+//   | [5] | turn/blend rate                        |
+//   | [6] | attack approach radius (squared cmp)   |
+//   +-----+----------------------------------------+
+//
+//   Flow
+//
+//   fAggroSpeedMul = *pFAggro/fAggroMax/8 + 0.975         // aggro -> speed scaling
+//   save hero (x2,y2,z2), foe (fFoeSaveX/Y/Z); g_fFoeCdTimer -= fDelta
+//   hero cell (nHeroCellX/Z = pos/5); dist squared = |foe->hero| squared
+//
+//   IF engaged (state 5, or within engage radius & anim preconditions):
+//       blend toward hero: two CalculateLocalRotationMatrix passes around
+//       HanaMatrix_BuildLookAtAndTransform, dirForwardX/Z = lerp(fwd->-fwd, 0.3*fBlendFactor)
+//       UpdateBoneLookAtTransform (face the hero)
+//       anim dispatch by pFoeBody->field_200: 6 = strafe (fZNudge, reversed duels 4/5),
+//         20 = tackle (lunge [3]; if within [4] -> hero anim 9, -2000*[1] HP,
+//                      g_dwBattleMode = -1, fHitImpact = 122), else anim 6
+//       anim rate fAnimRateA = 2f - f*fAggroSpeedMul; on finish of 21/3 -> anim 2
+//
+//   ELSE (not engaged) -- patrol/approach:
+//       timer/charge state -> g_dwFoeAiState = rand()%3, g_fFoeAiTimer = rand()%250+50
+//       nFoeAction: 0 idle / 1 (duels 2,3) / 2 (duels 4,5) / from state / 3 if boxed in
+//         (occupancy-grid probe of 5 neighbor cells)
+//       if nFoeAction >= 2: StepFoeTurn/StepFoeSpin, aggro -8*f
+//       else: HanaGrid_FloodFill(floodCtx, pOccGrid, foe cell, hero cell, &nFloodParm=5, ...)
+//         -> first step (fStepX0/fStepZ0) + waypoint list ppOutPathPts
+//         fMoveBudget = fTimeDiv*speed[0]*fAggroSpeedMul (clamp 4)
+//         walk the step, then consume remaining budget through waypoints (x5 cell scale)
+//         stuck check (moved < 0.01 & cell cached) -> face hero faster, aggro +8.1*f (clamp max)
+//         else gentle look + 0.2 degrees/frame spin when facing >=0.99
+//       SekBody__UpdateTo2(nMoveMode 1..5)
+//
+//   min-distance separation: if |foe->hero| < 5, push foe to exactly 5 units (fSepX/fSepZ)
+//   3x move/collision loop (CheckFrameCollision + TestMoveCollision -- same as hero)
+//   aggro floor 10; footstep SFX via g_pFoeHitSfxB/E[nHitSfx] with anim-frame windows
+//     (100-108 / 200-206 / 400-406 and 107-115 / 205-212 / 407-415)
+//   restore hero pos; return fHitImpact
+double __cdecl hook_UpdateFoeAI_446A38(
+  CSekBody *pFoeBody,
+  CSekBody *pHeroBody,
+  CHanaFrameT3EC_S354 *pMapFrame,
+  char *pOccGrid,
+  float fDelta,
+  float *pFAggro,
+  float *pFHeroHP,
+  float fAggroMax,
+  int nDuelIndex)
+{
+  D3DXVECTOR2 *pFloodStep; // eax
+  float dirForwardX; // [esp+0h] [ebp-4F4h]
+  float dirForwardXa; // [esp+0h] [ebp-4F4h]
+  float dirForwardXb; // [esp+0h] [ebp-4F4h]
+  float dirForwardZ; // [esp+8h] [ebp-4ECh]
+  float dirForwardZa; // [esp+8h] [ebp-4ECh]
+  float dirForwardZb; // [esp+8h] [ebp-4ECh]
+  float fMoveX_a; // [esp+Ch] [ebp-4E8h]
+  float fMoveX_b; // [esp+Ch] [ebp-4E8h]
+  float fHeroPushX; // [esp+Ch] [ebp-4E8h]
+  float fTurnRate2; // [esp+10h] [ebp-4E4h]
+  float fZNudge; // [esp+14h] [ebp-4E0h]
+  float fAnimRateA; // [esp+14h] [ebp-4E0h]
+  float fMoveZ_a; // [esp+14h] [ebp-4E0h]
+  float fMoveZ_b; // [esp+14h] [ebp-4E0h]
+  float fSpeedMul; // [esp+14h] [ebp-4E0h]
+  float fAnimRateB; // [esp+14h] [ebp-4E0h]
+  float fWpMoveX; // [esp+Ch] [ebp-4E8h]
+  float fWpMoveZ; // [esp+14h] [ebp-4E0h]
+  float fHeroPushZ; // [esp+14h] [ebp-4E0h]
+  D3DXVECTOR2 pfOutStep; // [esp+40h] [ebp-4B4h] BYREF
+  CSekItem *pAnimItem; // [esp+48h] [ebp-4ACh]
+  float pz2; // [esp+4Ch] [ebp-4A8h] BYREF
+  float py2; // [esp+50h] [ebp-4A4h] BYREF
+  float px2; // [esp+54h] [ebp-4A0h] BYREF
+  float fSepZ; // [esp+58h] [ebp-49Ch]
+  float v41; // [esp+5Ch] [ebp-498h]
+  float fSepX; // [esp+60h] [ebp-494h]
+  float fLookTgtX; // [esp+64h] [ebp-490h] BYREF
+  float fFoeZ2; // [esp+68h] [ebp-48Ch] BYREF
+  float xpos; // [esp+6Ch] [ebp-488h] BYREF
+  float fFoeY2; // [esp+70h] [ebp-484h] BYREF
+  float fFoeX2; // [esp+74h] [ebp-480h] BYREF
+  float fLookTgtZ; // [esp+78h] [ebp-47Ch] BYREF
+  float zrot; // [esp+7Ch] [ebp-478h] BYREF
+  float zpos; // [esp+80h] [ebp-474h] BYREF
+  float yrot; // [esp+84h] [ebp-470h] BYREF
+  float xrot; // [esp+88h] [ebp-46Ch] BYREF
+  float v53; // [esp+8Ch] [ebp-468h] BYREF
+  float ypos; // [esp+90h] [ebp-464h] BYREF
+  float fTurnBlend; // [esp+94h] [ebp-460h]
+  float fFwdAfterX; // [esp+98h] [ebp-45Ch] BYREF
+  float fFwdBeforeX; // [esp+9Ch] [ebp-458h] BYREF
+  float fFwdAfterZ; // [esp+A0h] [ebp-454h] BYREF
+  float v59; // [esp+A4h] [ebp-450h] BYREF
+  float fFwdBeforeZ; // [esp+A8h] [ebp-44Ch] BYREF
+  float v61; // [esp+ACh] [ebp-448h] BYREF
+  float v62; // [esp+B0h] [ebp-444h] BYREF
+  float fFwdAfterY; // [esp+B4h] [ebp-440h] BYREF
+  float fFwdBeforeY; // [esp+B8h] [ebp-43Ch] BYREF
+  float fWpProbeZ; // [esp+BCh] [ebp-438h] BYREF
+  float fWpProbeY; // [esp+C0h] [ebp-434h] BYREF
+  float fWpProbeX; // [esp+C4h] [ebp-430h] BYREF
+  float fMoveBudget; // [esp+C8h] [ebp-42Ch]
+  float fStepX; // [esp+CCh] [ebp-428h]
+  float fStepZ; // [esp+D0h] [ebp-424h]
+  WORD pnOutNumbPathPts; // [esp+D4h] [ebp-420h] BYREF
+  float fStepSpeed; // [esp+D8h] [ebp-41Ch]
+  float fTimeDiv; // [esp+DCh] [ebp-418h]
+  float fHeroDist; // [esp+E0h] [ebp-414h]
+  int nMoveMode; // [esp+E4h] [ebp-410h]
+  float fBlendFactor; // [esp+E8h] [ebp-40Ch]
+  float fLookX1; // [esp+ECh] [ebp-408h] BYREF
+  float pXpos; // [esp+F0h] [ebp-404h] BYREF
+  float fLookZ1; // [esp+F4h] [ebp-400h] BYREF
+  float pZXrot; // [esp+F8h] [ebp-3FCh] BYREF
+  float pZpos; // [esp+FCh] [ebp-3F8h] BYREF
+  float pYXrot; // [esp+100h] [ebp-3F4h] BYREF
+  float pXYrot; // [esp+104h] [ebp-3F0h] BYREF
+  float v84; // [esp+108h] [ebp-3ECh] BYREF
+  float pYpos; // [esp+10Ch] [ebp-3E8h] BYREF
+  __int16 v86; // [esp+110h] [ebp-3E4h]
+  float px; // [esp+114h] [ebp-3E0h] BYREF
+  int nMode; // [esp+118h] [ebp-3DCh]
+  __int16 v89; // [esp+11Ch] [ebp-3D8h]
+  __int16 v90; // [esp+120h] [ebp-3D4h]
+  float fAggroSpeedMul; // [esp+124h] [ebp-3D0h]
+  float pOutZ; // [esp+128h] [ebp-3CCh] BYREF
+  float z; // [esp+12Ch] [ebp-3C8h] BYREF
+  float y; // [esp+130h] [ebp-3C4h] BYREF
+  float fAggroSaved; // [esp+134h] [ebp-3C0h]
+  float x; // [esp+138h] [ebp-3BCh] BYREF
+  float fStepX0; // [esp+13Ch] [ebp-3B8h]
+  float fStepZ0; // [esp+140h] [ebp-3B4h]
+  POINT pnHeroCell; // [esp+144h] [ebp-3B0h]
+  CHanaFrameT3EC_S354 *pFrame; // [esp+14Ch] [ebp-3A8h]
+  int i; // [esp+150h] [ebp-3A4h]
+  POINT ppOutPathPts[5]; // [esp+154h] [ebp-3A0h] BYREF
+  float pOutY; // [esp+17Ch] [ebp-378h] BYREF
+  float fDist; // [esp+180h] [ebp-374h]
+  POINT pnFoeCell; // [esp+184h] [ebp-370h] BYREF
+  float z2; // [esp+18Ch] [ebp-368h] BYREF
+  float fHitImpact; // [esp+190h] [ebp-364h]
+  float y2; // [esp+194h] [ebp-360h] BYREF
+  int bFoeActDone; // [esp+198h] [ebp-35Ch]
+  float x2; // [esp+19Ch] [ebp-358h] BYREF
+  int nHitSfx; // [esp+1A0h] [ebp-354h]
+  __int16 v112; // [esp+1A4h] [ebp-350h]
+  D3DXVECTOR3 pV; // [esp+1A8h] [ebp-34Ch] BYREF
+  float fFoeSaveZ; // [esp+1B4h] [ebp-340h]
+  float pOutX; // [esp+1B8h] [ebp-33Ch] BYREF
+  float fFoeSaveY; // [esp+1BCh] [ebp-338h]
+  float arrFoeTuning[20][10]; // [esp+1C0h] [ebp-334h] BYREF
+  float pz; // [esp+4E0h] [ebp-14h] BYREF
+  float fFoeSaveX; // [esp+4E4h] [ebp-10h]
+  CHanaFrameT3EC_S354 *pHeroFrame; // [esp+4E8h] [ebp-Ch]
+  float py; // [esp+4ECh] [ebp-8h] BYREF
+  int pnDepth; // [esp+4F0h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] UpdateFoeAI_446A38\n");
+
+  pFrame = pFoeBody->pSekHeader_220->pFrameT3EC;
+  pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
+  v86 = 0;
+  v112 = 0;
+  v90 = ConvertFrom640AsInt(320);
+  v89 = ConvertFrom640AsInt(240);
+  fFoeSaveX = 0.0;
+  fFoeSaveY = 0.0;
+  fFoeSaveZ = 0.0;
+  pV.x = 0.0;
+  pV.y = 1.0;
+  pV.z = 0.0;
+  pnDepth = 5;
+  fAggroSpeedMul = *pFAggro / fAggroMax / 8.0 + 0.97500002;
+  fAggroSaved = *pFAggro;
+  fHitImpact = 0.0;
+  nMode = 0;
+  bFoeActDone = 0;
+  memset(arrFoeTuning, 0, sizeof(arrFoeTuning));   // rows 12..19 and cols [7..9] stay zero (original memsets the tail after packing QWORDs)
+  // duel 0
+  arrFoeTuning[0][0] = 0.8;    arrFoeTuning[0][1] = 1.0;
+  arrFoeTuning[0][2] = 10.0;   arrFoeTuning[0][3] = -2.5;
+  arrFoeTuning[0][4] = 5.0;    arrFoeTuning[0][5] = 1.0;
+  arrFoeTuning[0][6] = 25.0;
+  // duel 1
+  arrFoeTuning[1][0] = 0.9;    arrFoeTuning[1][1] = 1.3;
+  arrFoeTuning[1][2] = 6.0;    arrFoeTuning[1][3] = -2.5;
+  arrFoeTuning[1][4] = 5.0;    arrFoeTuning[1][5] = 1.0;
+  arrFoeTuning[1][6] = 30.0;
+  // duel 2
+  arrFoeTuning[2][0] = 1.0;    arrFoeTuning[2][1] = 6.0;
+  arrFoeTuning[2][2] = 20.0;   arrFoeTuning[2][3] = -2.0;
+  arrFoeTuning[2][4] = 6.0;    arrFoeTuning[2][5] = 1.3;
+  arrFoeTuning[2][6] = 38.0;
+  // duel 3
+  arrFoeTuning[3][0] = 0.9;    arrFoeTuning[3][1] = 6.5;
+  arrFoeTuning[3][2] = 15.0;   arrFoeTuning[3][3] = -2.0;
+  arrFoeTuning[3][4] = 6.0;    arrFoeTuning[3][5] = 1.3;
+  arrFoeTuning[3][6] = 38.0;
+  // duel 4
+  arrFoeTuning[4][0] = 0.8;    arrFoeTuning[4][1] = 2.5;
+  arrFoeTuning[4][2] = 15.0;   arrFoeTuning[4][3] = -0.8;
+  arrFoeTuning[4][4] = 8.0;    arrFoeTuning[4][5] = 2.3;
+  arrFoeTuning[4][6] = 30.0;
+  // duel 5
+  arrFoeTuning[5][0] = 0.9;    arrFoeTuning[5][1] = 2.5;
+  arrFoeTuning[5][2] = 15.0;   arrFoeTuning[5][3] = -0.8;
+  arrFoeTuning[5][4] = 8.0;    arrFoeTuning[5][5] = 2.3;
+  arrFoeTuning[5][6] = 30.0;
+  // duel 6
+  arrFoeTuning[6][0] = 1.0;    arrFoeTuning[6][1] = 4.0;
+  arrFoeTuning[6][2] = 12.0;   arrFoeTuning[6][3] = -0.8;
+  arrFoeTuning[6][4] = 8.0;    arrFoeTuning[6][5] = 1.8;
+  arrFoeTuning[6][6] = 22.0;
+  // duel 7
+  arrFoeTuning[7][0] = 1.0;    arrFoeTuning[7][1] = 4.0;
+  arrFoeTuning[7][2] = 12.0;   arrFoeTuning[7][3] = -0.8;
+  arrFoeTuning[7][4] = 8.0;    arrFoeTuning[7][5] = 1.8;
+  arrFoeTuning[7][6] = 25.0;
+  // duel 8
+  arrFoeTuning[8][0] = 1.2;    arrFoeTuning[8][1] = 4.5;
+  arrFoeTuning[8][2] = 20.0;   arrFoeTuning[8][3] = -2.0;
+  arrFoeTuning[8][4] = 6.0;    arrFoeTuning[8][5] = 1.8;
+  arrFoeTuning[8][6] = 60.0;
+  // duel 9
+  arrFoeTuning[9][0] = 1.5;    arrFoeTuning[9][1] = 3.0;
+  arrFoeTuning[9][2] = 15.0;   arrFoeTuning[9][3] = -2.5;
+  arrFoeTuning[9][4] = 6.0;    arrFoeTuning[9][5] = 0.8;
+  arrFoeTuning[9][6] = 54.0;
+  // duel 10
+  arrFoeTuning[10][0] = 1.2;   arrFoeTuning[10][1] = 3.5;
+  arrFoeTuning[10][2] = 15.0;  arrFoeTuning[10][3] = -2.5;
+  arrFoeTuning[10][4] = 6.0;   arrFoeTuning[10][5] = 1.0;
+  arrFoeTuning[10][6] = 30.0;
+  // duel 11
+  arrFoeTuning[11][0] = 1.6;   arrFoeTuning[11][1] = 3.5;
+  arrFoeTuning[11][2] = 6.0;   arrFoeTuning[11][3] = -2.5;
+  arrFoeTuning[11][4] = 6.0;   arrFoeTuning[11][5] = 0.8;
+  arrFoeTuning[11][6] = 41.0;
+  g_fFoeAiTimer_52ED28 = g_fFoeAiTimer_52ED28 - fDelta;
+  HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &x2, &y2, &z2);
+  HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &px, &py, &pz);
+  HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &x, &y, &z);
+  if ( g_fFoeCdTimer_52ED18 >= 0.0 )
+    g_fFoeCdTimer_52ED18 = g_fFoeCdTimer_52ED18 - fDelta;
+  else
+    g_fFoeCdTimer_52ED18 = 0.0;
+  pnHeroCell.x = (int)x / 5;
+  pnHeroCell.y = (int)z / 5;
+  HanaFrame_GetRelPosition(pFrame, (CHanaFrameRootT3EC_S2D4 *)pHeroFrame, &pOutX, &pOutY, &pOutZ);
+  fDist = pOutX * pOutX + pOutZ * pOutZ;
+  if ( (g_dwFoeAiState_52ED20 == 5 && pFoeBody->field_200 != 3)
+    || (g_dwFoeAiState_52ED20 <= 3
+      && pFoeBody->field_200 != 3
+      && (arrFoeTuning[nDuelIndex][2] * arrFoeTuning[nDuelIndex][2] > fDist
+        || pFoeBody->field_200 > 10
+        || pFoeBody->field_200 == 6)
+      && (g_dwBattleMode >= 0 || pFoeBody->field_200 > 10 || pFoeBody->field_200 == 6)) )
+  {
+    fFoeSaveX = px;
+    fFoeSaveY = py;
+    fFoeSaveZ = pz;
+    fBlendFactor = fDelta * arrFoeTuning[nDuelIndex][5];
+    if ( fBlendFactor > 1.0 )
+      fBlendFactor = 1.0;
+    HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &x, &y, &z);
+    HanaFrame_GetRelPosition(pHeroFrame, (CHanaFrameRootT3EC_S2D4 *)pFrame, &px, &py, &pz);
+    MtxMult_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, -2.0);
+    CalculateLocalRotationMatrix(
+      pFrame,
+      (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+      &pXpos,
+      &pYpos,
+      &pZpos,
+      &pXYrot,
+      &pYXrot,
+      &pZXrot);
+    HanaMatrix_BuildLookAtAndTransform(pFrame, pHeroFrame, g_pSceneFrame, 0);
+    CalculateLocalRotationMatrix(
+      pFrame,
+      (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+      &fLookX1,
+      &v84,
+      &fLookZ1,
+      &pXYrot,
+      &pYXrot,
+      &pZXrot);
+    fLookX1 = -fLookX1;
+    fLookZ1 = -fLookZ1;
+    dirForwardZ = (fLookZ1 - pZpos) * fBlendFactor * 0.30000001 + pZpos;
+    dirForwardX = (fLookX1 - pXpos) * fBlendFactor * 0.30000001 + pXpos;
+    UpdateBoneLookAtTransform(
+      pFrame,
+      (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+      dirForwardX,
+      0.0,
+      dirForwardZ,
+      0.0,
+      1.0,
+      0.0);
+    MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, z);
+    if ( pFoeBody->field_200 == 6 )
+    {
+      fBlendFactor = fDelta * arrFoeTuning[nDuelIndex][0];
+      if ( nDuelIndex >= 4 && nDuelIndex <= 5 )
+        fBlendFactor = fBlendFactor * -1.0;
+      fZNudge = -fBlendFactor;
+      MtxMult_4069DD(pFrame, pFrame, 0.0, 0.0, fZNudge);
+    }
+    else if ( pFoeBody->field_200 != 19 )
+    {
+      if ( pFoeBody->field_200 == 20 )
+      {
+        if ( pHeroBody->field_200 != 13 )
+        {
+          HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &px, &py, &pz);
+          MtxMult_4069DD(pFrame, pFrame, 0.0, 0.0, arrFoeTuning[nDuelIndex][3]);
+          HanaFrame_GetRelPosition(pFrame, (CHanaFrameRootT3EC_S2D4 *)pHeroFrame, &pOutX, &pOutY, &pOutZ);
+          MtxMult_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, px, py, pz);
+          fDist = sqrt(pOutX * pOutX + pOutZ * pOutZ);
+          if ( fDist < (double)arrFoeTuning[nDuelIndex][4] && g_dwBattleMode >= 0 )
+          {
+            SekBody__UpdateTo_4014E4(pHeroBody, 9);
+            *pFHeroHP = *pFHeroHP - 2000.0 * arrFoeTuning[nDuelIndex][1];
+            g_dwBattleMode = -1;
+            fHitImpact = 122.0;
+          }
+        }
+      }
+      else if ( pFoeBody->field_200 != 21 )
+      {
+        SekBody__UpdateTo_4014E4(pFoeBody, 6);
+      }
+    }
+    fAnimRateA = fDelta + fDelta - fDelta * fAggroSpeedMul;
+    if ( CSekBody__UpdateAnim_4019E1(pFoeBody, fAnimRateA) )
+    {
+      if ( pFoeBody->field_200 == 21 )
+      {
+        if ( g_dwFoeAiState_52ED20 == 5 )
+          g_dwFoeAiState_52ED20 = 0;
+        bFoeActDone = 1;
+      }
+      if ( pFoeBody->field_200 == 21 || pFoeBody->field_200 == 3 )
+        SekBody__UpdateTo_4014E4(pFoeBody, 2);
+    }
+  }
+  else
+  {
+    nMoveMode = 1;
+    HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &px, &py, &pz);
+    HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &x, &y, &z);
+    pnFoeCell.x = (int)px / 5;
+    pnFoeCell.y = (int)pz / 5;
+    pnHeroCell.x = (int)(x / 5.0);
+    pnHeroCell.y = (int)(z / 5.0);
+    x = x2;
+    y = y2;
+    z = z2;
+    if ( g_bFoeCharging_52ED24 )
+    {
+      g_dwFoeAiState_52ED20 = 0;
+      if ( g_fFoeAiTimer_52ED28 <= 0.0 )
+        g_bFoeCharging_52ED24 = 0;
+      nMode = 3;
+    }
+    else if ( g_fFoeAiTimer_52ED28 < 0.0 || g_bFoeCharging_52ED24 )
+    {
+      g_fFoeAiTimer_52ED28 = (float)(rand() % 250 + 50);
+      g_dwFoeAiState_52ED20 = rand() % 3;
+      nMode = 0;
+    }
+    if ( g_dwFoeAiState_52ED20 )
+    {
+      if ( nDuelIndex < 2
+        || arrFoeTuning[nDuelIndex][6] * arrFoeTuning[nDuelIndex][6] <= (x - px) * (x - px) + (z - pz) * (z - pz)
+        || fAggroMax / 3.0 >= *pFAggro
+        || g_dwBattleMode < 0 )
+      {
+        nMode = 0;
+      }
+      else if ( nDuelIndex == 2 || nDuelIndex == 3 )
+      {
+        nMode = 1;
+      }
+      else if ( nDuelIndex == 4 || nDuelIndex == 5 )
+      {
+        nMode = 2;
+      }
+      else
+      {
+        nMode = g_dwFoeAiState_52ED20;
+      }
+    }
+    if ( !pOccGrid[200 * ((int)pz / 5) + 20100 + (int)px / 5]
+      && !pOccGrid[200 * ((int)pz / 5) + 20101 + (int)px / 5]
+      && !pOccGrid[200 * ((int)pz / 5) + 20099 + (int)px / 5]
+      && !pOccGrid[200 * ((int)pz / 5) + 20300 + (int)px / 5]
+      && !pOccGrid[200 * ((int)pz / 5) + 19900 + (int)px / 5]
+      && nMode != 2 )
+    {
+      nMode = 3;
+    }
+    if ( nMode >= 2 )
+    {
+      nMoveMode = 2;
+      fFoeSaveX = px;
+      fFoeSaveY = py;
+      fFoeSaveZ = pz;
+      fSpeedMul = fAggroSpeedMul * arrFoeTuning[nDuelIndex][0];
+      fTurnRate2 = fAggroSpeedMul * arrFoeTuning[nDuelIndex][5] + fAggroSpeedMul * arrFoeTuning[nDuelIndex][5];
+      if ( nMode == 2 )
+        StepFoeTurn_457EE0(pFoeBody, pHeroBody, pMapFrame, fDelta, fTurnRate2, fSpeedMul);
+      else
+        StepFoeSpin_45804C(pFoeBody, pHeroBody, pMapFrame, fDelta, fTurnRate2, fSpeedMul);
+      *pFAggro = *pFAggro - 8.0 * fDelta;
+    }
+    else
+    {
+      pFloodStep = HanaGrid_FloodFill_4460AD(
+        &pfOutStep,
+        pOccGrid,
+        &pnFoeCell,
+        pnHeroCell,
+        &pnDepth,
+        nMode,
+        ppOutPathPts,
+        &pnOutNumbPathPts);
+      fStepX0 = pFloodStep->x;
+      fStepZ0 = pFloodStep->y;
+      fHeroDist = sqrt((x - px) * (x - px) + (z - pz) * (z - pz));
+      if ( pFoeBody->field_200 == 3
+        || fHeroDist >= (double)arrFoeTuning[nDuelIndex][6]
+        && (pFoeBody->field_200 != 2 || arrFoeTuning[nDuelIndex][6] + 10.0 <= fHeroDist) )
+      {
+        if ( pFoeBody->field_200 == 3 )
+        {
+          fTimeDiv = fDelta / 3.0;
+          nMoveMode = 3;
+        }
+        else
+        {
+          if ( fAggroMax / 5.0 <= *pFAggro )
+            nMoveMode = 1;
+          else
+            nMoveMode = 4;
+          fTimeDiv = (fDelta + fDelta) / 3.0;
+          *pFAggro = *pFAggro - 5.0 * fDelta;
+        }
+      }
+      else
+      {
+        nMoveMode = 2;
+        if ( 500.0 * fDelta >= 1.0 && rand() % (int)(500.0 * fDelta) == 1 )
+          nMoveMode = 3;
+        fTimeDiv = fDelta;
+        *pFAggro = *pFAggro - 8.0 * fDelta;
+      }
+      fStepSpeed = fTimeDiv * arrFoeTuning[nDuelIndex][0] * fAggroSpeedMul;
+      if ( fStepSpeed > 4.0 )
+        fStepSpeed = 4.0;
+      fMoveBudget = fStepSpeed;
+      if ( fStepSpeed < 0.0 )
+        fMoveBudget = 0.0;
+      fStepX = fStepX0;
+      fStepZ = fStepZ0;
+      fDist = sqrt(fStepX0 * fStepX0 + fStepZ0 * fStepZ0);
+      if ( fDist != 0.0 )
+      {
+        if ( fDist < (double)fMoveBudget )
+        {
+          fMoveZ_a = fStepZ + pz;
+          fMoveX_a = fStepX + px;
+        }
+        else
+        {
+          fMoveZ_a = fStepZ / fDist * fMoveBudget + pz;
+          fMoveX_a = fStepX / fDist * fMoveBudget + px;
+        }
+        MtxMult_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fMoveX_a, py, fMoveZ_a);
+      }
+      if ( fMoveBudget > (double)fDist )
+      {
+        for ( i = 0; i < (__int16)pnOutNumbPathPts; ++i )
+        {
+          fMoveBudget = fMoveBudget - fDist;
+          if ( fMoveBudget <= 0.0 )
+            break;
+          HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &fWpProbeX, &fWpProbeY, &fWpProbeZ);
+          fStepX = (double)(5 * ppOutPathPts[i].x) - fWpProbeX;
+          fStepZ = (double)(5 * ppOutPathPts[i].y) - fWpProbeZ;
+          fDist = sqrt(fStepX * fStepX + fStepZ * fStepZ);
+          if ( fDist != 0.0 )
+          {
+            if ( fDist >= (double)fMoveBudget )
+            {
+              fMoveZ_b = fStepZ / fDist * fMoveBudget + fWpProbeZ;
+              fMoveX_b = fStepX / fDist * fMoveBudget + fWpProbeX;
+              MtxMult_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fMoveX_b, fWpProbeY, fMoveZ_b);
+              break;
+            }
+            fWpMoveZ = (float)(5 * ppOutPathPts[i].y);
+            fWpMoveX = (float)(5 * ppOutPathPts[i].x);
+            MtxMult_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fWpMoveX, fWpProbeY, fWpMoveZ);
+          }
+        }
+      }
+      fFoeSaveX = px;
+      fFoeSaveY = py;
+      fFoeSaveZ = pz;
+      HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &px, &py, &pz);
+      if ( sqrt(
+        (fFoeSaveX - px) * (fFoeSaveX - px)
+        + (fFoeSaveY - py) * (fFoeSaveY - py)
+        + (fFoeSaveZ - pz) * (fFoeSaveZ - pz)) < 0.0099999998
+        && g_dwFoeCellXCache_52E4F8 == pnFoeCell.x
+        && g_dwFoeCellYCache_52E4FC == pnFoeCell.y )
+      {
+        fTurnBlend = fDelta / 4.0 * arrFoeTuning[nDuelIndex][5];
+        if ( fTurnBlend > 1.0 )
+          fTurnBlend = 1.0;
+        CalculateLocalRotationMatrix(
+          pFrame,
+          (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+          &fFwdBeforeX,
+          &fFwdBeforeY,
+          &fFwdBeforeZ,
+          &v62,
+          &v61,
+          &v59);
+        HanaMatrix_BuildLookAtAndTransform(pFrame, pHeroFrame, g_pSceneFrame, 0);
+        CalculateLocalRotationMatrix(
+          pFrame,
+          (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+          &fFwdAfterX,
+          &fFwdAfterY,
+          &fFwdAfterZ,
+          &v62,
+          &v61,
+          &v59);
+        fFwdAfterX = -fFwdAfterX;
+        fFwdAfterZ = -fFwdAfterZ;
+        dirForwardZa = (fFwdAfterZ - fFwdBeforeZ) * fTurnBlend * 0.30000001 + fFwdBeforeZ;
+        dirForwardXa = (fFwdAfterX - fFwdBeforeX) * fTurnBlend * 0.30000001 + fFwdBeforeX;
+        UpdateBoneLookAtTransform(
+          pFrame,
+          (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+          dirForwardXa,
+          0.0,
+          dirForwardZa,
+          0.0,
+          1.0,
+          0.0);
+        nMoveMode = 5;
+        *pFAggro = 8.1000004 * fDelta + fAggroSaved;
+        if ( *pFAggro > (double)fAggroMax )
+          *pFAggro = fAggroMax;
+      }
+      else
+      {
+        fTimeDiv = fDelta / 2.0 * arrFoeTuning[nDuelIndex][5];
+        if ( fDelta > 1.0 )
+          fTimeDiv = 1.0;
+        CalculateLocalRotationMatrix(
+          pFrame,
+          (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+          &xpos,
+          &ypos,
+          &zpos,
+          &xrot,
+          &yrot,
+          &zrot);
+        HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &fFoeX2, &fFoeY2, &fFoeZ2);
+        fHeroPushZ = pz - (pz - fFoeSaveZ) * 10.0;
+        fHeroPushX = px - (px - fFoeSaveX) * 10.0;
+        MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroPushX, fFoeY2, fHeroPushZ);
+        HanaMatrix_BuildLookAtAndTransform(pFrame, pHeroFrame, g_pSceneFrame, 0);
+        CalculateLocalRotationMatrix(
+          pFrame,
+          (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+          &fLookTgtX,
+          &v53,
+          &fLookTgtZ,
+          &xrot,
+          &yrot,
+          &zrot);
+        dirForwardZb = (fLookTgtZ - zpos) * fTimeDiv * 0.30000001 + zpos;
+        dirForwardXb = (fLookTgtX - xpos) * fTimeDiv * 0.30000001 + xpos;
+        UpdateBoneLookAtTransform(
+          pFrame,
+          (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+          dirForwardXb,
+          0.0,
+          dirForwardZb,
+          0.0,
+          1.0,
+          0.0);
+        CalculateLocalRotationMatrix(pFrame, pHeroFrame, &xpos, &ypos, &zpos, &xrot, &yrot, &zrot);
+        if ( zpos >= 0.99000001 )
+          Frame_RotateMatrixAxis_4070AB(pFrame, 1, &pV, 0.0034908999);
+        MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, z);
+      }
+      g_dwFoeCellXCache_52E4F8 = pnFoeCell.x;
+      g_dwFoeCellYCache_52E4FC = pnFoeCell.y;
+      SekBody__UpdateTo2_401647(pFoeBody, nMoveMode);
+    }
+    fAnimRateB = fDelta * fAggroSpeedMul;
+    if ( CSekBody__UpdateAnim_4019E1(pFoeBody, fAnimRateB) )
+    {
+      if ( pFoeBody->field_200 == 21 || pFoeBody->field_200 == 3 )
+        nMoveMode = 1;
+      SekBody__UpdateTo2_401647(pFoeBody, nMoveMode);
+    }
+  }
+  if ( g_dwBattleMode >= 0 )
+  {
+    HanaFrame_GetRelPosition(pFrame, (CHanaFrameRootT3EC_S2D4 *)pHeroFrame, &pOutX, &pOutY, &pOutZ);
+    fDist = sqrt(pOutX * pOutX + pOutZ * pOutZ);
+    if ( fDist < 5.0 && fDist != 0.0 )
+    {
+      v41 = pOutY;
+      fSepX = 5.0 / fDist * pOutX;
+      fSepZ = 5.0 / fDist * pOutZ;
+      MtxMult_4069DD(pFrame, pHeroFrame, fSepX, pOutY, fSepZ);
+      if ( bFoeActDone != 1 )
+        g_dwFoeAiState_52ED20 = 5;
+    }
+  }
+  px = fFoeSaveX;
+  py = fFoeSaveY;
+  pz = fFoeSaveZ;
+  nHitSfx = 0;
+  for ( i = 0; i < 3; ++i )
+  {
+    nHitSfx = CheckFrameCollision_443CC5(pFrame, pMapFrame, 0);
+    if ( nHitSfx )
+      break;
+    HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &px2, &py2, &pz2);
+    if ( TestMoveCollision_4443FC(pFrame, pMapFrame, px, py2, pz, 0) )
+      HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &px, &py2, &pz);
+    else
+      MtxMult_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, px, py2, pz);
+  }
+  if ( *pFAggro < 10.0 )
+    *pFAggro = 10.0;
+  if ( (unsigned int)--nHitSfx < 4 && g_pFoeHitSfxE_5244E4[nHitSfx] && g_pFoeHitSfxB_5244D4[nHitSfx] )
+  {
+    pAnimItem = &pFoeBody->items_250[pFoeBody->field_200];
+    HanaFrame_GetCenterPosition_408C3E((CHanaFrameRootT3EC_S2D4 *)pFrame, g_pSceneFrame, &px, &py, &pz);
+    g_pFoeHitSfxE_5244E4[nHitSfx]->pDS3DBuffer_4->SetPosition(px, py, pz, 1u);
+    g_pFoeHitSfxB_5244D4[nHitSfx]->pDS3DBuffer_4->SetPosition(px, py, pz, 1u);
+    if ( !g_pFoeHitSfxB_5244D4[nHitSfx]->pDSBuffer_0
+      || g_pFoeHitSfxB_5244D4[nHitSfx]->pDSBuffer_0->GetStatus(
+        &g_dwDSStatus_5185C8)
+      || (g_dwDSStatus_5185C8 & 1) == 0 )
+    {
+      if ( (pAnimItem->float_60 < 100.0 || pAnimItem->float_60 > 108.0)
+        && (pAnimItem->float_60 < 200.0 || pAnimItem->float_60 > 206.0)
+        && (pAnimItem->float_60 < 400.0 || pAnimItem->float_60 > 406.0) )
+      {
+        g_pFoeHitSfxB_5244D4[nHitSfx]->pDSBuffer_0->Stop();
+        g_pFoeHitSfxB_5244D4[nHitSfx]->pDSBuffer_0->SetCurrentPosition(0);
+      }
+      else
+      {
+        g_pFoeHitSfxB_5244D4[nHitSfx]->pDSBuffer_0->Play(0, 0, 0);
+      }
+    }
+    if ( !g_pFoeHitSfxE_5244E4[nHitSfx]->pDSBuffer_0
+      || g_pFoeHitSfxE_5244E4[nHitSfx]->pDSBuffer_0->GetStatus(
+        &g_dwDSStatus_5185C8)
+      || (g_dwDSStatus_5185C8 & 1) == 0 )
+    {
+      if ( (pAnimItem->float_60 < 107.0 || pAnimItem->float_60 > 115.0)
+        && (pAnimItem->float_60 < 205.0 || pAnimItem->float_60 > 212.0)
+        && (pAnimItem->float_60 < 407.0 || pAnimItem->float_60 > 415.0) )
+      {
+        g_pFoeHitSfxE_5244E4[nHitSfx]->pDSBuffer_0->Stop();
+        g_pFoeHitSfxE_5244E4[nHitSfx]->pDSBuffer_0->SetCurrentPosition(0);
+      }
+      else
+      {
+        g_pFoeHitSfxE_5244E4[nHitSfx]->pDSBuffer_0->Play(0, 0, 0);
+      }
+    }
+    for ( i = 0; i < 4; ++i )
+    {
+      if ( nHitSfx != i )
+      {
+        if ( g_pFoeHitSfxB_5244D4[i] )
+        {
+          g_pFoeHitSfxB_5244D4[i]->pDSBuffer_0->Stop();
+          g_pFoeHitSfxB_5244D4[i]->pDSBuffer_0->SetCurrentPosition(0);
+        }
+        if ( g_pFoeHitSfxE_5244E4[i] )
+        {
+          g_pFoeHitSfxE_5244E4[i]->pDSBuffer_0->Stop();
+          g_pFoeHitSfxE_5244E4[i]->pDSBuffer_0->SetCurrentPosition(0);
+        }
+      }
+    }
+  }
+  MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x2, y2, z2);
+  return fHitImpact;
+}
+
+double __cdecl hook_WanaAttack_Close_4535DE(
+  CSekBody *pWanaBody,
+  CSekBody *pHeroBody,
+  float *pFHeroHP,
+  float fDelta,
+  float fAmount,
+  CHanaFrameT3EC_S354 *pMapFrame)
+{
+  float fRelX; // [esp+8h] [ebp-14h] BYREF
+  CHanaFrameT3EC_S354 *pFrame; // [esp+Ch] [ebp-10h]
+  float fRelZ; // [esp+10h] [ebp-Ch] BYREF
+  CHanaFrameRootT3EC_S2D4 *pHeroFrame; // [esp+14h] [ebp-8h]
+  float fRelY; // [esp+18h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] WanaAttack_Close_4535DE\n");
+  
+  pFrame = pWanaBody->pSekHeader_220->pFrameT3EC;
+  pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
+  if ( pWanaBody->field_24C == 1 )
+    return 0.0;
+  if ( g_dwBattleMode == 2
+    && (HanaFrame_GetRelPosition(pFrame, pHeroFrame, &fRelX, &fRelY, &fRelZ),
+      sqrt(fRelX * fRelX + fRelY * fRelY + fRelZ * fRelZ) < 5.0) )
+  {
+    g_dwBattleMode = -1;
+    SekBody__UpdateTo2_401647(pWanaBody, 1);
+    SekBody__UpdateTo2_401647(pHeroBody, 8);
+    *pFHeroHP = *pFHeroHP - fAmount;
+    if ( *pFHeroHP <= 0.0 )
+      *pFHeroHP = 0.0;
+    return 130.0;
+  }
+  else
+  {
+    if ( CSekBody__UpdateAnim_4019E1(pWanaBody, fDelta) == 1 )
+      SekBody__UpdateTo2_401647(pWanaBody, 0);
+    return 0.0;
+  }
+}
+
+bool __cdecl hook_IsFoeWithinHeroRange_448B78(CSekBody *pHeroBody, CSekBody *pFoeBody)
+{
+  float fAfterHeroX; // [esp+8h] [ebp-2Ch] BYREF
+  float fFoeZ; // [esp+Ch] [ebp-28h] BYREF
+  float fFoeY; // [esp+10h] [ebp-24h] BYREF
+  float fFoeX; // [esp+14h] [ebp-20h] BYREF
+  float fHeroZ; // [esp+18h] [ebp-1Ch] BYREF
+  CHanaFrameT3EC_S354 *pFoeFrame; // [esp+1Ch] [ebp-18h]
+  float fHeroY; // [esp+20h] [ebp-14h] BYREF
+  float fHeroX; // [esp+24h] [ebp-10h] BYREF
+  float fAfterHeroZ; // [esp+28h] [ebp-Ch] BYREF
+  CHanaFrameT3EC_S354 *pHeroFrame; // [esp+2Ch] [ebp-8h]
+  float fAfterHeroY; // [esp+30h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] IsFoeWithinHeroRange_448B78\n");
+
+
+  pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
+  pFoeFrame = pFoeBody->pSekHeader_220->pFrameT3EC;
+  HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fHeroX, &fHeroY, &fHeroZ);
+  MtxMult_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, -2.5);
+  HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fAfterHeroX, &fAfterHeroY, &fAfterHeroZ);
+  HanaFrame_GetRelPosition(pFoeFrame, g_pSceneFrame, &fFoeX, &fFoeY, &fFoeZ);
+  MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fHeroY, fHeroZ);
+  return sqrt((fAfterHeroX - fFoeX) * (fAfterHeroX - fFoeX) + (fAfterHeroZ - fFoeZ) * (fAfterHeroZ - fFoeZ)) < 5.0;
+}
+
+//  It's one of the four trap ("wana") attack behaviors dispatched from PlayHunting_44C38D (index 1). It's a two-phase
+//   state machine keyed off g_dwBattleMode:
+// 
+//   Phase 1 -- trigger check (idle, g_dwBattleMode != -1):
+//   - Bails out if the wana is disabled (pWanaBody->field_24C == 1).
+//   - Skips the hit if the hero is invulnerable: its anim set's field_130 is in the 1600-1645 family, or its current anim
+//   item (field_200, confirmed via CutToAnim_4018E1 which assigns it) is 13 -- or simply out of range (fDist >= 5.0 or ==
+//   0).
+//   - On hit: sets g_dwBattleMode = -1 (locks out other attacks), wana -> anim item 1 (attack), hero -> anim item 7
+//   (knockback reaction -- Close uses 8 instead), subtracts fAmount from hero HP (clamped at 0), returns 33.0 -- a non-zero
+//   return both triggers the hit SFX and adds to the caller's fActTimer.
+// 
+//   Phase 2 -- knockback push (attacking, g_dwBattleMode == -1): while hero is within 6 units of the wana, it gets shoved
+//   to exactly 6 units away (rel vector scaled in XZ, Y kept). Then the interesting part -- a ground-settle loop (iTry <
+//   3): if the shove left the hero not touching the support surface (CheckFrameCollision type 0), the code tries to walk
+//   it back toward its pre-shove position:
+// 
+//   - TestMoveCollision(hero, map, anchor, 0) casts the segment current -> anchor; if a wall edge blocks it,
+//   TestBodyMoveHit_443EC4 snaps the hero to the wall contact point as a side effect -- then the anchor is re-armed to that
+//   snapped spot (fAnchorX/fCurY/fAnchorZ := current).
+//   - If unblocked, the hero is placed at (fAnchorX, fCurY, fAnchorZ) -- pulled back to the old XZ but keeping its current
+//   height.
+//   - Loop exits early once the hero is back on the ground.
+// 
+//   When the attack is over/out of range (LABEL_23), the wana's anim is advanced and reset to item 0 when finished,
+//   returning 0.
+double __cdecl hook_WanaAttack_Knockback_4536F6(
+  CSekBody *pWanaBody,
+  CSekBody *pHeroBody,
+  float *pFHeroHP,
+  float fDelta,
+  float fAmount,
+  CHanaFrameT3EC_S354 *pMapFrame)
+{
+  float fStartY; // [esp+8h] [ebp-34h] BYREF
+  float fAnchorX; // [esp+Ch] [ebp-30h] BYREF
+  float fCurY; // [esp+10h] [ebp-2Ch] BYREF
+  float fCurX; // [esp+14h] [ebp-28h] BYREF
+  float fCurZ; // [esp+18h] [ebp-24h] BYREF
+  float fAnchorZ; // [esp+1Ch] [ebp-20h] BYREF
+  float fRelX; // [esp+20h] [ebp-1Ch] BYREF
+  CHanaFrameT3EC_S354 *pWanaFrame; // [esp+24h] [ebp-18h]
+  int iTry; // [esp+28h] [ebp-14h]
+  float fDist; // [esp+2Ch] [ebp-10h]
+  float fRelZ; // [esp+30h] [ebp-Ch] BYREF
+  CHanaFrameT3EC_S354 *pHeroFrame; // [esp+34h] [ebp-8h]
+  float fRelY; // [esp+38h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] WanaAttack_Knockback_4536F6\n");
+  
+  pWanaFrame = pWanaBody->pSekHeader_220->pFrameT3EC;
+  pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
+  if ( pWanaBody->field_24C == 1 )
+    return 0.0;
+  HanaFrame_GetRelPosition(pHeroFrame, pWanaFrame, &fRelX, &fRelY, &fRelZ);
+  fDist = sqrt(fRelX * fRelX + fRelY * fRelY + fRelZ * fRelZ);
+  if ( g_dwBattleMode == -1 )
+  {
+    if ( fDist <= 6.0 && fDist != 0.0 )
+    {
+      HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fAnchorX, &fStartY, &fAnchorZ);
+      fRelX = 6.0 / fDist * fRelX;
+      fRelZ = 6.0 / fDist * fRelZ;
+      MtxMult_4069DD(pHeroFrame, pWanaFrame, fRelX, fRelY, fRelZ);
+      for ( iTry = 0; iTry < 3 && !CheckFrameCollision_443CC5(pHeroFrame, pMapFrame, 0); ++iTry )
+      {
+        HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fCurX, &fCurY, &fCurZ);
+        if ( TestMoveCollision_4443FC(pHeroFrame, pMapFrame, fAnchorX, fStartY, fAnchorZ, 0) )
+          HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fAnchorX, &fCurY, &fAnchorZ);
+        else
+          MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fAnchorX, fCurY, fAnchorZ);
+      }
+    }
+    goto LABEL_23;
+  }
+  if ( pHeroBody->pSekHeader_220->pAnimSetT3F1->field_130 >= 1600.0
+    && pHeroBody->pSekHeader_220->pAnimSetT3F1->field_130 <= 1645.0
+    || pHeroBody->field_200 == 13
+    || fDist >= 5.0
+    || fDist == 0.0 )
+  {
+  LABEL_23:
+    if ( CSekBody__UpdateAnim_4019E1(pWanaBody, fDelta) )
+    {
+      SekBody__UpdateTo_4014E4(pWanaBody, 0);
+      CSekBody__UpdateAnim_4019E1(pWanaBody, 0.0);
+    }
+    return 0.0;
+  }
+  g_dwBattleMode = -1;
+  SekBody__UpdateTo2_401647(pWanaBody, 1);
+  SekBody__UpdateTo2_401647(pHeroBody, 7);
+  *pFHeroHP = *pFHeroHP - fAmount;
+  if ( *pFHeroHP <= 0.0 )
+    *pFHeroHP = 0.0;
+  return 33.0;
+}
+
+// Wana charged attack: accumulates charge in the wana frame's CHanaBase flt_110 (seconds). Hero within 10u starts charging while wana idle 
+// (anim item 0); once started it keeps charging regardless of distance. At >5s wana switches to charge-up anim (item 1).
+// At >20s the charge is RESET (before the range test - a missed discharge wastes the charge) and if the hero is within 5u in the XZ plane only
+// (Y ignored) it discharges: battle mode -1, hero -> anim 12 (shock), wana -> anim 2 (discharge), HP -= fAmount,
+// returns 26.0 (hit: act-timer contribution + hit SFX in PlayHunting). pMapFrame is UNUSED here (no knockback/collision).
+// 
+// Note: rel position is wana-relative-to-hero here (opposite of Knockback). Also: hero anim 13 blocks charging but NOT the discharge; 
+// no 1600-1645 anim-set invulnerability check unlike Knockback.
+// 
+// Pending renaming field struct from CHanaBase_S130, generic scratch slots (nIndex_108, bOk_10C, iAlpha1000_120),
+// flt_110 -> fChargeTime.
+
+double __cdecl hook_WanaAttack_Charged_4539D1(
+  CSekBody *pWanaBody,
+  CSekBody *pHeroBody,
+  float *pFHeroHP,
+  float fDelta,
+  float fAmount,
+  CHanaFrameT3EC_S354 *pMapFrame)
+{
+  float fRelX; // [esp+8h] [ebp-14h] BYREF
+  CHanaFrameT3EC_S354 *pWanaFrame; // [esp+Ch] [ebp-10h]
+  float fRelZ; // [esp+10h] [ebp-Ch] BYREF
+  CHanaFrameRootT3EC_S2D4 *pHeroFrame; // [esp+14h] [ebp-8h]
+  float fRelY; // [esp+18h] [ebp-4h] BYREF
+  ONCELOG("[HNH:SUB] WanaAttack_Charged_4539D1\n");
+ 
+  pWanaFrame = pWanaBody->pSekHeader_220->pFrameT3EC;
+  pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
+  if ( pWanaBody->field_24C == 1 )
+    return 0.0;
+  if ( g_dwBattleMode == -1 )
+    goto LABEL_16;
+  HanaFrame_GetRelPosition(pWanaFrame, pHeroFrame, &fRelX, &fRelY, &fRelZ);
+  if ( pHeroBody->field_200 != 13
+    && (sqrt(fRelX * fRelX + fRelY * fRelY + fRelZ * fRelZ) < 10.0 && !pWanaBody->field_200 || pWanaFrame->flt_110 != 0.0) )
+  {
+    if ( pWanaFrame->flt_110 > 5.0 )
+      SekBody__UpdateTo2_401647(pWanaBody, 1);
+    pWanaFrame->flt_110 = fDelta + pWanaFrame->flt_110;
+  }
+  if ( pWanaFrame->flt_110 <= 20.0 || (pWanaFrame->flt_110 = 0.0, sqrt(fRelX * fRelX + fRelZ * fRelZ) >= 5.0) )
+  {
+  LABEL_16:
+    CSekBody__UpdateAnim_4019E1(pWanaBody, fDelta);
+    return 0.0;
+  }
+  else
+  {
+    g_dwBattleMode = -1;
+    SekBody__UpdateTo2_401647(pHeroBody, 12);
+    SekBody__UpdateTo2_401647(pWanaBody, 2);
+    *pFHeroHP = *pFHeroHP - fAmount;
+    if ( *pFHeroHP <= 0.0 )
+      *pFHeroHP = 0.0;
+    return 26.0;
+  }
+}
+
+double __cdecl hook_WanaAttack_Projectile_453B92(
+  CSekBody *pWanaBody,
+  CSekBody *pHeroBody,
+  float *pFHeroHP,
+  float fDelta,
+  float fAmount,
+  CHanaFrameT3EC_S354 *pMapFrame)
+{
+  float v7; // [esp+0h] [ebp-54h]
+  float X_4; // [esp+8h] [ebp-4Ch]
+  float x; // [esp+Ch] [ebp-48h] BYREF
+  float heroRelY; // [esp+10h] [ebp-44h] BYREF
+  float heroRelX; // [esp+14h] [ebp-40h] BYREF
+  float wanaRelY; // [esp+18h] [ebp-3Ch] BYREF
+  float wanaRelX; // [esp+1Ch] [ebp-38h] BYREF
+  CHanaFrameT3EC_S354 *pWanaFrame; // [esp+20h] [ebp-34h]
+  int v15; // [esp+24h] [ebp-30h]
+  float fDist; // [esp+28h] [ebp-2Ch]
+  int bProjMode; // [esp+2Ch] [ebp-28h]
+  float fHitValue; // [esp+30h] [ebp-24h]
+  float fProjSpeed; // [esp+34h] [ebp-20h]
+  float wanaRelZ; // [esp+38h] [ebp-1Ch] BYREF
+  int v21; // [esp+3Ch] [ebp-18h]
+  float z; // [esp+40h] [ebp-14h] BYREF
+  CHanaFrameT3EC_S354 *pHeroFrame; // [esp+44h] [ebp-10h]
+  float y; // [esp+48h] [ebp-Ch] BYREF
+  float heroRelZ; // [esp+4Ch] [ebp-8h] BYREF
+  int fProjHit; // [esp+50h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] WanaAttack_Projectile_453B92\n");
+ 
+  pWanaFrame = pWanaBody->pSekHeader_220->pFrameT3EC;
+  pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
+  v21 = 0;
+  v15 = 0;
+  fHitValue = 0.0;
+  fProjSpeed = 1.2;
+  if ( pWanaBody->field_24C == 1 )
+    return 0.0;
+  HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &heroRelX, &heroRelY, &heroRelZ);
+  HanaFrame_GetRelPosition(pWanaFrame, g_pSceneFrame, &x, &y, &z);
+  AttachChild_4055FD(g_pSceneFrame, pWanaFrame);
+  MtxMult_4069DD(pWanaFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, z);
+  if ( fAmount <= 5000.0 || fAmount > 7000.0 )
+  {
+    bProjMode = 0;
+  }
+  else
+  {
+    bProjMode = 1;
+    fProjSpeed = 1.5;
+  }
+  if ( fAmount <= 5000.0 )
+    fProjSpeed = 0.80000001;
+  fProjHit = StepWanaProjectile_4581B0(
+    pWanaBody,
+    pHeroBody,
+    pMapFrame,
+    fDelta,
+    5.0,
+    fProjSpeed,
+    pWanaFrame->bOk_10C,
+    bProjMode);
+  if ( fAmount > 5000.0 && fAmount <= 7000.0 )
+  {
+    HanaFrame_GetRelPosition(pWanaFrame, g_pSceneFrame, &wanaRelX, &wanaRelY, &wanaRelZ);
+    MtxMult_4069DD(pWanaFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, wanaRelX, heroRelY, wanaRelZ);
+  }
+  HanaFrame_GetRelPosition(pHeroFrame, pWanaFrame, &x, &y, &z);
+  fDist = sqrt(x * x + z * z);
+  if ( g_dwBattleMode != -1 )
+  {
+    pWanaFrame->bOk_10C = 0;
+    if ( fProjHit )
+    {
+      if ( pWanaBody->field_200 == 3 )
+        SekBody__UpdateTo2_401647(pWanaBody, 2);
+    }
+    else if ( fDist < 40.0 && sqrt(x * x) < 2.0 && z < -10.0 && pWanaBody->field_200 == 1 )
+    {
+      CSekBody__CutToAnim_4018E1(pWanaBody, 3);
+    }
+    if ( pHeroBody->field_200 != 13 && fDist < 4.0 )
+    {
+      if ( pWanaBody->field_200 == 3 )
+      {
+        pWanaFrame->bOk_10C = 1;
+        g_dwBattleMode = -1;
+        SekBody__UpdateTo2_401647(pHeroBody, 9);
+        *pFHeroHP = *pFHeroHP - fAmount;
+        if ( *pFHeroHP <= 0.0 )
+          *pFHeroHP = 0.0;
+        fHitValue = 123.0;
+      }
+      else if ( fAmount > 7000.0 )
+      {
+        pWanaFrame->bOk_10C = 1;
+        g_dwBattleMode = -1;
+        SekBody__UpdateTo2_401647(pHeroBody, 7);
+        *pFHeroHP = *pFHeroHP - fAmount / 10.0;
+        if ( *pFHeroHP <= 0.0 )
+          *pFHeroHP = 0.0;
+        fHitValue = 20.0;
+      }
+    }
+  }
+  if ( fDist < 4.0 && fDist != 0.0 && fAmount > 7000.0 )
+  {
+    X_4 = z * 4.0 / fDist;
+    v7 = x * 4.0 / fDist;
+    MtxMult_4069DD(pHeroFrame, pWanaFrame, v7, y, X_4);
+    if ( !CheckFrameCollision_443CC5(pHeroFrame, pMapFrame, 0) )
+      MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, heroRelX, heroRelY, heroRelZ);
+  }
+  CSekBody__UpdateAnim_4019E1(pWanaBody, fDelta);
+  return fHitValue;
+}
+
+// DrawFadeOutSpark(pSprites, fDecay)
+// pSprites[1] (at pSprites+4) is a spark sprite. Each call decays its alpha by fDecay/10;
+// while alpha>0 it draws 3 copies at x = 320 + (1-alpha)*{off0,off1,off2} (v6), y = 350,
+// for a horizontally-dissipating spark effect.
+void __cdecl hook_DrawFadeOutSpark_45669F(CHanaSpriteT3F6_S1FC **pSprites, float fDecay)
+{
+  float fCalcX; // [esp+28h] [ebp-1Ch]
+  float fPosX; // [esp+28h] [ebp-1Ch]
+  float fPosY; // [esp+2Ch] [ebp-18h]
+  int i; // [esp+30h] [ebp-14h]
+  float arrfXwaves[4]; // [esp+34h] [ebp-10h]
+
+  ONCELOG("[HNH:SUB] DrawFadeOutSpark_45669F\n");
+  
+  arrfXwaves[3] = 0.0;
+  arrfXwaves[0] = -128.0;
+  arrfXwaves[1] = 0.0;
+  arrfXwaves[2] = 128.0;
+  if ( pSprites[1] )
+  {
+    if ( pSprites[1]->fAlpha_144 > 0.0 )
+    {
+      pSprites[1]->fAlpha_144 = pSprites[1]->fAlpha_144 - fDecay / 10.0;
+      if ( pSprites[1]->fAlpha_144 > 0.0 )
+      {
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
+        if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+        {
+          for ( i = 0; i < 3; ++i )
+          {
+            fPosY = ConvertFrom640AsFloat(350.0);
+            fCalcX = (1.0 - pSprites[1]->fAlpha_144) * arrfXwaves[i] + 320.0;
+            fPosX = ConvertFrom640AsFloat(fCalcX);
+            CHanaSpriteT3F6__SetPos_414A5D(pSprites[1], fPosX, fPosY);
+            DrawSprite2D(pSprites[1]);
+          }
+          g_pD3DDevice_4D6C78->EndScene();
+        }
+      }
+    }
+  }
+}
+
+// Step the projectile wana one frame (the wana's own frame IS the projectile; local -Z is its forward axis). Called only from 
+// WanaAttack_Projectile_453B92 (spinRate=5; speed/variant picked there from fAmount;
+// bAlreadyLaunched = frame's CHanaBase bOk_10C latch, set on hero impact). Returns TRUE = projectile went AIRBORNE
+// (its step left it not intersecting the map) - caller then cuts flying anim 3 -> 2. Tracking radius: mode 0 = 100u,
+// mode 1 (hover variant) = ~180u; mode 1 also uses overhead-surface tests (bTestType=1) and keeps the ORIGINAL anchor Y
+// in the settle loop. Aim phase (hero near, not launched): probe 1.5x step along -Z (unless anim 4);
+// steer yaw toward hero side (fForwardSign from hero local X; unless anim 3). Probe still on map -> keep it, anim 1 (rolling).
+// Probe airborne -> back off (+1x, net 0.5x), anim 2, then 2-try settle loop pulling the projectile back toward its frame-entry
+// anchor until it touches the map again (same wall-slide pattern as WanaAttack_Knockback: TestMoveCollision snaps to contac
+BOOL __cdecl hook_StepWanaProjectile_4581B0(
+  CSekBody *pWanaBody,
+  CSekBody *pHeroBody,
+  CHanaFrameT3EC_S354 *pMapFrame,
+  float fDelta,
+  float fSpinRate,
+  float fProjSpeed,
+  int bAlreadyLaunched,
+  int bProjMode)
+{
+  float fProbeZ; // [esp+0h] [ebp-58h]
+  float fSteerRad; // [esp+0h] [ebp-58h]
+  float fBackoffZ; // [esp+0h] [ebp-58h]
+  float fIdleProbeZ; // [esp+0h] [ebp-58h]
+  float fIdleProbe2Z; // [esp+0h] [ebp-58h]
+  float fIdleRevertZ; // [esp+0h] [ebp-58h]
+  float fIdleSpinRad; // [esp+0h] [ebp-58h]
+  float fFlyStepZ; // [esp+0h] [ebp-58h]
+  float fFlyRevertZ; // [esp+0h] [ebp-58h]
+  float fFlySpinRad; // [esp+0h] [ebp-58h]
+  float fHeroRelX; // [esp+8h] [ebp-50h] BYREF
+  float fAnchorY; // [esp+Ch] [ebp-4Ch] BYREF
+  float fAnchorX; // [esp+10h] [ebp-48h] BYREF
+  float fCurY; // [esp+14h] [ebp-44h] BYREF
+  float fCurX; // [esp+18h] [ebp-40h] BYREF
+  CHanaFrameT3EC_S354 *pProjFrame; // [esp+1Ch] [ebp-3Ch]
+  int iTry; // [esp+20h] [ebp-38h]
+  BOOL bAirborne; // [esp+24h] [ebp-34h]
+  float fHeroSideZ; // [esp+28h] [ebp-30h] BYREF
+  D3DXVECTOR3 vecSpinAxis; // [esp+2Ch] [ebp-2Ch] BYREF
+  float fHeroSideY; // [esp+38h] [ebp-20h] BYREF
+  float fCurZ; // [esp+3Ch] [ebp-1Ch] BYREF
+  float fHeroSideX; // [esp+40h] [ebp-18h] BYREF
+  float fForwardSign; // [esp+44h] [ebp-14h]
+  float fHeroRelZ; // [esp+48h] [ebp-10h] BYREF
+  CHanaFrameT3EC_S354 *pHeroFrame; // [esp+4Ch] [ebp-Ch]
+  float fHeroRelY; // [esp+50h] [ebp-8h] BYREF
+  float fAnchorZ; // [esp+54h] [ebp-4h] BYREF
+  float fSpeed; // [esp+74h] [ebp+1Ch]
+
+  ONCELOG("[HNH:SUB] StepWanaProjectile_4581B0\n");
+ 
+  pProjFrame = pWanaBody->pSekHeader_220->pFrameT3EC;
+  pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
+  bAirborne = 0;
+  vecSpinAxis.x = 0.0;
+  vecSpinAxis.y = 1.0;
+  vecSpinAxis.z = 0.0;
+  HanaFrame_GetRelPosition(pProjFrame, g_pSceneFrame, &fAnchorX, &fAnchorY, &fAnchorZ);
+  fSpeed = fProjSpeed * 0.80000001;
+  HanaFrame_GetRelPosition(pHeroFrame, pProjFrame, &fHeroSideX, &fHeroSideY, &fHeroSideZ);
+  if ( fHeroSideX <= 2.0 )
+  {
+    if ( fHeroSideX >= 2.0 )
+      fForwardSign = 0.0;
+    else
+      fForwardSign = 1.0;
+  }
+  else
+  {
+    fForwardSign = -1.0;
+  }
+  HanaFrame_GetRelPosition(pHeroFrame, pProjFrame, &fHeroRelX, &fHeroRelY, &fHeroRelZ);
+  if ( (double)(22500 * bProjMode + 10000) <= fHeroRelX * fHeroRelX + fHeroRelY * fHeroRelY + fHeroRelZ * fHeroRelZ
+    || bAlreadyLaunched == 1 )
+  {
+    if ( bAlreadyLaunched == 1 )
+    {
+      SekBody__UpdateTo2_401647(pWanaBody, 1);
+      fFlyStepZ = -fDelta * fSpeed;
+      MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fFlyStepZ);
+      if ( !CheckFrameCollision_443CC5(pProjFrame, pMapFrame, bProjMode) )
+      {
+        bAirborne = 1;
+        fFlyRevertZ = fDelta * fSpeed;
+        MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fFlyRevertZ);
+        fFlySpinRad = -fDelta * 3.1418099 / 180.0 * fSpinRate;
+        Frame_RotateMatrixAxis_4070AB(pProjFrame, 1, &vecSpinAxis, fFlySpinRad);
+      }
+    }
+    else
+    {
+      SekBody__UpdateTo2_401647(pWanaBody, 2);
+      fIdleProbeZ = -fDelta * fSpeed / 2.0;
+      MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fIdleProbeZ);
+      if ( !CheckFrameCollision_443CC5(pProjFrame, pMapFrame, bProjMode) )
+      {
+        fIdleProbe2Z = -fDelta * fSpeed / 2.0;
+        MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fIdleProbe2Z);
+        if ( !CheckFrameCollision_443CC5(pProjFrame, pMapFrame, bProjMode) )
+        {
+          bAirborne = 1;
+          fIdleRevertZ = fDelta * fSpeed;
+          MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fIdleRevertZ);
+          fIdleSpinRad = fDelta * 3.1418099 / 180.0 * fSpinRate;
+          Frame_RotateMatrixAxis_4070AB(pProjFrame, 1, &vecSpinAxis, fIdleSpinRad);
+        }
+      }
+    }
+  }
+  else
+  {
+    if ( pWanaBody->field_200 != 4 )
+    {
+      fProbeZ = -fDelta * fSpeed * 1.5;
+      MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fProbeZ);
+    }
+    if ( pWanaBody->field_200 != 3 )
+    {
+      fSteerRad = fDelta * 3.1418099 / 180.0 * fForwardSign * fSpinRate;
+      Frame_RotateMatrixAxis_4070AB(pProjFrame, 1, &vecSpinAxis, fSteerRad);
+    }
+    if ( CheckFrameCollision_443CC5(pProjFrame, pMapFrame, 0) )
+    {
+      SekBody__UpdateTo2_401647(pWanaBody, 1);
+    }
+    else
+    {
+      bAirborne = 1;
+      SekBody__UpdateTo2_401647(pWanaBody, 2);
+      fBackoffZ = (fDelta * fSpeed * 1.5 + fDelta * fSpeed * 1.5) / 3.0;
+      MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fBackoffZ);
+      if ( bProjMode )
+      {
+        for ( iTry = 0; iTry < 2 && !CheckFrameCollision_443CC5(pProjFrame, pMapFrame, 1); ++iTry )
+        {
+          HanaFrame_GetRelPosition(pProjFrame, g_pSceneFrame, &fCurX, &fCurY, &fCurZ);
+          if ( TestMoveCollision_4443FC(pProjFrame, pMapFrame, fAnchorX, fAnchorY, fAnchorZ, 1) )
+            HanaFrame_GetRelPosition(pProjFrame, g_pSceneFrame, &fAnchorX, &fCurY, &fAnchorZ);
+          else
+            MtxMult_4069DD(pProjFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fAnchorX, fAnchorY, fAnchorZ);
+        }
+      }
+      else
+      {
+        for ( iTry = 0; iTry < 2 && !CheckFrameCollision_443CC5(pProjFrame, pMapFrame, 0); ++iTry )
+        {
+          HanaFrame_GetRelPosition(pProjFrame, g_pSceneFrame, &fCurX, &fCurY, &fCurZ);
+          if ( TestMoveCollision_4443FC(pProjFrame, pMapFrame, fAnchorX, fCurY, fAnchorZ, 0) )
+            HanaFrame_GetRelPosition(pProjFrame, g_pSceneFrame, &fAnchorX, &fCurY, &fAnchorZ);
+          else
+            MtxMult_4069DD(pProjFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fAnchorX, fCurY, fAnchorZ);
+        }
+      }
+    }
+  }
+  return bAirborne;
+}
+
+void __cdecl hook_BindSceneActors_448C72(
+  CHanaSceneT458_S504 *pScene,
+  CHanaFrameT3EC_S354 **pActorFrames,
+  unsigned int nCount)
+{
+  float fRelZ; // [esp+4h] [ebp-248h] BYREF
+  size_t nNameLen[10]; // [esp+8h] [ebp-244h]
+  float fRelY; // [esp+30h] [ebp-21Ch] BYREF
+  float fRelX; // [esp+34h] [ebp-218h] BYREF
+  unsigned int j; // [esp+38h] [ebp-214h]
+  unsigned int i; // [esp+3Ch] [ebp-210h]
+  float fDirUpZ; // [esp+40h] [ebp-20Ch] BYREF
+  String50 szActorNames[9]; // [esp+44h] [ebp-208h] BYREF
+  String50 szWana8; // [esp+206h] [ebp-46h] BYREF
+  float dirForwardZ; // [esp+238h] [ebp-14h] BYREF
+  float fDirUpY; // [esp+23Ch] [ebp-10h] BYREF
+  float fDirForwardY; // [esp+240h] [ebp-Ch] BYREF
+  float fDirUpX; // [esp+244h] [ebp-8h] BYREF
+  float dirForwardX; // [esp+248h] [ebp-4h] BYREF
+  ONCELOG("[HNH:SUB] BindSceneActors_448C72\n");
+  
+  strcpy((char *)szActorNames[0].str, "otoko");
+  memset((void *)&szActorNames[0].str[6], 0, 44u);
+  strcpy((char *)szActorNames[1].str, "onna");
+  memset((void *)&szActorNames[1].str[5], 0, 0x2Cu);
+  szActorNames[1].str[49] = 0;
+  strcpy((char *)szActorNames[2].str, "wana1");
+  memset((void *)&szActorNames[2].str[6], 0, 0x2Cu);
+  strcpy((char *)szActorNames[3].str, "wana2");
+  memset((void *)&szActorNames[3].str[6], 0, 0x2Cu);
+  strcpy((char *)szActorNames[4].str, "wana3");
+  memset((void *)&szActorNames[4].str[6], 0, 0x2Cu);
+  strcpy((char *)szActorNames[5].str, "wana4");
+  memset((void *)&szActorNames[5].str[6], 0, 0x2Cu);
+  strcpy((char *)szActorNames[6].str, "wana5");
+  memset((void *)&szActorNames[6].str[6], 0, 0x2Cu);
+  strcpy((char *)szActorNames[7].str, "wana6");
+  memset((void *)&szActorNames[7].str[6], 0, 0x2Cu);
+  strcpy((char *)szActorNames[8].str, "wana7");
+  memset((void *)&szActorNames[8].str[6], 0, 0x2Cu);
+  strcpy((char *)szWana8.str, "wana8");
+  memset((void *)&szWana8.str[6], 0, 0x2Cu);
+  nNameLen[0] = 5;
+  nNameLen[1] = 4;
+  nNameLen[2] = 5;
+  nNameLen[3] = 5;
+  nNameLen[4] = 5;
+  nNameLen[5] = 5;
+  nNameLen[6] = 5;
+  nNameLen[7] = 5;
+  nNameLen[8] = 5;
+  nNameLen[9] = 5;
+  if ( pScene )
+  {
+    for ( i = 0; i < nCount; ++i )
+    {
+      for ( j = 0; j < pScene->dwCount_130; ++j )
+      {
+        if ( pScene->refsFrames_134[j]
+          && !_strnicmp(pScene->refsFrames_134[j]->szName_8, szActorNames[i].str, nNameLen[i]) )
+        {
+          if ( i >= 2 )
+          {
+            AttachChild_4055FD(pScene->refsFrames_134[j], pActorFrames[i]);
+            MtxMult_4069DD(pActorFrames[i], pScene->refsFrames_134[j], 0.0, 0.0, 0.0);
+            UpdateBoneLookAtTransform(pActorFrames[i], pScene->refsFrames_134[j], 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
+          }
+          else
+          {
+            HanaFrame_GetRelPosition(pScene->refsFrames_134[j], g_pSceneFrame, &fRelX, &fRelY, &fRelZ);
+            MtxMult_4069DD(pActorFrames[i], (CHanaFrameT3EC_S354 *)g_pSceneFrame, fRelX, fRelY, fRelZ);
+            CalculateLocalRotationMatrix(
+              pScene->refsFrames_134[j],
+              (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+              &dirForwardX,
+              &fDirForwardY,
+              &dirForwardZ,
+              &fDirUpX,
+              &fDirUpY,
+              &fDirUpZ);
+            UpdateBoneLookAtTransform(
+              pActorFrames[i],
+              (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+              dirForwardX,
+              0.0,
+              dirForwardZ,
+              0.0,
+              1.0,
+              0.0);
+          }
+          break;
+        }
+      }
+    }
+  }
+}
+
+// Duel overhead camera (hunting mode, hero anim <= 6 + g_btoggleC_530268). Moves g_pCameraFrame to 16 units above the hero (hero-local Y up), aims it at the FOE (foe frame temporarily repositioned to 2x hero-foe horizontal distance along hero-local Z and re-posed to anim time 0 for a stable look-at target, both restored at the end), flags the hero frame bAlphaDeferred_130=1 (deferred/ghosted so it does not block the overhead view), then SMOOTHS the camera transform from its entry state toward the snapped state (lerp factor fDelta/5) via UpdateBoneLookAtTransform. Uses foe AND hero bodies; NO map collision handling (unlike UpdateCameraFollowChase_445525). CalculateLocalRotationMatrix returns the camera transform in hero space: col-3 = position, col-2 = up vector.
+void __cdecl hook_UpdateCameraFollowDuel_44C028(CSekBody *pHeroBody, CSekBody *pFoeBody, float fDelta)
+{
+  double fHorizDist; // st7
+  float fSmPosX; // [esp+0h] [ebp-64h]
+  float fSmPosY; // [esp+4h] [ebp-60h]
+  float fSmPosZ; // [esp+8h] [ebp-5Ch]
+  float fAimUpX; // [esp+Ch] [ebp-58h]
+  float fSmUpX; // [esp+Ch] [ebp-58h]
+  float fAimUpY; // [esp+10h] [ebp-54h]
+  float fSmUpY; // [esp+10h] [ebp-54h]
+  float fFoeScratchZ; // [esp+14h] [ebp-50h]
+  float fAimUpZ; // [esp+14h] [ebp-50h]
+  float fSmUpZ; // [esp+14h] [ebp-50h]
+  float fNegHeight; // [esp+18h] [ebp-4Ch]
+  float fFoeAnimTime; // [esp+20h] [ebp-44h]
+  float fFoeRelZ; // [esp+24h] [ebp-40h] BYREF
+  float fStartUpZ; // [esp+28h] [ebp-3Ch] BYREF
+  float fStartPosZ; // [esp+2Ch] [ebp-38h] BYREF
+  int iAnim; // [esp+30h] [ebp-34h]
+  float fTgtPosZ; // [esp+34h] [ebp-30h] BYREF
+  float fTgtPosY; // [esp+38h] [ebp-2Ch] BYREF
+  float fFoeRelY; // [esp+3Ch] [ebp-28h] BYREF
+  float fStartUpY; // [esp+40h] [ebp-24h] BYREF
+  float fTgtPosX; // [esp+44h] [ebp-20h] BYREF
+  float fStartPosY; // [esp+48h] [ebp-1Ch] BYREF
+  float fTgtUpZ; // [esp+4Ch] [ebp-18h] BYREF
+  float fTgtUpY; // [esp+50h] [ebp-14h] BYREF
+  float fFoeRelX; // [esp+54h] [ebp-10h] BYREF
+  float fStartUpX; // [esp+58h] [ebp-Ch] BYREF
+  float fTgtUpX; // [esp+5Ch] [ebp-8h] BYREF
+  float fStartPosX; // [esp+60h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] UpdateCameraFollowDuel_44C028\n");
+  
+  HanaFrame_GetRelPosition(
+    pFoeBody->pSekHeader_220->pFrameT3EC,
+    pHeroBody->pSekHeader_220->pFrameT3EC,
+    &fFoeRelX,
+    &fFoeRelY,
+    &fFoeRelZ);
+  fHorizDist = sqrt(fFoeRelX * fFoeRelX + fFoeRelZ * fFoeRelZ);
+  fFoeScratchZ = fHorizDist + fHorizDist;
+  MtxMult_4069DD(
+    pFoeBody->pSekHeader_220->pFrameT3EC,
+    pHeroBody->pSekHeader_220->pFrameT3EC,
+    0.0,
+    fFoeRelY,
+    fFoeScratchZ);
+  CalculateLocalRotationMatrix(
+    g_pCameraFrame,
+    pHeroBody->pSekHeader_220->pFrameT3EC,
+    &fStartPosX,
+    &fStartPosY,
+    &fStartPosZ,
+    &fStartUpX,
+    &fStartUpY,
+    &fStartUpZ);
+  pHeroBody->pSekHeader_220->pFrameT3EC->bAlphaDeferred_130 = 1;
+  MtxMult_4069DD(g_pCameraFrame, pHeroBody->pSekHeader_220->pFrameT3EC, 0.0, 16.0, 0.0);
+  fFoeAnimTime = pFoeBody->pSekHeader_220->pAnimSetT3F1->field_130;
+  for ( iAnim = 0; iAnim < pFoeBody->pSekHeader_220->pAnimSetT3F1->nAnimCount_134; ++iAnim )
+    InterpolateHanaAnimFrame(pFoeBody->pSekHeader_220->pAnimSetT3F1->refsAnimT3F0_138[iAnim], 0.0);
+  MtxStackStartMultLocal_4074EF();
+  HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, 0);
+  for ( iAnim = 0; iAnim < pFoeBody->pSekHeader_220->pAnimSetT3F1->nAnimCount_134; ++iAnim )
+    InterpolateHanaAnimFrame(pFoeBody->pSekHeader_220->pAnimSetT3F1->refsAnimT3F0_138[iAnim], fFoeAnimTime);
+  MtxStackStartMultLocal_4074EF();
+  CalculateLocalRotationMatrix(
+    g_pCameraFrame,
+    pHeroBody->pSekHeader_220->pFrameT3EC,
+    &fTgtPosX,
+    &fTgtPosY,
+    &fTgtPosZ,
+    &fTgtUpX,
+    &fTgtUpY,
+    &fTgtUpZ);
+  fAimUpZ = fTgtUpZ;
+  fAimUpY = fTgtUpY;
+  fAimUpX = fTgtUpX;
+  fNegHeight = -sqrt(fTgtPosY * fTgtPosY);
+  UpdateBoneLookAtTransform(
+    g_pCameraFrame,
+    pHeroBody->pSekHeader_220->pFrameT3EC,
+    0.0,
+    fNegHeight,
+    -1.0,
+    fAimUpX,
+    fAimUpY,
+    fAimUpZ);
+  CalculateLocalRotationMatrix(
+    g_pCameraFrame,
+    pHeroBody->pSekHeader_220->pFrameT3EC,
+    &fTgtPosX,
+    &fTgtPosY,
+    &fTgtPosZ,
+    &fTgtUpX,
+    &fTgtUpY,
+    &fTgtUpZ);
+  fSmUpZ = (fTgtUpZ - fStartUpZ) / 5.0 * fDelta + fStartUpZ;
+  fSmUpY = (fTgtUpY - fStartUpY) / 5.0 * fDelta + fStartUpY;
+  fSmUpX = (fTgtUpX - fStartUpX) / 5.0 * fDelta + fStartUpX;
+  fSmPosZ = (fTgtPosZ - fStartPosZ) / 5.0 * fDelta + fStartPosZ;
+  fSmPosY = (fTgtPosY - fStartPosY) / 5.0 * fDelta + fStartPosY;
+  fSmPosX = (fTgtPosX - fStartPosX) / 5.0 * fDelta + fStartPosX;
+  UpdateBoneLookAtTransform(
+    g_pCameraFrame,
+    pHeroBody->pSekHeader_220->pFrameT3EC,
+    fSmPosX,
+    fSmPosY,
+    fSmPosZ,
+    fSmUpX,
+    fSmUpY,
+    fSmUpZ);
+  MtxMult_4069DD(
+    pFoeBody->pSekHeader_220->pFrameT3EC,
+    pHeroBody->pSekHeader_220->pFrameT3EC,
+    fFoeRelX,
+    fFoeRelY,
+    fFoeRelZ);
+}
+
 void register_PlayHunting_44C38D() {
   hnh_Hook(0x44C38D, hook_PlayHunting_44C38D, "PlayHunting_44C38D"); // [OK]
+  hnh_Hook(0x446a38, hook_UpdateFoeAI_446A38, "UpdateFoeAI_446A38");
+  hnh_Hook(0x4535de, hook_WanaAttack_Close_4535DE, "WanaAttack_Close_4535DE");
+  hnh_Hook(0x448b78, hook_IsFoeWithinHeroRange_448B78, "IsFoeWithinHeroRange_448B78");
+  hnh_Hook(0x4536f6, hook_WanaAttack_Knockback_4536F6, "WanaAttack_Knockback_4536F6");
+  hnh_Hook(0x4539d1, hook_WanaAttack_Charged_4539D1, "WanaAttack_Charged_4539D1");
+  hnh_Hook(0x453b92, hook_WanaAttack_Projectile_453B92, "WanaAttack_Projectile_453B92");
+  hnh_Hook(0x45669f, hook_DrawFadeOutSpark_45669F, "DrawFadeOutSpark_45669F");
+  hnh_Hook(0x4581b0, hook_StepWanaProjectile_4581B0, "StepWanaProjectile_4581B0");
+  hnh_Hook(0x448c72, hook_BindSceneActors_448C72, "BindSceneActors_448C72");
+  hnh_Hook(0x44c028, hook_UpdateCameraFollowDuel_44C028, "UpdateCameraFollowDuel_44C028");
+
 
   hnh_HookOff();
   hnh_HookOn();

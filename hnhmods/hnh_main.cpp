@@ -113,6 +113,8 @@ void register_ParseExecStr_487D89();
 void register_RunModeSelectScreen();
 void register_PlayExploring_45BCAE();
 void register_SetupHeroEntry_4593E0();
+void register_HanaGrid_FloodFill_4460AD();
+void register_UpdateFoeAI_446A38();
 void register_PlayHunting_44C38D();
 void register_PlayAssault_4703AE();
 
@@ -171,6 +173,8 @@ void InitHNH() {
 	register_RunModeSelectScreen();
 	register_PlayExploring_45BCAE();
 	register_SetupHeroEntry_4593E0();
+	register_HanaGrid_FloodFill_4460AD();
+	register_UpdateFoeAI_446A38();
 	register_PlayHunting_44C38D();
 	register_PlayAssault_4703AE();
 

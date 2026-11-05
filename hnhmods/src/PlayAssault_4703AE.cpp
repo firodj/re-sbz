@@ -108,9 +108,6 @@ BOOL (__cdecl*LoadOdsEx_48564B)(LPCSTR lpFileName, CHanaSceneT458_S504 **ppScene
     reinterpret_cast<BOOL(__cdecl*)(LPCSTR, CHanaSceneT458_S504 **,
       CHanaFrameT3EC_S354 **, CHanaAnimSetT3F1_S150 **, unsigned int)>(0x48564B);
 
-int (__cdecl*DSBufferGetVolume_423C65)(LPDIRECTSOUNDBUFFER pDSBuffer) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER)>(0x423C65);
-
 int (__cdecl*PlayCutInScene_46A76F)(CHanaSceneT458_S504 *pScene,
     CHanaSpriteT3F6_S1FC **arrMouseSprites, CHanaSpriteT3F6_S1FC **arrGoSprites,
     CHanaSpriteT3F6_S1FC **arrPostureSprites, CSekBody *pLockOnBody,

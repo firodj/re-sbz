@@ -548,6 +548,22 @@ extern void(__cdecl* BuildViewportMatrix)();
 
 extern void(__cdecl* SetupHeroEntry_4593E0)(CHanaSceneT458_S504* pScene,
   CHanaFrameT3EC_S354* pHeroFrame, int nSubIndex);
+extern bool(__cdecl* UpdateHeroBody_44474E)(CSekBody* pHeroBody, CHanaFrameT3EC_S354* pMapFrame, float fDeltaTime, float* pfHeroHp, float fHeroHpMax);
+extern void(__cdecl* BuildMapCollisionGrid_445B12)(CHanaFrameT3EC_S354* pMapFrame, char** pOutGrid);
+extern void(__cdecl* Frame_RotateMatrixAxis_4070AB)(CHanaFrameT3EC_S354* pFrame, int nMode, D3DXVECTOR3* pAxis, float fAngleRad);
+extern int(__cdecl* CheckFrameCollision_443CC5)(CHanaFrameT3EC_S354* pBodyFrame, CHanaFrameT3EC_S354* pMapFrame, int bTestType);
+extern bool(__cdecl* TestMoveCollision_4443FC)(CHanaFrameT3EC_S354* pBodyFrame, CHanaFrameT3EC_S354* pMapFrame, float fNewX, float fNewY, float fNewZ, int bTestType);
+extern bool(__cdecl* HanaGrid_DFSPath)(char* pGrid, int nCellX, int nCellY, int nDepth, __int16 nSteps, int bIgnoreBlocked);
+extern D3DXVECTOR2* (__cdecl* HanaGrid_FloodFill_4460AD)(D3DXVECTOR2* pfOutStep, char* pGrid, POINT* pnFoeCell, POINT pnHeroCell, int* pnDepth, int nMode, POINT* ppOutPathPts, WORD* pnOutNumbPathPts);
+extern void(__cdecl* UpdateVoicePlayback_458B3A)(CSekBody* pFoeBody, CHanaFrameRootT3EC_S2D4* pFoeFocusFrame, CSoundStruct_8** arrVoiceBufs, float fDelta);
+extern int(__cdecl* DSBufferGetVolume_423C65)(LPDIRECTSOUNDBUFFER pDSBuf);
+extern double(__cdecl* UpdateFoeAI_446A38)(CSekBody* pFoeBody, CSekBody* pHeroBody,
+  CHanaFrameT3EC_S354* pMapFrame, char* pOccGrid, float fDeltaTime,
+  float* pfAggro, float* pfHeroHp, float fAggroMax, int nDuelIndex);
+
+
+extern int& g_dwBattleMode;
+
 
 // === DEFINED PlayExploring.cpp ===
 
@@ -559,7 +575,7 @@ extern int (__cdecl*BuildMapSubFrames_443DD5)(CHanaFrameT3EC_S354 *pMapFrame);
 
 extern CHanaSpriteT3F6_S1FC* (__cdecl* InitHudResources_4490A7)(CHanaSpriteT3F6_S1FC** arrSprNumbers,
   CHanaSpriteT3F6_S1FC** arrSprTimes, CHanaSpriteT3F6_S1FC** arrSprModes, int nMode);
-extern void (__cdecl*UpdateCameraFollow_445525)(CHanaFrameT3EC_S354 *pHeroFrame,
+extern void (__cdecl*UpdateCameraFollowChase_445525)(CHanaFrameT3EC_S354 *pHeroFrame,
   CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pMapFrame, float fTime, int bMove);
 extern void (__cdecl*SetupItemBodies_459F81)(CHanaSceneT458_S504 *pScene, CSekBody **pItemBodies,
   DWORD *arrItemPlaceData, int nMapIndex);
@@ -586,9 +602,11 @@ extern int (__cdecl*ShowMouseSelectDialog_4573CF)(CHanaSpriteT3F6_S1FC **arrSprM
   LPDIRECTSOUNDBUFFER *pArrSndBuf);
 extern HRESULT (__cdecl*DrawSpriteListEcho_45B2FB)(CHanaSpriteT3F6_S1FC **arrSprites, int nTargetIdx,
   float fDeltaTime);
+extern void(__cdecl* HanaMatrix_BuildLookAtAndTransform)(CHanaFrameT3EC_S354* pFoeFrame, CHanaFrameT3EC_S354* pHeroFrame, CHanaFrameRootT3EC_S2D4* pSceneFrame, BOOL bSkip);
+extern void(__cdecl* UpdateCameraFollowChase_445525)(CHanaFrameT3EC_S354* pHeroFrame,
+  CHanaFrameT3EC_S354* pCameraFrame, CHanaFrameT3EC_S354* pMapFrame, float fTime, int bMove);
 
-extern int &g_dwBattleMode_52ED04;   // also pinned in PlayExploring
-
+extern void(__cdecl* InterpolateHanaAnimFrame)(CHanaAnimT3F0_S240* pAnim, float fTime); // in: ParseODFContent
 #endif
 
 // == MACROS

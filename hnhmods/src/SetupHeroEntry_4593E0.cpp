@@ -7,39 +7,53 @@
 
 void (__cdecl*SetupHeroEntry_4593E0)(CHanaSceneT458_S504 *pScene,CHanaFrameT3EC_S354 *pHeroFrame, int nSubIndex)
 = reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, CHanaFrameT3EC_S354 *, int)>(0x4593E0);
-
 bool (__cdecl*UpdateHeroBody_44474E)(CSekBody *pHeroBody, CHanaFrameT3EC_S354 *pMapFrame, float fDeltaTime, float *pfHeroHp, float fHeroHpMax)
 = reinterpret_cast<bool(__cdecl*)(CSekBody *, CHanaFrameT3EC_S354 *, float, float *, float)>(0x44474E);
-
-
-
+void (__cdecl *BuildMapCollisionGrid_445B12)(CHanaFrameT3EC_S354 *pMapFrame, char **pOutGrid)
+= reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pMapFrame, char **pOutGrid)>(0x445b12);
 void (__cdecl *Frame_RotateMatrixAxis_4070AB)(CHanaFrameT3EC_S354 *pFrame, int nMode, D3DXVECTOR3 *pAxis, float fAngleRad)
 = reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFrame, int nMode, D3DXVECTOR3 *pAxis, float fAngleRad)>(0x4070ab);
-
 int (__cdecl *CheckFrameCollision_443CC5)(CHanaFrameT3EC_S354 *pBodyFrame, CHanaFrameT3EC_S354 *pMapFrame, int bTestType)
 = reinterpret_cast<int (__cdecl*)(CHanaFrameT3EC_S354 *pBodyFrame, CHanaFrameT3EC_S354 *pMapFrame, int bTestType)>(0x443cc5);
-
 BOOL (__cdecl *HitOverheadSurface_442C1C)(CHanaFrameT3EC_S354 *pBodyFrame, CHanaFrameT3EC_S354 *pMapFrame)
 = reinterpret_cast<BOOL (__cdecl*)(CHanaFrameT3EC_S354 *pBodyFrame, CHanaFrameT3EC_S354 *pMapFrame)>(0x442c1c);
 int (__cdecl *HitSupportSurface_4423B0)(CHanaFrameT3EC_S354 *pBodyFrame, CHanaFrameT3EC_S354 *pMapFrame)
 = reinterpret_cast<int (__cdecl*)(CHanaFrameT3EC_S354 *pBodyFrame, CHanaFrameT3EC_S354 *pMapFrame)>(0x4423b0);
 void (__cdecl *ComputeMeshBounds_407E1F)(CHanaFrameT3EC_S354 *pMapFrame, D3DXVECTOR3 *fMin, D3DXVECTOR3 *fMax)
 = reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pMapFrame, D3DXVECTOR3 *fMin, D3DXVECTOR3 *fMax)>(0x407e1f);
-
 bool (__cdecl *TestBodyMoveHit_443EC4)(CHanaFrameT3EC_S354 *pBodyFrame, CHanaFrameT3EC_S354 *pMapFrame, float fNewX, float fNewY, float fNewZ, int bIgnoreY)
 = reinterpret_cast<bool (__cdecl*)(CHanaFrameT3EC_S354 *pBodyFrame, CHanaFrameT3EC_S354 *pMapFrame, float fNewX, float fNewY, float fNewZ, int bIgnoreY)>(0x443ec4);
 bool (__cdecl *TestMoveCollision_4443FC)(CHanaFrameT3EC_S354 *pBodyFrame, CHanaFrameT3EC_S354 *pMapFrame, float fNewX, float fNewY, float fNewZ, int bTestType)
 = reinterpret_cast<bool (__cdecl*)(CHanaFrameT3EC_S354 *pBodyFrame, CHanaFrameT3EC_S354 *pMapFrame, float fNewX, float fNewY, float fNewZ, int bTestType)>(0x4443fc);
+bool (__cdecl *HanaGrid_DFSPath)(char *pGrid, int nCellX, int nCellY, int nDepth, __int16 nSteps, int bIgnoreBlocked)
+= reinterpret_cast<bool (__cdecl*)(char *pGrid, int nCellX, int nCellY, int nDepth, __int16 nSteps, int bIgnoreBlocked)>(0x445c12);
+D3DXVECTOR2 *(__cdecl *HanaGrid_FloodFill_4460AD)(D3DXVECTOR2 *pfOutStep, char *pGrid, POINT *pnFoeCell, POINT pnHeroCell, int *pnDepth, int nMode, POINT *ppOutPathPts, WORD *pnOutNumbPathPts)
+= reinterpret_cast<D3DXVECTOR2 *(__cdecl *)(D3DXVECTOR2 *, char *, POINT *, POINT, int *, int, POINT *, WORD *)>(0x4460AD);
+void (__cdecl *UpdateVoicePlayback_458B3A)(CSekBody *pFoeBody, CHanaFrameRootT3EC_S2D4 *pFoeFocusFrame, CSoundStruct_8 **arrVoiceBufs, float fDelta)
+= reinterpret_cast<void (__cdecl*)(CSekBody *pFoeBody, CHanaFrameRootT3EC_S2D4 *pFoeFocusFrame, CSoundStruct_8 **arrVoiceBufs, float fDelta)>(0x458b3a);
+int (__cdecl *DSBufferGetVolume_423C65)(LPDIRECTSOUNDBUFFER pDSBuf)
+= reinterpret_cast<int (__cdecl*)(LPDIRECTSOUNDBUFFER pDSBuf)>(0x423c65);
+
+
 
 
 uint8_t &g_bHeroAttackHold = *(uint8_t *)0x52ED08; // WRITABLE
 uint8_t &g_bHeroLightAttack = *(uint8_t *)0x52ED09; // WRITABLE
 float &g_fHeroLightAttackTime = *(float *)0x52ED0C; // WRITABLE
-uint32_t &g_dwBattleMode = *(uint32_t *)0x52ED04; // WRITABLE
+int &g_dwBattleMode = *(int *)0x52ED04; // WRITABLE
 uint8_t &g_bHeroChargeActive = *(uint8_t *)0x52ED0A; // WRITABLE
 float &g_fHeroChargeTime = *(float *)0x52ED00; // WRITABLE
 float &g_fHeroIdleTime = *(float *)0x52ED10; // WRITABLE
 
+char (&g_pMapCollGrid)[40804] = *(char (*)[40804])0x519D48; // WRITABLE
+
+uint16_t &g_nFloodCandidates_52ED14 = *(uint16_t *)0x52ED14; // WRITABLE
+POINT (&g_arrFloodPathXY_5244F8)[1024][5] = *(POINT (*)[1024][5])0x5244F8; // WRITABLE -- [candidate][waypoint]
+__int16 (&g_arrFloodPathLen_523CAC)[1024] = *(__int16 (*)[1024])0x523CAC; // WRITABLE
+__int16 (&g_arrFloodPathCnt_52E500)[1024] = *(__int16 (*)[1024])0x52E500; // WRITABLE
+
+uint32_t &g_nCurVoiceIdx_52EF64 = *(uint32_t *)0x52EF64; // WRITABLE
+uint32_t &g_nVoiceRotate_52EF68 = *(uint32_t *)0x52EF68; // WRITABLE
 
 // === FUNCTIONS ===
 
@@ -1076,11 +1090,562 @@ bool __cdecl hook_TestMoveCollision_4443FC(
   return result;
 }
 
+void __cdecl hook_BuildMapCollisionGrid_445B12(CHanaFrameT3EC_S354 *pMapFrame, char **pOutGrid)
+{
+  char bHit; // al
+  float fProbeX; // [esp+0h] [ebp-20h]
+  float fProbeZ; // [esp+8h] [ebp-18h]
+  int nCol; // [esp+14h] [ebp-Ch]
+  CHanaFrameT3EC_S354 *pProbeFrame; // [esp+18h] [ebp-8h] BYREF
+  int nRow; // [esp+1Ch] [ebp-4h]
+  ONCELOG("[HNH:SUB] BuildMapCollisionGrid_445B12\n");
+
+  pProbeFrame = 0;
+  memset(g_pMapCollGrid, 0, sizeof(g_pMapCollGrid));
+  CHanaObj__NewFrameT3EC_S354((CHanaFrameT3EC_S354 *)g_pSceneFrame, &pProbeFrame);
+  for ( nRow = 1; nRow < 200; ++nRow )
+  {
+    for ( nCol = 1; nCol < 200; ++nCol )
+    {
+      fProbeZ = (double)(nRow - 100) * 5.0;
+      fProbeX = (double)(nCol - 100) * 5.0;
+      MtxMult_4069DD(pProbeFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fProbeX, 0.0, fProbeZ);
+      bHit = CheckFrameCollision_443CC5(pProbeFrame, pMapFrame, 1);
+      g_pMapCollGrid[200 * nRow + nCol] = bHit;
+    }
+  }
+  if ( pProbeFrame )
+  {
+    CHanaObj__Free_40C1E4(pProbeFrame);
+    pProbeFrame = 0;
+  }
+  *pOutGrid = g_pMapCollGrid;
+}
+
+// HanaGrid_DFSPath -- depth-limited DFS that enumerates every walkable path branch
+// 
+//   The recursive worker behind HanaGrid_FloodFill. For a starting cell it explores cardinal directions only (W->E->S->N, no
+//   diagonals -- those exist only in FloodFill's direction tables) and records every distinct path endpoint as a
+//   "candidate" in the global tables.
+bool __cdecl hook_HanaGrid_DFSPath(char *pGrid, int nCellX, int nCellY, int nDepth, __int16 nSteps, int bIgnoreBlocked)
+{
+  int nDepthLeft; // [esp+14h] [ebp+14h]
+  __int16 nStepsNext; // [esp+18h] [ebp+18h]
+
+  ONCELOG("[HNH:SUB] HanaGrid_DFSPath_445C12\n");
+
+  nDepthLeft = nDepth - 1;
+  if ( nCellX <= -100
+    || nCellX >= 100
+    || nCellY <= -100
+    || nCellY >= 100
+    || pGrid[200 * nCellY + 20100 + nCellX] != 1 && !bIgnoreBlocked )
+  {
+    return 0;
+  }
+  if ( nDepthLeft > 0 )
+  {
+    g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14][nSteps].x = nCellX;
+    g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14][nSteps].y = nCellY;
+    nStepsNext = nSteps + 1;
+    if ( !HanaGrid_DFSPath(pGrid, nCellX - 1, nCellY, nDepthLeft, nStepsNext, bIgnoreBlocked) && !bIgnoreBlocked )
+    {
+      g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14][nStepsNext].x = nCellX;
+      g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14][nStepsNext].y = nCellY;
+      g_arrFloodPathLen_523CAC[g_nFloodCandidates_52ED14] = nDepthLeft;
+      g_arrFloodPathCnt_52E500[g_nFloodCandidates_52ED14] = nStepsNext;
+      memcpy(
+        g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14 + 1],
+        g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14],
+        8 * nStepsNext + 8);                    // (1+nStepsNext) * sizeof(POINT)
+      ++g_nFloodCandidates_52ED14;
+    }
+    if ( !HanaGrid_DFSPath(pGrid, nCellX + 1, nCellY, nDepthLeft, nStepsNext, bIgnoreBlocked) && !bIgnoreBlocked )
+    {
+      g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14][nStepsNext].x = nCellX;
+      g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14][nStepsNext].y = nCellY;
+      g_arrFloodPathLen_523CAC[g_nFloodCandidates_52ED14] = nDepthLeft;
+      g_arrFloodPathCnt_52E500[g_nFloodCandidates_52ED14] = nStepsNext;
+      memcpy(
+        g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14 + 1],
+        g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14],
+        sizeof(POINT[5]));
+      ++g_nFloodCandidates_52ED14;
+    }
+    if ( !HanaGrid_DFSPath(pGrid, nCellX, nCellY - 1, nDepthLeft, nStepsNext, bIgnoreBlocked) && !bIgnoreBlocked )
+    {
+      g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14][nStepsNext].x = nCellX;
+      g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14][nStepsNext].y = nCellY;
+      g_arrFloodPathLen_523CAC[g_nFloodCandidates_52ED14] = nDepthLeft;
+      g_arrFloodPathCnt_52E500[g_nFloodCandidates_52ED14] = nStepsNext;
+      memcpy(
+        g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14 + 1],
+        g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14],
+        sizeof(POINT[5]));
+      ++g_nFloodCandidates_52ED14;
+    }
+    if ( !HanaGrid_DFSPath(pGrid, nCellX, nCellY + 1, nDepthLeft, nStepsNext, bIgnoreBlocked) && !bIgnoreBlocked )
+    {
+      g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14][nStepsNext].x = nCellX;
+      g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14][nStepsNext].y = nCellY;
+      g_arrFloodPathLen_523CAC[g_nFloodCandidates_52ED14] = nDepthLeft;
+      g_arrFloodPathCnt_52E500[g_nFloodCandidates_52ED14] = nStepsNext;
+      memcpy(
+        g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14 + 1],
+        g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14],
+        sizeof(POINT[5]));
+      ++g_nFloodCandidates_52ED14;
+    }
+    return 1;
+  }
+  else
+  {
+    g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14][nSteps].x = nCellX;
+    g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14][nSteps].y = nCellY;
+    g_arrFloodPathLen_523CAC[g_nFloodCandidates_52ED14] = nDepthLeft;
+    g_arrFloodPathCnt_52E500[g_nFloodCandidates_52ED14] = nSteps;
+    memcpy(
+      g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14 + 1],
+      g_arrFloodPathXY_5244F8[g_nFloodCandidates_52ED14],
+      8 * nSteps + 8);                          // (1+nSteps) * sizeof(POINT)
+    ++g_nFloodCandidates_52ED14;
+    return 1;
+  }
+}
+
+// HanaGrid_FloodFill -- foe steering on the 200x200 occupancy grid (built by BuildMapCollisionGrid_445B12).
+//
+//   Grid layout: byte at pGrid[200*(cy+100) + cx+100], cells -100..99 (each cell = 5 world units; ==1 = walkable).
+//
+//   Direction tables (the decoded bit patterns):
+//   jDir:        0    1    2    3    4      5      6      7
+//   arrDirDx:   -1   +1    0    0   -1     +1     -1     +1
+//   arrDirDy:    0    0   -1   +1   -1     -1     +1     +1
+//   arrDirFx:  -1.0  1.0  0.0  0.0 -0.58  0.58  -0.58  0.58
+//   arrDirFz:   0.0  0.0 -1.0  1.0 -0.58 -0.58  0.58  0.58
+//   Cardinals first (0-3), diagonals after (4-7) at 0.58 magnitude. Entry [8] is zeroed by the tail memset
+//   and read when no direction improved -> nBestDir==8 yields a (0,0) step.
+//
+//   Algorithm:
+//   save hero-cell byte; if nMode==0, clear it (hero's cell isn't a wall while wandering)
+//   seed ppOutPathPts with 5 copies of the foe cell; ptBestEnd = foe cell
+//
+//   for jDir in 0..7:                        // try each neighbor direction
+//       if foe cell on-grid & walkable: seed candidate 0 (foe cell itself), 1 candidate
+//       if jDir==4 && !nMode: nDepth--        // halfway through, shorten search
+//       HanaGrid_DFSPath(grid, cx+dx, cy+dy, nDepth, 0, 0)   // fills g_arrFloodPathXY/Len/Cnt + g_nFloodCandidates
+//       nBestDx/Dy = nMode ? (9999,9999) : (0,0)   // approach: min-dist seed / wander: max-dist seed
+//       for each candidate i:
+//           nEndDx/nEndDy = candidate endpoint - hero cell
+//           keep extreme (min if approach, max if wander); tie-break: longer g_arrFloodPathLen[i] > nBestLen
+//       if the round's extreme beats the incumbent (same tie-break):
+//           adopt its endpoint, nBestDir = jDir, nBestLen, and copy its 5 waypoints + count out
+//
+//   if no direction improved: nBestDir = 8 (-> zero step), nBestLen = 5
+//   restore hero-cell byte
+//   *pfOutStep = (arrDirFx[nBestDir], arrDirFz[nBestDir])   // (0,0) when nBestDir==8
+//   *pnFoeCell = ptBestEnd; *pnDepth = nBestLen
+D3DXVECTOR2 *__cdecl hook_HanaGrid_FloodFill_4460AD(
+  D3DXVECTOR2 *pfOutStep,        // OUT: unit-ish step direction (X, Z) to move this frame
+  char *pGrid,                   // occupancy grid (200-byte rows, centered at +100)
+  POINT *pnFoeCell,              // IN/OUT: foe cell (x, y) -- updated to the path's end cell
+  POINT pnHeroCell,              // hero cell x, y
+  int *pnDepth,                  // IN/OUT: search depth (starts 5 from nFloodParm)
+  int nMode,                     // 0 = wander (pick endpoint FARTHEST from hero), else approach (NEAREST)
+  POINT *ppOutPathPts,           // OUT: up to 5 waypoint cells (x,y pairs)
+  WORD *pnOutNumbPathPts)        // OUT: waypoint count
+{
+  int nDepth; // [esp+54h] [ebp-12Ch]
+  int bIgnoredBlocked; // [esp+A4h] [ebp-DCh]
+  int nEndDy; // [esp+A8h] [ebp-D8h]
+  int nEndDx; // [esp+ACh] [ebp-D4h]
+  int jDir; // [esp+B0h] [ebp-D0h]
+  int nBestDir; // [esp+B4h] [ebp-CCh]
+  __int16 i; // [esp+B8h] [ebp-C8h]
+  char bHeroCellSaved; // [esp+BCh] [ebp-C4h]
+  POINT pnCell; // [esp+C0h] [ebp-C0h]
+  D3DXVECTOR2 fOutDir; // [esp+C8h] [ebp-B8h]
+  int nBestDy; // [esp+D0h] [ebp-B0h]
+  int nBestDx; // [esp+D4h] [ebp-ACh]
+  __int16 nBestLen; // [esp+D8h] [ebp-A8h]
+  __int16 iBestCand; // [esp+174h] [ebp-Ch]
+  POINT ptBestEnd; // [esp+178h] [ebp-8h]
+  float arrDirFx[19]; // [esp+8h] [ebp-178h]
+  int arrDirDx[19]; // [esp+58h] [ebp-128h]
+  float arrDirFz[19]; // [esp+DCh] [ebp-A4h]
+  int arrDirDy[19]; // [esp+128h] [ebp-58h]
+
+  ONCELOG("[HNH:SUB] HanaGrid_FloodFill_4460AD\n");
+
+  arrDirDx[0] = -1;
+  arrDirDx[1] = 1;
+  arrDirDx[2] = 0;
+  arrDirDx[3] = 0;
+  arrDirDx[4] = -1;
+  arrDirDx[5] = 1;
+  arrDirDx[6] = -1;
+  arrDirDx[7] = 1;
+  memset(&arrDirDx[8], 0, 44);
+  arrDirDy[0] = 0;
+  arrDirDy[1] = 0;
+  arrDirDy[2] = -1;
+  arrDirDy[3] = 1;
+  arrDirDy[4] = -1;
+  arrDirDy[5] = -1;
+  arrDirDy[6] = 1;
+  arrDirDy[7] = 1;
+  memset(&arrDirDy[8], 0, 44);
+  arrDirFx[0] = -1.0;
+  arrDirFx[1] = 1.0;
+  arrDirFx[2] = 0.0;
+  arrDirFx[3] = 0.0;
+  arrDirFx[4] = -0.57999998;
+  arrDirFx[5] = 0.57999998;
+  arrDirFx[6] = -0.57999998;
+  arrDirFx[7] = 0.57999998;
+  memset(&arrDirFx[8], 0, 44);
+  arrDirFz[0] = 0.0;
+  arrDirFz[1] = 0.0;
+  arrDirFz[2] = -1.0;
+  arrDirFz[3] = 1.0;
+  arrDirFz[4] = -0.57999998;
+  arrDirFz[5] = -0.57999998;
+  arrDirFz[6] = 0.57999998;
+  arrDirFz[7] = 0.57999998;
+  memset(&arrDirFz[8], 0, 44);
+  nBestDir = 8;
+  nDepth = *pnDepth;
+  nBestLen = 0;
+  bIgnoredBlocked = 0;
+  fOutDir.x = 0.0;
+  fOutDir.y = 0.0;
+  pnCell = *pnFoeCell;
+  bHeroCellSaved = pGrid[200 * pnHeroCell.y + 20100 + pnHeroCell.x];
+  if ( !nMode )
+    pGrid[200 * pnHeroCell.y + 20100 + pnHeroCell.x] = 0;
+  ptBestEnd = pnCell;
+  for ( i = 0; i < 5; ++i )
+    ppOutPathPts[i] = pnCell;
+  *pnOutNumbPathPts = 0;
+  for ( jDir = 0; jDir < 8; ++jDir )
+  {
+    g_nFloodCandidates_52ED14 = 0;
+    if ( pnCell.x > -100
+      && pnCell.x < 100
+      && pnCell.y > -100
+      && pnCell.y < 100
+      && pGrid[200 * pnCell.y + 20100 + pnCell.x] == 1 )
+    {
+      for ( i = 0; i < 5; ++i )
+      {
+        g_arrFloodPathXY_5244F8[0][i].x = pnCell.x;
+        g_arrFloodPathXY_5244F8[0][i].y = pnCell.y;
+      }
+      g_arrFloodPathLen_523CAC[0] = nDepth;
+      g_arrFloodPathCnt_52E500[0] = 0;
+      g_nFloodCandidates_52ED14 = 1;
+    }
+    if ( jDir == 4 && !nMode )
+      --nDepth;
+    HanaGrid_DFSPath(pGrid, arrDirDx[jDir] + pnCell.x, arrDirDy[jDir] + pnCell.y, nDepth, 0, bIgnoredBlocked);
+    if ( nMode )
+    {
+      nBestDx = 9999;
+      nBestDy = 9999;
+    }
+    else
+    {
+      nBestDx = 0;
+      nBestDy = 0;
+    }
+    iBestCand = 0;
+    for ( i = 0; i < g_nFloodCandidates_52ED14; ++i )
+    {
+      nEndDx = g_arrFloodPathXY_5244F8[i][g_arrFloodPathCnt_52E500[i]].x - pnHeroCell.x;
+      nEndDy = g_arrFloodPathXY_5244F8[i][g_arrFloodPathCnt_52E500[i]].y - pnHeroCell.y;
+      if ( nMode )
+      {
+        if ( nBestDy * nBestDy + nBestDx * nBestDx >= nEndDy * nEndDy + nEndDx * nEndDx
+          && (nBestDy * nBestDy + nBestDx * nBestDx != nEndDy * nEndDy + nEndDx * nEndDx
+            || g_arrFloodPathLen_523CAC[i] > nBestLen) )
+        {
+          nBestDx = nEndDx;
+          nBestDy = nEndDy;
+          iBestCand = i;
+        }
+      }
+      else if ( nBestDy * nBestDy + nBestDx * nBestDx <= nEndDy * nEndDy + nEndDx * nEndDx
+        && (nBestDy * nBestDy + nBestDx * nBestDx != nEndDy * nEndDy + nEndDx * nEndDx
+          || g_arrFloodPathLen_523CAC[i] > nBestLen) )
+      {
+        nBestDx = nEndDx;
+        nBestDy = nEndDy;
+        iBestCand = i;
+      }
+    }
+    if ( nMode )
+    {
+      if ( nBestDy * nBestDy + nBestDx * nBestDx <= (ptBestEnd.y - pnHeroCell.y) * (ptBestEnd.y - pnHeroCell.y)
+        + (ptBestEnd.x - pnHeroCell.x) * (ptBestEnd.x - pnHeroCell.x)
+        && (nBestDy * nBestDy + nBestDx * nBestDx != (ptBestEnd.y - pnHeroCell.y) * (ptBestEnd.y - pnHeroCell.y)
+          + (ptBestEnd.x - pnHeroCell.x) * (ptBestEnd.x - pnHeroCell.x)
+          || g_arrFloodPathLen_523CAC[iBestCand] > nBestLen) )
+      {
+        ptBestEnd.x = g_arrFloodPathXY_5244F8[iBestCand][g_arrFloodPathCnt_52E500[iBestCand]].x;
+        ptBestEnd.y = g_arrFloodPathXY_5244F8[iBestCand][g_arrFloodPathCnt_52E500[iBestCand]].y;
+        nBestDir = jDir;
+        nBestLen = g_arrFloodPathLen_523CAC[iBestCand];
+        for ( i = 0; i < 5; ++i )
+          ppOutPathPts[i] = g_arrFloodPathXY_5244F8[iBestCand][i];
+        *pnOutNumbPathPts = g_arrFloodPathCnt_52E500[iBestCand];
+      }
+    }
+    else if ( nBestDy * nBestDy + nBestDx * nBestDx >= (ptBestEnd.y - pnHeroCell.y) * (ptBestEnd.y - pnHeroCell.y)
+      + (ptBestEnd.x - pnHeroCell.x) * (ptBestEnd.x - pnHeroCell.x)
+      && (nBestDy * nBestDy + nBestDx * nBestDx != (ptBestEnd.y - pnHeroCell.y) * (ptBestEnd.y - pnHeroCell.y)
+        + (ptBestEnd.x - pnHeroCell.x) * (ptBestEnd.x - pnHeroCell.x)
+        || g_arrFloodPathLen_523CAC[iBestCand] > nBestLen) )
+    {
+      ptBestEnd.x = g_arrFloodPathXY_5244F8[iBestCand][g_arrFloodPathCnt_52E500[iBestCand]].x;
+      ptBestEnd.y = g_arrFloodPathXY_5244F8[iBestCand][g_arrFloodPathCnt_52E500[iBestCand]].y;
+      nBestDir = jDir;
+      nBestLen = g_arrFloodPathLen_523CAC[iBestCand];
+      for ( i = 0; i < 5; ++i )
+        ppOutPathPts[i] = g_arrFloodPathXY_5244F8[iBestCand][i];
+      *pnOutNumbPathPts = g_arrFloodPathCnt_52E500[iBestCand];
+    }
+  }
+  if ( ptBestEnd.x == pnCell.x && ptBestEnd.y == pnCell.y )
+  {
+    nBestDir = 8;
+    nBestLen = 5;
+  }
+  pGrid[200 * pnHeroCell.y + 20100 + pnHeroCell.x] = bHeroCellSaved;
+  fOutDir.x = arrDirFx[nBestDir];
+  fOutDir.y = arrDirFz[nBestDir];
+  *pnFoeCell = ptBestEnd;
+  *pnDepth = nBestLen;
+  *pfOutStep = fOutDir;
+  return pfOutStep;
+}
+
+int __cdecl hook_DSBufferGetVolume_423C65(LPDIRECTSOUNDBUFFER pDSBuf)
+{
+  LONG nVolume; // [esp+0h] [ebp-4h] BYREF
+
+  nVolume = 0;
+  if ( !g_bDSInited_5185C4 || !pDSBuf )
+    return -100000;
+  pDSBuf->GetVolume(&nVolume);
+  return nVolume;
+}
+
+// UpdateVoicePlayback(pSpeaker, pPosFrame, pVoices, fFrameTime)
+// DirectSound voice/line scheduler (uses g_pds3DListener + g_dwDSStatus_5185C8). pVoices is a 20-slot
+// array of positionable sound objects. sub_408C3E gets a 3D position from pPosFrame; each voice is
+// placed there (vtable slot +76) and its play state probed (slot +36 -> g_dwDSStatus). Based on the
+// speaker state v12 = *(pSpeaker+512) it selects which voice(s) to start (slot +48/+52), stop, or
+// seek to a playback offset (slot +60; sub_423C65 returns the current play position). Case groups:
+// state 1/2/4 = random one-shot line; 3/6/9 = timed line with stop-on-finish; 7/8 = alternating pair.
+void __cdecl hook_UpdateVoicePlayback_458B3A(
+  CSekBody *pFoeBody,
+  CHanaFrameRootT3EC_S2D4 *pFoeFocusFrame,
+  CSoundStruct_8 **arrVoiceBufs,
+  float fDelta)
+{
+  int Volume_423C65; // esi
+  int nVolTmp2; // esi
+  _WORD arrSndIdx6[4]; // [esp+8h] [ebp-9Ch]
+  BOOL bAlreadyPlaying; // [esp+10h] [ebp-94h]
+  _WORD arrSndIdxRand[6]; // [esp+14h] [ebp-90h]
+  D3DVALUE px; // [esp+20h] [ebp-84h] BYREF
+  int nVoiceSel; // [esp+24h] [ebp-80h]
+  int nSpeakerState; // [esp+28h] [ebp-7Ch]
+  int i; // [esp+2Ch] [ebp-78h]
+  D3DVALUE pz; // [esp+30h] [ebp-74h] BYREF
+  int nFadeVol; // [esp+34h] [ebp-70h]
+  int bAnyPlaying; // [esp+38h] [ebp-6Ch]
+  _DWORD arrIsPlaying[25]; // [esp+3Ch] [ebp-68h]
+  D3DVALUE py; // [esp+A0h] [ebp-4h] BYREF
+  ONCELOG("[HNH:SUB] UpdateVoicePlayback_458B3A\n");
+ 
+  nSpeakerState = 0;
+  nVoiceSel = 0;
+  bAnyPlaying = 0;
+  if ( g_pds3DListener && pFoeBody )
+  {
+    if ( fDelta < 0.0099999998 )
+      fDelta = 0.0099999998;
+    nSpeakerState = pFoeBody->field_200;
+    HanaFrame_GetCenterPosition_408C3E(pFoeFocusFrame, g_pSceneFrame, &px, &py, &pz);
+    for ( i = 0; i < 20; ++i )
+    {
+      if ( arrVoiceBufs[i] )
+      {
+        arrVoiceBufs[i]->pDS3DBuffer_4->SetPosition(px, py, pz, 1u);
+        if ( arrVoiceBufs[i]->pDSBuffer_0
+          && !arrVoiceBufs[i]->pDSBuffer_0->GetStatus(&g_dwDSStatus_5185C8)
+          && (g_dwDSStatus_5185C8 & 1) != 0 )
+        {
+          arrIsPlaying[i] = 1;
+          bAnyPlaying = 1;
+          nFadeVol = DSBufferGetVolume_423C65(arrVoiceBufs[i]->pDSBuffer_0);
+          if ( nFadeVol <= -7142 )
+            arrVoiceBufs[i]->pDSBuffer_0->Stop();
+        }
+        else
+        {
+          arrIsPlaying[i] = 0;
+        }
+      }
+    }
+    switch ( nSpeakerState )
+    {
+    case 1:
+    case 2:
+    case 4:
+      if ( !bAnyPlaying )
+      {
+        arrSndIdxRand[0] = 0;
+        arrSndIdxRand[1] = 1;
+        arrSndIdxRand[2] = 2;
+        arrSndIdxRand[3] = 9;
+        arrSndIdxRand[4] = 10;
+        nVoiceSel = (__int16)arrSndIdxRand[rand() % 5];
+        if ( g_nCurVoiceIdx_52EF64 == nVoiceSel )
+          nVoiceSel = 0;
+        else
+          g_nCurVoiceIdx_52EF64 = nVoiceSel;
+        if ( arrVoiceBufs[nVoiceSel] )
+        {
+          if ( arrVoiceBufs[nVoiceSel]->pDSBuffer_0 )
+            arrVoiceBufs[nVoiceSel]->pDSBuffer_0->SetVolume(0);
+          arrVoiceBufs[nVoiceSel]->pDSBuffer_0->SetCurrentPosition(0);
+          arrVoiceBufs[nVoiceSel]->pDSBuffer_0->Play(0, 0, 0);
+        }
+      }
+      break;
+    case 6:
+    case 3:
+    case 9:
+      bAlreadyPlaying = 0;
+      if ( nSpeakerState == 3 )
+      {
+        nVoiceSel = 7;
+        bAlreadyPlaying = g_nCurVoiceIdx_52EF64 == 7;
+        g_nCurVoiceIdx_52EF64 = 7;
+      }
+      if ( nSpeakerState == 6 )
+      {
+        arrSndIdx6[0] = 5;
+        arrSndIdx6[1] = 4;
+        arrSndIdx6[2] = 12;
+        arrSndIdx6[3] = 11;
+        if ( !arrIsPlaying[4] && !arrIsPlaying[5] && !arrIsPlaying[11] && !arrIsPlaying[12] )
+        {
+          ++g_nVoiceRotate_52EF68;
+          g_nVoiceRotate_52EF68 %= 4;
+        }
+        nVoiceSel = (__int16)arrSndIdx6[g_nVoiceRotate_52EF68];
+        g_nCurVoiceIdx_52EF64 = nVoiceSel;
+      }
+      if ( nSpeakerState == 9 )
+      {
+        nVoiceSel = 8;
+        if ( g_nCurVoiceIdx_52EF64 == 8 )
+          bAlreadyPlaying = 1;
+        g_nCurVoiceIdx_52EF64 = nVoiceSel;
+      }
+      for ( i = 0; i < 20; ++i )
+      {
+        if ( arrVoiceBufs[i] && g_nCurVoiceIdx_52EF64 != i && arrVoiceBufs[i]->pDSBuffer_0 )
+        {
+          if ( (int)(DSBufferGetVolume_423C65(arrVoiceBufs[i]->pDSBuffer_0) - (__int64)(500.0 * fDelta)) >= -10000 )
+          {
+            if ( (int)(DSBufferGetVolume_423C65(arrVoiceBufs[i]->pDSBuffer_0) - (__int64)(500.0 * fDelta)) <= 0 )
+            {
+              Volume_423C65 = DSBufferGetVolume_423C65(arrVoiceBufs[i]->pDSBuffer_0);
+              arrVoiceBufs[i]->pDSBuffer_0->SetVolume(
+                Volume_423C65 - (__int64)(500.0 * fDelta));
+            }
+            else
+            {
+              arrVoiceBufs[i]->pDSBuffer_0->SetVolume(0);
+            }
+          }
+          else
+          {
+            arrVoiceBufs[i]->pDSBuffer_0->SetVolume(-10000);
+          }
+        }
+      }
+      if ( !bAlreadyPlaying && arrVoiceBufs[g_nCurVoiceIdx_52EF64] && !arrIsPlaying[g_nCurVoiceIdx_52EF64] )
+      {
+        if ( arrVoiceBufs[g_nCurVoiceIdx_52EF64]->pDSBuffer_0 )
+          arrVoiceBufs[g_nCurVoiceIdx_52EF64]->pDSBuffer_0->SetVolume(
+            0);
+        arrVoiceBufs[g_nCurVoiceIdx_52EF64]->pDSBuffer_0->SetCurrentPosition(
+          0);
+        arrVoiceBufs[g_nCurVoiceIdx_52EF64]->pDSBuffer_0->Play(
+          0,
+          0,
+          0);
+      }
+      break;
+    case 7:
+    case 8:
+      nVoiceSel = 3;
+      if ( g_nCurVoiceIdx_52EF64 == 3 )
+        nVoiceSel = 6;
+      else
+        g_nCurVoiceIdx_52EF64 = nVoiceSel;
+      if ( bAnyPlaying )
+      {
+        for ( i = 0; i < 20; ++i )
+        {
+          if ( arrVoiceBufs[i] && i != 6 && i != 3 && arrVoiceBufs[i]->pDSBuffer_0 )
+          {
+            if ( (int)(DSBufferGetVolume_423C65(arrVoiceBufs[i]->pDSBuffer_0) - (__int64)(300.0 * fDelta)) >= -10000 )
+            {
+              if ( (int)(DSBufferGetVolume_423C65(arrVoiceBufs[i]->pDSBuffer_0) - (__int64)(300.0 * fDelta)) <= 0 )
+              {
+                nVolTmp2 = DSBufferGetVolume_423C65(arrVoiceBufs[i]->pDSBuffer_0);
+                arrVoiceBufs[i]->pDSBuffer_0->SetVolume(
+                  nVolTmp2 - (__int64)(300.0 * fDelta));
+              }
+              else
+              {
+                arrVoiceBufs[i]->pDSBuffer_0->SetVolume(0);
+              }
+            }
+            else
+            {
+              arrVoiceBufs[i]->pDSBuffer_0->SetVolume(-10000);
+            }
+          }
+        }
+      }
+      if ( arrVoiceBufs[nVoiceSel] && !arrIsPlaying[6] && !arrIsPlaying[3] )
+      {
+        if ( arrVoiceBufs[nVoiceSel]->pDSBuffer_0 )
+          arrVoiceBufs[nVoiceSel]->pDSBuffer_0->SetVolume(0);
+        arrVoiceBufs[nVoiceSel]->pDSBuffer_0->SetCurrentPosition(0);
+        arrVoiceBufs[nVoiceSel]->pDSBuffer_0->Play(0, 0, 0);
+      }
+      break;
+    default:
+      if ( nSpeakerState != 5 )
+        g_nCurVoiceIdx_52EF64 = 0;
+      break;
+    }
+  }
+}
+
 /*
 
 +L82    func-ptr  UpdateHeroBody_44474E         0x44474E    [no hook fn]
-L88    func-ptr  UpdateFoeAI_446A38            0x446A38    [no hook fn]
-L94    func-ptr  UpdateVoicePlayback_458B3A    0x458B3A    [no hook fn]
++L88    func-ptr  UpdateFoeAI_446A38            0x446A38    [no hook fn]
++L94    func-ptr  UpdateVoicePlayback_458B3A    0x458B3A    [no hook fn]
 L100   func-ptr  WanaAttack_Close_4535DE       0x4535DE    [no hook fn]
 L104   func-ptr  WanaAttack_Knockback_4536F6   0x4536F6    [no hook fn]
 L108   func-ptr  WanaAttack_Charged_4539D1     0x4539D1    [no hook fn]
@@ -1092,11 +1657,12 @@ L137   func-ptr  PlayResultsCutscene_455BE2    0x455BE2    [no hook fn]
 L145   func-ptr  PlayVictoryCutscene_455183    0x455183    [no hook fn]
 L154   func-ptr  DrawRecViewfinder_44B23B      0x44B23B    [no hook fn]
 L159   func-ptr  DrawFadeOutSpark_45669F       0x45669F    [no hook fn]
-L163   func-ptr  BuildMapCollisionGrid_445B12  0x445B12    [no hook fn]
++L163   func-ptr  BuildMapCollisionGrid_445B12  0x445B12    [no hook fn]
 L167   func-ptr  BindSceneActors_448C72        0x448C72    [no hook fn]
 L172   func-ptr  UpdateCameraFollow_44C028     0x44C028    [no hook fn]
 
 */
+
 
 void register_SetupHeroEntry_4593E0() {
   hnh_Hook(0x4593e0, hook_SetupHeroEntry_4593E0, "SetupHeroEntry_4593E0"); // [OK]
@@ -1108,8 +1674,11 @@ void register_SetupHeroEntry_4593E0() {
   hnh_Hook(0x407e1f, hook_ComputeMeshBounds_407E1F, "ComputeMeshBounds_407E1F");
   hnh_Hook(0x443ec4, hook_TestBodyMoveHit_443EC4, "TestBodyMoveHit_443EC4");
   hnh_Hook(0x4443fc, hook_TestMoveCollision_4443FC, "TestMoveCollision_4443FC");
- 
-  
+  hnh_Hook(0x445b12, hook_BuildMapCollisionGrid_445B12, "BuildMapCollisionGrid_445B12");
+  hnh_Hook(0x445c12, hook_HanaGrid_DFSPath, "HanaGrid_DFSPath_445C12");
+  hnh_Hook(0x4460ad, hook_HanaGrid_FloodFill_4460AD, "HanaGrid_FloodFill_4460AD");
+  hnh_Hook(0x458b3a, hook_UpdateVoicePlayback_458B3A, "UpdateVoicePlayback_458B3A");
+  hnh_Hook(0x423c65, hook_DSBufferGetVolume_423C65, "DSBufferGetVolume_423C65");
 
- 
+
 }

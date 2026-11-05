@@ -117,6 +117,12 @@
     <ClCompile Include="src\PlayAssault_4703AE.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\HanaGrid_FloodFill_4460AD.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UpdateFoeAI_446A38.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

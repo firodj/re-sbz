@@ -72,7 +72,7 @@ CHanaSpriteT3F6_S1FC *(__cdecl*InitHudResources_4490A7)(CHanaSpriteT3F6_S1FC **a
     reinterpret_cast<CHanaSpriteT3F6_S1FC *(*)(CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **,
       CHanaSpriteT3F6_S1FC **, int)>(0x4490A7);
 
-void (__cdecl*UpdateCameraFollow_445525)(CHanaFrameT3EC_S354 *pHeroFrame,
+void (__cdecl*UpdateCameraFollowChase_445525)(CHanaFrameT3EC_S354 *pHeroFrame,
     CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pMapFrame, float fTime, int bMove) =
     reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *,
       CHanaFrameT3EC_S354 *, float, int)>(0x445525);
@@ -132,8 +132,10 @@ HRESULT (__cdecl*DrawSpriteListEcho_45B2FB)(CHanaSpriteT3F6_S1FC **arrSprites, i
     float fDeltaTime) =
     reinterpret_cast<HRESULT(__cdecl*)(CHanaSpriteT3F6_S1FC **, int, float)>(0x45B2FB);
 
-// === PINNED GLOBALS ===
-int &g_dwBattleMode_52ED04 = *(int *)0x52ED04; // WRITABLE
+
+void (__cdecl *HanaMatrix_BuildLookAtAndTransform)(CHanaFrameT3EC_S354 *pFoeFrame, CHanaFrameT3EC_S354 *pHeroFrame, CHanaFrameRootT3EC_S2D4 *pSceneFrame, BOOL bSkip)
+= reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFoeFrame, CHanaFrameT3EC_S354 *pHeroFrame, CHanaFrameRootT3EC_S2D4 *pSceneFrame, BOOL bSkip)>(0x407b73);
+
 
 // === FUNCTIONS ===
 
@@ -602,12 +604,12 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
         bFirstFrameDone = 0;
         MtxMult_4069DD(g_pCameraFrame, pHeroBody->pSekHeader_220->pFrameT3EC,
                        0.0f, 25.0f, -1.0f);
-        UpdateCameraFollow_445525(pHeroBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame,
+        UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame,
                                   pMapFrame, 1.0f, 0);
         ResetSceneBodies_4857CA(pScene);
         pfExecTime = 0.0f;
         nElapsed = 0;
-        g_dwBattleMode_52ED04 = -1;
+        g_dwBattleMode = -1;
         CSekBody__CutToAnim_4018E1(pHeroBody, 1);
         CSekBody__UpdateAnim_4019E1(pHeroBody, 0.0f);
         CSekBody__PlayAnim_40179D(pHeroBody, 1);
@@ -667,7 +669,7 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
                 {
                     CSekBody__UpdateAnim_4019E1(pHeroBody, fDeltaTime);
                     fBlendTime = fBlendTime - fDeltaTime;
-                    g_dwBattleMode_52ED04 = -1;
+                    g_dwBattleMode = -1;
                 }
                 else
                 {
@@ -697,7 +699,7 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
                     }
                 }
                 pHeroBody->pSekHeader_220->pFrameT3EC->bAlphaDeferred_130 = 0;
-                UpdateCameraFollow_445525(pHeroBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame,
+                UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame,
                                           pMapFrame, fDeltaTime, 0);
                 UpdateLockonEvent_45953B(pScene, pHeroBody->pSekHeader_220->pFrameT3EC,
                                          pSekBody->pSekHeader_220->pFrameT3EC, pnMapIndex);
@@ -806,7 +808,7 @@ LABEL_84:
                     pScene->by_461 = 0;
                     pScene->dwPtrPos_444 = 0;
                     pScene->dwPtrCurrent_448 = 0;
-                    UpdateCameraFollow_445525(pHeroBody->pSekHeader_220->pFrameT3EC,
+                    UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC,
                             g_pCameraFrame, pMapFrame, fDeltaTime, 1);
                 }
             }
@@ -1042,9 +1044,198 @@ LABEL_149:
     return nMenuResult;
 }
 
+// Chase/follow camera (the standard camera, 11 call sites). Mount point = hero + 22*localUp + 18*localBack (hero frame used as scratch, restored at end). bSnap=1: SNAP hard to the mount (used right after a manual reposition - PrepareTargetSelect, PlayExploring warp; skips smoothing AND orbit clamps). bSnap=0: smooth follow - lerp fTime/25 toward mount, step capped at fTime per frame, orbit clamps around a point 13 behind the hero (radius 3..10, height 15+/-10), then a 3-try wall pull-in settle loop (overhead test): pulls the camera toward the hero's true position (fHeroX/Y/Z) through walls; when blocked, TestMoveCollision snaps it to the contact point and it is lifted by 1/6 of the blocked distance to see over. Finally BuildLookAt aims the camera at hero + 15*up + 9*forward. The initial MtxMult(+1 localZ)/final (-1) pair is a nudge that cancels out; the trailing double hero-restore MtxMult is a dead duplicate.
+void __cdecl hook_UpdateCameraFollowChase_445525(
+  CHanaFrameT3EC_S354 *pHeroFrame,
+  CHanaFrameT3EC_S354 *pCameraFrame,
+  CHanaFrameT3EC_S354 *pMapFrame,
+  float fTime,
+  int bSnap)
+{
+  double v5; // st7
+  float fMountOffY; // [esp+0h] [ebp-70h]
+  float fLiftedY; // [esp+0h] [ebp-70h]
+  float fLookOffY; // [esp+0h] [ebp-70h]
+  float fMountOffZ; // [esp+4h] [ebp-6Ch]
+  float fLookOffZ; // [esp+4h] [ebp-6Ch]
+  float fSnapY; // [esp+Ch] [ebp-64h] BYREF
+  float fPreZ; // [esp+10h] [ebp-60h] BYREF
+  float fLiftY; // [esp+14h] [ebp-5Ch] BYREF
+  float fPreX; // [esp+18h] [ebp-58h] BYREF
+  float fSnapX; // [esp+1Ch] [ebp-54h] BYREF
+  float fSnapZ; // [esp+20h] [ebp-50h] BYREF
+  float fCamPosX; // [esp+24h] [ebp-4Ch] BYREF
+  float fOrbZ; // [esp+28h] [ebp-48h] BYREF
+  float fCamStartZ; // [esp+2Ch] [ebp-44h]
+  float fLerp; // [esp+30h] [ebp-40h]
+  int iTry; // [esp+34h] [ebp-3Ch]
+  float fMountZ; // [esp+38h] [ebp-38h] BYREF
+  float fOrbY; // [esp+3Ch] [ebp-34h] BYREF
+  float fDist; // [esp+40h] [ebp-30h]
+  float fMountY; // [esp+44h] [ebp-2Ch] BYREF
+  float fHeroZ; // [esp+48h] [ebp-28h] BYREF
+  float fCamStartY; // [esp+4Ch] [ebp-24h]
+  float fMountX; // [esp+50h] [ebp-20h] BYREF
+  float fHeroY; // [esp+54h] [ebp-1Ch] BYREF
+  float fHeroX; // [esp+58h] [ebp-18h] BYREF
+  float fOrbX; // [esp+5Ch] [ebp-14h] BYREF
+  float fHeightOff; // [esp+60h] [ebp-10h]
+  float fCamPosZ; // [esp+64h] [ebp-Ch] BYREF
+  float fCamStartX; // [esp+68h] [ebp-8h]
+  float fCamPosY; // [esp+6Ch] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] UpdateCameraFollowChase_445525\n");
+  
+  MtxMult_4069DD(pCameraFrame, pCameraFrame, 0.0, 0.0, 1.0);
+  HanaFrame_GetRelPosition(pCameraFrame, g_pSceneFrame, &fCamPosX, &fCamPosY, &fCamPosZ);
+  fCamStartX = fCamPosX;
+  fCamStartY = fCamPosY;
+  fCamStartZ = fCamPosZ;
+  HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fHeroX, &fHeroY, &fHeroZ);
+  HanaFrame_GetRelPosition(pHeroFrame, pHeroFrame, &fMountX, &fMountY, &fMountZ);
+  fMountOffZ = fMountZ + 18.0;
+  fMountOffY = fMountY + 22.0;
+  MtxMult_4069DD(pHeroFrame, pHeroFrame, fMountX, fMountOffY, fMountOffZ);
+  HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fMountX, &fMountY, &fMountZ);
+  MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fHeroY, fHeroZ);
+  fLerp = 1.0;
+  if ( !bSnap )
+  {
+    fLerp = fTime / 25.0;
+    if ( fLerp > 1.0 )
+      fLerp = 1.0;
+  }
+  fMountX = (fMountX - fCamPosX) * fLerp + fCamPosX;
+  fMountY = (fMountY - fCamPosY) * fLerp + fCamPosY;
+  fMountZ = (fMountZ - fCamPosZ) * fLerp + fCamPosZ;
+  if ( !bSnap )
+  {
+    v5 = sqrt(
+      (fMountX - fCamPosX) * (fMountX - fCamPosX)
+      + (fMountY - fCamPosY) * (fMountY - fCamPosY)
+      + (fMountZ - fCamPosZ) * (fMountZ - fCamPosZ));
+    fDist = v5;
+    if ( v5 > fTime )
+    {
+      fMountX = (fMountX - fCamPosX) * fTime / fDist + fCamPosX;
+      fMountY = (fMountY - fCamPosY) * fTime / fDist + fCamPosY;
+      fMountZ = (fMountZ - fCamPosZ) * fTime / fDist + fCamPosZ;
+    }
+  }
+  fCamPosX = fMountX;
+  fCamPosY = fMountY;
+  fCamPosZ = fMountZ;
+  MtxMult_4069DD(pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fMountX, fMountY, fMountZ);
+  if ( !bSnap )
+  {
+    MtxMult_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, 13.0);
+    HanaFrame_GetRelPosition(pCameraFrame, pHeroFrame, &fOrbX, &fOrbY, &fOrbZ);
+    fDist = sqrt(fOrbX * fOrbX + fOrbZ * fOrbZ);
+    fHeightOff = sqrt((fOrbY - 15.0) * (fOrbY - 15.0));
+    if ( fDist > 10.0 )
+    {
+      fOrbX = 10.0 / fDist * fOrbX;
+      fOrbZ = 10.0 / fDist * fOrbZ;
+      MtxMult_4069DD(pCameraFrame, pHeroFrame, fOrbX, fOrbY, fOrbZ);
+    }
+    if ( fHeightOff > 10.0 )
+    {
+      fOrbY = (fOrbY - 15.0) * 10.0 / fHeightOff + 15.0;
+      MtxMult_4069DD(pCameraFrame, pHeroFrame, fOrbX, fOrbY, fOrbZ);
+    }
+    if ( fDist < 3.0 && fHeightOff < 5.0 )
+    {
+      if ( fDist < 3.0 && fDist != 0.0 )
+      {
+        fOrbX = 3.0 / fDist * fOrbX;
+        fOrbZ = 3.0 / fDist * fOrbZ;
+      }
+      if ( fHeightOff < 5.0 && fHeightOff != 0.0 )
+        fOrbY = (fOrbY - 15.0) * 5.0 / fHeightOff + 15.0;
+      MtxMult_4069DD(pCameraFrame, pHeroFrame, fOrbX, fOrbY, fOrbZ);
+    }
+    HanaFrame_GetRelPosition(pCameraFrame, g_pSceneFrame, &fCamPosX, &fCamPosY, &fCamPosZ);
+    MtxMult_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, -10.0);
+  }
+  for ( iTry = 0; iTry < 3 && !CheckFrameCollision_443CC5(pCameraFrame, pMapFrame, 1); ++iTry )
+  {
+    HanaFrame_GetRelPosition(pCameraFrame, g_pSceneFrame, &fPreX, &fLiftY, &fPreZ);
+    if ( TestMoveCollision_4443FC(pCameraFrame, pMapFrame, fHeroX, fHeroY, fHeroZ, 1) )
+    {
+      HanaFrame_GetRelPosition(pCameraFrame, g_pSceneFrame, &fSnapX, &fSnapY, &fSnapZ);
+      fLiftY = sqrt((fPreX - fSnapX) * (fPreX - fSnapX) + (fPreZ - fSnapZ) * (fPreZ - fSnapZ)) / 6.0;
+      fLiftedY = fSnapY + fLiftY;
+      MtxMult_4069DD(pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fSnapX, fLiftedY, fSnapZ);
+    }
+    else
+    {
+      MtxMult_4069DD(pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fCamStartX, fCamStartY, fCamStartZ);
+    }
+  }
+  HanaFrame_GetRelPosition(pHeroFrame, pHeroFrame, &fMountX, &fMountY, &fMountZ);
+  fLookOffZ = fMountZ - 9.0;
+  fLookOffY = fMountY + 15.0;
+  MtxMult_4069DD(pHeroFrame, pHeroFrame, fMountX, fLookOffY, fLookOffZ);
+  HanaMatrix_BuildLookAtAndTransform(pCameraFrame, pHeroFrame, pCameraFrame, 0);
+  MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fHeroY, fHeroZ);
+  MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fHeroY, fHeroZ);
+  MtxMult_4069DD(pCameraFrame, pCameraFrame, 0.0, 0.0, -1.0);
+}
+
+void __cdecl hook_HanaMatrix_BuildLookAtAndTransform(
+  CHanaFrameT3EC_S354 *pFoeFrame,
+  CHanaFrameT3EC_S354 *pHeroFrame,
+  CHanaFrameRootT3EC_S2D4 *pSceneFrame,
+  BOOL bSkip)
+{
+  D3DXVECTOR3 fUpTemp_x; // [esp+0h] [ebp-7Ch]
+  D3DXVECTOR3 fRightTemp_x; // [esp+Ch] [ebp-70h]
+  D3DXMATRIX mInverse; // [esp+18h] [ebp-64h] BYREF
+  D3DXVECTOR3 vRight; // [esp+58h] [ebp-24h] BYREF
+  D3DXVECTOR3 vLook; // [esp+64h] [ebp-18h] BYREF
+  D3DXVECTOR3 vUp; // [esp+70h] [ebp-Ch] BYREF
+
+  ONCELOG("[HNH:SUB] HanaMatrix_BuildLookAtAndTransform_407B73\n");
+ 
+  if ( !bSkip )
+  {
+    vLook.x = pHeroFrame->mat4x4_after._41 - pFoeFrame->mat4x4_after._41;
+    vLook.y = pHeroFrame->mat4x4_after._42 - pFoeFrame->mat4x4_after._42;
+    vLook.z = pHeroFrame->mat4x4_after._43 - pFoeFrame->mat4x4_after._43;
+    D3DXVec3Normalize(&vLook, &vLook);
+    vUp.x = 0.0;
+    vUp.y = 1.0;
+    vUp.z = 0.0;
+    fRightTemp_x.x = 1.0 * vLook.z - 0.0 * vLook.y;
+    fRightTemp_x.y = 0.0 * vLook.x - 0.0 * vLook.z;
+    fRightTemp_x.z = 0.0 * vLook.y - 1.0 * vLook.x;
+    vRight = fRightTemp_x;
+    D3DXVec3Normalize(&vRight, &vRight);
+    fUpTemp_x.x = vLook.y * vRight.z - vLook.z * vRight.y;
+    fUpTemp_x.y = vLook.z * vRight.x - vLook.x * vRight.z;
+    fUpTemp_x.z = vLook.x * vRight.y - vLook.y * vRight.x;
+    vUp = fUpTemp_x;
+    D3DXVec3Normalize(&vUp, &vUp);
+    pFoeFrame->mat4x4_after._11 = vRight.x;
+    pFoeFrame->mat4x4_after._21 = vUp.x;
+    pFoeFrame->mat4x4_after._31 = vLook.x;
+    pFoeFrame->mat4x4_after._12 = vRight.y;
+    pFoeFrame->mat4x4_after._22 = vUp.y;
+    pFoeFrame->mat4x4_after._32 = vLook.y;
+    pFoeFrame->mat4x4_after._13 = vRight.z;
+    pFoeFrame->mat4x4_after._23 = vUp.z;
+    pFoeFrame->mat4x4_after._33 = vLook.z;
+    D3DXMatrixInverse(&mInverse, 0, &pFoeFrame->mat4x4_before);
+    D3DXMatrixMultiply(&pFoeFrame->mat4x4_fmrx, &pFoeFrame->mat4x4_after, &mInverse);
+  }
+}
+
 void register_PlayExploring_45BCAE() {
 
   hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK]
+  hnh_Hook(0x445525, hook_UpdateCameraFollowChase_445525, "UpdateCameraFollowChase_445525");
+  hnh_Hook(0x407b73, hook_HanaMatrix_BuildLookAtAndTransform, "HanaMatrix_BuildLookAtAndTransform_407B73");
+
 
   hnh_HookOff();
   hnh_HookOn();

@@ -3,6 +3,13 @@
 ## Python
 Python using `py` intead.
 
+## Analyzing Function
+
+Prefer read from decompiled files for these functions instead of IDA Pro because it took longer time, with list of functions:
+1. address: 0x4703AE, name: PlayAssault_4703AE, src: PlayAssault_4703AE.cpp, implemented: hook_PlayAssault_4703AE.
+2. address: 0x45BCAE, name: PlayExploring_45BCAE, src: PlayExploring_45BCAE.cpp, implemented: hook_PlayExploring_45BCAE.
+3. address: 0x44C38D, name: PlayHunting_44C38D, src: PlayHunting_44C38D.cpp, implemented: hook_PlayHunting_44C38D
+
 ## Extracting Decompiled C/C++
 
 When extract a c/c++ function from IDA Pro MCP, put output into `./hnhmods/src`.
