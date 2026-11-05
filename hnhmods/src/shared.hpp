@@ -582,20 +582,10 @@ extern CHanaSpriteT3F6_S1FC* (__cdecl* InitHudResources_4490A7)(CHanaSpriteT3F6_
   CHanaSpriteT3F6_S1FC** arrSprTimes, CHanaSpriteT3F6_S1FC** arrSprModes, int nMode);
 extern void (__cdecl*UpdateCameraFollowChase_445525)(CHanaFrameT3EC_S354 *pHeroFrame,
   CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pMapFrame, float fTime, int bMove);
-extern void (__cdecl*SetupItemBodies_459F81)(CHanaSceneT458_S504 *pScene, CSekBody **pItemBodies,
-  DWORD *arrItemPlaceData, int nMapIndex);
 extern char (__cdecl*UpdateHeroControl_45A513)(CSekBody *pHeroBody, CHanaFrameT3EC_S354 *pMapFrame,
   float fDeltaTime, float *pfHeroHp, float fHeroHpMax, int nMapIndex, float *pfCamFactor);
-extern int (__cdecl*FindTargetInRange_45A1AD)(CHanaFrameRootT3EC_S2D4 *pHeroFrame,
-  CSekBody **pItemBodies, float fDeltaTime, int nMapIndex);
-extern void (__cdecl*ApplyTargetEffect_45A2BA)(int nTargetSprite, float *pfHeroHp, float *pfHeroHpMax,
-  int *pnTimeLimit, float *pfCamFactor, float *pfBlendTime);
-extern char (__cdecl*UpdateLockonEvent_45953B)(CHanaSceneT458_S504 *pScene,
-  CHanaFrameT3EC_S354 *pHeroFrame, CHanaFrameT3EC_S354 *pLockonFrame, int nMapIndex);
 extern int (__cdecl*CheckSceneTransition_459768)(CHanaSceneT458_S504 *pScene,
   CHanaFrameT3EC_S354 *pHeroFrame, int *pnMapIndex, int *pnSubIndex, int nStageIndex);
-extern double (__cdecl*GetSceneEventTime_459CA2)(CHanaSceneT458_S504 *pScene,
-  CHanaFrameT3EC_S354 *pHeroFrame, unsigned int *pnCursor, int nMapIndex);
 extern HRESULT(__cdecl* UpdateHudGauge_44BC36)(CHanaSpriteT3F6_S1FC** pHudRes, int nCurHp, int nMaxHp);
 
 extern int (__cdecl*PrepareTargetSelect_45B5BD)(CSekBody *pHeroBody, CSekBody **pItemBodies,
@@ -625,6 +615,9 @@ extern void* (__cdecl* DrawRecViewfinder_44B23B)(CHanaSpriteT3F6_S1FC** pSprites
   int nHeroHp, int nHeroHpMax, int nAggro, int nAggroMax); // in: PlayHunting.cpp
 extern void(__cdecl* DrawClockHud_44AF5B)(CHanaSpriteT3F6_S1FC** arrSprNumbers, int nX, int nY,
   int nTimeLeft); // in: PlayCinematicSequence.cpp
+
+extern void(__cdecl* DrawSprite3D)(CHanaSpriteT3F6_S1FC* pSprite, D3DXVECTOR3* parrPos); // in: PlayHunting.cpp
+
 #endif
 
 // == MACROS

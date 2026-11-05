@@ -3155,6 +3155,9 @@ void __cdecl hook_StepFoeSpin_45804C(
 
 void register_PlayHunting_44C38D() {
   hnh_Hook(0x44C38D, hook_PlayHunting_44C38D, "PlayHunting_44C38D"); // [OK]
+
+  hnh_HookOff();
+
   hnh_Hook(0x446a38, hook_UpdateFoeAI_446A38, "UpdateFoeAI_446A38");
   hnh_Hook(0x4535de, hook_WanaAttack_Close_4535DE, "WanaAttack_Close_4535DE");
   hnh_Hook(0x448b78, hook_IsFoeWithinHeroRange_448B78, "IsFoeWithinHeroRange_448B78");
@@ -3172,6 +3175,6 @@ void register_PlayHunting_44C38D() {
   hnh_Hook(0x457ee0, hook_StepFoeTurn_457EE0, "StepFoeTurn_457EE0");
   hnh_Hook(0x45804c, hook_StepFoeSpin_45804C, "StepFoeSpin_45804C");
 
-  hnh_HookOff();
+  
   hnh_HookOn();
 }

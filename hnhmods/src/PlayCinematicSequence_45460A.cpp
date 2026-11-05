@@ -641,6 +641,9 @@ void __cdecl hook_DrawHudSpriteNumber_44B97B(CHanaSpriteT3F6_S1FC **pDigitSprite
 
 }
 void register_PlayCinematicSequence_45460A() {
+
+  hnh_HookOff();
+
   hnh_Hook(0x45460a, hook_PlayCinematicSequence_45460A, "PlayCinematicSequence_45460A");
   hnh_Hook(0x4532d0, hook_DrawCountdownFlash_4532D0, "DrawCountdownFlash_4532D0");
   hnh_Hook(0x4542e0, hook_UpdateBodiesInput_4542E0, "UpdateBodiesInput_4542E0");
@@ -648,6 +651,6 @@ void register_PlayCinematicSequence_45460A() {
   hnh_Hook(0x44af5b, hook_DrawClockHud_44AF5B, "DrawClockHud_44AF5B");
   hnh_Hook(0x44b97b, hook_DrawHudSpriteNumber_44B97B, "DrawHudSpriteNumber_44B97B");
 
-  hnh_HookOff();
+  
   hnh_HookOn();
 }

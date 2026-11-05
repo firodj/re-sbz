@@ -1989,9 +1989,933 @@ void __cdecl hook_HanaTexture_CreateFromFile(CHanaSpriteT3F6_S1FC **ppOutSprite,
   }
 }
 
+// Activate the item/enemy bodies for a map. Marks up to 10 item bodies active (sets [304]=1 on each body's pose target), then configures the scene's item slots from pItemConfig for nMapIndex.
+void __cdecl hook_SetupItemBodies_459F81(
+  CHanaSceneT458_S504 *pScene,
+  CSekBody **pItemBodies,
+  DWORD *arrItemPlaceData,
+  int nMapIndex)
+{
+  int v4; // eax
+  float a5; // [esp+4h] [ebp-30h] BYREF
+  float a4; // [esp+8h] [ebp-2Ch] BYREF
+  unsigned int i; // [esp+Ch] [ebp-28h]
+  float a3; // [esp+10h] [ebp-24h] BYREF
+  unsigned int j; // [esp+14h] [ebp-20h]
+  CHanaFrameT3EC_S354 *pChild; // [esp+18h] [ebp-1Ch]
+  float pZXrot; // [esp+1Ch] [ebp-18h] BYREF
+  float dirForwardZ; // [esp+20h] [ebp-14h] BYREF
+  float pYXrot; // [esp+24h] [ebp-10h] BYREF
+  float pYpos; // [esp+28h] [ebp-Ch] BYREF
+  float pXYrot; // [esp+2Ch] [ebp-8h] BYREF
+  float dirForwardX; // [esp+30h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] SetupItemBodies_459F81\n");
+  
+  pChild = 0;
+  for ( i = 0; i < 0xA; ++i )
+  {
+    if ( pItemBodies[i] )
+      pItemBodies[i]->pSekHeader_220->pFrameT3EC->bAlphaDeferred_130 = 1;
+  }
+  if ( pScene )
+  {
+    for ( i = 0; i < 0xA; ++i )
+    {
+      if ( (arrItemPlaceData[i] & 0x80000000) == 0
+        && pItemBodies[arrItemPlaceData[i]]
+        && ((1 << arrItemPlaceData[i]) & g_sceneState_52F7E0.ary33[nMapIndex + 50]) == 0 )
+      {
+        for ( j = 0; j < pScene->dwCount_130; ++j )
+        {
+          if ( pScene->refsFrames_134[j] )
+          {
+            if ( !_strnicmp(pScene->refsFrames_134[j]->szName_8, "item", 4u) )
+            {
+              v4 = atoi(&pScene->refsFrames_134[j]->szName_8[4]);
+              if ( v4 == i + 1 )
+              {
+                pChild = pItemBodies[arrItemPlaceData[i]]->pSekHeader_220->pFrameT3EC;
+                HanaFrame_GetRelPosition(pScene->refsFrames_134[j], g_pSceneFrame, &a3, &a4, &a5);
+                MtxMult_4069DD(pChild, (CHanaFrameT3EC_S354 *)g_pSceneFrame, a3, a4, a5);
+                CalculateLocalRotationMatrix(
+                  pScene->refsFrames_134[j],
+                  (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+                  &dirForwardX,
+                  &pYpos,
+                  &dirForwardZ,
+                  &pXYrot,
+                  &pYXrot,
+                  &pZXrot);
+                UpdateBoneLookAtTransform(
+                  pChild,
+                  (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+                  dirForwardX,
+                  0.0,
+                  dirForwardZ,
+                  0.0,
+                  1.0,
+                  0.0);
+                pChild->bAlphaDeferred_130 = 0;
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+uint32_t &g_fHeroAnimSpeed = *(uint32_t *)0x52EF70; // WRITABLE
+uint8_t &g_bSpinActive = *(uint8_t *)0x52EF76; // WRITABLE
+float &g_fSpinTimer = *(float *)0x52EF6C; // WRITABLE
+float &g_fIdleTimer = *(float *)0x52EF7C; // WRITABLE
+uint8_t &g_bAttackHeld = *(uint8_t *)0x52EF74; // WRITABLE
+uint8_t &g_bSkillActive = *(uint8_t *)0x52EF75; // WRITABLE
+
+float &g_fSkillTimer = *(float *)0x52EF78; // WRITABLE
+// Hero control / AI / input + movement step for one frame. (1) Input: under MutexThreadWait, GetInputState; sums mouse delta across 30 devices into nMouseDX/nMouseDY (x10 sensitivity when the device is 'ok'), centered on ConvertFrom640AsInt(320/240); tracks left/middle button press/release into g_bAttackHeld / g_bSkillActive (+g_dwSkillTimer). (2) If g_dwBattleMode<=-1, reset all action flags. (3) Battle state: g_bSpinActive (g_dwSpinTimer, pose 16, hp-0.5/s, spin -1.8*camF, exits >80s) or g_bSkillActive (g_dwSkillTimer, pose 13, hp-0.3/s, spin +1.5, pose 1 after 28s, clear >33s); else on held mouse button pick the attack pose - special maps (16,17,21,22,23) use pose 6/hp-0.25, others pose 5/hp-0.2, plus per-button poses 3/4/1 - or when idle (500ms) pose 1 / random 2|14 and regen hp +0.05/s (clamped to fHeroHpMax). Yaw from nMouseDX/360/3 via MatrixRotateCubeMapFace about pYawAxis=(0,1,0). (4) Ramp *pfCamFactor toward 1.0 at fFrameTime/1000. (5) Collision/move: up to 3 iterations of CheckFrameCollision; on bloc
+char __cdecl hook_UpdateHeroControl_45A513(
+  CSekBody *pHeroBody,
+  CHanaFrameT3EC_S354 *pMapFrame,
+  float fFrameTime,
+  float *pfHeroHp,
+  float fHeroHpMax,
+  int nMapIndex,
+  float *pfCamFactor)
+{
+  float x; // [esp+0h] [ebp-80h]
+  float y; // [esp+4h] [ebp-7Ch]
+  float angle; // [esp+8h] [ebp-78h]
+  float anglea; // [esp+8h] [ebp-78h]
+  float angleb; // [esp+8h] [ebp-78h]
+  float anglec; // [esp+8h] [ebp-78h]
+  float angled; // [esp+8h] [ebp-78h]
+  float anglee; // [esp+8h] [ebp-78h]
+  float anglef; // [esp+8h] [ebp-78h]
+  float angleg; // [esp+8h] [ebp-78h]
+  float fLerpZ; // [esp+8h] [ebp-78h]
+  CSekItem *pCurItem; // [esp+18h] [ebp-68h]
+  float fPos2Y; // [esp+1Ch] [ebp-64h] BYREF
+  float fPos2X; // [esp+20h] [ebp-60h] BYREF
+  float fPos2Z; // [esp+24h] [ebp-5Ch] BYREF
+  float px; // [esp+28h] [ebp-58h] BYREF
+  __int16 nMouseDX; // [esp+2Ch] [ebp-54h]
+  __int16 nCenterY; // [esp+30h] [ebp-50h]
+  char bBtn2Released; // [esp+34h] [ebp-4Ch]
+  __int16 nCenterX; // [esp+38h] [ebp-48h]
+  char bBtn1Released; // [esp+3Ch] [ebp-44h]
+  float a5; // [esp+40h] [ebp-40h] BYREF
+  char bBtn2Down; // [esp+44h] [ebp-3Ch]
+  CHanaFrameT3EC_S354 *pHeroFrame; // [esp+48h] [ebp-38h]
+  CInputState *InputState_481B37; // [esp+4Ch] [ebp-34h]
+  __int16 i; // [esp+50h] [ebp-30h]
+  char bBtn1Down; // [esp+54h] [ebp-2Ch]
+  float a4; // [esp+58h] [ebp-28h] BYREF
+  int nCollision; // [esp+5Ch] [ebp-24h]
+  __int16 nMouseDY; // [esp+60h] [ebp-20h]
+  char bActing; // [esp+64h] [ebp-1Ch]
+  D3DXVECTOR3 pYawAxis; // [esp+68h] [ebp-18h] BYREF
+  float pz; // [esp+74h] [ebp-Ch] BYREF
+  float a3; // [esp+78h] [ebp-8h] BYREF
+  D3DVALUE py; // [esp+7Ch] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] UpdateHeroControl_45A513\n");
+
+
+  pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
+  nMouseDX = 0;
+  nMouseDY = 0;
+  nCenterX = ConvertFrom640AsInt(320);
+  nCenterY = ConvertFrom640AsInt(240);
+  bActing = 0;
+  bBtn1Down = 0;
+  bBtn1Released = 0;
+  bBtn2Down = 0;
+  bBtn2Released = 0;
+  pYawAxis.x = 0.0;
+  pYawAxis.y = 1.0;
+  pYawAxis.z = 0.0;
+  MutexThreadWait_4815EC(1);
+  InputState_481B37 = GetInputState_481B37();
+  for ( i = 0; i < 30; ++i )
+  {
+    InputState_481B37[i].true_6 = 0;
+    if ( InputState_481B37[i].kbdMove_5 == 1 )
+    {
+      nMouseDX += 10 * (InputState_481B37[i].mouseX_0 - nCenterX);
+      InputState_481B37[i].mouseX_0 = nCenterX;
+      nMouseDY += 10 * (InputState_481B37[i].mouseY_2 - nCenterY);
+    }
+    else
+    {
+      nMouseDX += InputState_481B37[i].mouseX_0 - nCenterX;
+      InputState_481B37[i].mouseX_0 = nCenterX;
+      nMouseDY += InputState_481B37[i].mouseY_2 - nCenterY;
+    }
+    InputState_481B37[i].mouseY_2 = nCenterY;
+  }
+  for ( i = 0; i < 15; ++i )
+  {
+    if ( InputState_481B37[i].mouseBtn_4 == 1 )
+      bBtn1Down = 1;
+    if ( !InputState_481B37[i].mouseBtn_4 && bBtn1Down == 1 )
+      bBtn1Released = 1;
+    if ( InputState_481B37[i].mouseBtn_4 == 1 && bBtn1Released == 1 )
+      g_bAttackHeld = 1;
+    if ( InputState_481B37[i].mouseBtn_4 == 2 )
+      bBtn2Down = 1;
+    if ( !InputState_481B37[i].mouseBtn_4 && bBtn2Down == 1 )
+      bBtn2Released = 1;
+    if ( InputState_481B37[i].mouseBtn_4 == 2 && bBtn2Released == 1 && !g_bSkillActive )
+    {
+      g_bSkillActive = 1;
+      g_fSkillTimer = 0.0;
+    }
+  }
+  MutexThreadWait_4815EC(0);
+  if ( g_dwBattleMode <= -1 )
+  {
+    g_bAttackHeld = 0;
+    g_bSkillActive = 0;
+    g_bSpinActive = 0;
+    g_fSkillTimer = 0.0;
+    g_fSpinTimer = 0.0;
+    g_fIdleTimer = 0.0;
+    g_dwBattleMode = 0;
+  }
+  HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &px, &py, &pz);
+  if ( g_bSkillActive || g_bSpinActive )
+  {
+    if ( g_bSpinActive )
+    {
+      g_fSpinTimer = g_fSpinTimer + fFrameTime;
+      SekBody__UpdateTo2_401647(pHeroBody, 16);
+      *pfHeroHp = *pfHeroHp - 0.5 * fFrameTime;
+      if ( g_fSpinTimer <= 10.0 || g_fSpinTimer >= 35.0 )
+      {
+        if ( g_fSpinTimer > 80.0 )
+        {
+          g_bSpinActive = 0;
+          g_fSpinTimer = 0.0;
+          SekBody__UpdateTo2_401647(pHeroBody, 1);
+        }
+      }
+      else
+      {
+        anglee = -1.8 * fFrameTime * *pfCamFactor;
+        MtxMult_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, anglee);
+      }
+      g_fIdleTimer = 0.0;
+    }
+    else if ( g_bSkillActive )
+    {
+      g_fSkillTimer = g_fSkillTimer + fFrameTime;
+      if ( g_fSkillTimer < 25.0 )
+      {
+        SekBody__UpdateTo2_401647(pHeroBody, 13);
+        *pfHeroHp = *pfHeroHp - 0.30000001 * fFrameTime;
+        anglef = 1.5 * fFrameTime * *pfCamFactor;
+        MtxMult_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, anglef);
+      }
+      if ( g_fSkillTimer > 28.0 )
+        SekBody__UpdateTo2_401647(pHeroBody, 1);
+      if ( g_fSkillTimer > 33.0 )
+      {
+        g_bSkillActive = 0;
+        g_fSkillTimer = 0.0;
+      }
+      g_fIdleTimer = 0.0;
+      g_dwBattleMode = 4;
+    }
+  }
+  else
+  {
+    if ( InputState_481B37->mouseBtn_4 )
+    {
+      g_fIdleTimer = 0.0;
+      if ( g_bAttackHeld == 1 && InputState_481B37->mouseBtn_4 == 1 )
+      {
+        if ( nMapIndex == 16 || nMapIndex == 17 || nMapIndex == 21 || nMapIndex == 22 || nMapIndex == 23 )
+        {
+          SekBody__UpdateTo2_401647(pHeroBody, 6);
+          *pfHeroHp = *pfHeroHp - 0.25 * fFrameTime;
+          angle = -2.0 * fFrameTime * *pfCamFactor;
+          MtxMult_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, angle);
+        }
+        else
+        {
+          SekBody__UpdateTo2_401647(pHeroBody, 5);
+          *pfHeroHp = *pfHeroHp - 0.2 * fFrameTime;
+          anglea = -1.0 * fFrameTime * *pfCamFactor;
+          MtxMult_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, anglea);
+        }
+        g_dwBattleMode = 2;
+        bActing = 1;
+      }
+      else
+      {
+        switch ( InputState_481B37->mouseBtn_4 )
+        {
+        case 1:
+          SekBody__UpdateTo2_401647(pHeroBody, 3);
+          *pfHeroHp = *pfHeroHp - 0.15000001 * fFrameTime;
+          angleb = -0.5 * fFrameTime * *pfCamFactor;
+          MtxMult_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, angleb);
+          g_dwBattleMode = 1;
+          bActing = 1;
+          break;
+        case 2:
+          SekBody__UpdateTo2_401647(pHeroBody, 4);
+          *pfHeroHp = *pfHeroHp - 0.15000001 * fFrameTime;
+          anglec = 0.5 * fFrameTime * *pfCamFactor;
+          MtxMult_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, anglec);
+          g_dwBattleMode = 3;
+          break;
+        case 3:
+          SekBody__UpdateTo2_401647(pHeroBody, 1);
+          break;
+        }
+      }
+    }
+    else
+    {
+      g_bAttackHeld = 0;
+      g_fIdleTimer = g_fIdleTimer + fFrameTime;
+      if ( g_fIdleTimer < 500.0 )
+      {
+        SekBody__UpdateTo2_401647(pHeroBody, 1);
+      }
+      else if ( pHeroBody->field_200 == 1 )
+      {
+        if ( rand() % 3 )
+          SekBody__UpdateTo2_401647(pHeroBody, 2);
+        else
+          SekBody__UpdateTo2_401647(pHeroBody, 14);
+      }
+      *pfHeroHp = 0.050000001 * fFrameTime + *pfHeroHp;
+      if ( *pfHeroHp >= (double)fHeroHpMax )
+        *pfHeroHp = fHeroHpMax;
+      g_dwBattleMode = 0;
+    }
+    angled = (double)nMouseDX / 360.0 / 3.0;
+    Frame_RotateMatrixAxis_4070AB(pHeroFrame, 1, &pYawAxis, angled);
+  }
+  if ( *pfHeroHp <= 1.0 )
+    *pfHeroHp = 1.0;
+  if ( pHeroBody->field_200 >= 7 )
+    g_fHeroAnimSpeed = 1.0;
+  else
+    g_fHeroAnimSpeed = (*pfCamFactor + 2.0) / 3.0;
+  angleg = fFrameTime * g_fHeroAnimSpeed;
+  if ( CSekBody__UpdateAnim_4019E1(pHeroBody, angleg) && g_fIdleTimer >= 500.0 )
+    g_fIdleTimer = 0.0;
+  if ( *pfCamFactor <= 1.01 )
+  {
+    if ( *pfCamFactor >= 0.99000001 )
+      *pfCamFactor = 1.0;
+    else
+      *pfCamFactor = fFrameTime / 1000.0 + *pfCamFactor;
+  }
+  else
+  {
+    *pfCamFactor = *pfCamFactor - fFrameTime / 1000.0;
+  }
+  nCollision = 0;
+  for ( i = 0; i < 3; ++i )
+  {
+    nCollision = CheckFrameCollision_443CC5(pHeroFrame, pMapFrame, 0);
+    if ( nCollision )
+      break;
+    HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &a3, &a4, &a5);
+    if ( !TestMoveCollision_4443FC(pHeroFrame, pMapFrame, px, a4, pz, 0) )
+      MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, px, a4, pz);
+    HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fPos2X, &fPos2Y, &fPos2Z);
+    fLerpZ = pz - (pz - fPos2Z) / 2.0;
+    y = py - (py - fPos2Y) / 2.0;
+    x = px - (px - fPos2X) / 2.0;
+    MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, fLerpZ);
+  }
+  if ( (unsigned int)--nCollision < 4 && g_arrFootstepSound_52F18C[nCollision] && g_arrFootstepSound_52F17C[nCollision] )
+  {
+    pCurItem = &pHeroBody->items_250[pHeroBody->field_200];
+    HanaFrame_GetCenterPosition_408C3E(pHeroFrame, g_pSceneFrame, &px, &py, &pz);
+    g_arrFootstepSound_52F18C[nCollision]->pDS3DBuffer_4->SetPosition(
+      px,
+      py,
+      pz,
+      1u);
+    g_arrFootstepSound_52F17C[nCollision]->pDS3DBuffer_4->SetPosition(
+      px,
+      py,
+      pz,
+      1u);
+    if ( !g_arrFootstepSound_52F17C[nCollision]->pDSBuffer_0
+      || g_arrFootstepSound_52F17C[nCollision]->pDSBuffer_0->GetStatus(
+        &g_dwDSStatus_5185C8)
+      || (g_dwDSStatus_5185C8 & 1) == 0 )
+    {
+      if ( (pCurItem->float_60 < 303.0 || pCurItem->float_60 > 310.0)
+        && (pCurItem->float_60 < 403.0 || pCurItem->float_60 > 410.0)
+        && (pCurItem->float_60 < 500.0 || pCurItem->float_60 > 504.0)
+        && (pCurItem->float_60 < 600.0 || pCurItem->float_60 > 606.0)
+        && (pCurItem->float_60 < 1630.0 || pCurItem->float_60 > 1640.0)
+        && (pCurItem->float_60 < 1670.0 || pCurItem->float_60 > 1680.0)
+        && (pCurItem->float_60 < 2622.0 || pCurItem->float_60 > 2630.0) )
+      {
+        for ( i = 0; i < 4; ++i )
+        {
+          if ( g_arrFootstepSound_52F17C[i] )
+            g_arrFootstepSound_52F17C[i]->pDSBuffer_0->Stop();
+        }
+      }
+      else
+      {
+        g_arrFootstepSound_52F17C[nCollision]->pDSBuffer_0->Play(
+          0,
+          0,
+          0);
+      }
+    }
+    if ( !g_arrFootstepSound_52F18C[nCollision]->pDSBuffer_0
+      || g_arrFootstepSound_52F18C[nCollision]->pDSBuffer_0->GetStatus(
+        &g_dwDSStatus_5185C8)
+      || (g_dwDSStatus_5185C8 & 1) == 0 )
+    {
+      if ( (pCurItem->float_60 < 313.0 || pCurItem->float_60 > 320.0)
+        && (pCurItem->float_60 < 413.0 || pCurItem->float_60 > 420.0)
+        && (pCurItem->float_60 < 507.0 || pCurItem->float_60 > 511.0)
+        && (pCurItem->float_60 < 605.0 || pCurItem->float_60 > 611.0)
+        && (pCurItem->float_60 < 1633.0 || pCurItem->float_60 > 1643.0)
+        && (pCurItem->float_60 < 1658.0 || pCurItem->float_60 > 1665.0)
+        && (pCurItem->float_60 < 2620.0 || pCurItem->float_60 > 2630.0) )
+      {
+        for ( i = 0; i < 4; ++i )
+        {
+          if ( g_arrFootstepSound_52F18C[i] )
+            g_arrFootstepSound_52F18C[i]->pDSBuffer_0->Stop();
+        }
+      }
+      else
+      {
+        g_arrFootstepSound_52F18C[nCollision]->pDSBuffer_0->Play(
+          0,
+          0,
+          0);
+      }
+    }
+  }
+  return bActing;
+}
+
+// Find the nearest item/enemy body in acquisition range. For each item body computes its position relative to pHeroFrame; if within radius (~8, dist^2<64) and not already flagged, sets [304]=1, records the hit in the global per-map target bitmask (MEMORY[0x52F845][nMapIndex] |= 1<<i) and returns that index.
+int __cdecl hook_FindTargetInRange_45A1AD(
+  CHanaFrameRootT3EC_S2D4 *pFrame,
+  CSekBody **pItemBodies,
+  float fDeltaTime,
+  int nMapIndex)
+{
+  float a5; // [esp+0h] [ebp-18h] BYREF
+  float a4; // [esp+4h] [ebp-14h] BYREF
+  float a3; // [esp+8h] [ebp-10h] BYREF
+  int i; // [esp+Ch] [ebp-Ch]
+  CHanaFrameT3EC_S354 *a1; // [esp+10h] [ebp-8h]
+  int v10; // [esp+14h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] FindTargetInRange_45A1AD\n");
+ 
+  v10 = 0;
+  a1 = 0;
+  for ( i = 0; i < 10; ++i )
+  {
+    if ( pItemBodies[i] )
+    {
+      a1 = pItemBodies[i]->pSekHeader_220->pFrameT3EC;
+      if ( !a1->bAlphaDeferred_130 )
+      {
+        HanaFrame_GetRelPosition(a1, pFrame, &a3, &a4, &a5);
+        if ( a3 * a3 + a5 * a5 < 64.0 )
+        {
+          v10 = i;
+          g_sceneState_52F7E0.ary33[nMapIndex + 50] |= 1 << i;
+          a1->bAlphaDeferred_130 = 1;
+          break;
+        }
+      }
+    }
+  }
+  for ( i = 0; i < 10; ++i )
+  {
+    if ( pItemBodies )
+      CSekBody__UpdateAnim_4019E1(pItemBodies[i], fDeltaTime);
+  }
+  return v10;
+}
+
+// Apply the effect of the acquired target type to the hero. switch(nType): 1 -> +20000 hp (clamped to max) +10 blend; 2 -> +6600 hp & max +10 blend; 3 -> camera factor=1.25; 4 -> +30s time limit (capped 999); 5+ -> further item effects.
+void __cdecl hook_ApplyTargetEffect_45A2BA(
+  int nType,
+  float *pfHeroHp,
+  float *pfHeroHpMax,
+  _DWORD *pnTimeLimit,
+  _DWORD *pfCamFactor,
+  float *pfBlendTime)
+{
+  ONCELOG("[HNH:SUB] ApplyTargetEffect_45A2BA\n");
+  switch ( nType )
+  {
+  case 1:
+    *pfBlendTime = *pfBlendTime + 10.0;
+    *pfHeroHp = *pfHeroHp + 20000.0;
+    if ( *pfHeroHpMax < (double)*pfHeroHp )
+      *pfHeroHp = *pfHeroHpMax;
+    break;
+  case 2:
+    *pfBlendTime = *pfBlendTime + 10.0;
+    *pfHeroHp = *pfHeroHp + 6600.0;
+    *pfHeroHpMax = *pfHeroHpMax + 6600.0;
+    break;
+  case 3:
+    *pfCamFactor = 1069547520;
+    break;
+  case 4:
+    *pfBlendTime = *pfBlendTime + 10.0;
+    if ( (unsigned int)(*pnTimeLimit + 30) <= 0x3E7 )
+      *pnTimeLimit += 30;
+    else
+      *pnTimeLimit = 999;
+    break;
+  case 5:
+    *pfBlendTime = *pfBlendTime + 20.0;
+    *pfHeroHp = *pfHeroHp - 20000.0;
+    break;
+  case 6:
+    *pfCamFactor = 1056964608;
+    break;
+  case 7:
+    *pfBlendTime = *pfBlendTime + 20.0;
+    if ( *pnTimeLimit >= 0x1Eu )
+      *pnTimeLimit -= 30;
+    else
+      *pnTimeLimit = 0;
+    break;
+  default:
+    return;
+  }
+}
+
+// Lock-on targeter. Scans pScene->refsFrames_134 for 'Event' children whose bit (nEventNo=atoi(name+5)) is not yet set in the per-map event bitmask g_sceneState_52F7E0.stc9C.gap30[nMapIndex+3]; keeps the nearest one within reach (default 400.0, squared). For the closest it positions/aims pLockonFrame at that node (rel pos + local rotation vs g_pSceneFrame -> MtxMult + UpdateBoneLookAtTransform) and sets bFound=1. If none found, parks pLockonFrame far off-screen (10000,1000,-1000). Returns bFound.
+void __cdecl hook_UpdateLockonEvent_45953B(
+  CHanaSceneT458_S504 *pScene,
+  CHanaFrameT3EC_S354 *pHeroFrame,
+  CHanaFrameT3EC_S354 *pLockonFrame,
+  int nMapIndex)
+{
+  float fRelZ; // [esp+0h] [ebp-34h] BYREF
+  float fRelY; // [esp+4h] [ebp-30h] BYREF
+  float fRelX; // [esp+8h] [ebp-2Ch] BYREF
+  unsigned int i; // [esp+Ch] [ebp-28h]
+  float fSqDist; // [esp+10h] [ebp-24h]
+  bool bFound; // [esp+14h] [ebp-20h]
+  int nEventNo; // [esp+18h] [ebp-1Ch]
+  float dirUpZ; // [esp+1Ch] [ebp-18h] BYREF
+  float dirForwardZ; // [esp+20h] [ebp-14h] BYREF
+  float dirUpY; // [esp+24h] [ebp-10h] BYREF
+  float dirForwardY; // [esp+28h] [ebp-Ch] BYREF
+  float dirUpX; // [esp+2Ch] [ebp-8h] BYREF
+  float dirForwardX[2]; // [esp+30h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] UpdateLockonEvent_45953B\n");
+  
+  fSqDist = 400.0;
+  bFound = 0;
+  if ( pScene )
+  {
+    for ( i = 0; i < pScene->dwCount_130; ++i )
+    {
+      if ( pScene->refsFrames_134[i] )
+      {
+        if ( !_strnicmp(pScene->refsFrames_134[i]->szName_8, "event", 5u) )
+        {
+          nEventNo = atoi(&pScene->refsFrames_134[i]->szName_8[5]);
+          if ( ((1 << nEventNo) & g_sceneState_52F7E0.ary33[nMapIndex]) == 0 )
+          {
+            HanaFrame_GetRelPosition(pScene->refsFrames_134[i], pHeroFrame, &fRelX, &fRelY, &fRelZ);
+            CalculateLocalRotationMatrix(
+              pScene->refsFrames_134[i],
+              pHeroFrame,
+              dirForwardX,
+              &dirForwardY,
+              &dirForwardZ,
+              &dirUpX,
+              &dirUpY,
+              &dirUpZ);
+            if ( fRelX * fRelX + fRelZ * fRelZ <= fSqDist )
+            {
+              fSqDist = fRelX * fRelX + fRelZ * fRelZ;
+              HanaFrame_GetRelPosition(pScene->refsFrames_134[i], g_pSceneFrame, &fRelX, &fRelY, &fRelZ);
+              CalculateLocalRotationMatrix(
+                pScene->refsFrames_134[i],
+                (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+                dirForwardX,
+                &dirForwardY,
+                &dirForwardZ,
+                &dirUpX,
+                &dirUpY,
+                &dirUpZ);
+              MtxMult_4069DD(pLockonFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fRelX, fRelY, fRelZ);
+              UpdateBoneLookAtTransform(
+                pLockonFrame,
+                (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+                dirForwardX[0],
+                dirForwardY,
+                dirForwardZ,
+                dirUpX,
+                dirUpY,
+                dirUpZ);
+              bFound = 1;
+            }
+          }
+        }
+      }
+    }
+  }
+  if ( !bFound )
+    MtxMult_4069DD(pLockonFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, 10000.0, 1000.0, -1000.0);
+}
+
+// Scene advance / transition detector. Scans the ODS scene's refsFrames_134 for 'Jump' marker frames; when the hero is within radius ~5.2 of one (fRelX^2+fRelZ^2<=27.04) and it is in front (fRelZ... pZpos < -0.85), reads the destination from the name: nTargetMap=atoi(name+4), nTargetSub=atoi(name+7). (1) If nTargetMap is in this stage's engageMapTable slot (30*nStageIndex), set nResult=2 -> caller engages the scripted-cam/dialogue mode. (2) Else if nTargetMap==finalMapTable[nStageIndex] ({21,13,16,4,2,14,16,22,17,6,8}) -> return 3 = stage complete. (3) Otherwise advance: write *pnMapIndex=nTargetMap / *pnSubIndex=nTargetSub and, unless it is an excluded target ((23,0),(23,1), map 8, (22,10)), play a transition SFX (pDSBuf for maps 16/17 else arrUIEffectDSBuffer_52F168) and return 1 = fade & load the next map. Leaves nResult (0/2) when nothing triggered.
+int __cdecl hook_CheckSceneTransition_459768(
+  CHanaSceneT458_S504 *pScene,
+  CHanaFrameT3EC_S354 *pHeroFrame,
+  int *pnMapIndex,
+  int *pnSubIndex,
+  int nStageIndex)
+{
+  int nTargetSub; // [esp+4h] [ebp-778h]
+  _DWORD engageMapTable[450]; // [esp+8h] [ebp-774h] BYREF
+  float fRelZ; // [esp+710h] [ebp-6Ch] BYREF
+  float fRelY; // [esp+714h] [ebp-68h] BYREF
+  float fRelX; // [esp+718h] [ebp-64h] BYREF
+  unsigned int i; // [esp+71Ch] [ebp-60h]
+  int nResult; // [esp+720h] [ebp-5Ch]
+  float pZXrot; // [esp+724h] [ebp-58h] BYREF
+  _DWORD finalMapTable[15]; // [esp+728h] [ebp-54h] BYREF
+  float pZpos; // [esp+764h] [ebp-18h] BYREF
+  float pYXrot; // [esp+768h] [ebp-14h] BYREF
+  float pYpos; // [esp+76Ch] [ebp-10h] BYREF
+  float pXYrot; // [esp+770h] [ebp-Ch] BYREF
+  int nTargetMap; // [esp+774h] [ebp-8h]
+  float pXpos; // [esp+778h] [ebp-4h] BYREF
+  ONCELOG("[HNH:SUB] CheckSceneTransition_459768\n");
+  
+  nResult = 0;
+  engageMapTable[0] = 0;
+  engageMapTable[1] = 4;
+  engageMapTable[2] = 3;
+  engageMapTable[3] = 10;
+  engageMapTable[4] = 11;
+  engageMapTable[5] = 13;
+  engageMapTable[6] = 12;
+  engageMapTable[7] = 19;
+  engageMapTable[8] = 16;
+  engageMapTable[9] = 23;
+  engageMapTable[10] = -1;
+  memset(&engageMapTable[11], 0, 80);
+  engageMapTable[31] = 16;
+  engageMapTable[32] = 21;
+  engageMapTable[33] = 23;
+  engageMapTable[34] = -1;
+  memset(&engageMapTable[35], 0, 104);
+  engageMapTable[61] = 17;
+  engageMapTable[62] = 23;
+  engageMapTable[63] = -1;
+  memset(&engageMapTable[64], 0, 108);
+  engageMapTable[91] = 17;
+  engageMapTable[92] = 23;
+  engageMapTable[93] = -1;
+  memset(&engageMapTable[94], 0, 108);
+  engageMapTable[121] = 8;
+  engageMapTable[122] = 17;
+  engageMapTable[123] = -1;
+  memset(&engageMapTable[124], 0, 108);
+  engageMapTable[151] = 8;
+  engageMapTable[152] = 17;
+  engageMapTable[153] = -1;
+  memset(&engageMapTable[154], 0, 108);
+  engageMapTable[181] = 8;
+  engageMapTable[182] = 17;
+  engageMapTable[183] = -1;
+  memset(&engageMapTable[184], 0, 108);
+  engageMapTable[211] = -1;
+  memset(&engageMapTable[212], 0, 116);
+  engageMapTable[241] = -1;
+  memset(&engageMapTable[242], 0, 116);
+  engageMapTable[271] = -1;
+  memset(&engageMapTable[272], 0, 116);
+  engageMapTable[301] = -1;
+  memset(&engageMapTable[302], 0, 592);
+  finalMapTable[0] = 21;
+  finalMapTable[1] = 13;
+  finalMapTable[2] = 16;
+  finalMapTable[3] = 4;
+  finalMapTable[4] = 2;
+  finalMapTable[5] = 14;
+  finalMapTable[6] = 16;
+  finalMapTable[7] = 22;
+  finalMapTable[8] = 17;
+  finalMapTable[9] = 6;
+  finalMapTable[10] = 8;
+  memset(&finalMapTable[11], 0, 16);
+  if ( pScene )
+  {
+    for ( i = 0; i < pScene->dwCount_130; ++i )
+    {
+      if ( pScene->refsFrames_134[i] )
+      {
+        if ( !_strnicmp(pScene->refsFrames_134[i]->szName_8, "JUMP", 4u) )
+        {
+          HanaFrame_GetRelPosition(pScene->refsFrames_134[i], pHeroFrame, &fRelX, &fRelY, &fRelZ);
+          CalculateLocalRotationMatrix(
+            pScene->refsFrames_134[i],
+            pHeroFrame,
+            &pXpos,
+            &pYpos,
+            &pZpos,
+            &pXYrot,
+            &pYXrot,
+            &pZXrot);
+          if ( fRelX * fRelX + fRelZ * fRelZ <= 27.039997 && pZpos < -0.85000002 )
+          {
+            nTargetMap = atoi(&pScene->refsFrames_134[i]->szName_8[4]);
+            nTargetSub = atoi(&pScene->refsFrames_134[i]->szName_8[7]);
+            for ( i = 0; i < 0x1E && engageMapTable[30 * nStageIndex + i] != -1; ++i )
+            {
+              if ( engageMapTable[30 * nStageIndex + i] == nTargetMap )
+              {
+                nResult = 2;
+                break;
+              }
+            }
+            if ( nResult != 2 )
+            {
+              if ( finalMapTable[nStageIndex] == nTargetMap )
+              {
+                return 3;
+              }
+              else
+              {
+                *pnMapIndex = nTargetMap;
+                *pnSubIndex = nTargetSub;
+                if ( (*pnMapIndex != 23 || *pnSubIndex)
+                  && (*pnMapIndex != 23 || *pnSubIndex != 1)
+                  && *pnMapIndex != 8
+                  && (*pnMapIndex != 22 || *pnSubIndex != 10) )
+                {
+                  if ( *pnMapIndex == 16 && *pnSubIndex == 1 || *pnMapIndex == 17 )
+                  {
+                    if ( g_arrUIEffectDSBuffer_52F168[1] )
+                      DSBufferPlay(g_arrUIEffectDSBuffer_52F168[1], 0);
+                  }
+                  else if ( g_arrUIEffectDSBuffer_52F168[0] )
+                  {
+                    DSBufferPlay(g_arrUIEffectDSBuffer_52F168[0], 0);
+                  }
+                }
+                return 1;
+              }
+            }
+            return nResult;
+          }
+        }
+      }
+    }
+  }
+  return nResult;
+}
+
+// Trigger the ODS 'Event' the hero has reached and return its script time. Scans pScene->refsFrames_134 for children named 'Event'; when one is within radius 5 of pHeroFrame (fRelX^2+fRelZ^2<=25) and oriented/positioned (pZpos<-0.25 || pZXrot>0.25), reads nEventNo=atoi(name+13). If its bit is not yet set in g_sceneState_52F7E0.stc9C.gap30[nMapIndex+3] (the per-map event bitmask), sets fEventTime=1000*nEventNo and marks the bit. On a trigger it also finds the 'Otoko' child -> *pnCursor (hero node index) and the 'Camera' child, re-parenting/re-aiming g_pCameraFrame onto it (AttachChild + MtxMult + UpdateBoneLookAt). Returns fEventTime (0 = no event).
+double __cdecl hook_GetSceneEventTime_459CA2(
+  CHanaSceneT458_S504 *pScene,
+  CHanaFrameT3EC_S354 *pHeroFrame,
+  unsigned int *pnCursor,
+  int nMapIndex)
+{
+  float fRelZ; // [esp+4h] [ebp-30h] BYREF
+  float fRelY; // [esp+8h] [ebp-2Ch] BYREF
+  float fRelX; // [esp+Ch] [ebp-28h] BYREF
+  unsigned int i; // [esp+10h] [ebp-24h]
+  float fEventTime; // [esp+14h] [ebp-20h]
+  int nEventNo; // [esp+18h] [ebp-1Ch]
+  float pZXrot; // [esp+1Ch] [ebp-18h] BYREF
+  float pZpos; // [esp+20h] [ebp-14h] BYREF
+  float pYXrot; // [esp+24h] [ebp-10h] BYREF
+  float pYpos; // [esp+28h] [ebp-Ch] BYREF
+  float pXYrot; // [esp+2Ch] [ebp-8h] BYREF
+  float pXpos; // [esp+30h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] GetSceneEventTime_459CA2\n");
+  
+  fEventTime = 0.0;
+  if ( pScene )
+  {
+    for ( i = 0; i < pScene->dwCount_130; ++i )
+    {
+      if ( pScene->refsFrames_134[i] )
+      {
+        if ( !_strnicmp(pScene->refsFrames_134[i]->szName_8, "EVENT", 5u) )
+        {
+          HanaFrame_GetRelPosition(pScene->refsFrames_134[i], pHeroFrame, &fRelX, &fRelY, &fRelZ);
+          CalculateLocalRotationMatrix(
+            pScene->refsFrames_134[i],
+            pHeroFrame,
+            &pXpos,
+            &pYpos,
+            &pZpos,
+            &pXYrot,
+            &pYXrot,
+            &pZXrot);
+          if ( fRelX * fRelX + fRelZ * fRelZ <= 25.0 && (pZpos < -0.25 || pZXrot > 0.25) )
+          {
+            nEventNo = atoi(&pScene->refsFrames_134[i]->szName_8[5]);
+            if ( ((1 << nEventNo) & g_sceneState_52F7E0.ary33[nMapIndex]) == 0 )
+            {
+              fEventTime = (float)(1000 * nEventNo);
+              g_sceneState_52F7E0.ary33[nMapIndex] |= 1 << nEventNo;
+            }
+            break;
+          }
+        }
+      }
+    }
+    if ( fEventTime != 0.0 )
+    {
+      for ( i = 0; i < pScene->dwCount_130; ++i )
+      {
+        if ( pScene->refsFrames_134[i] && !_strnicmp(pScene->refsFrames_134[i]->szName_8, "OTOKO", 5u) )
+        {
+          *pnCursor = i;
+          break;
+        }
+      }
+      for ( i = 0; i < pScene->dwCount_130; ++i )
+      {
+        if ( pScene->refsFrames_134[i] && !_strnicmp(pScene->refsFrames_134[i]->szName_8, "camera", 6u) )
+        {
+          AttachChild_4055FD(pScene->refsFrames_134[i], g_pCameraFrame);
+          MtxMult_4069DD(g_pCameraFrame, pScene->refsFrames_134[i], 0.0, 0.0, 0.0);
+          UpdateBoneLookAtTransform(g_pCameraFrame, pScene->refsFrames_134[i], 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
+          return fEventTime;
+        }
+      }
+    }
+  }
+  return fEventTime;
+}
+
+// Update the on-screen health gauge HUD from the pHudRes resource table, using fHpPct/fHpMaxPct (hero hp and max, passed divided by 100).
+void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpPct, int fHpMaxPct)
+{
+  POINT ptHud2; // rax
+  int v4; // eax
+  int v5; // eax
+  int v6; // [esp+20h] [ebp-68h]
+  int v7; // [esp+20h] [ebp-68h]
+  int v8; // [esp+24h] [ebp-64h]
+  int v9; // [esp+24h] [ebp-64h]
+  float v10; // [esp+28h] [ebp-60h]
+  float v11; // [esp+28h] [ebp-60h]
+  int v12; // [esp+28h] [ebp-60h]
+  int v13; // [esp+28h] [ebp-60h]
+  int nCount; // [esp+34h] [ebp-54h]
+  D3DXVECTOR3 *i; // [esp+3Ch] [ebp-4Ch]
+  DWORD texW; // [esp+40h] [ebp-48h] BYREF
+  D3DXVECTOR3 parrPos; // [esp+44h] [ebp-44h] BYREF
+  float v18; // [esp+50h] [ebp-38h]
+  float v19; // [esp+54h] [ebp-34h]
+  int v20; // [esp+58h] [ebp-30h]
+  float v21; // [esp+5Ch] [ebp-2Ch]
+  float v22; // [esp+60h] [ebp-28h]
+  int v23; // [esp+64h] [ebp-24h]
+  float v24; // [esp+68h] [ebp-20h]
+  float v25; // [esp+6Ch] [ebp-1Ch]
+  int v26; // [esp+70h] [ebp-18h]
+  struct tagRECT rc; // [esp+74h] [ebp-14h] BYREF
+  DWORD texH; // [esp+84h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] UpdateHudGauge_44BC36\n");
+ 
+  nCount = 4;
+  for ( i = &parrPos; --nCount >= 0; ++i )
+    ;
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
+  if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+  {
+    GetSurfaceWH(pHudRes[2]->pTexture_134, &texW, &texH);
+    SetRect(&rc, 253, 0, 254, 48);
+    CHanaSpriteT3F6__SetSrcRect_414B28(pHudRes[2], &rc);
+    parrPos.x = ConvertFrom640AsFloat(354.0);
+    parrPos.y = ConvertFrom640AsFloat(13.0);
+    parrPos.z = 0.0;
+    v18 = ConvertFrom640AsFloat(600.0);
+    v19 = ConvertFrom640AsFloat(13.0);
+    v20 = 0;
+    v21 = ConvertFrom640AsFloat(614.0);
+    v22 = ConvertFrom640AsFloat(28.0);
+    v23 = 0;
+    v24 = ConvertFrom640AsFloat(368.0);
+    v25 = ConvertFrom640AsFloat(28.0);
+    v26 = 0;
+    DrawSprite3D(pHudRes[2], &parrPos);
+    ptHud2 = *(POINT*)&pHudRes[2]->dwWidth_1F0;
+    SetRect(
+      &rc,
+      ((ptHud2.x - ptHud2.y) >> 1) - fHpPct * (pHudRes[2]->dwWidth_1F0 / 2 - 1) / fHpMaxPct,
+      0,
+      ((ptHud2.x - ptHud2.y) >> 1) - fHpPct * (pHudRes[2]->dwWidth_1F0 / 2 - 1) / fHpMaxPct,
+      48);
+    CHanaSpriteT3F6__SetSrcRect_414B28(pHudRes[2], &rc);
+    parrPos.x = ConvertFrom640AsFloat(354.0);
+    parrPos.y = ConvertFrom640AsFloat(13.0);
+    parrPos.z = 0.0;
+    v10 = (double)(246 * fHpPct / fHpMaxPct) + 354.0;
+    v18 = ConvertFrom640AsFloat(v10);
+    v19 = ConvertFrom640AsFloat(13.0);
+    v20 = 0;
+    v11 = (double)(246 * fHpPct / fHpMaxPct) + 368.0;
+    v21 = ConvertFrom640AsFloat(v11);
+    v22 = ConvertFrom640AsFloat(28.0);
+    v23 = 0;
+    v24 = ConvertFrom640AsFloat(368.0);
+    v25 = ConvertFrom640AsFloat(28.0);
+    v26 = 0;
+    DrawSprite3D(pHudRes[2], &parrPos);
+    v12 = ConvertFrom640AsInt(30);
+    v8 = ConvertFrom640AsInt(640);
+    v6 = ConvertFrom640AsInt(-2);
+    v4 = ConvertFrom640AsInt(320);
+    SetRect(&rc, v4, v6, v8, v12);
+    DrawSpriteLTRB(pHudRes[1], rc.left, rc.top, rc.right, rc.bottom);
+    SetRect(&rc, 0, 1, 160, 47);
+    CHanaSpriteT3F6__SetSrcRect_414B28(pHudRes[8], &rc);
+    v13 = ConvertFrom640AsInt(78);
+    v9 = ConvertFrom640AsInt(640);
+    v7 = ConvertFrom640AsInt(30);
+    v5 = ConvertFrom640AsInt(480);
+    SetRect(&rc, v5, v7, v9, v13);
+    DrawSpriteLTRB(pHudRes[8], rc.left, rc.top, rc.right, rc.bottom);
+    g_pD3DDevice_4D6C78->EndScene();
+  }
+}
+
 void register_PlayExploring_45BCAE() {
 
   hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK]
+
+  hnh_HookOff();
   hnh_Hook(0x445525, hook_UpdateCameraFollowChase_445525, "UpdateCameraFollowChase_445525");
   hnh_Hook(0x407b73, hook_HanaMatrix_BuildLookAtAndTransform, "HanaMatrix_BuildLookAtAndTransform_407B73");
   hnh_Hook(0x404349, hook_CHanaAnimSetT3F1__RemoveAnimT3F0_404349, "CHanaAnimSetT3F1__RemoveAnimT3F0_404349");
@@ -2000,7 +2924,15 @@ void register_PlayExploring_45BCAE() {
   hnh_Hook(0x407e5b, hook_Frame_ComputeWorldAABB, "Frame_ComputeWorldAABB_407E5B");
   hnh_Hook(0x4490a7, hook_InitHudResources_4490A7, "InitHudResources_4490A7");
   hnh_Hook(0x4135ed, hook_HanaTexture_CreateFromFile, "HanaTexture_CreateFromFile_4135ED");
+  hnh_Hook(0x459f81, hook_SetupItemBodies_459F81, "SetupItemBodies_459F81");
+  hnh_Hook(0x45a513, hook_UpdateHeroControl_45A513, "UpdateHeroControl_45A513");
+  hnh_Hook(0x45a1ad, hook_FindTargetInRange_45A1AD, "FindTargetInRange_45A1AD");
+  hnh_Hook(0x45a2ba, hook_ApplyTargetEffect_45A2BA, "ApplyTargetEffect_45A2BA");
+  hnh_Hook(0x45953b, hook_UpdateLockonEvent_45953B, "UpdateLockonEvent_45953B");
+  hnh_Hook(0x459768, hook_CheckSceneTransition_459768, "CheckSceneTransition_459768");
+  hnh_Hook(0x459ca2, hook_GetSceneEventTime_459CA2, "GetSceneEventTime_459CA2");
+  hnh_Hook(0x44bc36, hook_UpdateHudGauge_44BC36, "UpdateHudGauge_44BC36");
 
-  hnh_HookOff();
+  
   hnh_HookOn();
 }
