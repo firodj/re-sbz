@@ -12,6 +12,9 @@ BOOL (__cdecl*LoadOdsEx_48564B)(LPCSTR lpFileName, CHanaSceneT458_S504 **ppScene
   reinterpret_cast<BOOL(__cdecl*)(LPCSTR, CHanaSceneT458_S504 **,
     CHanaFrameT3EC_S354 **, CHanaAnimSetT3F1_S150 **, unsigned int)>(0x48564B);
 
+BOOL (__cdecl*LoadSekAndOdf_4445DD)(LPCSTR pszSekFile, LPCSTR pszOdfFile, CSekBody **ppSekBody) =
+reinterpret_cast<int(__cdecl*)(LPCSTR, LPCSTR, CSekBody **)>(0x4445DD);
+
 DWORD (__cdecl*ReadStrFile_483567)(CHanaSceneT458_S504 *pScene, const char *szFileName) =
     reinterpret_cast<DWORD(__cdecl*)(CHanaSceneT458_S504 *, const char *)>(0x483567);
 int (__cdecl*ParseODFFile_441F19)(LPCSTR lpFileName, CHanaFrameT3EC_S354 **pOutRootFrameT3EC,

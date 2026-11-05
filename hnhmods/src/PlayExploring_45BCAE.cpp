@@ -3,63 +3,14 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-// PlayExploring_45BCAE(nStageIndex) -- GameMainLoop scene-type 2: the map
-// exploration/battle screen. nStageIndex 1..10 (0 reads mapIndexTable[-1] in
-// the original) selects the stage entry; per stage the map/sub-stage/time
-// limit come from three small tables:
-//   pnMapIndex = mapIndexTable[2*nStageIndex-1] -> Map\mXX\atXX.ODF +
-//     sch\mapXX.ods (index 0 / 7 / >= 24 are the runtime-empty "" rows --
-//     raw .data past the image is 0xFF filler, zero at runtime -- so those
-//     stages parse an empty path and bail out with -1)
-//   pnSubIndex = mapIndexTable[2*nStageIndex]
-//   sub-stage  = subStageTable[nStageIndex]  -> arrItemPlaceData row set
-//   time limit = timeLimitTable[nStageIndex] (in 1/100 s; HUD shows
-//     100*nTimeLimit - nElapsed/10)
-// One-time setup: 10 SFX wavs (Start/GameOver/On/On2/foot2..5; slots 4..9 are
-// the "" filler), stage BGM s007/8/9.wav (stages 0,2,4,6,9 -> s007, 10 ->
-// s009, else s008) volume-clamped from g_fVolumeDbTable[avi volume]-1000,
-// InitHudResources_4490A7, 7 mask-sprite bmp pairs sch\mXX.bmp/a.bmp, hero
-// body otoko\otoko.sek/.odf (camera frame "Frame5_o00_02_head"), lockon body
-// lockon\lock.sek/.odf, item bodies item\i11..i17.
-//
-// Outer loop: parse the map ODF (free the anim set, attach the map frame to
-// the scene frame, BuildMapSubFrames), load the scene ODS, SetupHeroEntry +
-// SetupItemBodies, park the camera at (0,25,-1) relative to the hero. Inner
-// frame loop: ESC -> SystemMenu_4655AB on the BGM (entry-state snapshot with
-// live scene flags; >= 1 leaves); dialogue mode freezes the countdown and
-// gives right-button x5 text speed / middle-button skip toggle; otherwise
-// UpdateHeroControl (+ FindTargetInRange/ApplyTargetEffect echo sprites),
-// camera follow, lockon event. CheckSceneTransition 1 -> fade + exit, 2 ->
-// forced dialogue (pfExecTime = 10000), else GetSceneEventTime may start an
-// event dialogue; both dialogue entries park the lockon body at (1000,1000,
-// 1000) and save the hero pos/rot for the exit path (ParseExecStr returning
-// 0) to restore. Render: scene surface blit (Clear(2)) or the 3D pass
-// (Clear(3) + HanaFrame_Draw), then the dialogue pose (hero placed at the
-// cursor's frame) or the HUD (UpdateHudGauge + DrawClockHud), the target
-// echo sprites, present.
-//
-// Exit (LABEL_125): HP <= 0 or countdown 0 with nMenuResult < 0 -> stage 7
-// short-circuits to scene step 80; otherwise BGM stop + GameOver SFX,
-// PrepareTargetSelect + ShowMouseSelectDialog to pick the next target (0 ->
-// return 1; picked -> heal +15% max HP, reset the stage tables, reload).
-// nMenuResult >= 0 breaks to the epilogue: HP is written back to
-// g_sceneState only when nMenuResult == 0 (the stage-7 and dialog-abort
-// gotos skip that store). Cleanup releases the 10 SFX + BGM buffers, both
-// sek bodies, the item/target bodies, the scene, the map frame and all HUD/
-// echo sprites. Returns 0 normal, 1 quit-to-menu, -1 load failure.
-//
-// Label map vs the original decompilation: LABEL_84 -> the render block
-// inside the frame loop, LABEL_125 -> stage-exit dispatch, LABEL_149 ->
-// cleanup epilogue.
-
 // === PINNED GAME FUNCTIONS ===
 int (__cdecl*PlayExploring_45BCAE)(int nStageIndex) =
     reinterpret_cast<int(__cdecl*)(int)>(0x45BCAE);
 
-// --- not yet extracted; pinned here call-only ---
+void (__cdecl *CHanaAnimSetT3F1__RemoveAnimT3F0_404349)(CHanaAnimSetT3F1_S150 *pAnimSet, CHanaAnimT3F0_S240 *pAnim)
+= reinterpret_cast<void (__cdecl*)(CHanaAnimSetT3F1_S150 *pAnimSet, CHanaAnimT3F0_S240 *pAnim)>(0x404349);
 
-int (__cdecl*LoadSekAndOdf_4445DD)(LPCSTR pszSekFile, LPCSTR pszOdfFile, CSekBody **ppSekBody) =
-    reinterpret_cast<int(__cdecl*)(LPCSTR, LPCSTR, CSekBody **)>(0x4445DD);
+// --- not yet extracted; pinned here call-only ---
 
 CObjItemRef_S208 *(__cdecl*UpdateCameraLinkedObjects_44451F)(CHanaFrameT3EC_S354 *pCameraFrame) =
     reinterpret_cast<CObjItemRef_S208 *(*)(CHanaFrameT3EC_S354 *)>(0x44451F);
@@ -132,9 +83,64 @@ HRESULT (__cdecl*DrawSpriteListEcho_45B2FB)(CHanaSpriteT3F6_S1FC **arrSprites, i
 
 void (__cdecl *HanaMatrix_BuildLookAtAndTransform)(CHanaFrameT3EC_S354 *pFoeFrame, CHanaFrameT3EC_S354 *pHeroFrame, CHanaFrameRootT3EC_S2D4 *pSceneFrame, BOOL bSkip)
 = reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFoeFrame, CHanaFrameT3EC_S354 *pHeroFrame, CHanaFrameRootT3EC_S2D4 *pSceneFrame, BOOL bSkip)>(0x407b73);
+void (__cdecl *Frame_ComputeWorldAABB)(CHanaFrameT3EC_S354 *pFrame)
+= reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x407e5b);
+void (__cdecl *HanaTexture_CreateFromFile)(CHanaSpriteT3F6_S1FC **ppOutSprite, CHAR *szFileName)
+= reinterpret_cast<void (__cdecl*)(CHanaSpriteT3F6_S1FC **ppOutSprite, CHAR *szFileName)>(0x4135ed);
 
 
 // === FUNCTIONS ===
+
+
+// PlayExploring_45BCAE(nStageIndex) -- GameMainLoop scene-type 2: the map
+// exploration/battle screen. nStageIndex 1..10 (0 reads mapIndexTable[-1] in
+// the original) selects the stage entry; per stage the map/sub-stage/time
+// limit come from three small tables:
+//   pnMapIndex = mapIndexTable[2*nStageIndex-1] -> Map\mXX\atXX.ODF +
+//     sch\mapXX.ods (index 0 / 7 / >= 24 are the runtime-empty "" rows --
+//     raw .data past the image is 0xFF filler, zero at runtime -- so those
+//     stages parse an empty path and bail out with -1)
+//   pnSubIndex = mapIndexTable[2*nStageIndex]
+//   sub-stage  = subStageTable[nStageIndex]  -> arrItemPlaceData row set
+//   time limit = timeLimitTable[nStageIndex] (in 1/100 s; HUD shows
+//     100*nTimeLimit - nElapsed/10)
+// One-time setup: 10 SFX wavs (Start/GameOver/On/On2/foot2..5; slots 4..9 are
+// the "" filler), stage BGM s007/8/9.wav (stages 0,2,4,6,9 -> s007, 10 ->
+// s009, else s008) volume-clamped from g_fVolumeDbTable[avi volume]-1000,
+// InitHudResources_4490A7, 7 mask-sprite bmp pairs sch\mXX.bmp/a.bmp, hero
+// body otoko\otoko.sek/.odf (camera frame "Frame5_o00_02_head"), lockon body
+// lockon\lock.sek/.odf, item bodies item\i11..i17.
+//
+// Outer loop: parse the map ODF (free the anim set, attach the map frame to
+// the scene frame, BuildMapSubFrames), load the scene ODS, SetupHeroEntry +
+// SetupItemBodies, park the camera at (0,25,-1) relative to the hero. Inner
+// frame loop: ESC -> SystemMenu_4655AB on the BGM (entry-state snapshot with
+// live scene flags; >= 1 leaves); dialogue mode freezes the countdown and
+// gives right-button x5 text speed / middle-button skip toggle; otherwise
+// UpdateHeroControl (+ FindTargetInRange/ApplyTargetEffect echo sprites),
+// camera follow, lockon event. CheckSceneTransition 1 -> fade + exit, 2 ->
+// forced dialogue (pfExecTime = 10000), else GetSceneEventTime may start an
+// event dialogue; both dialogue entries park the lockon body at (1000,1000,
+// 1000) and save the hero pos/rot for the exit path (ParseExecStr returning
+// 0) to restore. Render: scene surface blit (Clear(2)) or the 3D pass
+// (Clear(3) + HanaFrame_Draw), then the dialogue pose (hero placed at the
+// cursor's frame) or the HUD (UpdateHudGauge + DrawClockHud), the target
+// echo sprites, present.
+//
+// Exit (LABEL_125): HP <= 0 or countdown 0 with nMenuResult < 0 -> stage 7
+// short-circuits to scene step 80; otherwise BGM stop + GameOver SFX,
+// PrepareTargetSelect + ShowMouseSelectDialog to pick the next target (0 ->
+// return 1; picked -> heal +15% max HP, reset the stage tables, reload).
+// nMenuResult >= 0 breaks to the epilogue: HP is written back to
+// g_sceneState only when nMenuResult == 0 (the stage-7 and dialog-abort
+// gotos skip that store). Cleanup releases the 10 SFX + BGM buffers, both
+// sek bodies, the item/target bodies, the scene, the map frame and all HUD/
+// echo sprites. Returns 0 normal, 1 quit-to-menu, -1 load failure.
+//
+// Label map vs the original decompilation: LABEL_84 -> the render block
+// inside the frame loop, LABEL_125 -> stage-exit dispatch, LABEL_149 ->
+// cleanup epilogue.
+
 
 int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
 {
@@ -1227,12 +1233,773 @@ void __cdecl hook_HanaMatrix_BuildLookAtAndTransform(
   }
 }
 
+void __cdecl hook_CHanaAnimSetT3F1__RemoveAnimT3F0_404349(CHanaAnimSetT3F1_S150 *pAnimSet, CHanaAnimT3F0_S240 *pAnim)
+{
+  CHanaAnimT3F0_S240 **pOldAnimRefs; // [esp+0h] [ebp-8h]
+  unsigned int foundIdx; // [esp+4h] [ebp-4h]
+  ONCELOG("[HNH:SUB] CHanaAnimSetT3F1__RemoveAnimT3F0_404349\n");
+  
+  if ( pAnimSet->nAnimCount_134 )
+  {
+    for ( foundIdx = 0; foundIdx < pAnimSet->nAnimCount_134; ++foundIdx )
+    {
+      if ( pAnimSet->refsAnimT3F0_138[foundIdx] == pAnim )
+      {
+        if ( pAnimSet->nAnimCount_134 <= 1u )
+        {
+          MemFree_40DF64(pAnimSet->refsAnimT3F0_138);
+          pAnimSet->refsAnimT3F0_138 = 0;
+          pAnimSet->nAnimCount_134 = 0;
+        }
+        else
+        {
+          pOldAnimRefs = pAnimSet->refsAnimT3F0_138;
+          pAnimSet->refsAnimT3F0_138 = 0;
+          pAnimSet->refsAnimT3F0_138 = (CHanaAnimT3F0_S240 **)MemAlloc_40DEF7(4 * pAnimSet->nAnimCount_134 + 64);
+          memcpy(pAnimSet->refsAnimT3F0_138, pOldAnimRefs, 4 * foundIdx + 4);
+          pAnimSet->refsAnimT3F0_138[foundIdx] = 0;
+          memcpy(
+            &pAnimSet->refsAnimT3F0_138[foundIdx],
+            &pOldAnimRefs[foundIdx + 1],
+            4 * (pAnimSet->nAnimCount_134 - foundIdx) - 4);
+          MemFree_40DF64(pOldAnimRefs);
+          --pAnimSet->nAnimCount_134;
+        }
+        CHanaObj__Free_40C1E4(pAnim);
+        return;
+      }
+    }
+  }
+  else
+  {
+    pAnimSet->refsAnimT3F0_138 = 0;
+  }
+}
+
+// Rebind/reset camera-linked objects after an ODS scene load. Walks g_pObjTable; for each object of dwType_204==1009, calls sub_404349 on the sub-objects whose [304] slot equals nCameraId (the freshly loaded camera frame).
+void __cdecl hook_UpdateCameraLinkedObjects_44451F(CHanaFrameT3EC_S354 *nCameraId)
+{
+  int j; // [esp+0h] [ebp-10h]
+  int i; // [esp+4h] [ebp-Ch]
+  CObjItemRef_S208 *pObjItem; // [esp+8h] [ebp-8h]
+  CHanaAnimSetT3F1_S150 *pAnimSet; // [esp+Ch] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] UpdateCameraLinkedObjects_44451F\n");
+  
+  pObjItem = g_pObjectTable;
+  for ( i = 0; i < g_nObjectTableCount; ++i )
+  {
+    if ( pObjItem->dwObjType_204 == 0x3F1 )
+    {
+      pAnimSet = (CHanaAnimSetT3F1_S150 *)pObjItem->pObj_200;
+      for ( j = 0; j < pAnimSet->nAnimCount_134; ++j )
+      {
+        if ( pAnimSet->refsAnimT3F0_138[j]->pHanaFram_130 == nCameraId )
+          CHanaAnimSetT3F1__RemoveAnimT3F0_404349(pAnimSet, pAnimSet->refsAnimT3F0_138[j]);
+      }
+    }
+    ++pObjItem;
+  }
+}
+
+// Recursively expand a parsed ODF map frame into child frame nodes: marks [0]=1, normalizes via sub_407E5B, builds the T3ED representation (CHanaObj::NewT3EDFromChildT3EC), and for each frame recurses then frees the temp T3ED. Called right after ParseODFFile on the map frame.
+void __cdecl hook_BuildMapSubFrames_443DD5(CHanaFrameT3EC_S354 *pFrame)
+{
+  unsigned int nIndex; // [esp+4h] [ebp-10h]
+  CHanaFrameT3EC_S354 *pFrameAtIndex; // [esp+8h] [ebp-Ch] BYREF
+  CHanaFrameArrayT3ED_S138 *pFrameArray; // [esp+Ch] [ebp-8h] BYREF
+  unsigned int FramesCountT3ED_408E75; // [esp+10h] [ebp-4h]
+  ONCELOG("[HNH:SUB] BuildMapSubFrames_443DD5\n");
+  
+  FramesCountT3ED_408E75 = 0;
+  if ( pFrame )
+  {
+    pFrame->bAlphaDeferred_130 = 1;
+    Frame_ComputeWorldAABB(pFrame);
+    CHanaObj__NewFrameArrayT3EDFromChildT3EC(pFrame, &pFrameArray);
+    if ( pFrameArray )
+    {
+      FramesCountT3ED_408E75 = CHanaObj__GetFramesCountT3ED_408E75(pFrameArray);
+      for ( nIndex = 0; nIndex < FramesCountT3ED_408E75; ++nIndex )
+      {
+        CHanaObj__GetFrameAtIndexT3ED(pFrameArray, nIndex, &pFrameAtIndex);
+        if ( pFrameAtIndex )
+        {
+          Frame_ComputeWorldAABB(pFrameAtIndex);
+          BuildMapSubFrames_443DD5(pFrameAtIndex);
+          if ( pFrameAtIndex )
+          {
+            CHanaObj__Free_40C1E4(pFrameAtIndex);
+            pFrameAtIndex = 0;
+          }
+        }
+      }
+      if ( pFrameArray )
+        CHanaObj__Free_40C1E4(pFrameArray);
+    }
+  }
+}
+
+void __cdecl hook_Frame_ComputeWorldAABB(CHanaFrameT3EC_S354 *pFrame)
+{
+  D3DXVECTOR3 *pVertexOut; // edx
+  D3DXVECTOR3 *pTrasnformedCorner; // eax
+  int j; // [esp+0h] [ebp-294h]
+  D3DXVECTOR3 *m; // [esp+8h] [ebp-28Ch]
+  int i; // [esp+Ch] [ebp-288h]
+  D3DXMATRIX *k; // [esp+14h] [ebp-280h]
+  D3DXMATRIX cornerMatrices; // [esp+18h] [ebp-27Ch] BYREF
+  D3DXMATRIX cornerM1; // [esp+58h] [ebp-23Ch] BYREF
+  D3DXMATRIX cornerM2; // [esp+98h] [ebp-1FCh] BYREF
+  D3DXMATRIX cornerM3; // [esp+D8h] [ebp-1BCh] BYREF
+  D3DXMATRIX cornerM4; // [esp+118h] [ebp-17Ch] BYREF
+  D3DXMATRIX cornerM5; // [esp+158h] [ebp-13Ch] BYREF
+  D3DXMATRIX cornerM6; // [esp+198h] [ebp-FCh] BYREF
+  D3DXMATRIX cornerM7; // [esp+1D8h] [ebp-BCh] BYREF
+  D3DXVECTOR3 maxBound; // [esp+218h] [ebp-7Ch]
+  D3DXVECTOR3 transformed[8]; // [esp+224h] [ebp-70h] BYREF
+  int n; // [esp+284h] [ebp-10h]
+  D3DXVECTOR3 minBound; // [esp+288h] [ebp-Ch]
+
+  ONCELOG("[HNH:SUB] Frame_ComputeWorldAABB_407E5B\n");
+ 
+  i = 8;
+  for ( k = &cornerMatrices; --i >= 0; ++k )
+    ;
+  j = 8;
+  for ( m = transformed; --j >= 0; ++m )
+    ;
+  maxBound = pFrame->vertBoundMax_220;
+  minBound = pFrame->vertBoundMin_22C;
+  if ( maxBound.x == minBound.x )
+  {
+    maxBound.x = maxBound.x - 0.00050000002;
+    minBound.x = minBound.x + 0.00050000002;
+  }
+  if ( maxBound.y == minBound.y )
+  {
+    maxBound.y = maxBound.y - 0.00050000002;
+    minBound.y = minBound.y + 0.00050000002;
+  }
+  if ( maxBound.z == minBound.z )
+  {
+    maxBound.z = maxBound.z - 0.00050000002;
+    minBound.z = minBound.z + 0.00050000002;
+  }
+  D3DXMatrixTranslation(&cornerMatrices, maxBound.x, minBound.y, maxBound.z);
+  D3DXMatrixTranslation(&cornerM1, maxBound.x, minBound.y, minBound.z);
+  D3DXMatrixTranslation(&cornerM2, minBound.x, minBound.y, minBound.z);
+  D3DXMatrixTranslation(&cornerM3, minBound.x, minBound.y, maxBound.z);
+  D3DXMatrixTranslation(&cornerM4, maxBound.x, maxBound.y, maxBound.z);
+  D3DXMatrixTranslation(&cornerM5, maxBound.x, maxBound.y, minBound.z);
+  D3DXMatrixTranslation(&cornerM6, minBound.x, maxBound.y, minBound.z);
+  D3DXMatrixTranslation(&cornerM7, minBound.x, maxBound.y, maxBound.z);
+  for ( n = 0; n < 8; ++n )
+  {
+    D3DXMatrixMultiply(&cornerMatrices + n, &cornerMatrices + n, &pFrame->mat4x4_after);
+    transformed[n].x = cornerMatrices.m[4 * n + 3][0];
+    transformed[n].y = cornerMatrices.m[4 * n + 3][1];
+    transformed[n].z = cornerMatrices.m[4 * n + 3][2];
+    pVertexOut = &transformed[n];
+    pTrasnformedCorner = &pFrame->transformedCorners[n];
+    pTrasnformedCorner->x = pVertexOut->x;
+    pTrasnformedCorner->y = pVertexOut->y;
+    pTrasnformedCorner->z = pVertexOut->z;
+  }
+  pFrame->worldAABBMax = transformed[0];
+  pFrame->worldAABBMin = pFrame->worldAABBMax;
+  for ( n = 1; n < 8; ++n )
+  {
+    if ( transformed[n].x < (double)pFrame->worldAABBMin.x )
+      pFrame->worldAABBMin.x = transformed[n].x;
+    if ( transformed[n].y < (double)pFrame->worldAABBMin.y )
+      pFrame->worldAABBMin.y = transformed[n].y;
+    if ( transformed[n].z < (double)pFrame->worldAABBMin.z )
+      pFrame->worldAABBMin.z = transformed[n].z;
+    if ( transformed[n].x > (double)pFrame->worldAABBMax.x )
+      pFrame->worldAABBMax.x = transformed[n].x;
+    if ( transformed[n].y > (double)pFrame->worldAABBMax.y )
+      pFrame->worldAABBMax.y = transformed[n].y;
+    if ( transformed[n].z > (double)pFrame->worldAABBMax.z )
+      pFrame->worldAABBMax.z = transformed[n].z;
+  }
+}
+
+// Initialize the battle HUD / select resource arrays (three int* tables, flag=1 at start): the clock-HUD table fed to DrawClockHud, the gauge table fed to UpdateHudGauge, and the mouse-select table fed to ShowMouseSelectDialog. Large setup routine; called once at battle start.
+CHanaSpriteT3F6_S1FC *__cdecl hook_InitHudResources_4490A7(
+  CHanaSpriteT3F6_S1FC **arrSprNumbers,
+  CHanaSpriteT3F6_S1FC **arrSprTimes,
+  CHanaSpriteT3F6_S1FC **arrSprModes,
+  int nMode)
+{
+  CHanaSpriteT3F6_S1FC *result; // eax
+  String25 arrBmpModes_v5[30]; // [esp+4h] [ebp-DC8h] BYREF
+  String25 arrBmpTimes_v32[15]; // [esp+2F4h] [ebp-AD8h] BYREF
+  _BYTE v7[250]; // [esp+46Bh] [ebp-961h] BYREF
+  String25 arrBmpNumbers_v49[15]; // [esp+568h] [ebp-864h] BYREF
+  CHAR FileName[256]; // [esp+6E0h] [ebp-6ECh] BYREF
+  int i; // [esp+7E0h] [ebp-5ECh]
+  CHanaSpriteT3F6_S1FC *pSprite_v63; // [esp+7E4h] [ebp-5E8h] BYREF
+  CHAR szPath[256]; // [esp+7E8h] [ebp-5E4h] BYREF
+  String25 szOfaBMP_v66[32]; // [esp+8E8h] [ebp-4E4h] BYREF
+  _BYTE v14[448]; // [esp+C08h] [ebp-1C4h] BYREF
+  __int16 v15; // [esp+DC8h] [ebp-4h]
+  CHanaSpriteT3F6_S1FC **arrSprTimes_a2a; // [esp+DD8h] [ebp+Ch]
+  CHanaSpriteT3F6_S1FC **arrSprLifes_v99; // [esp+DD8h] [ebp+Ch]
+
+  ONCELOG("[HNH:SUB] InitHudResources_4490A7\n");
+  
+  pSprite_v63 = 0;
+  strcpy((char *)arrBmpNumbers_v49[0].str, "0.BMP");
+  *(_DWORD *)&arrBmpNumbers_v49[0].str[6] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[0].str[10] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[0].str[14] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[0].str[18] = 0;
+  *(_WORD *)&arrBmpNumbers_v49[0].str[22] = 0;
+  arrBmpNumbers_v49[0].str[24] = 0;
+  strcpy((char *)arrBmpNumbers_v49[1].str, "1.BMP");
+  *(_DWORD *)&arrBmpNumbers_v49[1].str[6] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[1].str[10] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[1].str[14] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[1].str[18] = 0;
+  *(_WORD *)&arrBmpNumbers_v49[1].str[22] = 0;
+  arrBmpNumbers_v49[1].str[24] = 0;
+  strcpy((char *)arrBmpNumbers_v49[2].str, "2.BMP");
+  *(_DWORD *)&arrBmpNumbers_v49[2].str[6] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[2].str[10] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[2].str[14] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[2].str[18] = 0;
+  *(_WORD *)&arrBmpNumbers_v49[2].str[22] = 0;
+  arrBmpNumbers_v49[2].str[24] = 0;
+  strcpy((char *)arrBmpNumbers_v49[3].str, "3.BMP");
+  *(_DWORD *)&arrBmpNumbers_v49[3].str[6] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[3].str[10] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[3].str[14] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[3].str[18] = 0;
+  *(_WORD *)&arrBmpNumbers_v49[3].str[22] = 0;
+  arrBmpNumbers_v49[3].str[24] = 0;
+  strcpy((char *)arrBmpNumbers_v49[4].str, "4.BMP");
+  *(_DWORD *)&arrBmpNumbers_v49[4].str[6] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[4].str[10] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[4].str[14] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[4].str[18] = 0;
+  *(_WORD *)&arrBmpNumbers_v49[4].str[22] = 0;
+  arrBmpNumbers_v49[4].str[24] = 0;
+  strcpy((char *)arrBmpNumbers_v49[5].str, "5.BMP");
+  *(_DWORD *)&arrBmpNumbers_v49[5].str[6] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[5].str[10] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[5].str[14] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[5].str[18] = 0;
+  *(_WORD *)&arrBmpNumbers_v49[5].str[22] = 0;
+  arrBmpNumbers_v49[5].str[24] = 0;
+  strcpy((char *)arrBmpNumbers_v49[6].str, "6.BMP");
+  *(_DWORD *)&arrBmpNumbers_v49[6].str[6] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[6].str[10] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[6].str[14] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[6].str[18] = 0;
+  *(_WORD *)&arrBmpNumbers_v49[6].str[22] = 0;
+  arrBmpNumbers_v49[6].str[24] = 0;
+  strcpy((char *)arrBmpNumbers_v49[7].str, "7.BMP");
+  *(_DWORD *)&arrBmpNumbers_v49[7].str[6] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[7].str[10] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[7].str[14] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[7].str[18] = 0;
+  *(_WORD *)&arrBmpNumbers_v49[7].str[22] = 0;
+  arrBmpNumbers_v49[7].str[24] = 0;
+  strcpy((char *)arrBmpNumbers_v49[8].str, "8.BMP");
+  *(_DWORD *)&arrBmpNumbers_v49[8].str[6] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[8].str[10] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[8].str[14] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[8].str[18] = 0;
+  *(_WORD *)&arrBmpNumbers_v49[8].str[22] = 0;
+  arrBmpNumbers_v49[8].str[24] = 0;
+  strcpy((char *)arrBmpNumbers_v49[9].str, "9.BMP");
+  *(_DWORD *)&arrBmpNumbers_v49[9].str[6] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[9].str[10] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[9].str[14] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[9].str[18] = 0;
+  *(_WORD *)&arrBmpNumbers_v49[9].str[22] = 0;
+  arrBmpNumbers_v49[9].str[24] = 0;
+  strcpy((char *)arrBmpNumbers_v49[10].str, "c.BMP");
+  *(_DWORD *)&arrBmpNumbers_v49[10].str[6] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[10].str[10] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[10].str[14] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[10].str[18] = 0;
+  *(_WORD *)&arrBmpNumbers_v49[10].str[22] = 0;
+  arrBmpNumbers_v49[10].str[24] = 0;
+  strcpy((char *)arrBmpNumbers_v49[11].str, "ef01.bmp");
+  *(_DWORD *)&arrBmpNumbers_v49[11].str[9] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[11].str[13] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[11].str[17] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[11].str[21] = 0;
+  strcpy((char *)arrBmpNumbers_v49[12].str, "ef02.bmp");
+  *(_DWORD *)&arrBmpNumbers_v49[12].str[9] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[12].str[13] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[12].str[17] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[12].str[21] = 0;
+  strcpy((char *)arrBmpNumbers_v49[13].str, "ef03.bmp");
+  *(_DWORD *)&arrBmpNumbers_v49[13].str[9] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[13].str[13] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[13].str[17] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[13].str[21] = 0;
+  strcpy((char *)arrBmpNumbers_v49[14].str, "ef03.bmp");
+  *(_DWORD *)&arrBmpNumbers_v49[14].str[9] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[14].str[13] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[14].str[17] = 0;
+  *(_DWORD *)&arrBmpNumbers_v49[14].str[21] = 0;
+  strcpy((char *)arrBmpTimes_v32[0].str, "run\\timeA.BMP");
+  *(_DWORD *)&arrBmpTimes_v32[0].str[14] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[0].str[18] = 0;
+  *(_WORD *)&arrBmpTimes_v32[0].str[22] = 0;
+  arrBmpTimes_v32[0].str[24] = 0;
+  strcpy((char *)arrBmpTimes_v32[1].str, "run\\timeB.BMP");
+  *(_DWORD *)&arrBmpTimes_v32[1].str[14] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[1].str[18] = 0;
+  *(_WORD *)&arrBmpTimes_v32[1].str[22] = 0;
+  arrBmpTimes_v32[1].str[24] = 0;
+  strcpy((char *)arrBmpTimes_v32[2].str, "run\\lifeA.BMP");
+  *(_DWORD *)&arrBmpTimes_v32[2].str[14] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[2].str[18] = 0;
+  *(_WORD *)&arrBmpTimes_v32[2].str[22] = 0;
+  arrBmpTimes_v32[2].str[24] = 0;
+  strcpy((char *)arrBmpTimes_v32[3].str, "run\\lifeB.BMP");
+  *(_DWORD *)&arrBmpTimes_v32[3].str[14] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[3].str[18] = 0;
+  *(_WORD *)&arrBmpTimes_v32[3].str[22] = 0;
+  arrBmpTimes_v32[3].str[24] = 0;
+  strcpy((char *)arrBmpTimes_v32[4].str, "run\\Ber.BMP");
+  *(_DWORD *)&arrBmpTimes_v32[4].str[12] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[4].str[16] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[4].str[20] = 0;
+  arrBmpTimes_v32[4].str[24] = 0;
+  strcpy((char *)arrBmpTimes_v32[5].str, "run\\rendaA.bmp");
+  *(_DWORD *)&arrBmpTimes_v32[5].str[15] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[5].str[19] = 0;
+  *(_WORD *)&arrBmpTimes_v32[5].str[23] = 0;
+  strcpy((char *)arrBmpTimes_v32[6].str, "run\\rendaB.bmp");
+  *(_DWORD *)&arrBmpTimes_v32[6].str[15] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[6].str[19] = 0;
+  *(_WORD *)&arrBmpTimes_v32[6].str[23] = 0;
+  strcpy((char *)arrBmpTimes_v32[7].str, "run\\button01.bmp");
+  *(_DWORD *)&arrBmpTimes_v32[7].str[17] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[7].str[21] = 0;
+  strcpy((char *)arrBmpTimes_v32[8].str, "run\\button03.bmp");
+  *(_DWORD *)&arrBmpTimes_v32[8].str[17] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[8].str[21] = 0;
+  strcpy((char *)arrBmpTimes_v32[9].str, "run\\button05.bmp");
+  *(_DWORD *)&arrBmpTimes_v32[9].str[17] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[9].str[21] = 0;
+  strcpy((char *)arrBmpTimes_v32[10].str, "run\\button06.bmp");
+  *(_DWORD *)&arrBmpTimes_v32[10].str[17] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[10].str[21] = 0;
+  strcpy((char *)arrBmpTimes_v32[11].str, "run\\button02.bmp");
+  *(_DWORD *)&arrBmpTimes_v32[11].str[17] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[11].str[21] = 0;
+  strcpy((char *)arrBmpTimes_v32[12].str, "run\\button04.bmp");
+  *(_DWORD *)&arrBmpTimes_v32[12].str[17] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[12].str[21] = 0;
+  strcpy((char *)arrBmpTimes_v32[13].str, "run\\button05.bmp");
+  *(_DWORD *)&arrBmpTimes_v32[13].str[17] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[13].str[21] = 0;
+  strcpy((char *)arrBmpTimes_v32[14].str, "run\\button06.bmp");
+  *(_DWORD *)&arrBmpTimes_v32[14].str[17] = 0;
+  *(_DWORD *)&arrBmpTimes_v32[14].str[21] = 0;
+  memset(v7, 0, sizeof(v7));
+  strcpy((char *)arrBmpModes_v5[0].str, "mode03.bmp");
+  *(_DWORD *)&arrBmpModes_v5[0].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[0].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[0].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[0].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[1].str, "mode04.bmp");
+  *(_DWORD *)&arrBmpModes_v5[1].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[1].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[1].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[1].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[2].str, "hunt01.bmp");
+  *(_DWORD *)&arrBmpModes_v5[2].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[2].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[2].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[2].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[3].str, "hunt02.bmp");
+  *(_DWORD *)&arrBmpModes_v5[3].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[3].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[3].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[3].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[4].str, "hunt03.bmp");
+  *(_DWORD *)&arrBmpModes_v5[4].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[4].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[4].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[4].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[5].str, "hunt04.bmp");
+  *(_DWORD *)&arrBmpModes_v5[5].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[5].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[5].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[5].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[6].str, "hunt05.bmp");
+  *(_DWORD *)&arrBmpModes_v5[6].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[6].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[6].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[6].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[7].str, "hunt06.bmp");
+  *(_DWORD *)&arrBmpModes_v5[7].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[7].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[7].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[7].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[8].str, "hunt07.bmp");
+  *(_DWORD *)&arrBmpModes_v5[8].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[8].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[8].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[8].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[9].str, "hunt08.bmp");
+  *(_DWORD *)&arrBmpModes_v5[9].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[9].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[9].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[9].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[10].str, "hunt09.bmp");
+  *(_DWORD *)&arrBmpModes_v5[10].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[10].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[10].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[10].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[11].str, "hunt10.bmp");
+  *(_DWORD *)&arrBmpModes_v5[11].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[11].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[11].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[11].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[12].str, "mode01.bmp");
+  *(_DWORD *)&arrBmpModes_v5[12].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[12].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[12].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[12].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[13].str, "mode02.bmp");
+  *(_DWORD *)&arrBmpModes_v5[13].str[11] = 0;
+  *(_DWORD *)&arrBmpModes_v5[13].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[13].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[13].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[14].str, "huntXX2.bmp");
+  *(_DWORD *)&arrBmpModes_v5[14].str[12] = 0;
+  *(_DWORD *)&arrBmpModes_v5[14].str[16] = 0;
+  *(_DWORD *)&arrBmpModes_v5[14].str[20] = 0;
+  arrBmpModes_v5[14].str[24] = 0;
+  strcpy((char *)arrBmpModes_v5[15].str, "huntXX1.bmp");
+  *(_DWORD *)&arrBmpModes_v5[15].str[12] = 0;
+  *(_DWORD *)&arrBmpModes_v5[15].str[16] = 0;
+  *(_DWORD *)&arrBmpModes_v5[15].str[20] = 0;
+  arrBmpModes_v5[15].str[24] = 0;
+  strcpy((char *)arrBmpModes_v5[16].str, "run\\cont01.bmp");
+  *(_DWORD *)&arrBmpModes_v5[16].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[16].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[16].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[17].str, "run\\cont02.bmp");
+  *(_DWORD *)&arrBmpModes_v5[17].str[15] = 0;
+  *(_DWORD *)&arrBmpModes_v5[17].str[19] = 0;
+  *(_WORD *)&arrBmpModes_v5[17].str[23] = 0;
+  strcpy((char *)arrBmpModes_v5[18].str, "run\\yes01.bmp");
+  *(_DWORD *)&arrBmpModes_v5[18].str[14] = 0;
+  *(_DWORD *)&arrBmpModes_v5[18].str[18] = 0;
+  *(_WORD *)&arrBmpModes_v5[18].str[22] = 0;
+  arrBmpModes_v5[18].str[24] = 0;
+  strcpy((char *)arrBmpModes_v5[19].str, "run\\yes02.bmp");
+  *(_DWORD *)&arrBmpModes_v5[19].str[14] = 0;
+  *(_DWORD *)&arrBmpModes_v5[19].str[18] = 0;
+  *(_WORD *)&arrBmpModes_v5[19].str[22] = 0;
+  arrBmpModes_v5[19].str[24] = 0;
+  strcpy((char *)arrBmpModes_v5[20].str, "run\\no01.bmp");
+  *(_DWORD *)&arrBmpModes_v5[20].str[13] = 0;
+  *(_DWORD *)&arrBmpModes_v5[20].str[17] = 0;
+  *(_DWORD *)&arrBmpModes_v5[20].str[21] = 0;
+  strcpy((char *)arrBmpModes_v5[21].str, "run\\no02.bmp");
+  *(_DWORD *)&arrBmpModes_v5[21].str[13] = 0;
+  *(_DWORD *)&arrBmpModes_v5[21].str[17] = 0;
+  *(_DWORD *)&arrBmpModes_v5[21].str[21] = 0;
+  strcpy((char *)arrBmpModes_v5[22].str, "run\\yes03.bmp");
+  *(_DWORD *)&arrBmpModes_v5[22].str[14] = 0;
+  *(_DWORD *)&arrBmpModes_v5[22].str[18] = 0;
+  *(_WORD *)&arrBmpModes_v5[22].str[22] = 0;
+  arrBmpModes_v5[22].str[24] = 0;
+  strcpy((char *)arrBmpModes_v5[23].str, "run\\yes04.bmp");
+  *(_DWORD *)&arrBmpModes_v5[23].str[14] = 0;
+  *(_DWORD *)&arrBmpModes_v5[23].str[18] = 0;
+  *(_WORD *)&arrBmpModes_v5[23].str[22] = 0;
+  arrBmpModes_v5[23].str[24] = 0;
+  strcpy((char *)arrBmpModes_v5[24].str, "run\\no03.bmp");
+  *(_DWORD *)&arrBmpModes_v5[24].str[13] = 0;
+  *(_DWORD *)&arrBmpModes_v5[24].str[17] = 0;
+  *(_DWORD *)&arrBmpModes_v5[24].str[21] = 0;
+  strcpy((char *)arrBmpModes_v5[25].str, "run\\no04.bmp");
+  *(_DWORD *)&arrBmpModes_v5[25].str[13] = 0;
+  *(_DWORD *)&arrBmpModes_v5[25].str[17] = 0;
+  *(_DWORD *)&arrBmpModes_v5[25].str[21] = 0;
+  memset(&arrBmpModes_v5[26], 0, 100u);
+  strcpy((char *)szOfaBMP_v66[0].str, "run\\ofa.bmp");
+  *(_DWORD *)&szOfaBMP_v66[0].str[12] = 0;
+  *(_DWORD *)&szOfaBMP_v66[0].str[16] = 0;
+  *(_DWORD *)&szOfaBMP_v66[0].str[20] = 0;
+  szOfaBMP_v66[0].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[1].str, "run\\lifeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[1].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[1].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[1].str[22] = 0;
+  szOfaBMP_v66[1].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[2].str, "run\\safa.bmp");
+  *(_DWORD *)&szOfaBMP_v66[2].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[2].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[2].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[3].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[3].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[3].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[3].str[22] = 0;
+  szOfaBMP_v66[3].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[4].str, "run\\safb.bmp");
+  *(_DWORD *)&szOfaBMP_v66[4].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[4].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[4].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[5].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[5].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[5].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[5].str[22] = 0;
+  szOfaBMP_v66[5].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[6].str, "run\\safc.bmp");
+  *(_DWORD *)&szOfaBMP_v66[6].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[6].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[6].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[7].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[7].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[7].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[7].str[22] = 0;
+  szOfaBMP_v66[7].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[8].str, "run\\mafa.bmp");
+  *(_DWORD *)&szOfaBMP_v66[8].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[8].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[8].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[9].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[9].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[9].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[9].str[22] = 0;
+  szOfaBMP_v66[9].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[10].str, "run\\mafb.bmp");
+  *(_DWORD *)&szOfaBMP_v66[10].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[10].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[10].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[11].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[11].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[11].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[11].str[22] = 0;
+  szOfaBMP_v66[11].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[12].str, "run\\mafc.bmp");
+  *(_DWORD *)&szOfaBMP_v66[12].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[12].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[12].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[13].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[13].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[13].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[13].str[22] = 0;
+  szOfaBMP_v66[13].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[14].str, "run\\tsfa.bmp");
+  *(_DWORD *)&szOfaBMP_v66[14].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[14].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[14].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[15].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[15].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[15].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[15].str[22] = 0;
+  szOfaBMP_v66[15].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[16].str, "run\\tsfb.bmp");
+  *(_DWORD *)&szOfaBMP_v66[16].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[16].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[16].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[17].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[17].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[17].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[17].str[22] = 0;
+  szOfaBMP_v66[17].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[18].str, "run\\tsfc.bmp");
+  *(_DWORD *)&szOfaBMP_v66[18].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[18].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[18].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[19].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[19].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[19].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[19].str[22] = 0;
+  szOfaBMP_v66[19].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[20].str, "run\\mifa.bmp");
+  *(_DWORD *)&szOfaBMP_v66[20].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[20].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[20].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[21].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[21].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[21].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[21].str[22] = 0;
+  szOfaBMP_v66[21].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[22].str, "run\\mifb.bmp");
+  *(_DWORD *)&szOfaBMP_v66[22].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[22].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[22].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[23].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[23].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[23].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[23].str[22] = 0;
+  szOfaBMP_v66[23].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[24].str, "run\\mifc.bmp");
+  *(_DWORD *)&szOfaBMP_v66[24].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[24].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[24].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[25].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[25].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[25].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[25].str[22] = 0;
+  szOfaBMP_v66[25].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[26].str, "run\\tofa.bmp");
+  *(_DWORD *)&szOfaBMP_v66[26].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[26].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[26].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[27].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[27].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[27].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[27].str[22] = 0;
+  szOfaBMP_v66[27].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[28].str, "run\\tofb.bmp");
+  *(_DWORD *)&szOfaBMP_v66[28].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[28].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[28].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[29].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[29].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[29].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[29].str[22] = 0;
+  szOfaBMP_v66[29].str[24] = 0;
+  strcpy((char *)szOfaBMP_v66[30].str, "run\\tofc.bmp");
+  *(_DWORD *)&szOfaBMP_v66[30].str[13] = 0;
+  *(_DWORD *)&szOfaBMP_v66[30].str[17] = 0;
+  *(_DWORD *)&szOfaBMP_v66[30].str[21] = 0;
+  strcpy((char *)szOfaBMP_v66[31].str, "run\\timeC.BMP");
+  *(_DWORD *)&szOfaBMP_v66[31].str[14] = 0;
+  *(_DWORD *)&szOfaBMP_v66[31].str[18] = 0;
+  *(_WORD *)&szOfaBMP_v66[31].str[22] = 0;
+  szOfaBMP_v66[31].str[24] = 0;
+  memset(v14, 0, sizeof(v14));
+  v15 = 0;
+  for ( i = 0; i < 11; ++i )
+  {
+    wsprintfA(FileName, "%s", arrBmpNumbers_v49[i].str);
+    CHanaObj__GetRealPath_486D9A(FileName, 1003);// get g_szSPRPath
+    LoadBmpWithMask_413A5E(&pSprite_v63, FileName, FileName);
+    *arrSprNumbers++ = pSprite_v63;
+  }
+  for ( i = 11; i <= 13; i += 2 )
+  {
+    wsprintfA(FileName, "%s", arrBmpNumbers_v49[i].str);
+    CHanaObj__GetRealPath_486D9A(FileName, 1003);// get g_szSPRPath
+    wsprintfA(szPath, "%s", arrBmpNumbers_v49[i + 1].str);
+    CHanaObj__GetRealPath_486D9A(szPath, 1003); // get g_szSPRPath
+    LoadBmpWithMask_413A5E(&pSprite_v63, FileName, szPath);
+    *arrSprNumbers++ = pSprite_v63;
+  }
+  for ( i = 0; i <= 1; ++i )
+  {
+    wsprintfA(FileName, "%s", arrBmpTimes_v32[2 * i].str);
+    CHanaObj__GetRealPath_486D9A(FileName, 1003);// get g_szSPRPath
+    wsprintfA(szPath, "%s", arrBmpTimes_v32[2 * i + 1].str);
+    CHanaObj__GetRealPath_486D9A(szPath, 1003); // get g_szSPRPath
+    LoadBmpWithMask_413A5E(&pSprite_v63, FileName, szPath);
+    *arrSprTimes++ = pSprite_v63;
+  }
+  wsprintfA(FileName, "%s", arrBmpTimes_v32[4].str);
+  CHanaObj__GetRealPath_486D9A(FileName, 1003); // get g_szSPRPath
+  HanaTexture_CreateFromFile(&pSprite_v63, FileName);
+  *arrSprTimes = pSprite_v63;
+  arrSprTimes_a2a = arrSprTimes + 1;
+  for ( i = 0; i < 10; i += 2 )
+  {
+    wsprintfA(FileName, "%s", arrBmpTimes_v32[i + 5].str);
+    CHanaObj__GetRealPath_486D9A(FileName, 1003);// get g_szSPRPath
+    wsprintfA(szPath, "%s", arrBmpTimes_v32[i + 6].str);
+    CHanaObj__GetRealPath_486D9A(szPath, 1003); // get g_szSPRPath
+    LoadBmpWithMask_413A5E(&pSprite_v63, FileName, szPath);
+    *arrSprTimes_a2a++ = pSprite_v63;
+  }
+  wsprintfA(FileName, "%s", szOfaBMP_v66[0].str);
+  CHanaObj__GetRealPath_486D9A(FileName, 1003); // get g_szSPRPath
+  wsprintfA(szPath, "%s", szOfaBMP_v66[1].str);
+  CHanaObj__GetRealPath_486D9A(szPath, 1003);   // get g_szSPRPath
+  LoadBmpWithMask_413A5E(&pSprite_v63, FileName, szPath);
+  *arrSprTimes_a2a = pSprite_v63;
+  result = (CHanaSpriteT3F6_S1FC *)(arrSprTimes_a2a + 1);
+  arrSprLifes_v99 = arrSprTimes_a2a + 1;
+  for ( i = 0; i < 6; i += 2 )
+  {
+    wsprintfA(FileName, "%s", szOfaBMP_v66[6 * nMode + 2 + i].str);
+    CHanaObj__GetRealPath_486D9A(FileName, 1003);// get g_szSPRPath
+    wsprintfA(szPath, "%s", szOfaBMP_v66[6 * nMode + 3 + i].str);
+    CHanaObj__GetRealPath_486D9A(szPath, 1003); // get g_szSPRPath
+    LoadBmpWithMask_413A5E(&pSprite_v63, FileName, szPath);
+    result = pSprite_v63;
+    *arrSprLifes_v99++ = pSprite_v63;
+  }
+  for ( i = 0; i < 28; i += 2 )
+  {
+    wsprintfA(FileName, "%s", arrBmpModes_v5[i].str);
+    CHanaObj__GetRealPath_486D9A(FileName, 1003);// get g_szSPRPath
+    wsprintfA(szPath, "%s", arrBmpModes_v5[i + 1].str);
+    CHanaObj__GetRealPath_486D9A(szPath, 1003); // get g_szSPRPath
+    LoadBmpWithMask_413A5E(&pSprite_v63, FileName, szPath);
+    result = pSprite_v63;
+    *arrSprModes++ = pSprite_v63;
+  }
+  return result;
+}
+
+void __cdecl hook_HanaTexture_CreateFromFile(CHanaSpriteT3F6_S1FC **ppOutSprite, CHAR *szFileName)
+{
+  DWORD dwFlags; // [esp+8h] [ebp-14h] BYREF
+  CHanaSpriteT3F6_S1FC *pSprite; // [esp+Ch] [ebp-10h]
+  int v5; // [esp+10h] [ebp-Ch]
+  HRESULT hr; // [esp+14h] [ebp-8h]
+  int v7; // [esp+18h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] HanaTexture_CreateFromFile_4135ED\n");
+ 
+  dwFlags = 256;
+  pSprite = (CHanaSpriteT3F6_S1FC *)MemAlloc_40DEF7(0x1FCu);
+  memset(pSprite, 0, sizeof(CHanaSpriteT3F6_S1FC));
+  pSprite->dwType = 0x3F6;
+  v5 = -1;
+  v7 = -1;
+  hr = D3DXCreateTextureFromFile(g_pD3DDevice_4D6C78, &dwFlags, 0, 0, 0, 0, &pSprite->pTexture_134, 0, szFileName, D3DX_FT_DEFAULT);
+  if ( hr >= 0 )
+  {
+    wsprintfA(pSprite->szName_8, "%s", szFileName);
+    pSprite->ddSurfaceDesc_170.dwSize = 124;
+    pSprite->ddSurfaceDesc_170.dwFlags = 4102;
+    pSprite->pTexture_134->GetSurfaceDesc(&pSprite->ddSurfaceDesc_170);
+    pSprite->dwRGBBitCount_1EC = pSprite->ddSurfaceDesc_170.ddpfPixelFormat.dwRGBBitCount;
+    pSprite->dwWidth_1F0 = pSprite->ddSurfaceDesc_170.dwWidth;
+    pSprite->dwHeight_1F4 = pSprite->ddSurfaceDesc_170.dwHeight;
+    pSprite->lPitch_1F8 = pSprite->ddSurfaceDesc_170.lPitch;
+    pSprite->fAlpha_144 = 1.0;
+    pSprite->fScale_148 = 1.0;
+    pSprite->pCenter_158 = 0;
+    pSprite->fHalfWidth_150 = (float)(pSprite->dwWidth_1F0 / 2);
+    pSprite->fHalfHeight_154 = (float)(pSprite->dwHeight_1F4 / 2);
+    pSprite->pRect_16C = 0;
+    pSprite->rect_15C.top = 0;
+    pSprite->rect_15C.left = 0;
+    pSprite->rect_15C.bottom = pSprite->dwHeight_1F4;
+    pSprite->rect_15C.right = pSprite->dwWidth_1F0;
+    CHanaObj__AddRef_40BFC3(pSprite);
+    *ppOutSprite = pSprite;
+  }
+}
+
 void register_PlayExploring_45BCAE() {
 
   hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK]
   hnh_Hook(0x445525, hook_UpdateCameraFollowChase_445525, "UpdateCameraFollowChase_445525");
   hnh_Hook(0x407b73, hook_HanaMatrix_BuildLookAtAndTransform, "HanaMatrix_BuildLookAtAndTransform_407B73");
-
+  hnh_Hook(0x404349, hook_CHanaAnimSetT3F1__RemoveAnimT3F0_404349, "CHanaAnimSetT3F1__RemoveAnimT3F0_404349");
+  hnh_Hook(0x44451f, hook_UpdateCameraLinkedObjects_44451F, "UpdateCameraLinkedObjects_44451F");
+  hnh_Hook(0x443dd5, hook_BuildMapSubFrames_443DD5, "BuildMapSubFrames_443DD5");
+  hnh_Hook(0x407e5b, hook_Frame_ComputeWorldAABB, "Frame_ComputeWorldAABB_407E5B");
+  hnh_Hook(0x4490a7, hook_InitHudResources_4490A7, "InitHudResources_4490A7");
+  hnh_Hook(0x4135ed, hook_HanaTexture_CreateFromFile, "HanaTexture_CreateFromFile_4135ED");
 
   hnh_HookOff();
   hnh_HookOn();

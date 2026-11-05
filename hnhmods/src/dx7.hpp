@@ -399,3 +399,8 @@ extern D3DXMATRIX* (__stdcall*D3DXMatrixTranslation)(D3DXMATRIX* pOut,  float x,
 extern D3DXMATRIX* (__stdcall*D3DXMatrixScaling)(D3DXMATRIX* pOut,  float sx,  float sy, float sz);
 extern D3DXVECTOR3* (__stdcall*D3DXVec3TransformCoord)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV, const D3DXMATRIX* pM);
 extern D3DXVECTOR3* (__stdcall* D3DXVec3TransformNormal)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV, const D3DXMATRIX* pM);
+extern HRESULT(__stdcall* D3DXCreateTextureFromFile)(LPDIRECT3DDEVICE7 pd3dDevice,
+  LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight,
+  D3DX_SURFACEFORMAT* pPixelFormat, LPDIRECTDRAWPALETTE pDDPal,
+  LPDIRECTDRAWSURFACE7* ppDDSurf, LPDWORD pNumMipMaps, LPSTR pSrcName,
+  D3DX_FILTERTYPE filterType);

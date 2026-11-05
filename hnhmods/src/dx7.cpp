@@ -76,6 +76,17 @@ D3DXMATRIX* (__stdcall*D3DXMatrixScaling)(D3DXMATRIX* pOut,  float sx,  float sy
 D3DXVECTOR3* (__stdcall*D3DXVec3TransformCoord)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV, const D3DXMATRIX* pM) = reinterpret_cast<D3DXVECTOR3* (__stdcall*)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV, const D3DXMATRIX* pM)>(0x48A2A0);
 D3DXVECTOR3* (__stdcall* D3DXVec3TransformNormal)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV, const D3DXMATRIX* pM) = reinterpret_cast<D3DXVECTOR3* (__stdcall*)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV,  const D3DXMATRIX* pM)>(0x48A38E);
 
+HRESULT(__stdcall* D3DXCreateTextureFromFile)(LPDIRECT3DDEVICE7 pd3dDevice,
+  LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight,
+  D3DX_SURFACEFORMAT* pPixelFormat, LPDIRECTDRAWPALETTE pDDPal,
+  LPDIRECTDRAWSURFACE7* ppDDSurf, LPDWORD pNumMipMaps, LPSTR pSrcName,
+  D3DX_FILTERTYPE filterType) =
+  reinterpret_cast<HRESULT (__stdcall*)(  LPDIRECT3DDEVICE7 pd3dDevice,
+    LPDWORD pFlags,  LPDWORD pWidth,  LPDWORD pHeight,
+    D3DX_SURFACEFORMAT* pPixelFormat,  LPDIRECTDRAWPALETTE pDDPal,
+    LPDIRECTDRAWSURFACE7* ppDDSurf,  LPDWORD pNumMipMaps,  LPSTR pSrcName,
+    D3DX_FILTERTYPE filterType)>(0x48E807);
+
 // === FUNCTION IMPLEMENATIONS ===
 
 D3DXVECTOR3 *__stdcall hook_D3DXVec3Normalize(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV)

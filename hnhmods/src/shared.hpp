@@ -510,6 +510,8 @@ extern BOOL(__cdecl* LoadOdsEx_48564B)(LPCSTR lpFileName, CHanaSceneT458_S504** 
   unsigned int nCount);
 extern void(__cdecl* SekBody__UpdateTo_4014E4)(CSekBody* pSekBody, int nItem);
 
+extern BOOL(__cdecl* LoadSekAndOdf_4445DD)(LPCSTR pszSekFile, LPCSTR pszOdfFile, CSekBody** ppSekBody);
+
 // === DEFINED CHanaObj__NewFrameT3EC_S354.cpp ===
 
 extern void(__cdecl* CHanaObj__NewFrameT3EC_S354)(CHanaFrameT3EC_S354* pParent, CHanaFrameT3EC_S354** ppOutFrame);
@@ -571,8 +573,6 @@ extern int& g_dwBattleMode;
 
 
 // === DEFINED PlayExploring.cpp ===
-
-extern int(__cdecl* LoadSekAndOdf_4445DD)(LPCSTR pszSekFile, LPCSTR pszOdfFile, CSekBody** ppSekBody);
 
 extern CObjItemRef_S208* (__cdecl* UpdateCameraLinkedObjects_44451F)(CHanaFrameT3EC_S354* pCameraFrame);
 
