@@ -6,6 +6,11 @@
 // === PINNED GAME FUNCTIONS ===
 int (__cdecl*ParseODS_483932)(LPBYTE pBuf, CHanaSceneT458_S504 *pScene) =
     reinterpret_cast<int(__cdecl*)(LPBYTE, CHanaSceneT458_S504 *)>(0x483932);
+BOOL (__cdecl*LoadOdsEx_48564B)(LPCSTR lpFileName, CHanaSceneT458_S504 **ppScene,
+  CHanaFrameT3EC_S354 **arrFrames, CHanaAnimSetT3F1_S150 **arrAnimSets,
+  unsigned int nCount) =
+  reinterpret_cast<BOOL(__cdecl*)(LPCSTR, CHanaSceneT458_S504 **,
+    CHanaFrameT3EC_S354 **, CHanaAnimSetT3F1_S150 **, unsigned int)>(0x48564B);
 
 DWORD (__cdecl*ReadStrFile_483567)(CHanaSceneT458_S504 *pScene, const char *szFileName) =
     reinterpret_cast<DWORD(__cdecl*)(CHanaSceneT458_S504 *, const char *)>(0x483567);
@@ -36,6 +41,10 @@ CSekHeader * (__cdecl *SekHeader_CloneClean)(const CSekHeader *pSrcHdr)
   = reinterpret_cast<CSekHeader * (__cdecl*)(const CSekHeader *pSrcHdr)>(0x40d875);
 CHanaFrameT3EC_S354 * (__cdecl *CHanaFrameT3EC__FindByName_483650)(CHanaFrameT3EC_S354 *, LPCSTR lpString)
   = reinterpret_cast<CHanaFrameT3EC_S354 * (__cdecl*)(CHanaFrameT3EC_S354 *, LPCSTR lpString)>(0x483650);
+void (__cdecl *ParseOdsEx_484A38)(LPCSTR lpBuffer, CHanaSceneT458_S504 *pScene, CHanaFrameT3EC_S354 **arrFrames, CHanaAnimSetT3F1_S150 **arrAnimeSets, int dwCount)
+= reinterpret_cast<void (__cdecl*)(LPCSTR lpBuffer, CHanaSceneT458_S504 *pScene, CHanaFrameT3EC_S354 **arrFrames, CHanaAnimSetT3F1_S150 **arrAnimeSets, int dwCount)>(0x484a38);
+void (__cdecl *SekBody__UpdateTo_4014E4)(CSekBody *pSekBody, int nItem)
+= reinterpret_cast<void (__cdecl *)(CSekBody *, int)>(0x4014E4);
 
 FnHanaMorp HanaVert_CopyMorph = reinterpret_cast<FnHanaMorp>(0x4363A3);
 FnHanaMorp HanaVert_LerpMorph = reinterpret_cast<FnHanaMorp>(0x436300);
@@ -868,8 +877,398 @@ CHanaFrameT3EC_S354 *__cdecl hook_CHanaFrameT3EC__FindByName_483650(CHanaFrameT3
   return pFoundFrame;
 }
 
+BOOL __cdecl hook_LoadOdsEx_48564B(
+  LPCSTR lpFileName,
+  CHanaSceneT458_S504 **ppScene,
+  CHanaFrameT3EC_S354 **arrFrames,
+  CHanaAnimSetT3F1_S150 **arrAnimeSets,
+  int dwCount)
+{
+  int skipHeader; // eax
+  CHanaSceneT458_S504 *pScene; // [esp-10h] [ebp-220h]
+  HANDLE hFile; // [esp+0h] [ebp-210h]
+  CHAR szODSHeader[512]; // [esp+4h] [ebp-20Ch] BYREF
+  DWORD nNumberOfBytesToRead; // [esp+204h] [ebp-Ch]
+  LPBYTE lpBuffer; // [esp+208h] [ebp-8h]
+  DWORD NumberOfBytesRead; // [esp+20Ch] [ebp-4h] BYREF
+  ONCELOG("[HNH:SUB] LoadOdsEx_48564B\n");
+
+  lpBuffer = 0;
+  CHanaObj__NewSceneT458_S504(ppScene);
+  AttachHanaObj_40BAB8((*ppScene)->pAnimSet_148, lpFileName);
+  hFile = CreateFileA(lpFileName, GENERIC_READ, 0, 0, 3u, 0, 0);
+  NumberOfBytesRead = 0;
+  if ( !hFile )
+    return 0;
+  if ( hFile == (HANDLE)INVALID_HANDLE_VALUE )
+    return 0;
+  nNumberOfBytesToRead = GetFileSize(hFile, 0);
+  if ( !nNumberOfBytesToRead )
+    return 0;
+  if ( nNumberOfBytesToRead == -1 )
+    return 0;
+  lpBuffer = (LPBYTE)MemAlloc_40DEF7(nNumberOfBytesToRead + 128);
+  wsprintfA(szODSHeader, "新フォーマットＯＤＳ%c%c%c", 13, 10, 0);
+  ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, &NumberOfBytesRead, 0);
+  CloseHandle(hFile);
+  if ( !lstrcmpA(szODSHeader, (LPCSTR)lpBuffer) )
+  {
+    pScene = *ppScene;
+    skipHeader = lstrlenA(szODSHeader);
+    ParseOdsEx_484A38((LPCSTR)&lpBuffer[skipHeader + 1], pScene, arrFrames, arrAnimeSets, dwCount);
+  }
+  if ( lpBuffer )
+  {
+    MemFree_40DF64(lpBuffer);
+    lpBuffer = 0;
+  }
+  if ( *ppScene )
+    ResetSceneBodies_4857CA(*ppScene);
+  MtxStackStartMultLocal_4074EF();
+  return 1;
+}
+
+
+// Binary ODS scene-script parser (tag-driven, lpBuffer walks the raw bytes). Stages:
+// (1) TEXT: scene name + loads the dialogue string file (GetRealPath id 1004 -> ReadStrFile).
+// (2) SIZE: dwCount_130 = N; allocs the 5 scene arrays refsFrames_134 / refsAnimeSets_138 / refsSekBody_13C / arrSizes_144 / arrSekItemProps_140 (4*N+64 each).
+// (3) NAME (per entry, nSlot++): reuses a PRELOADED frame+animset when the tag string case-insensitively equals a frame name in arrFrames[0..dwCount) (AddRef + attach to scene root, bReused=1), else loads a fresh .odf (ParseODFFile + name both objects).
+// (4) ANIM: track data into pAnimSet_148 for the PREVIOUS entry's frame. SEKN: ParseSekFile -> CSekBody for the previous entry; reads the item-prop table (dword count + 8-byte {flt,index} props) and wires body->pSekHeader_220 {pAnimSetT3F1, pFrameT3EC} to the entry's pair, AddRefs, PlayAnim(0). Stage ends at 'サウンド' (sound) / 'ファイルは終了' (EOF) / EYESANIM.
+// (5) EYESANIM: camera track on g_pCameraFrame. EYE2: finds an eye node - scans each entry frame name for substring 'eye' (mChar loop, limit len-6); the frame is TEMPORARILY renamed 'XXXX' so FindFrameByName(subtree, 'eye') cannot match the root itself, backup restored after; hit => pScene->by_474=1, pCamFrame_478=pEyeFrame. 'Light': memcpy D3DLIGHT7 (buffer +104), NewLightT3EF + AssignLigthtToFrame(g_pLightFrame) + light anim track; named 'Light_%d_%d' from two rand()s (unique key). Stage ends at 3DON / サウンド / EOF.
+// (6) 3DON: group-anim trick - creates temp pGroupFrame under the scene root, reparents ALL entry frames under it (nReparent loop), parses the 3DON track against the group, re-attaches frames to the scene root (iiReparent) and frees the temp frame.
+// Final terminator: 'ファイルは終了'. v27/v30/v31/v33 zero-inits are dead.
+void __cdecl hook_ParseOdsEx_484A38(
+  LPCSTR lpBuffer,
+  CHanaSceneT458_S504 *pScene,
+  CHanaFrameT3EC_S354 **arrFrames,
+  CHanaAnimSetT3F1_S150 **arrAnimeSets,
+  int dwCount)
+{
+  int v5; // eax
+  int v6; // eax
+  int v7; // eax
+  int v8; // eax
+  int v9; // eax
+  int v10; // eax
+  int v11; // [esp-4h] [ebp-280h]
+  unsigned int nReparent; // [esp+4h] [ebp-278h]
+  unsigned int iiReparent; // [esp+4h] [ebp-278h]
+  CHanaFrameT3EC_S354 *pGroupFrame; // [esp+8h] [ebp-274h] BYREF
+  CHanaLightT3EF_S1A0 *pLight; // [esp+Ch] [ebp-270h] BYREF
+  D3DLIGHT7 pD3Dlight; // [esp+10h] [ebp-26Ch] BYREF
+  CHanaFrameT3EC_S354 *pEyeFrame; // [esp+78h] [ebp-204h]
+  CHAR szNameBackup[200]; // [esp+7Ch] [ebp-200h] BYREF
+  unsigned int kFrame; // [esp+144h] [ebp-138h]
+  int nNameScanLen; // [esp+148h] [ebp-134h]
+  int bEyeFound; // [esp+14Ch] [ebp-130h]
+  int mChar; // [esp+150h] [ebp-12Ch]
+  DWORD jItem; // [esp+154h] [ebp-128h]
+  CSekBody *pSekBody; // [esp+158h] [ebp-124h]
+  int bReused; // [esp+15Ch] [ebp-120h]
+  int iPreload; // [esp+160h] [ebp-11Ch]
+  int v27; // [esp+164h] [ebp-118h]
+  int nSlot; // [esp+168h] [ebp-114h]
+  CHAR szPath[256]; // [esp+16Ch] [ebp-110h] BYREF
+  int v30; // [esp+26Ch] [ebp-10h]
+  int v31; // [esp+270h] [ebp-Ch]
+  int nCount; // [esp+274h] [ebp-8h]
+  int v33; // [esp+278h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] ParseOdsEx_484A38\n");
+
+  nSlot = 0;
+  v27 = 0;
+  v30 = 0;
+  v33 = 0;
+  v31 = 0;
+  MtxStackStartMultLocal_4074EF();
+  while ( 1 )
+  {
+    if ( !memcmp(lpBuffer, "TEXT", 4u) )
+    {
+      lpBuffer += 8;
+      wsprintfA(pScene->szName_160, "%s", lpBuffer);
+      wsprintfA(szPath, "%s", lpBuffer);
+      CHanaObj__GetRealPath_486D9A(szPath, 1004);
+      v5 = lstrlenA(lpBuffer);
+      lpBuffer += v5;
+      ReadStrFile_483567(pScene, szPath);
+      goto LABEL_6;
+    }
+    if ( !memcmp(lpBuffer, "SIZE", 4u) )
+      break;
+  LABEL_6:
+    ++lpBuffer;
+  }
+  lpBuffer += 4;
+  nSlot = 0;
+  nCount = *(_DWORD *)lpBuffer;
+  pScene->dwCount_130 = nCount;
+  pScene->refsFrames_134 = (CHanaFrameT3EC_S354 **)MemAlloc_40DEF7(4 * nCount + 64);
+  pScene->refsAnimeSets_138 = (CHanaAnimSetT3F1_S150 **)MemAlloc_40DEF7(4 * nCount + 64);
+  pScene->refsSekBody_13C = (CSekBody **)MemAlloc_40DEF7(4 * nCount + 64);
+  pScene->arrSizes_144 = (DWORD *)MemAlloc_40DEF7(4 * nCount + 64);
+  pScene->arrSekItemProps_140 = (CSekItemProp **)MemAlloc_40DEF7(4 * nCount + 64);
+  while ( 1 )
+  {
+    while ( 1 )
+    {
+      while ( 1 )
+      {
+        while ( !memcmp(lpBuffer, "NAME", 4u) )
+        {
+          bReused = 0;
+          lpBuffer += 4;
+          wsprintfA(szPath, "%s", lpBuffer);
+          CHanaObj__GetRealPath_486D9A(szPath, 1005);
+          for ( iPreload = 0; iPreload < dwCount; ++iPreload )
+          {
+            v6 = lstrlenA(lpBuffer);
+            if ( !_memicmp(lpBuffer, arrFrames[iPreload]->szName_8, v6 + 1) )
+            {
+              pScene->refsFrames_134[nSlot] = arrFrames[iPreload];
+              pScene->refsAnimeSets_138[nSlot] = arrAnimeSets[iPreload];
+              CHanaObj__AddRef_40BFC3(pScene->refsFrames_134[nSlot]);
+              CHanaObj__AddRef_40BFC3(pScene->refsAnimeSets_138[nSlot]);
+              AttachChild_4055FD(g_pSceneFrame, pScene->refsFrames_134[nSlot]);
+              bReused = 1;
+              break;
+            }
+          }
+          if ( !bReused )
+          {
+            ParseODFFile_441F19(szPath, &pScene->refsFrames_134[nSlot], &pScene->refsAnimeSets_138[nSlot]);
+            AttachHanaObj_40BAB8(pScene->refsFrames_134[nSlot], lpBuffer);
+            AttachHanaObj_40BAB8(pScene->refsAnimeSets_138[nSlot], lpBuffer);
+          }
+          ++nSlot;
+          v7 = lstrlenA(lpBuffer);
+          lpBuffer += v7 + 1;
+        }
+        if ( memcmp(lpBuffer, "ANIM", 4u) )
+          break;
+        lpBuffer += 4;
+        if ( pScene->refsFrames_134[nSlot - 1] )
+          ParseOdfANIM_4414EB((LPBYTE *)&lpBuffer, pScene->pAnimSet_148, pScene->refsFrames_134[nSlot - 1]);
+      }
+      if ( memcmp(lpBuffer, "SEKN", 4u) )
+        break;
+      lpBuffer += 4;
+      wsprintfA(szPath, "%s", lpBuffer);
+      CHanaObj__GetRealPath_486D9A(szPath, 1005);
+      pSekBody = ParseSekFile_401039(szPath);
+      if ( pSekBody )
+      {
+        wsprintfA(pSekBody->szName_0, "%s", lpBuffer);
+        pScene->refsSekBody_13C[nSlot - 1] = pSekBody;
+        v9 = lstrlenA(lpBuffer);
+        lpBuffer += v9 + 1;
+        if ( pScene->refsSekBody_13C )
+        {
+          pScene->arrSizes_144[nSlot - 1] = *(_DWORD *)lpBuffer;
+          lpBuffer += 4;
+          pScene->arrSekItemProps_140[nSlot - 1] = (CSekItemProp *)MemAlloc_40DEF7(8 * pScene->arrSizes_144[nSlot - 1] + 256);
+          for ( jItem = 0; jItem < pScene->arrSizes_144[nSlot - 1]; ++jItem )
+          {
+            pScene->arrSekItemProps_140[nSlot - 1][jItem].flt_0 = *(float *)lpBuffer;
+            pScene->arrSekItemProps_140[nSlot - 1][jItem].index = *((_DWORD *)lpBuffer + 1);
+            lpBuffer += 8;
+          }
+          pScene->refsSekBody_13C[nSlot - 1]->pSekHeader_220->pAnimSetT3F1 = pScene->refsAnimeSets_138[nSlot - 1];
+          pScene->refsSekBody_13C[nSlot - 1]->pSekHeader_220->pFrameT3EC = pScene->refsFrames_134[nSlot - 1];
+          CHanaObj__AddRef_40BFC3(pScene->refsAnimeSets_138[nSlot - 1]);
+          CHanaObj__AddRef_40BFC3(pScene->refsFrames_134[nSlot - 1]);
+          CSekBody__PlayAnim_40179D(pScene->refsSekBody_13C[nSlot - 1], 0);
+        }
+      }
+      else
+      {
+        v8 = lstrlenA(lpBuffer);
+        lpBuffer += v8 + 1;
+      }
+    }
+    if ( !memcmp(lpBuffer, "サウンド", 8u)
+      || !memcmp(lpBuffer, "ファイルは終了", 0xEu)
+      || !memcmp(lpBuffer, "EYESANIM", 8u) )
+    {
+      break;
+    }
+    ++lpBuffer;
+  }
+  while ( 1 )
+  {
+    while ( 1 )
+    {
+      while ( 1 )
+      {
+        while ( !memcmp(lpBuffer, "EYESANIM", 8u) )
+        {
+          lpBuffer += 8;
+          if ( pScene->pAnimSet_148 )
+            ParseOdfANIM_4414EB((LPBYTE *)&lpBuffer, pScene->pAnimSet_148, g_pCameraFrame);
+        }
+        if ( memcmp(lpBuffer, "EYE2", 4u) )
+          break;
+        bEyeFound = 0;
+        for ( kFrame = 0; kFrame < pScene->dwCount_130; ++kFrame )
+        {
+          nNameScanLen = lstrlenA(pScene->refsFrames_134[kFrame]->szName_8) - 6;
+          for ( mChar = 0; mChar < nNameScanLen; ++mChar )
+          {
+            if ( !_memicmp(&pScene->refsFrames_134[kFrame]->szName_8[mChar], "eye", 3u) )
+            {
+              pEyeFrame = 0;
+              wsprintfA(szNameBackup, "%s", pScene->refsFrames_134[kFrame]->szName_8);
+              wsprintfA(pScene->refsFrames_134[kFrame]->szName_8, "XXXX");
+              pEyeFrame = FindFrameByName_47E999(pScene->refsFrames_134[kFrame], "eye");
+              wsprintfA(pScene->refsFrames_134[kFrame]->szName_8, "%s", szNameBackup);
+              if ( pEyeFrame )
+              {
+                bEyeFound = 1;
+                pScene->by_474 = 1;
+                pScene->pCamFrame_478 = pEyeFrame;
+                break;
+              }
+            }
+          }
+          if ( bEyeFound == 1 )
+            break;
+        }
+        lpBuffer += 4;
+      }
+      if ( memcmp(lpBuffer, "Light", 5u) )
+        break;
+      lpBuffer += 5;
+      memcpy(&pD3Dlight, lpBuffer, sizeof(pD3Dlight));
+      CHanaObj__NewLightT3EF(&pLight, &pD3Dlight);
+      AssignLigthtToFrame_40539D(g_pLightFrame, pLight);
+      if ( pLight )
+      {
+        CHanaObj__Free_40C1E4(pLight);
+        pLight = 0;
+      }
+      lpBuffer += 104;
+      lpBuffer += 4;
+      ParseOdfANIM_4414EB((LPBYTE *)&lpBuffer, pScene->pAnimSet_148, g_pLightFrame);
+      v11 = rand() % 100;
+      v10 = rand();
+      wsprintfA(szPath, "Light_%d_%d", v10 % 100, v11);
+      AttachHanaObj_40BAB8(g_pLightFrame, szPath);
+    }
+    if ( !memcmp(lpBuffer, "3DON", 4u)
+      || !memcmp(lpBuffer, "サウンド", 8u)
+      || !memcmp(lpBuffer, "ファイルは終了", 0xEu) )
+    {
+      break;
+    }
+    ++lpBuffer;
+  }
+  while ( 1 )
+  {
+    while ( !memcmp(lpBuffer, "3DON", 4u) )
+    {
+      if ( pScene->pAnimSet_148 )
+      {
+        pGroupFrame = 0;
+        CHanaObj__NewFrameT3EC_S354((CHanaFrameT3EC_S354 *)g_pSceneFrame, &pGroupFrame);
+        for ( nReparent = 0; nReparent < pScene->dwCount_130; ++nReparent )
+        {
+          if ( pScene->refsFrames_134[nReparent] )
+            AttachChild_4055FD(pGroupFrame, pScene->refsFrames_134[nReparent]);
+        }
+        ParseOds3DON_483704((LPBYTE *)&lpBuffer, pScene->pAnimSet_148, pGroupFrame);
+        for ( iiReparent = 0; iiReparent < pScene->dwCount_130; ++iiReparent )
+        {
+          if ( pScene->refsFrames_134[iiReparent] )
+            AttachChild_4055FD(g_pSceneFrame, pScene->refsFrames_134[iiReparent]);
+        }
+        if ( pGroupFrame )
+        {
+          CHanaObj__Free_40C1E4(pGroupFrame);
+          pGroupFrame = 0;
+        }
+      }
+    }
+    if ( !memcmp(lpBuffer, "ファイルは終了", 14u) )
+      break;
+    ++lpBuffer;
+  }
+}
+
+BOOL __cdecl hook_LoadSekAndOdf_4445DD(LPCSTR pszSekFile, LPCSTR pszOdfFile, CSekBody **ppOutBody)
+{
+  CSekBody *pSekBody; // [esp+0h] [ebp-4h]
+  ONCELOG("[HNH:SUB] LoadSekAndOdf_4445DD\n");
+ 
+  pSekBody = ParseSekFile_401039(pszSekFile);
+  if ( pSekBody && pSekBody->pSekHeader_220 )
+  {
+    SekBody__UpdateTo_4014E4(pSekBody, 0);
+    ParseODFFile_441F19(pszOdfFile, &pSekBody->pSekHeader_220->pFrameT3EC, &pSekBody->pSekHeader_220->pAnimSetT3F1);
+    if ( pSekBody->pSekHeader_220->pFrameT3EC )
+    {
+      AttachChild_4055FD(g_pSceneFrame, pSekBody->pSekHeader_220->pFrameT3EC);
+      MtxMult_4069DD(pSekBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, 0.0, 0.0, 0.0);
+      UpdateBoneLookAtTransform(
+        pSekBody->pSekHeader_220->pFrameT3EC,
+        (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        1.0,
+        0.0);
+      CHanaAnimSetT3F1__SetTime_403D61(pSekBody->pSekHeader_220->pAnimSetT3F1, 1.0);
+      AttachHanaObj_40BAB8(pSekBody->pSekHeader_220->pFrameT3EC, pszOdfFile);
+      AttachHanaObj_40BAB8(pSekBody->pSekHeader_220->pAnimSetT3F1, pszOdfFile);
+    }
+    else
+    {
+      CSekBody__Release_4012FE(pSekBody);
+      pSekBody = 0;
+    }
+    *ppOutBody = pSekBody;
+    return 1;
+  }
+  else
+  {
+    *ppOutBody = 0;
+    return 0;
+  }
+}
+
+
+void __cdecl hook_SekBody__UpdateTo_4014E4(CSekBody *pSekBody, int nItem)
+{
+  ONCELOG("[HNH:SUB] SekBody__UpdateTo_4014E4\n");
+
+  if ( pSekBody->field_200 != nItem && nItem < 128 )
+  {
+    if ( !pSekBody->items_250[nItem].field_7C )
+      pSekBody->float_21C = 1.0;
+    pSekBody->field_200 = nItem;
+    pSekBody->field_208 = nItem;
+    pSekBody->items_250[nItem].field_44 = 0;
+    pSekBody->items_250[nItem].field_6C = 0;
+    pSekBody->items_250[nItem].field_64 = 0;
+    if ( pSekBody->items_250[nItem].field_50 )
+      pSekBody->items_250[nItem].float_5C = (pSekBody->items_250[nItem].float_58 - pSekBody->items_250[nItem].float_54)
+      / (double)pSekBody->items_250[nItem].field_50;
+    else
+      pSekBody->items_250[nItem].float_5C = 0.0;
+    pSekBody->items_250[nItem].float_60 = pSekBody->items_250[nItem].float_54;
+    pSekBody->field_244 = 0;
+    pSekBody->field_248 = 0;
+  }
+}
+
+
 void register_ParseODS_483932() {
-  
+ 
+  hnh_Hook(0x48564b, hook_LoadOdsEx_48564B, "LoadOdsEx_48564B");
+  hnh_Hook(0x484a38, hook_ParseOdsEx_484A38, "ParseOdsEx_484A38");
+  hnh_Hook(0x4445dd, hook_LoadSekAndOdf_4445DD, "LoadSekAndOdf_4445DD");
+  hnh_Hook(0x4014e4, hook_SekBody__UpdateTo_4014E4, "SekBody__UpdateTo_4014E4");
   hnh_HookOff();
     hnh_Hook(0x483567, hook_ReadStrFile_483567, "ReadStrFile_483567"); // [OK]
     hnh_Hook(0x47E999, hook_FindFrameByName_47E999, "FindFrameByName_47E999"); // [OK]

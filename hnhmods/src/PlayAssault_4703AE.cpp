@@ -3,6 +3,49 @@
 #include "console.hpp"
 #include "shared.hpp"
 
+// === PINNED GAME FUNCTIONS ===
+
+// (the original-function pin PlayAssault_4703AE is defined in
+//  MenuCharSelect.cpp - its first caller - and extern'd in shared.hpp)
+
+// --- not yet extracted; pinned here call-only ---
+// (ToggleWaitScreen's only caller is this scene)
+
+void (__cdecl*ToggleWaitScreen)(int bShow) =
+    reinterpret_cast<void(__cdecl*)(int)>(0x47E3E1);
+
+CHanaFrameT3EC_S354 *(__cdecl*Scene_FindMapFrame)(
+    CHanaSceneT458_S504 *pScene) =
+    reinterpret_cast<CHanaFrameT3EC_S354 *(*)(CHanaSceneT458_S504 *)>(
+      0x46777D);
+
+void (__cdecl*InitializePracticeAnimations_4667A9)(
+    CHanaFrameT3EC_S354 *pModeFrame) =
+    reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *)>(0x4667A9);
+
+
+int (__cdecl*PlayCutInScene_46A76F)(CHanaSceneT458_S504 *pScene,
+    CHanaSpriteT3F6_S1FC **arrMouseSprites, CHanaSpriteT3F6_S1FC **arrGoSprites,
+    CHanaSpriteT3F6_S1FC **arrPostureSprites, CSekBody *pLockOnBody,
+    CSekBody *pModeBody, int iGroup, CSoundStruct_8 **arrSoundAHs,
+    CSoundStruct_8 **arrSoundSEs, CSekBody **arrTearsBodies, int iMenuTab) =
+    reinterpret_cast<int(__cdecl*)(CHanaSceneT458_S504 *,
+      CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **,
+      CSekBody *, CSekBody *, int, CSoundStruct_8 **, CSoundStruct_8 **,
+      CSekBody **, int)>(0x46A76F);
+
+void (WINAPI *WaitScreenThreadProc)(LPVOID lpThreadParameter)
+= reinterpret_cast<void (WINAPI*)(LPVOID lpThreadParameter)>(0x47e1a2);
+void (__cdecl *Frame_SetPracticeAnimRootRecursive)(CHanaFrameT3EC_S354 *pFrame, CHanaFrameT3EC_S354 *pRootAnimFrame)
+= reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFrame, CHanaFrameT3EC_S354 *pRootAnimFrame)>(0x466738);
+
+// === PINNED GLOBALS ===
+// (none new - g_pDSBuf_52EFD0 is pinned in RunModeSelectScreen.cpp; every
+//  other global used here is already extern in shared.hpp)
+
+// === FUNCTIONS ===
+
+
 // PlayAssault_4703AE(iModeId, iMenuTab) -- GameMainLoop case-4 scene, the
 // kendo-"practice" session (also entered from MenuCharSelect with iModeId =
 // ch*2 / ch*2+1, iMenuTab = 1). One session = selection screen -> chosen
@@ -81,48 +124,6 @@
 //   unreachable (piSelected < 0 only as -1, which breaks); single calls.
 // - Two dead .data-copied scratch buffers (40 and 100 bytes, only memset)
 //   were dropped.
-
-// === PINNED GAME FUNCTIONS ===
-
-// (the original-function pin PlayAssault_4703AE is defined in
-//  MenuCharSelect.cpp - its first caller - and extern'd in shared.hpp)
-
-// --- not yet extracted; pinned here call-only ---
-// (ToggleWaitScreen's only caller is this scene)
-
-void (__cdecl*ToggleWaitScreen_47E3E1)(int bShow) =
-    reinterpret_cast<void(__cdecl*)(int)>(0x47E3E1);
-
-CHanaFrameT3EC_S354 *(__cdecl*Scene_FindMapFrame_46777D)(
-    CHanaSceneT458_S504 *pScene) =
-    reinterpret_cast<CHanaFrameT3EC_S354 *(*)(CHanaSceneT458_S504 *)>(
-      0x46777D);
-
-void (__cdecl*InitializePracticeAnimations_4667A9)(
-    CHanaFrameT3EC_S354 *pModeFrame) =
-    reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *)>(0x4667A9);
-
-BOOL (__cdecl*LoadOdsEx_48564B)(LPCSTR lpFileName, CHanaSceneT458_S504 **ppScene,
-    CHanaFrameT3EC_S354 **arrFrames, CHanaAnimSetT3F1_S150 **arrAnimSets,
-    unsigned int nCount) =
-    reinterpret_cast<BOOL(__cdecl*)(LPCSTR, CHanaSceneT458_S504 **,
-      CHanaFrameT3EC_S354 **, CHanaAnimSetT3F1_S150 **, unsigned int)>(0x48564B);
-
-int (__cdecl*PlayCutInScene_46A76F)(CHanaSceneT458_S504 *pScene,
-    CHanaSpriteT3F6_S1FC **arrMouseSprites, CHanaSpriteT3F6_S1FC **arrGoSprites,
-    CHanaSpriteT3F6_S1FC **arrPostureSprites, CSekBody *pLockOnBody,
-    CSekBody *pModeBody, int iGroup, CSoundStruct_8 **arrSoundAHs,
-    CSoundStruct_8 **arrSoundSEs, CSekBody **arrTearsBodies, int iMenuTab) =
-    reinterpret_cast<int(__cdecl*)(CHanaSceneT458_S504 *,
-      CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **,
-      CSekBody *, CSekBody *, int, CSoundStruct_8 **, CSoundStruct_8 **,
-      CSekBody **, int)>(0x46A76F);
-
-// === PINNED GLOBALS ===
-// (none new - g_pDSBuf_52EFD0 is pinned in RunModeSelectScreen.cpp; every
-//  other global used here is already extern in shared.hpp)
-
-// === FUNCTIONS ===
 
 int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
 {
@@ -440,7 +441,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     memset(arrSoundSEs, 0, sizeof(arrSoundSEs));
 
     // --- one-time loads behind the WAIT screen
-    ToggleWaitScreen_47E3E1(1);
+    ToggleWaitScreen(1);
     for (i = 0; i < 30 && arrAhWavNames[30 * (iModeId / 2) + i].str[0]; ++i)
     {
         wsprintfA(pszFileName, "h\\%s.wav",
@@ -580,7 +581,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
         if (arrScenes[i])
         {
             ApplyFrameEffectOption(arrScenes[i]);
-            Scene_FindMapFrame_46777D(arrScenes[i]);
+            Scene_FindMapFrame(arrScenes[i]);
         }
     }
 
@@ -591,7 +592,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     else
         g_sceneState_52F7E0.sceneFlags_98[iModeId / 2] |=
             (unsigned __int64)1 << (arrSceneRemap[piSelected] + 10);
-    ToggleWaitScreen_47E3E1(0);
+    ToggleWaitScreen(0);
 
     while (1)  // outer: one selection pass + one sub-scene playback
     {
@@ -652,7 +653,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
             }
             continue;
         }
-        ToggleWaitScreen_47E3E1(1);
+        ToggleWaitScreen(1);
         wsprintfA(pszFileName, "%s.Ods", arrSceneNames[iModeId][piSelected].str);
         CHanaObj__GetRealPath_486D9A(pszFileName, 1002);      // ODS dir
         if (pSceneAny)
@@ -661,16 +662,16 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
             if (!LoadOdsEx_48564B(pszFileName, &pSceneNew, pSceneAny->refsFrames_134,
                     pSceneAny->refsAnimeSets_138, pSceneAny->dwCount_130))
             {
-                ToggleWaitScreen_47E3E1(0);
+                ToggleWaitScreen(0);
                 return -1;
             }
         }
         else if (!LoadOds_4843CF(pszFileName, &pSceneNew))
         {
-            ToggleWaitScreen_47E3E1(0);
+            ToggleWaitScreen(0);
             return -1;
         }
-        ToggleWaitScreen_47E3E1(0);
+        ToggleWaitScreen(0);
         for (i = 0; i < 30; ++i)
         {
             if (arrScenes[i])
@@ -703,7 +704,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
                 arrScenes[piSelected]->refsFrames_134[j]->bAlphaDeferred_130 = 0;
         }
         ApplyFrameEffectOption(arrScenes[piSelected]);
-        Scene_FindMapFrame_46777D(arrScenes[piSelected]);
+        Scene_FindMapFrame(arrScenes[piSelected]);
         D3DSetRenderStates_4276C0();
 
         while (1)  // inner: frame loop of the loaded sub-scene
@@ -729,7 +730,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
                 for (i = 0; i < 20; ++i)
                 {
                     if (arrScenes[i])
-                        Scene_FindMapFrame_46777D(arrScenes[i]);
+                        Scene_FindMapFrame(arrScenes[i]);
                 }
                 if (nResult >= 1)
                     break;
@@ -969,6 +970,261 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     return nResult;
 }
 
+
+HANDLE &g_hWaitScreenThread = *(HANDLE *)0x52F0D0; // WRITABLE
+uint32_t &g_bWaitScreenOn = *(uint32_t *)0x52F0CC; // WRITABLE
+HWND &g_hwndWaitScreen = *(HWND *)0x52F0C8; // WRITABLE
+
+// ToggleWaitScreen - Start or stop the blinking WAIT-screen thread
+// // Called only from Scene4_4703AE (push 1 = show, push 0 = hide)
+// // 
+// // Arguments:
+// //   bShow: 1 = start the wait screen (only when no thread is running),
+// //          0 = stop it (also taken when a thread is already running)
+// // 
+// // Show path:
+// //   1. g_bWaitScreenOn = 1 (loop condition of the thread)
+// //   2. g_hwndWaitScreen = g_hwndParent; invalidate both windows
+// //   3. Blit 640x480 black to primary + back buffer, UpdateFrame + FlipToGDISurface x2
+// //   4. hWaitScreenThread = CreateThread(WaitScreenThreadProc), priority ABOVE_NORMAL
+// // 
+// // Hide path:
+// //   1. g_bWaitScreenOn = 0; thread notices on its next 10ms tick
+// //   2. Poll GetExitCodeThread up to 1000 x 5ms (5s); if still STILL_ACTIVE (259)
+// //      -> TerminateThread(hWaitScreenThread, 1)
+// //   3. CloseHandle + primary buffer Lock/Unlock
+void __cdecl hook_ToggleWaitScreen(BOOL bShow)
+{
+  int v1; // eax
+  int v2; // eax
+  int v3; // [esp-8h] [ebp-198h]
+  int v4; // [esp-8h] [ebp-198h]
+  int i; // [esp+4h] [ebp-18Ch]
+  int bNorm; // [esp+8h] [ebp-188h]
+  DWORD ThreadId; // [esp+Ch] [ebp-184h] BYREF
+  DDSURFACEDESC2 ddSurfaceDesc; // [esp+10h] [ebp-180h] BYREF
+  char szWeightTxt[256]; // [esp+8Ch] [ebp-104h] BYREF
+  //char v10; // [esp+18Bh] [ebp-5h]
+  DWORD ExitCode; // [esp+18Ch] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] ToggleWaitScreen_47E3E1\n");
+  
+
+  strcpy(szWeightTxt, "ウエイト");
+  
+  ddSurfaceDesc.dwSize = 124;
+  if ( !bShow || g_hWaitScreenThread )
+  {
+    g_bWaitScreenOn = 0;
+    Sleep(5u);
+    if ( g_hWaitScreenThread )
+    {
+      bNorm = 1;
+      for ( i = 0; i < 1000; ++i )
+      {
+        Sleep(5u);
+        if ( !GetExitCodeThread(g_hWaitScreenThread, &ExitCode) )
+          break;
+        if ( ExitCode != 259 )
+        {
+          bNorm = 0;
+          break;
+        }
+        SetThreadPriority(g_hWaitScreenThread, 0);
+      }
+      if ( bNorm == 1 )
+        TerminateThread(g_hWaitScreenThread, 1u);
+      CloseHandle(g_hWaitScreenThread);
+      g_hWaitScreenThread = 0;
+      g_pPrimaryBuffer_4D6C88->Lock(0, &ddSurfaceDesc, 1, 0);
+      g_pPrimaryBuffer_4D6C88->Unlock(0);
+    }
+  }
+  else
+  {
+    g_bWaitScreenOn = 1;
+    InvalidateRect(g_hwndParent, 0, 0);
+    InvalidateRect(g_hwndWaitScreen, 0, 0);
+    g_hwndWaitScreen = g_hwndParent;
+    v3 = ConvertFrom640AsInt(480);
+    v1 = ConvertFrom640AsInt(640);
+    BltSurface(g_pPrimaryBuffer_4D6C88, 0, 0, v1, v3, 0);
+    v4 = ConvertFrom640AsInt(480);
+    v2 = ConvertFrom640AsInt(640);
+    BltSurface(g_pBackBuffer_4D6C90, 0, 0, v2, v4, 0);
+    g_pRenderCtx->UpdateFrame(1);
+    g_pDD_4D6C7C->FlipToGDISurface();
+    g_pPrimaryBuffer_4D6C88->Lock(0, &ddSurfaceDesc, 1, 0);
+    g_pPrimaryBuffer_4D6C88->Unlock(0);
+    g_pDD_4D6C7C->FlipToGDISurface();
+    g_hWaitScreenThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)WaitScreenThreadProc, 0, 0, &ThreadId);
+    SetThreadPriority(g_hWaitScreenThread, 2);
+    Sleep(50u);
+  }
+}
+
+// WaitScreenThreadProc - Thread proc rendering a blinking WAIT screen
+// // Started by ToggleWaitScreen (0x47E3E1) via CreateThread, priority ABOVE_NORMAL
+// // 
+// // Behavior:
+// //   1. Loads wait.bmp, GetDC(g_hwndWaitScreen)
+// //   2. While g_bWaitScreenOn == 1: every 100th 10ms tick, alternate between
+// //      StretchDIBits(wait.bmp, centered) and black FillRect -> blinking effect
+// //   3. On exit: ReleaseDC, FreeBmp, g_hwndWaitScreen = 0, ExitThread(1)
+void __stdcall hook_WaitScreenThreadProc(LPVOID lpThreadParameter)
+{
+  int xdest; // eax
+  int ydest; // [esp-2Ch] [ebp-94h]
+  int biWidth; // [esp-18h] [ebp-80h]
+  unsigned int biHeight; // [esp-14h] [ebp-7Ch]
+  LPBYTE pData; // [esp-10h] [ebp-78h]
+  const BITMAPINFO *pBitmapInfoHeader; // [esp-Ch] [ebp-74h]
+  CBMPFile *pBmp; // [esp+0h] [ebp-68h]
+  int nPrevPercent; // [esp+4h] [ebp-64h]
+  CHAR FileName[64]; // [esp+8h] [ebp-60h] BYREF
+  HDC hdc; // [esp+48h] [ebp-20h]
+  HBRUSH hbr; // [esp+4Ch] [ebp-1Ch]
+  int nCount; // [esp+50h] [ebp-18h]
+  int nPercent; // [esp+54h] [ebp-14h]
+  RECT rc; // [esp+58h] [ebp-10h] BYREF
+
+  ONCELOG("[HNH:SUB] WaitScreenThreadProc_47E1A2\n");
+ 
+  hdc = 0;
+  nCount = 0;
+  nPrevPercent = 1;
+  rc.left = 0;
+  rc.top = 0;
+  rc.right = ConvertFrom640AsInt(640);
+  rc.bottom = ConvertFrom640AsInt(480);
+  wsprintfA(FileName, "Wait.bmp");
+  CHanaObj__GetRealPath_486D9A(FileName, 1007);
+  pBmp = LoadBmp_420DF0(FileName);
+  if ( pBmp )
+  {
+    hdc = GetDC(g_hwndWaitScreen);
+    if ( hdc && hdc != (HDC)-1 )
+    {
+      while ( g_bWaitScreenOn == 1 )
+      {
+        nPercent = ++nCount / 100 % 2;
+        if ( nPrevPercent != nPercent )
+        {
+          g_pDD_4D6C7C->FlipToGDISurface();
+          nPrevPercent = nPercent;
+          if ( nPercent )
+          {
+            pBitmapInfoHeader = (const BITMAPINFO *)pBmp->pBitmapInfoHeader;
+            pData = pBmp->pData;
+            biHeight = pBitmapInfoHeader->bmiHeader.biHeight;
+            biWidth = pBitmapInfoHeader->bmiHeader.biWidth;
+            ydest = ConvertFrom640AsInt(240) - (biHeight >> 1);
+            xdest = ConvertFrom640AsInt(320);
+            StretchDIBits(
+              hdc,
+              xdest - ((unsigned int)pBmp->pBitmapInfoHeader->biWidth >> 1),
+              ydest,
+              biWidth,
+              biHeight,
+              0,
+              0,
+              biWidth,
+              biHeight,
+              pData,
+              pBitmapInfoHeader,
+              0,
+              0xCC0020u);
+          }
+          else
+          {
+            hbr = CreateSolidBrush(0);
+            FillRect(hdc, &rc, hbr);
+            DeleteObject(hbr);
+          }
+        }
+        Sleep(0xAu);
+      }
+      ReleaseDC(g_hwndWaitScreen, hdc);
+    }
+    FreeBmp_4211ED(pBmp);
+  }
+  g_hwndWaitScreen = 0;
+  ExitThread(1u);
+}
+
+CHanaFrameT3EC_S354 *__cdecl hook_Scene_FindMapFrame(CHanaSceneT458_S504 *pScene)
+{
+  unsigned int i; // [esp+0h] [ebp-8h]
+  CHanaFrameT3EC_S354 *pNotFound; // [esp+4h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] Scene_FindMapFrame_46777D\n");
+ 
+  pNotFound = 0;
+  if ( !pScene )
+    return 0;
+  for ( i = 0; i < pScene->dwCount_130; ++i )
+  {
+    if ( !_memicmp(pScene->refsFrames_134[i]->szName_8, "Map\\", 4u) )
+    {
+      pScene->refsFrames_134[i]->bAlphaDeferred_130 = g_mapFrameFlag_530264 & 1;
+      return pScene->refsFrames_134[i];
+    }
+  }
+  return pNotFound;
+}
+
+void __cdecl hook_InitializePracticeAnimations_4667A9(CHanaFrameT3EC_S354 *pRootFrame)
+{
+  int i; // [esp+4h] [ebp-D0h]
+  String50 szAnimNames[4]; // [esp+8h] [ebp-CCh] BYREF
+  CHanaFrameT3EC_S354 *pFrame; // [esp+D0h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] InitializePracticeAnimations_4667A9\n");
+  
+  strcpy((char *)szAnimNames[0].str, "_h00_all");
+  memset((void *)&szAnimNames[0].str[9], 0, 0x28u);
+  szAnimNames[0].str[49] = 0;
+  strcpy((char *)szAnimNames[1].str, "_p00_");
+  memset((void *)&szAnimNames[1].str[6], 0, 0x2Cu);
+  strcpy((char *)szAnimNames[2].str, "_d00_all");
+  memset((void *)&szAnimNames[2].str[9], 0, 0x28u);
+  szAnimNames[2].str[49] = 0;
+  szAnimNames[3].str[0] = 0;
+  memset((void *)&szAnimNames[3].str[1], 0, 0x30u);
+  szAnimNames[3].str[49] = 0;
+  for ( i = 0; i < 3; ++i )
+  {
+    pFrame = FindFrameByName_47E999(pRootFrame, szAnimNames[i].str);
+    if ( pFrame )
+      Frame_SetPracticeAnimRootRecursive(pFrame, pFrame);
+  }
+}
+
+void __cdecl hook_Frame_SetPracticeAnimRootRecursive(CHanaFrameT3EC_S354 *pFrame, CHanaFrameT3EC_S354 *pRootAnimFrame)
+{
+  CHanaNode *pChildFrames; // [esp+4h] [ebp-8h]
+  unsigned int i; // [esp+8h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] Frame_SetPracticeAnimRootRecursive_466738\n");
+  
+  pFrame->field_11C = (int)pRootAnimFrame;
+  if ( pFrame->nCountChild )
+  {
+    pChildFrames = pFrame->pFirstChildNode;
+    for ( i = 0; i < pFrame->nCountChild; ++i )
+    {
+      Frame_SetPracticeAnimRootRecursive(pChildFrames->pData, pRootAnimFrame);
+      pChildFrames = pChildFrames->pNext;
+    }
+  }
+}
+
+
 void register_PlayAssault_4703AE() {
   hnh_Hook(0x4703AE, hook_PlayAssault_4703AE, "PlayAssault_4703AE"); // [OK]
+  hnh_Hook(0x47e3e1, hook_ToggleWaitScreen, "ToggleWaitScreen_47E3E1");
+  hnh_Hook(0x47e1a2, hook_WaitScreenThreadProc, "WaitScreenThreadProc_47E1A2");
+  hnh_Hook(0x46777d, hook_Scene_FindMapFrame, "Scene_FindMapFrame_46777D");
+  hnh_Hook(0x4667a9, hook_InitializePracticeAnimations_4667A9, "InitializePracticeAnimations_4667A9");
+  hnh_Hook(0x466738, hook_Frame_SetPracticeAnimRootRecursive, "Frame_SetPracticeAnimRootRecursive_466738");
 }

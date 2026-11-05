@@ -318,6 +318,7 @@ extern int(__cdecl* ShowYesNoDialog_461A9E)(CHanaSpriteT3F6_S1FC* pCursor,
 // === DEFINED PlayOdsDialogueScene_477F90.cpp ===
 
 extern int(__cdecl* PlayOdsDialogueScene_477F90)(int nOdsIndex);
+extern void(__cdecl* CHanaObj__NewSceneT458_S504)(CHanaSceneT458_S504** ppOut);
 
 // === DEFINED DrawDialogueText_4803B5.cpp ===
 
@@ -504,6 +505,10 @@ extern D3DXMATRIX* (__cdecl* MtxMult_4069DD)(CHanaFrameT3EC_S354* pChildFrame, C
 extern int(__cdecl*ParseODS_483932)(LPBYTE pBuf, CHanaSceneT458_S504 *pScene);
 extern void(__cdecl* CHanaObj__NewMeshT3F5)(CHanaMeshT3F5_S138** pOut);
 extern void(__cdecl* CHanaObj__NewAnimSetT3F1_S150)(CHanaAnimSetT3F1_S150** ppOut);
+extern BOOL(__cdecl* LoadOdsEx_48564B)(LPCSTR lpFileName, CHanaSceneT458_S504** ppScene,
+  CHanaFrameT3EC_S354** arrFrames, CHanaAnimSetT3F1_S150** arrAnimSets,
+  unsigned int nCount);
+extern void(__cdecl* SekBody__UpdateTo_4014E4)(CSekBody* pSekBody, int nItem);
 
 // === DEFINED CHanaObj__NewFrameT3EC_S354.cpp ===
 

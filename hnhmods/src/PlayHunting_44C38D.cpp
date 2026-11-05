@@ -82,8 +82,7 @@ void (__cdecl *StepFoeTurn_457EE0)(CSekBody *pFoeBody, CSekBody *pHeroBody, CHan
 = reinterpret_cast<void (__cdecl *)(CSekBody *, CSekBody *, CHanaFrameT3EC_S354 *, float, float, float)>(0x457EE0);
 void (__cdecl *StepFoeSpin_45804C)(CSekBody *pFoeBody, CSekBody *pHeroBody, CHanaFrameT3EC_S354 *pMapFrame, float fDelta, float fSpinRate, float fSpeed)
 = reinterpret_cast<void (__cdecl *)(CSekBody *, CSekBody *, CHanaFrameT3EC_S354 *, float, float, float)>(0x45804C);
-void (__cdecl *SekBody__UpdateTo_4014E4)(CSekBody *pSekBody, int nItem)
-= reinterpret_cast<void (__cdecl *)(CSekBody *, int)>(0x4014E4);
+
 
 BOOL (__cdecl *StepWanaProjectile_4581B0)(CSekBody *pWanaBody, CSekBody *pHeroBody, CHanaFrameT3EC_S354 *pMapFrame, float fDelta, float fSpinRate, float fProjSpeed, int bAlreadyLaunched, int bProjMode)
 = reinterpret_cast<BOOL (__cdecl*)(CSekBody *pWanaBody, CSekBody *pHeroBody, CHanaFrameT3EC_S354 *pMapFrame, float fDelta, float fSpinRate, float fProjSpeed, int bAlreadyLaunched, int bProjMode)>(0x4581b0);
@@ -3040,30 +3039,6 @@ void __cdecl hook_RenderDualBodyScene_456807(
   }
 }
 
-void __cdecl hook_SekBody__UpdateTo_4014E4(CSekBody *pSekBody, int nItem)
-{
-  ONCELOG("[HNH:SUB] SekBody__UpdateTo_4014E4\n");
-  
-  if ( pSekBody->field_200 != nItem && nItem < 128 )
-  {
-    if ( !pSekBody->items_250[nItem].field_7C )
-      pSekBody->float_21C = 1.0;
-    pSekBody->field_200 = nItem;
-    pSekBody->field_208 = nItem;
-    pSekBody->items_250[nItem].field_44 = 0;
-    pSekBody->items_250[nItem].field_6C = 0;
-    pSekBody->items_250[nItem].field_64 = 0;
-    if ( pSekBody->items_250[nItem].field_50 )
-      pSekBody->items_250[nItem].float_5C = (pSekBody->items_250[nItem].float_58 - pSekBody->items_250[nItem].float_54)
-      / (double)pSekBody->items_250[nItem].field_50;
-    else
-      pSekBody->items_250[nItem].float_5C = 0.0;
-    pSekBody->items_250[nItem].float_60 = pSekBody->items_250[nItem].float_54;
-    pSekBody->field_244 = 0;
-    pSekBody->field_248 = 0;
-  }
-}
-
 void __cdecl hook_StepFoeTurn_457EE0(
   CSekBody *pFoeBody,
   CSekBody *pHeroBody,
@@ -3193,7 +3168,7 @@ void register_PlayHunting_44C38D() {
   hnh_Hook(0x44b23b, hook_DrawRecViewfinder_44B23B, "DrawRecViewfinder_44B23B");
   hnh_Hook(0x414344, hook_DrawSprite3D, "DrawSprite3D_414344");
   hnh_Hook(0x456807, hook_RenderDualBodyScene_456807, "RenderDualBodyScene_456807");
-  hnh_Hook(0x4014e4, hook_SekBody__UpdateTo_4014E4, "SekBody__UpdateTo_4014E4");
+
   hnh_Hook(0x457ee0, hook_StepFoeTurn_457EE0, "StepFoeTurn_457EE0");
   hnh_Hook(0x45804c, hook_StepFoeSpin_45804C, "StepFoeSpin_45804C");
 
