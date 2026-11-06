@@ -23,7 +23,6 @@ void (__cdecl*InitializePracticeAnimations_4667A9)(
     CHanaFrameT3EC_S354 *pModeFrame) =
     reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *)>(0x4667A9);
 
-
 void (WINAPI *WaitScreenThreadProc)(LPVOID lpThreadParameter)
 = reinterpret_cast<void (WINAPI*)(LPVOID lpThreadParameter)>(0x47e1a2);
 void (__cdecl *Frame_SetPracticeAnimRootRecursive)(CHanaFrameT3EC_S354 *pFrame, CHanaFrameT3EC_S354 *pRootAnimFrame)

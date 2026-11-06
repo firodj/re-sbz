@@ -63,8 +63,8 @@ void (__cdecl*Cursor_ClampToCenterOrSprite)(int bClamp, int *pX, int *pY,
     reinterpret_cast<void(__cdecl*)(int, int *, int *, int *, int *,
       CHanaSpriteT3F6_S1FC *)>(0x468A4A);
 
-void (__cdecl*Frame_CheckCameraDistanceAndRecurse)(CHanaFrameT3EC_S354 *pFrame) =
-    reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *)>(0x4665F0);
+BOOL (__cdecl*Frame_CheckCameraDistanceAndRecurse)(CHanaFrameT3EC_S354 *pFrame) =
+    reinterpret_cast<BOOL(__cdecl*)(CHanaFrameT3EC_S354 *)>(0x4665F0);
 
 void (__cdecl*UpdateSekBodyAnimationMatrix)(CSekBody *pSekBody, float fPhase) =
     reinterpret_cast<void(__cdecl*)(CSekBody *, float)>(0x46A503);
@@ -146,6 +146,10 @@ void (__cdecl *HanaFrame_GetMatAfter)(CHanaFrameT3EC_S354 *a1, D3DXMATRIX *pM)
 = reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *a1, D3DXMATRIX *pM)>(0x407945);
 void (__cdecl *UpdateFrameAnimationMatrix)(CHanaFrameT3EC_S354 *pFrame, float targetTime, float currentTime)
 = reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFrame, float targetTime, float currentTime)>(0x46a3e9);
+void (__cdecl *TransferAnimSetFrameAnimations_4679B2)(CHanaAnimSetT3F1_S150 *pSrcAnimSet, CHanaAnimSetT3F1_S150 *pDstAnimSet, CHanaFrameT3EC_S354 *pFrame)
+= reinterpret_cast<void (__cdecl*)(CHanaAnimSetT3F1_S150 *pSrcAnimSet, CHanaAnimSetT3F1_S150 *pDstAnimSet, CHanaFrameT3EC_S354 *pFrame)>(0x4679b2);
+void (__cdecl *Scene_ApplyFadeToPracticeFrames)(float fadeAlpha)
+= reinterpret_cast<void (__cdecl*)(float fadeAlpha)>(0x468b99);
 
 
 // === PINNED GLOBALS ===
@@ -2291,6 +2295,586 @@ void __cdecl hook_UpdateFrameAnimationMatrix(CHanaFrameT3EC_S354 *pFrame, float 
   }
 
 }
+
+
+BOOL __cdecl hook_Frame_CheckCameraDistanceAndRecurse(CHanaFrameT3EC_S354 *pFrame)
+{
+  BOOL bChildOk; // eax
+  float moveX; // [esp+0h] [ebp-30h]
+  float moveY; // [esp+4h] [ebp-2Ch]
+  float moveZ; // [esp+8h] [ebp-28h]
+  CHanaNode *pFirstChildNode; // [esp+10h] [ebp-20h]
+  float relPosX; // [esp+14h] [ebp-1Ch] BYREF
+  unsigned int i; // [esp+18h] [ebp-18h]
+  float fDist; // [esp+1Ch] [ebp-14h]
+  BOOL bOk; // [esp+20h] [ebp-10h]
+  float relPosZ; // [esp+24h] [ebp-Ch] BYREF
+  float relPosY; // [esp+28h] [ebp-8h] BYREF
+  int v13; // [esp+2Ch] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] Frame_CheckCameraDistanceAndRecurse_4665F0\n");
+
+  bOk = 0;
+  v13 = 0;
+  if ( !pFrame->bAlphaDeferred_130 )            // Skip if flag_130 is set (already processed or disabled)
+  {
+    HanaFrame_GetRelPosition(g_pCameraFrame, pFrame, &relPosX, &relPosY, &relPosZ);// Get camera-relative position of this frame
+    fDist = sqrt(relPosX * relPosX + relPosY * relPosY + relPosZ * relPosZ);
+    if ( fDist < 3.0 )                          // Within 3.0 units = "in practice range"
+    {
+      if ( pFrame->field_11C )
+      {
+        bOk = 1;                                // Practice animations initialized ¨ signal practice mode active
+      }
+      else if ( fDist != 0.0 )                  // Not initialized yet ¨ push camera to exactly 3.0 units away
+      {
+        moveZ = relPosZ * 3.0 / fDist;
+        moveY = relPosY * 3.0 / fDist;
+        moveX = relPosX * 3.0 / fDist;
+        MtxMult_4069DD(g_pCameraFrame, pFrame, moveX, moveY, moveZ);
+      }
+    }
+  }
+  if ( pFrame->nCountChild )                    // Recurse into children via CHanaNode linked list
+  {
+    pFirstChildNode = pFrame->pFirstChildNode;
+    for ( i = 0; i < pFrame->nCountChild; ++i )
+    {
+      bChildOk = Frame_CheckCameraDistanceAndRecurse(pFirstChildNode->pData);
+      bOk |= bChildOk;
+      pFirstChildNode = pFirstChildNode->pNext;
+    }
+  }
+  return bOk;                                   // 1 if any frame in subtree triggered practice mode
+}
+
+void __cdecl hook_Cursor_ClampToCenterOrSprite(
+  int nMode,
+  int *pCursorX,
+  int *pCursorY,
+  int *pDeltaX,
+  int *pDeltaY,
+  CHanaSpriteT3F6_S1FC *pSprite)
+{
+  int centerX; // eax
+  int centerY; // [esp-4h] [ebp-8h]
+
+  ONCELOG("[HNH:SUB] Cursor_ClampToCenterOrSprite_468A4A\n");
+
+  if ( !nMode
+    && (*pCursorX <= 10
+      || ConvertFrom640AsInt(576) <= *pCursorX
+      || *pCursorY <= 10
+      || ConvertFrom640AsInt(470) <= *pCursorY) )
+  {
+    centerY = ConvertFrom640AsInt(240);
+    centerX = ConvertFrom640AsInt(320);
+    SetCursorPos(centerX, centerY);
+    *pDeltaX -= *pCursorX - ConvertFrom640AsInt(320);
+    *pCursorX = ConvertFrom640AsInt(320);
+    *pDeltaY -= *pCursorY - ConvertFrom640AsInt(240);
+    *pCursorY = ConvertFrom640AsInt(240);
+  }
+  if ( nMode )
+  {
+    if ( pSprite )
+    {
+      SetCursorPos((__int64)pSprite->destWHZ_138.x, (__int64)pSprite->destWHZ_138.y);
+      *pDeltaX = (__int64)pSprite->destWHZ_138.x;
+      *pCursorX = *pDeltaX;
+      *pDeltaY = (__int64)pSprite->destWHZ_138.y;
+      *pCursorY = *pDeltaY;
+    }
+  }
+}
+
+BOOL __cdecl hook_Scene_ProcessPracticeFrames(CHanaSceneT458_S504 *pScene)
+{
+  unsigned int i; // [esp+0h] [ebp-8h]
+  BOOL bOk; // [esp+4h] [ebp-4h]
+  ONCELOG("[HNH:SUB] Scene_ProcessPracticeFrames_4668AC\n");
+  bOk = 0;
+  for ( i = 0; i < pScene->dwCount_130; ++i )
+  {
+    if ( !_memicmp(pScene->refsFrames_134[i]->szName_8, "h\\h", 3u) )
+    {
+      if ( !pScene->refsFrames_134[i]->field_11C )
+      {
+        pScene->refsFrames_134[i]->field_11C = 1;
+        InitializePracticeAnimations_4667A9(pScene->refsFrames_134[i]);
+      }
+      bOk |= Frame_CheckCameraDistanceAndRecurse(pScene->refsFrames_134[i]);
+    }
+  }
+  return bOk;
+}
+
+// Camera behavior selector:
+// * 1 = Track & Dolly -- orbit/dolly around target with distance-based speed
+// * 2 = Offset LookAt -- position camera at offset from target, then look at target
+// * 3 = Simple  Dolly -- move camera forward/back only
+// * Other = Default Follow -- just maintain look-at with distance clamping
+void __cdecl hook_CameraController_UpdateCutscene(
+  CHanaFrameRootT3EC_S2D4 *pTargetFrame,  // Frame to track/look at
+  CHanaFrameRootT3EC_S2D4 *pSceneFrameArg,// Scene root frame (unused, global g_pSceneFrame used instead)
+  int panSpeedX,                          // Horizontal pan speed multiplier
+  int panSpeedY,                          // Vertical pan speed multiplier
+  __int16 cameraMode)                     // Camera behavior mode (1, 2, or 3)
+{
+  double v5; // st7
+  float x; // [esp+0h] [ebp-3Ch]
+  float moveX; // [esp+0h] [ebp-3Ch]
+  float moveX2; // [esp+0h] [ebp-3Ch]
+  float moveX3; // [esp+0h] [ebp-3Ch]
+  float panX2; // [esp+0h] [ebp-3Ch]
+  float moveX4; // [esp+0h] [ebp-3Ch]
+  float moveX5; // [esp+0h] [ebp-3Ch]
+  float panY; // [esp+4h] [ebp-38h]
+  float X; // [esp+4h] [ebp-38h]
+  float moveY; // [esp+4h] [ebp-38h]
+  float Xa; // [esp+4h] [ebp-38h]
+  float moveY2; // [esp+4h] [ebp-38h]
+  float Xb; // [esp+4h] [ebp-38h]
+  float moveZ; // [esp+8h] [ebp-34h]
+  float X_4; // [esp+8h] [ebp-34h]
+  float moveZ2; // [esp+8h] [ebp-34h]
+  float X_4a; // [esp+8h] [ebp-34h]
+  float panZ; // [esp+8h] [ebp-34h]
+  float a3; // [esp+18h] [ebp-24h] BYREF
+  float distXZ; // [esp+1Ch] [ebp-20h]
+  float distXYZ; // [esp+20h] [ebp-1Ch]
+  float z; // [esp+24h] [ebp-18h] BYREF
+  float distXYZ_prev; // [esp+28h] [ebp-14h]
+  float relPosY2; // [esp+2Ch] [ebp-10h] BYREF
+  float relPosX2; // [esp+30h] [ebp-Ch] BYREF
+  float a5; // [esp+34h] [ebp-8h] BYREF
+  float a4; // [esp+38h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] CameraController_UpdateCutscene_466BDA\n");
+
+  // 1. Initialize camera basis: forward=(0,0,1), up=(0,1,0) relative to target
+  UpdateBoneLookAtTransform(
+    g_pCameraFrame,
+    (CHanaFrameT3EC_S354 *)pTargetFrame,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0);
+  CameraLookAtFrame(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, -1);// 2. Make camera look at target (mode -1 = use camera's local up)
+  if ( cameraMode == 1 )                        // Mode 1: Track & Dolly
+  {
+    HanaFrame_GetRelPosition(g_pCameraFrame, pTargetFrame, &a3, &a4, &a5);// Get initial relative position
+    distXZ = sqrt(a3 * a3 + a5 * a5) / 150.0;   // Horizontal distance scaled by 1/150
+    panY = (double)-panSpeedY * distXZ;         // Pan camera horizontally based on distance
+    x = (double)panSpeedX * distXZ;
+    MtxMult_4069DD(g_pCameraFrame, g_pCameraFrame, x, panY, 0.0);
+    HanaFrame_GetRelPosition(g_pCameraFrame, pTargetFrame, &relPosX2, &relPosY2, &z);// Get new position after pan
+    distXYZ_prev = sqrt(a3 * a3 + a4 * a4 + a5 * a5);
+    distXYZ = sqrt(relPosX2 * relPosX2 + relPosY2 * relPosY2 + z * z);
+    if ( distXYZ != 0.0 )                       // Dolly correction: move camera toward/away to maintain original distance
+    {
+      moveZ = z * distXYZ_prev / distXYZ;
+      X = relPosY2 * distXYZ_prev / distXYZ;
+      moveX = relPosX2 * distXYZ_prev / distXYZ;
+      MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, moveX, X, moveZ);
+    }
+    HanaFrame_GetRelPosition(g_pCameraFrame, pTargetFrame, &relPosX2, &relPosY2, &z);// Anti-jitter: if too close (<2) or moved further away, push back
+    distXZ = sqrt(relPosX2 * relPosX2 + z * z);
+    if ( distXZ != 0.0 )
+    {
+      if ( distXZ < 2.0 || (v5 = sqrt((relPosX2 - a3) * (relPosX2 - a3) + (z - a5) * (z - a5)), v5 > distXZ) )
+      {
+        X_4 = (z + z) / distXZ;
+        moveX2 = (relPosX2 + relPosX2) / distXZ;
+        MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, moveX2, a4, X_4);
+      }
+    }
+  }
+  if ( cameraMode == 3 )                        // Mode 3: Simple Dolly
+  {
+    moveZ2 = -(double)panSpeedY / 20.0;         // Just move camera forward/back along Z
+    MtxMult_4069DD(g_pCameraFrame, g_pCameraFrame, 0.0, 0.0, moveZ2);
+  }
+  if ( cameraMode == 2 )                        // Mode 2: Offset LookAt
+  {
+    CameraLookAtFrame(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, -1);// Re-establish look-at
+    HanaFrame_GetRelPosition((CHanaFrameT3EC_S354 *)pTargetFrame, g_pCameraFrame, &relPosX2, &relPosY2, &z);//  Get target-relative camera position
+    moveY = relPosY2 - (double)panSpeedY / 80.0;// Position camera at offset from target
+    moveX3 = (double)panSpeedX / 80.0 + relPosX2;
+    MtxMult_4069DD((CHanaFrameT3EC_S354 *)pTargetFrame, g_pCameraFrame, moveX3, moveY, z);
+    Xa = -(double)panSpeedY / 80.0;             // Small camera self-pan
+    panX2 = (double)panSpeedX / 80.0;
+    MtxMult_4069DD(g_pCameraFrame, g_pCameraFrame, panX2, Xa, 0.0);
+  }                                             // All Modes: Distance Clamping
+  HanaFrame_GetRelPosition(g_pCameraFrame, pTargetFrame, &a3, &a4, &a5);
+  distXYZ = sqrt(a3 * a3 + a4 * a4 + a5 * a5);
+  if ( distXYZ <= 30.0 || distXYZ == 0.0 )      // Clamp distance to [2.0, 30.0] range
+  {
+    if ( distXYZ < 2.0 && distXYZ != 0.0 )      // Too close: push away along normalized vector
+    {
+      panZ = (a5 + a5) / distXYZ;
+      Xb = (a4 + a4) / distXYZ;
+      moveX5 = (a3 + a3) / distXYZ;
+      MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, moveX5, Xb, panZ);
+    }
+  }
+  else
+  {                                             // Too far (>30): pull to exactly 30 units
+    X_4a = a5 * 30.0 / distXYZ;
+    moveY2 = a4 * 30.0 / distXYZ;
+    moveX4 = a3 * 30.0 / distXYZ;
+    MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, moveX4, moveY2, X_4a);
+  }
+  UpdateBoneLookAtTransform(
+    (CHanaFrameT3EC_S354 *)pTargetFrame,
+    (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0);                                       // Update target's bone look-at transform
+  CameraLookAtFrame(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, -1);
+}
+
+// CameraFrame_ProjectFramePairOntoForwardRay positions a target frame at the point where the line between two frames
+// (FrameA, FrameB) intersects the camera's forward view ray in camera space. The X/Z position is the intersection with
+// the camera's central ray (X=0, Z from 0 to -10); the Y position is the average of the two frames' Y coordinates. The
+// resulting transform is computed via MtxMult_4069DD which builds a translation matrix, multiplies by the camera's world
+// matrix, and applies it to the target frame's mat4x4_after.
+// 
+// This is likely used for UI/camera effects where an object (target frame) should appear centered between two 3D objects
+// from the camera's perspective.
+void __cdecl hook_CameraFrame_ProjectFramePairOntoForwardRay(
+  CHanaFrameRootT3EC_S2D4 *pTargetFrame,  // [in/out] Target frame root to receive the computed matrix
+  CHanaFrameT3EC_S354 *pFrameA,           // [in] First frame (defines line segment with pFrameB)
+  CHanaFrameT3EC_S354 *pFrameB)           // [in] Second frame (defines line segment with pFrameA)
+{
+  float avgX; // [esp+0h] [ebp-44h]
+  float frameB_posY; // [esp+4h] [ebp-40h] BYREF
+  float intersectX; // [esp+8h] [ebp-3Ch]
+  float frameA_posY; // [esp+Ch] [ebp-38h] BYREF
+  int camPosZ_1; // [esp+10h] [ebp-34h] BYREF
+  float camPosY_1; // [esp+14h] [ebp-30h] BYREF
+  float camPosX_1; // [esp+18h] [ebp-2Ch] BYREF
+  float frameB_posX; // [esp+1Ch] [ebp-28h] BYREF
+  float frameA_posX; // [esp+20h] [ebp-24h] BYREF
+  float intersectZ; // [esp+24h] [ebp-20h]
+  float avgY; // [esp+28h] [ebp-1Ch]
+  int camPosZ_2; // [esp+2Ch] [ebp-18h] BYREF
+  float camPosY_2; // [esp+30h] [ebp-14h] BYREF
+  float t; // [esp+34h] [ebp-10h]
+  float camPosX_2; // [esp+38h] [ebp-Ch] BYREF
+  int frameB_posZ; // [esp+3Ch] [ebp-8h] BYREF
+  int frameA_posZ; // [esp+40h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] CameraFrame_ProjectFramePairOntoForwardRay_46A55D\n");
+  
+  HanaFrame_GetRelPosition(g_pCameraFrame, g_pCameraFrame, &camPosX_1, &camPosY_1, (float *)&camPosZ_1);// // ---- Get camera position in its own space (always 0,0,0) ----
+  HanaFrame_GetRelPosition(g_pCameraFrame, g_pCameraFrame, &camPosX_2, &camPosY_2, (float *)&camPosZ_2);
+  *(float *)&camPosZ_2 = *(float *)&camPosZ_2 - 10.0;// ---- Get camera position again, then offset Z by -10 (forward ray endpoint) ----
+  HanaFrame_GetRelPosition(pFrameA, g_pCameraFrame, &frameA_posX, &frameA_posY, (float *)&frameA_posZ);// ---- Get FrameA and FrameB positions in camera space ----
+  HanaFrame_GetRelPosition(pFrameB, g_pCameraFrame, &frameB_posX, &frameB_posY, (float *)&frameB_posZ);
+  avgX = frameA_posX / 2.0 + frameB_posX / 2.0;
+  intersectX = avgX;
+  avgY = frameA_posY / 2.0 + frameB_posY / 2.0;
+  intersectZ = *(float *)&frameA_posZ / 2.0 + *(float *)&frameB_posZ / 2.0;
+  if ( (frameB_posX - frameA_posX) * (*(float *)&camPosZ_2 - *(float *)&camPosZ_1)
+    - (*(float *)&frameB_posZ - *(float *)&frameA_posZ) * (camPosX_2 - camPosX_1) != 0.0 )
+{                                             
+    // Geometric Interpretation
+    // 
+    // Camera Space (view space):
+    //                         Camera at origin (0,0,0)
+    //                               |
+    //                               |  Forward ray (10 units along -Z)
+    //                               v
+    //                         (0, 0, -10) <- camPosZ_2 after adjustment
+    // 
+    //     FrameA  *-------------------*  FrameB
+    //              \                 /
+    //               \   Line A-B    /
+    //                \             /
+    //                 \           /
+    //                  \         /
+    //                   \       /
+    //                    \     /
+    //                     \   /
+    //                      \ /
+    //                       *  Intersection (X~~0, Z=depth)
+    //                       |
+    //                       |  (Y = average of FrameA.Y and FrameB.Y)
+    //                       v
+    //               Target frame positioned here
+    // 
+    // - XZ intersection: Finds where the line between FrameA and FrameB crosses the camera's
+    //   central view ray (X=0 line). This is the "screen-center" depth.
+    // - XY intersection: Degenerate (camera forward ray has no Y extent), so falls back to midpoint Y.
+    // - Result: Target frame is placed at the screen-center depth of the FrameA-FrameB segment, at their average height.
+    t = ((*(float *)&frameA_posZ - camPosY_1) * (camPosX_2 - camPosX_1)
+      - (frameA_posX - camPosX_1) * (*(float *)&camPosZ_2 - *(float *)&camPosZ_1))
+      / ((frameB_posX - frameA_posX) * (*(float *)&camPosZ_2 - *(float *)&camPosZ_1)
+        - (*(float *)&frameB_posZ - *(float *)&frameA_posZ) * (camPosX_2 - camPosX_1));
+    intersectX = (frameB_posX - frameA_posX) * t + frameA_posX;
+    intersectZ = (*(float *)&frameB_posZ - *(float *)&frameA_posZ) * t + *(float *)&frameA_posZ;
+  }
+  if ( (frameB_posX - frameA_posX) * (camPosY_2 - camPosY_1) - (frameB_posY - frameA_posY) * (camPosX_2 - camPosX_1) != 0.0 )
+  {
+    t = ((frameA_posY - camPosY_1) * (camPosX_2 - camPosX_1) - (frameA_posX - camPosX_1) * (camPosY_2 - camPosY_1))
+      / ((frameB_posX - frameA_posX) * (camPosY_2 - camPosY_1) - (frameB_posY - frameA_posY) * (camPosX_2 - camPosX_1));
+    avgY = (frameB_posY - frameA_posY) * t + frameA_posY;
+  }
+  MtxMult_4069DD((CHanaFrameT3EC_S354 *)pTargetFrame, g_pCameraFrame, intersectX, avgY, intersectZ);
+}
+
+CHanaFrameT3EC_S354 *__cdecl hook_FindFrameByNameSubstringRecursive(CHanaFrameT3EC_S354 *pFrame, LPCSTR pSearchStr)
+{
+  int searchLen; // [esp+0h] [ebp-1Ch]
+  int i; // [esp+4h] [ebp-18h]
+  CHanaFrameT3EC_S354 *FrameByNameSubstringRecursive; // [esp+8h] [ebp-14h]
+  unsigned int childIdx; // [esp+Ch] [ebp-10h]
+  int frameNameLen; // [esp+14h] [ebp-8h]
+  CHanaNode *pChildNode; // [esp+18h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] FindFrameByNameSubstringRecursive_47EA86\n");
+  
+  FrameByNameSubstringRecursive = 0;            // 1. Check CURRENT frame: must have attached object AND name contains substring
+  if ( pFrame->pAttachedObj_20C )
+  {
+    searchLen = lstrlenA(pSearchStr);
+    frameNameLen = lstrlenA(pFrame->szName_8);
+    for ( i = 0; i <= frameNameLen - searchLen; ++i )// Slide substring search over frame name (case-insensitive)
+    {
+      if ( !_strnicmp(&pFrame->szName_8[i], pSearchStr, searchLen) )
+        return pFrame;
+    }
+  }
+  if ( pFrame->nCountChild )                    // 2. Recurse into children (depth-first, left-to-right)
+  {
+    pChildNode = pFrame->pFirstChildNode;
+    for ( childIdx = 0; childIdx < pFrame->nCountChild; ++childIdx )
+    {
+      if ( pChildNode->pData )                  // // Child frame exists
+      {
+        FrameByNameSubstringRecursive = FindFrameByNameSubstringRecursive(pChildNode->pData, pSearchStr);
+        if ( FrameByNameSubstringRecursive )    // // Propagate first match up
+          break;
+      }
+      pChildNode = pChildNode->pNext;           // Next sibling
+    }
+  }
+  return FrameByNameSubstringRecursive;
+}
+
+void __cdecl hook_AnimSet_ResetAndTransferAnimations(
+  CHanaAnimSetT3F1_S150 *pSrcAnimSet,
+  CHanaAnimSetT3F1_S150 *pDstAnimSet,
+  CHanaFrameT3EC_S354 *pRootFrame)
+{
+  ONCELOG("[HNH:SUB] AnimSet_ResetAndTransferAnimations_467ABE\n");
+
+  SetAnimSetTime(pDstAnimSet, 0.0);             // 1. Reset destination animation set time to 0.0 (start)
+  SetAnimSetTime(pSrcAnimSet, 0.0);             // 2. Reset source animation set time to 0.0 (start)
+  TransferAnimSetFrameAnimations_4679B2(pSrcAnimSet, pDstAnimSet, pRootFrame);// 3. Transfer animations from source to destination for the frame hierarchy
+  //    Recursively finds animations in pSrcAnimSet that target frames in pRootFrame's tree,
+  //    moves them to pDstAnimSet (adds to dst, removes from src)
+}
+
+void __cdecl hook_TransferAnimSetFrameAnimations_4679B2(
+  CHanaAnimSetT3F1_S150 *pSrcAnimSet,
+  CHanaAnimSetT3F1_S150 *pDstAnimSet,
+  CHanaFrameT3EC_S354 *pFrame)
+{
+  CHanaAnimT3F0_S240 *pHanaAnimT3F0; // [esp+4h] [ebp-Ch]
+  unsigned int i; // [esp+8h] [ebp-8h]
+  unsigned int j; // [esp+8h] [ebp-8h]
+  CHanaNode *pFirstChildNode; // [esp+Ch] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] TransferAnimSetFrameAnimations_4679B2\n");
+
+  if ( pFrame )
+  {
+    for ( i = 0; i < pSrcAnimSet->nAnimCount_134; ++i )// Find animation in source set targeting THIS frame
+    {
+      if ( pSrcAnimSet->refsAnimT3F0_138[i]->pHanaFram_130 == pFrame )
+      {
+        pHanaAnimT3F0 = pSrcAnimSet->refsAnimT3F0_138[i];
+        CHanaAnimSetT3F1__AddAnimT3F0_403C15(pDstAnimSet, pHanaAnimT3F0);// Add to destination set (increments refcount, bakes keyframes)
+        CHanaAnimSetT3F1__RemoveAnimT3F0_404349(pSrcAnimSet, pHanaAnimT3F0);// Remove from source set
+        break;
+      }
+    }
+    if ( pFrame->nCountChild )                  // Recurse into children
+    {
+      pFirstChildNode = pFrame->pFirstChildNode;
+      for ( j = 0; j < pFrame->nCountChild; ++j )
+      {
+        TransferAnimSetFrameAnimations_4679B2(pSrcAnimSet, pDstAnimSet, pFirstChildNode->pData);
+        pFirstChildNode = pFirstChildNode->pNext;
+      }
+    }
+  }
+}
+
+void __cdecl hook_DrawFadeTransition_Scene(
+  int transitionState,
+  CHanaSceneT458_S504 *pScene,
+  CHanaSpriteT3F6_S1FC **arrMouseSprites,
+  CHanaSpriteT3F6_S1FC **arrGOTypeSprites)
+{
+  double v4; // st7
+  float fPosX; // [esp+4Ch] [ebp-20h]
+  float fPosY; // [esp+50h] [ebp-1Ch]
+  float fPosYa; // [esp+50h] [ebp-1Ch]
+  float fPosYb; // [esp+50h] [ebp-1Ch]
+  float fPosYc; // [esp+50h] [ebp-1Ch]
+  int i; // [esp+58h] [ebp-14h]
+  int j; // [esp+58h] [ebp-14h]
+  float alpha; // [esp+5Ch] [ebp-10h]
+  float FrameTime; // [esp+60h] [ebp-Ch]
+  DWORD dwMouseY; // [esp+64h] [ebp-8h] BYREF
+  DWORD dwMouseX; // [esp+68h] [ebp-4h] BYREF
+
+  ONCELOG("[HNH:SUB] DrawFadeTransition_Scene_468DA8\n");
+  
+  for ( i = 0; i < 2; ++i )
+  {
+    if ( arrGOTypeSprites[i] )
+    {
+      fPosY = (double)(i + 1) * 48.0 - 16.0 - 16.0;
+      fPosYa = ConvertFrom640AsFloat(fPosY);
+      fPosX = ConvertFrom640AsFloat(608.0);
+      CHanaSpriteT3F6__SetPos_414A5D(arrGOTypeSprites[i], fPosX, fPosYa);
+    }
+  }
+  if ( transitionState )
+    alpha = 1.0;
+  else
+    alpha = 0.0;
+  FrameTimer_BeginFrame();
+  FrameTimer_EndFrame();
+  while ( 1 )
+  {
+    FrameTime = GetFrameTime();
+    if ( FrameTime > 5.0 )
+      FrameTime = 5.0;
+    FrameTimer_EndFrame();
+    v4 = transitionState ? alpha - FrameTime / 10.0 : FrameTime / 10.0 + alpha;
+    alpha = v4;
+    GetMouseXY_45A4D8(&dwMouseX, &dwMouseY);
+    fPosYb = 1.0 - alpha;
+    Scene_ApplyFadeToPracticeFrames(fPosYb);
+    if ( alpha < 0.0 || alpha > 1.0 )
+      break;
+    MtxStackStartMultLocal_4074EF();
+    g_pRenderCtx->Clear(3);
+    if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+    {
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+      HanaFrame_Draw((CHanaFrameT3EC_S354 *)g_pSceneFrame);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+      HanaVert_DrawBatch(1);
+      g_pD3DDevice_4D6C78->EndScene();
+    }
+    if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+    {
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
+      for ( j = 0; j < 2; ++j )
+      {
+        if ( arrGOTypeSprites[j] )
+        {
+          CHanaObj__SetAlpha3F6(arrGOTypeSprites[j], alpha);
+          DrawSprite2D(arrGOTypeSprites[j]);
+        }
+      }
+      while ( j < 8 )
+      {
+        if ( arrGOTypeSprites[j] )
+        {
+          fPosYc = 1.0 - alpha;
+          CHanaObj__SetAlpha3F6(arrGOTypeSprites[j], fPosYc);
+          DrawSprite2D(arrGOTypeSprites[j]);
+        }
+        ++j;
+      }
+      if ( arrMouseSprites[5] )
+        DrawSprite2D(arrMouseSprites[5]);
+      g_pD3DDevice_4D6C78->EndScene();
+    }
+
+    PresentFrame();
+    HanaVert_DrawBatch(0);
+  }
+  FrameTimer_BeginFrame();
+  FrameTimer_EndFrame();
+}
+
+// Applies a fade/alpha effect to specific "practice mode" frames in the scene
+// hierarchy. Used during fade transitions to show/hide practice-related visual elements based on the current effect
+// level.
+//   
+// Returns: The "_d00_" frame if found, NULL otherwise
+void __cdecl hook_Scene_ApplyFadeToPracticeFrames(float fadeAlpha)
+{
+  float alpha; // [esp+0h] [ebp-C0h]
+  float effectAlphaMultipliers[5]; // [esp+8h] [ebp-B8h]
+  CHanaFrameT3EC_S354 *pFoundFrame; // [esp+1Ch] [ebp-A4h]
+  CHanaFrameT3EC_S354 *pD00Frame; // [esp+20h] [ebp-A0h]
+  int i; // [esp+24h] [ebp-9Ch]
+  String50 szArrFrameNames[3]; // [esp+28h] [ebp-98h] BYREF
+
+  ONCELOG("[HNH:SUB] Scene_ApplyFadeToPracticeFrames_468B99\n");
+
+  pFoundFrame = 0;
+  pD00Frame = 0;
+  strcpy((char *)szArrFrameNames[0].str, "_h00_");// Prepare name templates for _h00_ frames (2 slots: indices 0 and 1)
+  // Each slot is 25 chars: "_h00_" + padding
+  memset((void *)&szArrFrameNames[0].str[6], 0, 0x2Cu);
+  strcpy((char *)szArrFrameNames[1].str, "_p00_");
+  memset((void *)&szArrFrameNames[1].str[6], 0, 0x2Cu);// Prepare _p00_ name template (not used in loop but prepared)
+  szArrFrameNames[2].str[0] = 0;
+  memset((void *)&szArrFrameNames[2].str[1], 0, 0x30u);
+  szArrFrameNames[2].str[49] = 0;
+  effectAlphaMultipliers[0] = 0.0;              // Effect level alpha multipliers: [0]=0.0, [1]=0.8, [2]=0.5, [3]=0.2, [4]=0.0
+  effectAlphaMultipliers[1] = 0.80000001;
+  effectAlphaMultipliers[2] = 0.5;
+  effectAlphaMultipliers[3] = 0.2;
+  effectAlphaMultipliers[4] = 0.0;
+  if ( fadeAlpha < 0.0 )                        // Clamp input alpha to valid range
+    fadeAlpha = 0.0;
+  if ( fadeAlpha > 1.0 )
+    fadeAlpha = 1.0;
+  for ( i = 0; i < 2; ++i )                     // Process TWO _h00_ frames: _h00_ (slot 0) and _h25_ (slot 1)
+  {
+    pFoundFrame = FindFrameByName_47E999((CHanaFrameT3EC_S354 *)g_pSceneFrame, szArrFrameNames[i].str);
+    if ( pFoundFrame )
+    {
+      if ( g_nEffectLevel_530265 )              // Effect level 1-4: force fully transparent, mark as "effect active"
+      {
+        Frame_ApplyFadeRecursive(pFoundFrame, 0.0);
+        pFoundFrame->bAlphaDeferred_130 = 1;    // Flag: under effect control
+      }
+      else                                      // Effect level 0: normal fade with given alpha
+      {
+        Frame_ApplyFadeRecursive(pFoundFrame, fadeAlpha);
+        pFoundFrame->bAlphaDeferred_130 = 0;    //  Flag: normal fade
+      }
+    }
+  }
+  pD00Frame = FindFrameByName_47E999((CHanaFrameT3EC_S354 *)g_pSceneFrame, "_d00_");
+  if ( pD00Frame )
+  {
+    pD00Frame->bAlphaDeferred_130 = !g_nEffectLevel_530265 || g_nEffectLevel_530265 == 4;// 1 for effect levels 1-3, 0 for level 0 or 4
+    alpha = fadeAlpha * effectAlphaMultipliers[(unsigned __int8)g_nEffectLevel_530265];// Compute final alpha: fadeAlpha * multiplier[effectLevel]
+    Frame_ApplyFadeRecursive(pD00Frame, alpha); // Apply fade recursively to _d00_ frame and children
+  }
+}
+
+
 void register_PlayCutInScene_46A76F() {
   hnh_Hook(0x46A76F, hook_PlayCutInScene_46A76F, "PlayCutInScene_46A76F"); // [OK]
 
@@ -2317,7 +2901,17 @@ void register_PlayCutInScene_46A76F() {
   hnh_Hook(0x4680b4, hook_UpdateCutInSceneBoneTransforms, "UpdateCutInSceneBoneTransforms_4680B4");
   hnh_Hook(0x46a503, hook_UpdateSekBodyAnimationMatrix, "UpdateSekBodyAnimationMatrix_46A503");
   hnh_Hook(0x46a3e9, hook_UpdateFrameAnimationMatrix, "UpdateFrameAnimationMatrix_46A3E9");
- 
+  hnh_Hook(0x4665f0, hook_Frame_CheckCameraDistanceAndRecurse, "Frame_CheckCameraDistanceAndRecurse_4665F0");
+  hnh_Hook(0x468a4a, hook_Cursor_ClampToCenterOrSprite, "Cursor_ClampToCenterOrSprite_468A4A");
+  hnh_Hook(0x4668ac, hook_Scene_ProcessPracticeFrames, "Scene_ProcessPracticeFrames_4668AC");
+  hnh_Hook(0x466bda, hook_CameraController_UpdateCutscene, "CameraController_UpdateCutscene_466BDA");
+  hnh_Hook(0x46a55d, hook_CameraFrame_ProjectFramePairOntoForwardRay, "CameraFrame_ProjectFramePairOntoForwardRay_46A55D");
+  hnh_Hook(0x47ea86, hook_FindFrameByNameSubstringRecursive, "FindFrameByNameSubstringRecursive_47EA86");
+  hnh_Hook(0x467abe, hook_AnimSet_ResetAndTransferAnimations, "AnimSet_ResetAndTransferAnimations_467ABE");
+  hnh_Hook(0x4679b2, hook_TransferAnimSetFrameAnimations_4679B2, "TransferAnimSetFrameAnimations_4679B2");
+  hnh_Hook(0x468da8, hook_DrawFadeTransition_Scene, "DrawFadeTransition_Scene_468DA8");
+  hnh_Hook(0x468b99, hook_Scene_ApplyFadeToPracticeFrames, "Scene_ApplyFadeToPracticeFrames_468B99");
+
 
   hnh_HookOn();
 }

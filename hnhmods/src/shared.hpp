@@ -637,7 +637,10 @@ extern int(__cdecl* PlayCutInScene_46A76F)(CHanaSceneT458_S504* pScene,
   CHanaSpriteT3F6_S1FC** arrPostureSprites, CSekBody* pLockOnBody,
   CSekBody* pModeBody, int iGroup, CSoundStruct_8** arrSoundAHs,
   CSoundStruct_8** arrSoundSEs, CSekBody** arrTearsBodies, int iMenuTab); // in: PlayCutInScene.cpp
-
+extern void(__cdecl* InitializePracticeAnimations_4667A9)(
+  CHanaFrameT3EC_S354* pModeFrame); // in: PlayAssault.cpp
+extern bool(__cdecl* CHanaAnimSetT3F1__AddAnimT3F0_403C15)(CHanaAnimSetT3F1_S150* pAnimSet, CHanaAnimT3F0_S240* pAnim); // in: ParseODFContent.cpp
+extern void(__cdecl* CHanaAnimSetT3F1__RemoveAnimT3F0_404349)(CHanaAnimSetT3F1_S150* pAnimSet, CHanaAnimT3F0_S240* pAnim); // in: PlayExploring.cpp
 #endif
 
 // == MACROS
