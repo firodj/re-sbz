@@ -148,8 +148,8 @@ void (__cdecl *UpdateFrameAnimationMatrix)(CHanaFrameT3EC_S354 *pFrame, float ta
 = reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFrame, float targetTime, float currentTime)>(0x46a3e9);
 void (__cdecl *TransferAnimSetFrameAnimations_4679B2)(CHanaAnimSetT3F1_S150 *pSrcAnimSet, CHanaAnimSetT3F1_S150 *pDstAnimSet, CHanaFrameT3EC_S354 *pFrame)
 = reinterpret_cast<void (__cdecl*)(CHanaAnimSetT3F1_S150 *pSrcAnimSet, CHanaAnimSetT3F1_S150 *pDstAnimSet, CHanaFrameT3EC_S354 *pFrame)>(0x4679b2);
-void (__cdecl *Scene_ApplyFadeToPracticeFrames)(float fadeAlpha)
-= reinterpret_cast<void (__cdecl*)(float fadeAlpha)>(0x468b99);
+  void (__cdecl *Scene_ApplyFadeToPracticeFrames)(float fadeAlpha)
+    = reinterpret_cast<void (__cdecl*)(float fadeAlpha)>(0x468b99);
 
 
 // === PINNED GLOBALS ===
@@ -1399,7 +1399,7 @@ void __cdecl hook_AnimSet_MatchAndSortKutiRTibusaLFrames(
     }
   }
 }
-CSekItem * &g_pSekItem_4CD760 = *(CSekItem * *)0x4CD760; // WRITABLE
+
 double __cdecl hook_GetSekBodyCurrentAnimTime(CSekBody *pSekBody)
 {
   ONCELOG("[HNH:SUB] GetSekBodyCurrentAnimTime_401C67\n");
