@@ -63,6 +63,7 @@ void (__cdecl * UpdateBoneLookAtTransform)( CHanaFrameT3EC_S354 *pBoneFrame, CHa
 void (__cdecl * CameraLookAtFrame)( CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pTargetFrame, CHanaFrameT3EC_S354 *pSceneFrame, __int16 iMode) = reinterpret_cast<void(__cdecl*)( CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3EC_S354 *pTargetFrame, CHanaFrameT3EC_S354 *pSceneFrame, __int16 iMode)>(0x40873E);
 void (__cdecl * HanaMeshT3F5_Draw)(CHanaMeshT3F5_S138 *pMesh) = reinterpret_cast<void(__cdecl*)(CHanaMeshT3F5_S138 *pMesh)>(0x40FE8E);
 void (__cdecl * HanaMorpT457_Draw)(CHanaMorpT457_S40C *pMorp) = reinterpret_cast<void(__cdecl*)(CHanaMorpT457_S40C *pMorp)>(0x434FC9);
+//void(__cdecl*HanaT3FB_Draw)(CHanaBase_S130* pObj) = reinterpret_cast<void(__cdecl*)(CHanaBase_S130*)>(0x416776);
 
 // === PINNED GLOBALS ===
 uint32_t &g_fRendering    = *(uint32_t *)0x4CD778;  // WRITABLE
@@ -955,8 +956,6 @@ void __cdecl hook_AddObjectToPool(
   g_pObjPool[g_nObjCount++].bitLightEnables = qwBitLightEnables;
 }
 
-void(__cdecl*HanaT3FB_Draw)(CHanaBase_S130* pObj) = reinterpret_cast<void(__cdecl*)(CHanaBase_S130*)>(0x416776);
-
 DWORD __cdecl hook_CHanaObj__GetChildCountT3F5_40FF0F(CHanaMeshT3F5_S138 *pHanaT3F5)
 {
   ONCELOG("[HNH:SUB] CHanaObj__GetChildCountT3F5_40FF0F\n");
@@ -1022,7 +1021,8 @@ void __cdecl hook_HanaVert_DrawByType(CHanaVertT3EA_S1FC *pObj)
     HanaMeshT3F5_Draw((CHanaMeshT3F5_S138 *)pObj);
     break;
   case 0x3FB:
-    HanaT3FB_Draw((CHanaBase_S130 *)pObj);
+    DebugLog("{%s} %s\n", "WARN", "DrawVert T3FB");
+    //HanaT3FB_Draw((CHanaBase_S130 *)pObj);
     break;
   case 0x457:
     HanaMorpT457_Draw((CHanaMorpT457_S40C *)pObj);

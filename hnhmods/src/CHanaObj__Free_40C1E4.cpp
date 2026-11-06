@@ -31,10 +31,10 @@ __int64 &g_bitsLightIndexes_4D6CB8 = *(__int64*)0x4D6CB8;
 
 // === GLOBAL FUNCTIONS ===
 
-void (__cdecl *CHanaObj__FreeT3FB)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x4166B5);
-void (__cdecl *CHanaObj__FreeT3FC)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x410501);
-void (__cdecl *CHanaObj__FreeT3FD)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x4114DF);
-void (__cdecl *CHanaObj__FreeT3FE)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x413075);
+//void (__cdecl *CHanaObj__FreeT3FB)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x4166B5);
+//void (__cdecl *CHanaObj__FreeT3FC)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x410501);
+//void (__cdecl *CHanaObj__FreeT3FD)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x4114DF);
+//void (__cdecl *CHanaObj__FreeT3FE)(CHanaBase_S130 *pObj) = reinterpret_cast<void (__cdecl *)(CHanaBase_S130 *)>(0x413075);
 void (__cdecl * CHanaObj__RemoveFromGlobalRef)(CHanaBase_S130 *pObj) = reinterpret_cast<void(__cdecl*)(CHanaBase_S130 *pObj)>(0x40BD4D);
 void (__cdecl * CHanaObj__FreeVertT3EA)(CHanaVertT3EA_S1FC *pVert) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert)>(0x417A0C);
 void (__cdecl * CHanaObj__FreeTextureT3EB)(CHanaTextureT3EB_S2CC *pTexture) = reinterpret_cast<void(__cdecl*)(CHanaTextureT3EB_S2CC *pTexture)>(0x416256);
@@ -1051,19 +1051,19 @@ void __cdecl hook_CHanaObj__Free_40C1E4(CHanaBase_S130 *pObj)
     break;
   case 0x3FB:
     DebugLog("{%s} %s\n", "WARN", "Free T3FB");
-    CHanaObj__FreeT3FB(pObj);
+    //CHanaObj__FreeT3FB(pObj);
     break;
   case 0x3FC:
     DebugLog("{%s} %s\n", "WARN", "Free T3FC");
-    CHanaObj__FreeT3FC(pObj);
+    // CHanaObj__FreeT3FC(pObj);
     break;
   case 0x3FD:
     DebugLog("{%s} %s\n", "WARN", "Free T3FD");
-    CHanaObj__FreeT3FD(pObj);
+    //CHanaObj__FreeT3FD(pObj);
     break;
   case 0x3FE:
     DebugLog("{%s} %s\n", "WARN", "Free T3FE");
-    CHanaObj__FreeT3FE(pObj);
+    //CHanaObj__FreeT3FE(pObj);
     break;
   case 0x457:
     CHanaObj__FreeMorpT457((CHanaMorpT457_S40C*)pObj);
