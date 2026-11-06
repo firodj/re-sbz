@@ -1,7 +1,18 @@
+// GAME: [011019][TEATIME] âÿÇÃîﬂñ¬Å@Å`âÛÇÍÇΩè…éqÇÃêSÅ`
 #include "dx7.hpp"
 
 #include "console.hpp"
 #include "shared.hpp"
+
+
+// === PINNED GAME FUNCTIONS ===
+int (__cdecl*SysMenu_GirlStatusCheck_464919)(LPDIRECTDRAWSURFACE7 *arrSurf,
+    CHanaSpriteT3F6_S1FC *pCursor, CHanaSpriteT3F6_S1FC *pYesNo, int nMouseX, int nMouseY,
+    int bPressed, int *pnSceneStep, float fCurHP, float fMaxHP, QWORD *pSceneFlags) =
+    reinterpret_cast<int(__cdecl*)(LPDIRECTDRAWSURFACE7 *, CHanaSpriteT3F6_S1FC *,
+      CHanaSpriteT3F6_S1FC *, int, int, int, int *, float, float, QWORD *)>(0x464919);
+
+// === FUNCTIONS ===
 
 // SysMenu_GirlStatusCheck_464919 -- SystemMenu tab 2 (girl status). Per-girl
 // backgrounds System31..System35.bmp (30-stride name table g_aSystem01Bmp
@@ -30,14 +41,7 @@
 // loaded yet (load+blt, return), sheet not loaded yet (load, return),
 // otherwise draw all + set blend states. ALWAYS returns -1 (stay in menu).
 
-// === PINNED GAME FUNCTIONS ===
-int (__cdecl*SysMenu_GirlStatusCheck_464919)(LPDIRECTDRAWSURFACE7 *arrSurf,
-    CHanaSpriteT3F6_S1FC *pCursor, CHanaSpriteT3F6_S1FC *pYesNo, int nMouseX, int nMouseY,
-    int bPressed, int *pnSceneStep, float fCurHP, float fMaxHP, QWORD *pSceneFlags) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTDRAWSURFACE7 *, CHanaSpriteT3F6_S1FC *,
-      CHanaSpriteT3F6_S1FC *, int, int, int, int *, float, float, QWORD *)>(0x464919);
 
-// === FUNCTIONS ===
 int __cdecl hook_SysMenu_GirlStatusCheck_464919(LPDIRECTDRAWSURFACE7 arrSurf[],
     CHanaSpriteT3F6_S1FC *pCursor, CHanaSpriteT3F6_S1FC *pYesNo /*unused*/, int nMouseX,
     int nMouseY, int bPressed, int *pnSceneStep, float fCurHP, float fMaxHP,

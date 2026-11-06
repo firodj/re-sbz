@@ -1,3 +1,4 @@
+// GAME: [011019][TEATIME] ‰Ø‚Ì”ß–Â@`‰ó‚ê‚½Éq‚ÌS`
 /* 
  * WinMain - Entry point for the HanaHime application
  * Initializes window, DirectInput, and runs the main game loop

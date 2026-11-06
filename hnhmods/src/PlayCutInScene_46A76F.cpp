@@ -1,3 +1,5 @@
+// GAME: [011019][TEATIME] âÿÇÃîﬂñ¬Å@Å`âÛÇÍÇΩè…éqÇÃêSÅ`
+
 #include "dx7.hpp"
 
 #include <cmath>
@@ -2324,9 +2326,9 @@ BOOL __cdecl hook_Frame_CheckCameraDistanceAndRecurse(CHanaFrameT3EC_S354 *pFram
     {
       if ( pFrame->field_11C )
       {
-        bOk = 1;                                // Practice animations initialized Å® signal practice mode active
+        bOk = 1;                                // Practice animations initialized ?øΩ?øΩ signal practice mode active
       }
-      else if ( fDist != 0.0 )                  // Not initialized yet Å® push camera to exactly 3.0 units away
+      else if ( fDist != 0.0 )                  // Not initialized yet ?øΩ?øΩ push camera to exactly 3.0 units away
       {
         moveZ = relPosZ * 3.0 / fDist;
         moveY = relPosY * 3.0 / fDist;
@@ -2877,8 +2879,6 @@ void __cdecl hook_Scene_ApplyFadeToPracticeFrames(float fadeAlpha)
 
 void register_PlayCutInScene_46A76F() {
   hnh_Hook(0x46A76F, hook_PlayCutInScene_46A76F, "PlayCutInScene_46A76F"); // [OK]
-
- 
 
   hnh_HookOff();
   hnh_Hook(0x467bbd, hook_SyncObjectAnimationByName_467BBD, "SyncObjectAnimationByName_467BBD"); // [OK]

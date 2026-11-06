@@ -1,3 +1,4 @@
+// GAME: [011019][TEATIME] ‰Ø‚Ì”ß–Â@`‰ó‚ê‚½ÉŽq‚ÌS`
 #include "dx7.hpp"
 
 #include "console.hpp"
@@ -329,7 +330,7 @@ BOOL __cdecl hook_LoadOds_4843CF(LPCSTR lpFileName, CHanaSceneT458_S504 **ppScen
   if ( nNumberOfBytesToRead == -1 )
     return 0;
   lpBuffer = MemAlloc_40DEF7(nNumberOfBytesToRead + 128);
-  wsprintfA(String1, "ï¿½Vï¿½tï¿½Hï¿½[ï¿½}ï¿½bï¿½gï¿½nï¿½cï¿½r%c%c%c", 13, 10, 0);
+  wsprintfA(String1, "VƒtƒH[ƒ}ƒbƒg‚n‚c‚r%c%c%c", 13, 10, 0);
   ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, &NumberOfBytesRead, 0);
   CloseHandle(hFile);
   if ( !lstrcmpA(String1, (LPCSTR)lpBuffer) )
@@ -487,22 +488,13 @@ BOOL __cdecl hook_CSekBody__UpdateAnim_4019E1(CSekBody *pSekBody, float fDelta)
   if ( g_pSekItem_4CD760->float_58 <= (double)g_pSekItem_4CD760->float_60 )
   {
     bCompleted = 1;
-    if ( !g_pSekItem_4CD760->flag_0 )
+    if ( !g_pSekItem_4CD760->flag_0 && !g_pSekItem_4CD760->field_70 )
     {
-      if ( !g_pSekItem_4CD760->field_70 )
-      {
-        g_pSekItem_4CD760->field_44 = g_pSekItem_4CD760->field_50;
-        g_nSekStep_4CD764 = g_pSekItem_4CD760->field_50 - 1;
-        pSekBody->field_244 = 1;
-        g_pSekItem_4CD760->float_60 = g_pSekItem_4CD760->float_58;
-        goto LABEL_15;
-      }
-    LABEL_11:
-      CSekBody__CutToAnim_4018E1(pSekBody, g_pSekItem_4CD760->field_74);
-      pSekBody->float_21C = 0.0;
-      goto LABEL_15;
-    }
-    if ( g_pSekItem_4CD760->flag_0 == 1 )
+      g_pSekItem_4CD760->field_44 = g_pSekItem_4CD760->field_50;
+      g_nSekStep_4CD764 = g_pSekItem_4CD760->field_50 - 1;
+      pSekBody->field_244 = 1;
+      g_pSekItem_4CD760->float_60 = g_pSekItem_4CD760->float_58;
+    } else if ( g_pSekItem_4CD760->flag_0 == 1 )
     {
       ++g_pSekItem_4CD760->field_64;
       if ( !g_pSekItem_4CD760->field_70 || g_pSekItem_4CD760->field_64 < g_pSekItem_4CD760->gap78 )
@@ -512,12 +504,14 @@ BOOL __cdecl hook_CSekBody__UpdateAnim_4019E1(CSekBody *pSekBody, float fDelta)
         pSekBody->field_244 = 1;
         pSekBody->field_248 = 1;
         g_pSekItem_4CD760->float_60 = g_pSekItem_4CD760->float_54;
-        goto LABEL_15;
       }
-      goto LABEL_11;
+      else {
+        CSekBody__CutToAnim_4018E1(pSekBody, g_pSekItem_4CD760->field_74);
+        pSekBody->float_21C = 0.0;
+      }
     }
   }
-LABEL_15:
+
   if ( pSekBody->pSekHeader_220->pAnimSetT3F1 )
   {
     if ( pSekBody->float_21C != 0.0 )
@@ -529,6 +523,7 @@ LABEL_15:
     CHanaAnimSetT3F1__SetTime_403D61(pSekBody->pSekHeader_220->pAnimSetT3F1, g_pSekItem_4CD760->float_60);
     CHanaAnimSetT3F1__BlendStep_43A643(pSekBody->pSekHeader_220->pAnimSetT3F1, &pSekBody->float_224, fDelta);
   }
+
   return bCompleted;
 }
 
@@ -1376,13 +1371,13 @@ LPVOID __cdecl hook_Surface_LockAndGetPointer(LPDIRECTDRAWSURFACE7 pSurface)
 
 void register_PlayOdsDialogueScene_477F90() {
   hnh_Hook(0x477F90, hook_PlayOdsDialogueScene_477F90, "PlayOdsDialogueScene_477F90"); // [OK]
-
+  hnh_Hook(0x4843cf, hook_LoadOds_4843CF, "LoadOds_4843CF"); // [OK]
   hnh_Hook(0x47fa84, hook_DrawAdvanceDialogueText_47FA84, "DrawAdvanceDialogueText_47FA84");
-    
+  hnh_Hook(0x4019e1, hook_CSekBody__UpdateAnim_4019E1, "CSekBody__UpdateAnim_4019E1"); // [OK]
   hnh_HookOff();
-    hnh_Hook(0x4843cf, hook_LoadOds_4843CF, "LoadOds_4843CF"); // [OK]
+    
     hnh_Hook(0x4018e1, hook_CSekBody__CutToAnim_4018E1, "CSekBody__CutToAnim_4018E1"); // [OK]
-    hnh_Hook(0x4019e1, hook_CSekBody__UpdateAnim_4019E1, "CSekBody__UpdateAnim_4019E1"); // [OK]
+   
     hnh_Hook(0x401647, hook_SekBody__UpdateTo2_401647, "SekBody__UpdateTo2_401647");  // [OK]
     hnh_Hook(0x43a643, hook_CHanaAnimSetT3F1__BlendStep_43A643, "CHanaAnimSetT3F1__BlendStep_43A643"); // [OK]
     hnh_Hook(0x4857ca, hook_ResetSceneBodies_4857CA, "ResetSceneBodies_4857CA"); // [OK]

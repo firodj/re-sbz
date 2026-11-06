@@ -1,3 +1,4 @@
+// GAME: [011019][TEATIME] 華の悲鳴　～壊れた硝子の心～
 #include "dx7.hpp"
 
 #include "console.hpp"
@@ -189,8 +190,7 @@ bool __cdecl hook_CheckInstalledDirRoot_4869A7(HWND hWnd)
         // Shift-JIS @0x4CB460: "hitsuyou na folder ga mitsukeraremasen" (the required
         // folder could not be found); escape-encoded so this file stays codepage-safe.
         MessageBoxA(hWnd,
-            "\x95\x4B\x97\x76\x82\xC8\x83\x74\x83\x48\x83\x8B\x83\x5F\x81\x5B"
-            "\x82\xAA\x8C\xA9\x82\xC2\x82\xAF\x82\xE7\x82\xEA\x82\xDC\x82\xB9\x82\xF1",
+            "必要なフォルダーが見つけられません",
             "", 0);
         return false;
     }
@@ -514,7 +514,7 @@ int __cdecl hook_CHanaObj__GetFramesCountT3ED_408E75(CHanaFrameArrayT3ED_S138 *p
 }
 
 // Idiomatic with IDirect3DRMFrameArray::GetElement() - bounds-checked, AddRefs returned frame;
-// NULL input → NULL out, success (D3DRM returns S_FALSE there) 
+// NULL input ?¨ NULL out, success (D3DRM returns S_FALSE there) 
 HRESULT __cdecl hook_CHanaObj__GetFrameAtIndexT3ED(
   CHanaFrameArrayT3ED_S138 *pFrameArray,
   unsigned int nIndex,

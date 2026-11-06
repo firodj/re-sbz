@@ -1,7 +1,15 @@
+// GAME: [011019][TEATIME] âÿÇÃîﬂñ¬Å@Å`âÛÇÍÇΩè…éqÇÃêSÅ`
 #include "dx7.hpp"
 
 #include "console.hpp"
 #include "shared.hpp"
+
+// === PINNED GAME FUNCTIONS ===
+int (__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
+    float fCurHP, float fMaxHP, CSceneState sceneState) =
+    reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER, int, int, float, float, CSceneState)>(0x4655AB);
+
+// === FUNCTIONS ===
 
 // SystemMenu_4655AB -- the shared in-game SYSTEM MENU (save / load / girl
 // status / options / graphics / back / quit), called from the scene
@@ -35,18 +43,6 @@
 // on entry, written back on exit. Font switched to ÇlÇr ñæí© 15x15 for the
 // menu, restored to 26x26 after. Teardown releases everything, restores
 // ANTIALIAS and render states, and FrameTimer_BeginFrame.
-
-// === PINNED GAME FUNCTIONS ===
-int (__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
-    float fCurHP, float fMaxHP, CSceneState sceneState) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER, int, int, float, float, CSceneState)>(0x4655AB);
-// SysMenu_SaveMenu_462135 lives in src/SysMenu_SaveMenu_462135.cpp (extern in shared.hpp)
-// SysMenu_LoadMenu_462851 lives in src/SysMenu_LoadMenu_462851.cpp (extern in shared.hpp)
-// SysMenu_GirlStatusCheck_464919 lives in src/SysMenu_GirlStatusCheck_464919.cpp (extern in shared.hpp)
-// SysMenu_Options_462FE9 lives in src/SysMenu_Options_462FE9.cpp (extern in shared.hpp)
-// SysMenu_Graphics_46380D lives in src/SysMenu_Graphics_46380D.cpp (extern in shared.hpp)
-// ShowYesNoDialog_461A9E lives in src/ShowYesNoDialog_461A9E.cpp (extern in shared.hpp)
-// === FUNCTIONS ===
 int __cdecl hook_SystemMenu_4655AB(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,
                                    float fCurHP, float fMaxHP, CSceneState sceneState)
 {

@@ -1,3 +1,4 @@
+// GAME: [011019][TEATIME] ‰Ø‚Ì”ß–Â@`‰ó‚ê‚½ÉŽq‚ÌS`
 #include "dx7.hpp"
 #include "console.hpp"
 
