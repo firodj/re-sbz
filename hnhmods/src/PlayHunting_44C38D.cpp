@@ -2543,10 +2543,8 @@ void __cdecl hook_DrawRecViewfinder_44B23B(
   int nAggroCur,
   int nAggroMax)
 {
-  POINT ptSprite2; // rax
   int left1; // eax
   int left2; // eax
-  POINT ptSprite2b; // rax
   int left3; // eax
   int left4; // eax
   int top1; // [esp+20h] [ebp-6Ch]
@@ -2614,12 +2612,15 @@ void __cdecl hook_DrawRecViewfinder_44B23B(
       parrPos[3].y = ConvertFrom640AsFloat(28.0);
       parrPos[3].z = 0.0;
       DrawSprite3D(pSprites[2], parrPos);
-      ptSprite2 = *(POINT*)&pSprites[2]->dwWidth_1F0;
+
+      // IDA Hex-Rays bug: CDQ SUB EAX, EDX, SAR sequence
+      int xBer = (pSprites[2]->dwWidth_1F0 / 2) - nHeroHpCur * (pSprites[2]->dwWidth_1F0 / 2 - 1) / nHeroHpMax;
+
       SetRect(
         &rc,
-        ((ptSprite2.x - ptSprite2.y) >> 1) - nHeroHpCur * (pSprites[2]->dwWidth_1F0 / 2 - 1) / nHeroHpMax,
+        xBer,
         0,
-        ((ptSprite2.x - ptSprite2.y) >> 1) - nHeroHpCur * (pSprites[2]->dwWidth_1F0 / 2 - 1) / nHeroHpMax,
+        xBer,
         48);
       CHanaSpriteT3F6__SetSrcRect_414B28(pSprites[2], &rc);
       parrPos[0].x = ConvertFrom640AsFloat(354.0);
@@ -2651,12 +2652,15 @@ void __cdecl hook_DrawRecViewfinder_44B23B(
       left2 = ConvertFrom640AsInt(480);
       SetRect(&rc, left2, top2, right2, bottom2);
       DrawSpriteLTRB(pSprites[8], rc.left, rc.top, rc.right, rc.bottom);
-      ptSprite2b = *(POINT*)&pSprites[2]->dwWidth_1F0;
+
+      // IDA Hex-Rays bug: CDQ SUB EAX, EDX, SAR sequence
+      xBer = (pSprites[2]->dwWidth_1F0 / 2) - nAggroCur * (pSprites[2]->dwWidth_1F0 / 2) / nAggroMax + 1;
+
       SetRect(
         &rc,
-        ((ptSprite2b.x - ptSprite2b.y) >> 1) - nAggroCur * (pSprites[2]->dwWidth_1F0 / 2) / nAggroMax + 1,
+        xBer,
         0,
-        ((ptSprite2b.x - ptSprite2b.y) >> 1) - nAggroCur * (pSprites[2]->dwWidth_1F0 / 2) / nAggroMax + 1,
+        xBer,
         48);
       CHanaSpriteT3F6__SetSrcRect_414B28(pSprites[2], &rc);
       fMeterB_X0 = (1.0 - (double)nAggroCur / (double)nAggroMax) * 246.0 + 40.0;
@@ -2757,7 +2761,13 @@ void __cdecl hook_DrawSprite3D(CHanaSpriteT3F6_S1FC *pSprite, D3DXVECTOR3 *parrP
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_LIGHTING, 1);
 }
 
-// Two-body cutscene compositor (only caller: PlayHunting - composites the duel's hero+foe bodies into an ODS cutscene scene). Swaps LIVE bodies into STAND-IN slots: finds the scene frame whose world position exactly equals the body frame's (float == match over pScene->refsFrames_134[0..dwCount_130)), reparents the body frame under it (AttachChild + MtxMult 0 + look-at identity). pStandInA/B = the scene's own CSekBody at that slot; its field_200 (current anim item) is copied onto the live body EVERY FRAME, so the scene animation drives the live bodies' anims. Playback loop: mouse button held = 5x speed (GetCursorPos 3rd out; X/Y unused); advances pfExecTime to pAnimSet_148->fRes_13C under a cinematic 0.4 FOV. Fade choreography vs remaining time: pSprites[0] expanding box at (320,350) +/- 32*fBoxExpand grows in while >150 left, fades out after (fBoxAlpha); pSprites[1] centered sprite does the OPPOSITE (fCenterAlpha out then in); pSprites[7] letterbox banner (top band (0,380)-(640,700) + flipped (640,320)-(0,0) ba
+// Two-body cutscene compositor (only caller: PlayHunting - composites the duel's hero+foe bodies into an ODS cutscene scene). Swaps LIVE bodies into STAND-IN slots:
+// finds the scene frame whose world position exactly equals the body frame's (float == match over pScene->refsFrames_134[0..dwCount_130)),
+// reparents the body frame under it (AttachChild + MtxMult 0 + look-at identity). pStandInA/B = the scene's own CSekBody at that slot; its field_200
+// (current anim item) is copied onto the live body EVERY FRAME, so the scene animation drives the live bodies' anims.
+// Playback loop: mouse button held = 5x speed (GetCursorPos 3rd out; X/Y unused); advances pfExecTime to pAnimSet_148->fRes_13C under a cinematic 0.4 FOV.
+// Fade choreography vs remaining time: pSprites[0] expanding box at (320,350) +/- 32*fBoxExpand grows in while >150 left, fades out after (fBoxAlpha);
+// pSprites[1] centered sprite does the OPPOSITE (fCenterAlpha out then in); pSprites[7] letterbox banner (top band (0,380)-(640,700) + flipped (640,320)-(0,0) ba
 void __cdecl hook_RenderDualBodyScene_456807(
   CHanaSceneT458_S504 *pScene,
   CSekBody *pBodyA,
@@ -3062,7 +3072,6 @@ void __cdecl hook_StepFoeTurn_457EE0(
 
   ONCELOG("[HNH:SUB] StepFoeTurn_457EE0\n");
   
-
   pSpinFrame = pFoeBody->pSekHeader_220->pFrameT3EC;
   pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
   vecSpinAxis.x = 0.0;
@@ -3737,27 +3746,27 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
 void register_PlayHunting_44C38D() {
   hnh_Hook(0x44C38D, hook_PlayHunting_44C38D, "PlayHunting_44C38D"); // [OK]
 
-  hnh_HookOff();
-
-  hnh_Hook(0x446a38, hook_UpdateFoeAI_446A38, "UpdateFoeAI_446A38");
-  hnh_Hook(0x4535de, hook_WanaAttack_Close_4535DE, "WanaAttack_Close_4535DE");
-  hnh_Hook(0x448b78, hook_IsFoeWithinHeroRange_448B78, "IsFoeWithinHeroRange_448B78");
-  hnh_Hook(0x4536f6, hook_WanaAttack_Knockback_4536F6, "WanaAttack_Knockback_4536F6");
   hnh_Hook(0x4539d1, hook_WanaAttack_Charged_4539D1, "WanaAttack_Charged_4539D1");
   hnh_Hook(0x453b92, hook_WanaAttack_Projectile_453B92, "WanaAttack_Projectile_453B92");
-  hnh_Hook(0x45669f, hook_DrawFadeOutSpark_45669F, "DrawFadeOutSpark_45669F");
   hnh_Hook(0x4581b0, hook_StepWanaProjectile_4581B0, "StepWanaProjectile_4581B0");
-  hnh_Hook(0x448c72, hook_BindSceneActors_448C72, "BindSceneActors_448C72");
   hnh_Hook(0x44c028, hook_UpdateCameraFollowDuel_44C028, "UpdateCameraFollowDuel_44C028");
-  hnh_Hook(0x44b23b, hook_DrawRecViewfinder_44B23B, "DrawRecViewfinder_44B23B");
-  hnh_Hook(0x414344, hook_DrawSprite3D, "DrawSprite3D_414344");
   hnh_Hook(0x456807, hook_RenderDualBodyScene_456807, "RenderDualBodyScene_456807");
 
   hnh_Hook(0x457ee0, hook_StepFoeTurn_457EE0, "StepFoeTurn_457EE0");
-  hnh_Hook(0x45804c, hook_StepFoeSpin_45804C, "StepFoeSpin_45804C");
   hnh_Hook(0x455183, hook_PlayVictoryCutscene_455183, "PlayVictoryCutscene_455183");
-  hnh_Hook(0x455be2, hook_PlayResultsCutscene_455BE2, "PlayResultsCutscene_455BE2");
 
-  
+
+  hnh_HookOff();
+  hnh_Hook(0x446a38, hook_UpdateFoeAI_446A38, "UpdateFoeAI_446A38"); // [OK]
+  hnh_Hook(0x4535de, hook_WanaAttack_Close_4535DE, "WanaAttack_Close_4535DE"); // [OK]
+  hnh_Hook(0x448b78, hook_IsFoeWithinHeroRange_448B78, "IsFoeWithinHeroRange_448B78"); // [OK]
+  hnh_Hook(0x4536f6, hook_WanaAttack_Knockback_4536F6, "WanaAttack_Knockback_4536F6"); // [OK]
+  hnh_Hook(0x45669f, hook_DrawFadeOutSpark_45669F, "DrawFadeOutSpark_45669F"); // [OK]
+  hnh_Hook(0x448c72, hook_BindSceneActors_448C72, "BindSceneActors_448C72"); // [OK]
+  hnh_Hook(0x44b23b, hook_DrawRecViewfinder_44B23B, "DrawRecViewfinder_44B23B"); // [OK]
+  hnh_Hook(0x414344, hook_DrawSprite3D, "DrawSprite3D_414344"); // [OK]
+  hnh_Hook(0x45804c, hook_StepFoeSpin_45804C, "StepFoeSpin_45804C"); // [OK]
+  hnh_Hook(0x455be2, hook_PlayResultsCutscene_455BE2, "PlayResultsCutscene_455BE2"); // [OK]
+
   hnh_HookOn();
 }

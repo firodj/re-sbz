@@ -1049,7 +1049,13 @@ LABEL_149:
     return nMenuResult;
 }
 
-// Chase/follow camera (the standard camera, 11 call sites). Mount point = hero + 22*localUp + 18*localBack (hero frame used as scratch, restored at end). bSnap=1: SNAP hard to the mount (used right after a manual reposition - PrepareTargetSelect, PlayExploring warp; skips smoothing AND orbit clamps). bSnap=0: smooth follow - lerp fTime/25 toward mount, step capped at fTime per frame, orbit clamps around a point 13 behind the hero (radius 3..10, height 15+/-10), then a 3-try wall pull-in settle loop (overhead test): pulls the camera toward the hero's true position (fHeroX/Y/Z) through walls; when blocked, TestMoveCollision snaps it to the contact point and it is lifted by 1/6 of the blocked distance to see over. Finally BuildLookAt aims the camera at hero + 15*up + 9*forward. The initial MtxMult(+1 localZ)/final (-1) pair is a nudge that cancels out; the trailing double hero-restore MtxMult is a dead duplicate.
+// Chase/follow camera (the standard camera, 11 call sites). Mount point = hero + 22*localUp + 18*localBack (hero frame used as scratch, restored at end).
+// bSnap=1: SNAP hard to the mount (used right after a manual reposition - PrepareTargetSelect, PlayExploring warp; skips smoothing AND orbit clamps).
+// bSnap=0: smooth follow - lerp fTime/25 toward mount, step capped at fTime per frame, orbit clamps around a point 13 behind the hero (radius 3..10, height 15+/-10),
+// then a 3-try wall pull-in settle loop (overhead test): pulls the camera toward the hero's true position (fHeroX/Y/Z) through walls; when blocked,
+// TestMoveCollision snaps it to the contact point and it is lifted by 1/6 of the blocked distance to see over.
+// Finally BuildLookAt aims the camera at hero + 15*up + 9*forward. The initial MtxMult(+1 localZ)/final (-1) pair is a nudge that cancels out;
+// the trailing double hero-restore MtxMult is a dead duplicate.
 void __cdecl hook_UpdateCameraFollowChase_445525(
   CHanaFrameT3EC_S354 *pHeroFrame,
   CHanaFrameT3EC_S354 *pCameraFrame,
@@ -1278,7 +1284,8 @@ void __cdecl hook_CHanaAnimSetT3F1__RemoveAnimT3F0_404349(CHanaAnimSetT3F1_S150 
   }
 }
 
-// Rebind/reset camera-linked objects after an ODS scene load. Walks g_pObjTable; for each object of dwType_204==1009, calls sub_404349 on the sub-objects whose [304] slot equals nCameraId (the freshly loaded camera frame).
+// Rebind/reset camera-linked objects after an ODS scene load. Walks g_pObjTable; for each object of dwType_204==1009, calls sub_404349 on the sub-objects
+// whose [304] slot equals nCameraId (the freshly loaded camera frame).
 void __cdecl hook_UpdateCameraLinkedObjects_44451F(CHanaFrameT3EC_S354 *nCameraId)
 {
   int j; // [esp+0h] [ebp-10h]
@@ -1304,7 +1311,8 @@ void __cdecl hook_UpdateCameraLinkedObjects_44451F(CHanaFrameT3EC_S354 *nCameraI
   }
 }
 
-// Recursively expand a parsed ODF map frame into child frame nodes: marks [0]=1, normalizes via sub_407E5B, builds the T3ED representation (CHanaObj::NewT3EDFromChildT3EC), and for each frame recurses then frees the temp T3ED. Called right after ParseODFFile on the map frame.
+// Recursively expand a parsed ODF map frame into child frame nodes: marks [0]=1, normalizes via sub_407E5B, builds the T3ED representation
+// (CHanaObj::NewT3EDFromChildT3EC), and for each frame recurses then frees the temp T3ED. Called right after ParseODFFile on the map frame.
 void __cdecl hook_BuildMapSubFrames_443DD5(CHanaFrameT3EC_S354 *pFrame)
 {
   unsigned int nIndex; // [esp+4h] [ebp-10h]
@@ -1420,7 +1428,8 @@ void __cdecl hook_Frame_ComputeWorldAABB(CHanaFrameT3EC_S354 *pFrame)
   }
 }
 
-// Initialize the battle HUD / select resource arrays (three int* tables, flag=1 at start): the clock-HUD table fed to DrawClockHud, the gauge table fed to UpdateHudGauge, and the mouse-select table fed to ShowMouseSelectDialog. Large setup routine; called once at battle start.
+// Initialize the battle HUD / select resource arrays (three int* tables, flag=1 at start): the clock-HUD table fed to DrawClockHud, the gauge table fed to
+// UpdateHudGauge, and the mouse-select table fed to ShowMouseSelectDialog. Large setup routine; called once at battle start.
 CHanaSpriteT3F6_S1FC *__cdecl hook_InitHudResources_4490A7(
   CHanaSpriteT3F6_S1FC **arrSprNumbers,
   CHanaSpriteT3F6_S1FC **arrSprTimes,
@@ -1984,7 +1993,8 @@ void __cdecl hook_HanaTexture_CreateFromFile(CHanaSpriteT3F6_S1FC **ppOutSprite,
   }
 }
 
-// Activate the item/enemy bodies for a map. Marks up to 10 item bodies active (sets [304]=1 on each body's pose target), then configures the scene's item slots from pItemConfig for nMapIndex.
+// Activate the item/enemy bodies for a map. Marks up to 10 item bodies active (sets [304]=1 on each body's pose target), then configures the scene's item slots
+// from pItemConfig for nMapIndex.
 void __cdecl hook_SetupItemBodies_459F81(
   CHanaSceneT458_S504 *pScene,
   CSekBody **pItemBodies,
@@ -2070,7 +2080,15 @@ uint8_t &g_bAttackHeld = *(uint8_t *)0x52EF74; // WRITABLE
 uint8_t &g_bSkillActive = *(uint8_t *)0x52EF75; // WRITABLE
 
 float &g_fSkillTimer = *(float *)0x52EF78; // WRITABLE
-// Hero control / AI / input + movement step for one frame. (1) Input: under MutexThreadWait, GetInputState; sums mouse delta across 30 devices into nMouseDX/nMouseDY (x10 sensitivity when the device is 'ok'), centered on ConvertFrom640AsInt(320/240); tracks left/middle button press/release into g_bAttackHeld / g_bSkillActive (+g_dwSkillTimer). (2) If g_dwBattleMode<=-1, reset all action flags. (3) Battle state: g_bSpinActive (g_dwSpinTimer, pose 16, hp-0.5/s, spin -1.8*camF, exits >80s) or g_bSkillActive (g_dwSkillTimer, pose 13, hp-0.3/s, spin +1.5, pose 1 after 28s, clear >33s); else on held mouse button pick the attack pose - special maps (16,17,21,22,23) use pose 6/hp-0.25, others pose 5/hp-0.2, plus per-button poses 3/4/1 - or when idle (500ms) pose 1 / random 2|14 and regen hp +0.05/s (clamped to fHeroHpMax). Yaw from nMouseDX/360/3 via MatrixRotateCubeMapFace about pYawAxis=(0,1,0). (4) Ramp *pfCamFactor toward 1.0 at fFrameTime/1000. (5) Collision/move: up to 3 iterations of CheckFrameCollision; on bloc
+
+// Hero control / AI / input + movement step for one frame. (1) Input: under MutexThreadWait, GetInputState; sums mouse delta across 30 devices into
+// nMouseDX/nMouseDY (x10 sensitivity when the device is 'ok'), centered on ConvertFrom640AsInt(320/240); tracks left/middle button press/release into
+// g_bAttackHeld / g_bSkillActive (+g_dwSkillTimer). (2) If g_dwBattleMode<=-1, reset all action flags. (3) Battle state: g_bSpinActive
+// (g_dwSpinTimer, pose 16, hp-0.5/s, spin -1.8*camF, exits >80s) or g_bSkillActive (g_dwSkillTimer, pose 13, hp-0.3/s, spin +1.5, pose 1 after 28s, clear >33s);
+// else on held mouse button pick the attack pose - special maps (16,17,21,22,23) use pose 6/hp-0.25, others pose 5/hp-0.2, plus per-button poses 3/4/1 - or when
+// idle (500ms) pose 1 / random 2|14 and regen hp +0.05/s (clamped to fHeroHpMax).
+// Yaw from nMouseDX/360/3 via MatrixRotateCubeMapFace about pYawAxis=(0,1,0). (4) Ramp *pfCamFactor toward 1.0 at fFrameTime/1000.
+// (5) Collision/move: up to 3 iterations of CheckFrameCollision; on bloc
 char __cdecl hook_UpdateHeroControl_45A513(
   CSekBody *pHeroBody,
   CHanaFrameT3EC_S354 *pMapFrame,
@@ -2404,7 +2422,8 @@ char __cdecl hook_UpdateHeroControl_45A513(
   return bActing;
 }
 
-// Find the nearest item/enemy body in acquisition range. For each item body computes its position relative to pHeroFrame; if within radius (~8, dist^2<64) and not already flagged, sets [304]=1, records the hit in the global per-map target bitmask (MEMORY[0x52F845][nMapIndex] |= 1<<i) and returns that index.
+// Find the nearest item/enemy body in acquisition range. For each item body computes its position relative to pHeroFrame; if within radius (~8, dist^2<64) and not
+// already flagged, sets [304]=1, records the hit in the global per-map target bitmask (MEMORY[0x52F845][nMapIndex] |= 1<<i) and returns that index.
 int __cdecl hook_FindTargetInRange_45A1AD(
   CHanaFrameRootT3EC_S2D4 *pFrame,
   CSekBody **pItemBodies,
@@ -2501,7 +2520,10 @@ void __cdecl hook_ApplyTargetEffect_45A2BA(
   }
 }
 
-// Lock-on targeter. Scans pScene->refsFrames_134 for 'Event' children whose bit (nEventNo=atoi(name+5)) is not yet set in the per-map event bitmask g_sceneState_52F7E0.stc9C.gap30[nMapIndex+3]; keeps the nearest one within reach (default 400.0, squared). For the closest it positions/aims pLockonFrame at that node (rel pos + local rotation vs g_pSceneFrame -> MtxMult + UpdateBoneLookAtTransform) and sets bFound=1. If none found, parks pLockonFrame far off-screen (10000,1000,-1000). Returns bFound.
+// Lock-on targeter. Scans pScene->refsFrames_134 for 'Event' children whose bit (nEventNo=atoi(name+5)) is not yet set in the per-map event bitmask
+// g_sceneState_52F7E0.stc9C.gap30[nMapIndex+3]; keeps the nearest one within reach (default 400.0, squared). For the closest it positions/aims pLockonFrame
+// at that node (rel pos + local rotation vs g_pSceneFrame -> MtxMult + UpdateBoneLookAtTransform) and sets bFound=1. If none found, parks pLockonFrame
+// far off-screen (10000,1000,-1000). Returns bFound.
 void __cdecl hook_UpdateLockonEvent_45953B(
   CHanaSceneT458_S504 *pScene,
   CHanaFrameT3EC_S354 *pHeroFrame,
@@ -2581,7 +2603,12 @@ void __cdecl hook_UpdateLockonEvent_45953B(
     MtxMult_4069DD(pLockonFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, 10000.0, 1000.0, -1000.0);
 }
 
-// Scene advance / transition detector. Scans the ODS scene's refsFrames_134 for 'Jump' marker frames; when the hero is within radius ~5.2 of one (fRelX^2+fRelZ^2<=27.04) and it is in front (fRelZ... pZpos < -0.85), reads the destination from the name: nTargetMap=atoi(name+4), nTargetSub=atoi(name+7). (1) If nTargetMap is in this stage's engageMapTable slot (30*nStageIndex), set nResult=2 -> caller engages the scripted-cam/dialogue mode. (2) Else if nTargetMap==finalMapTable[nStageIndex] ({21,13,16,4,2,14,16,22,17,6,8}) -> return 3 = stage complete. (3) Otherwise advance: write *pnMapIndex=nTargetMap / *pnSubIndex=nTargetSub and, unless it is an excluded target ((23,0),(23,1), map 8, (22,10)), play a transition SFX (pDSBuf for maps 16/17 else arrUIEffectDSBuffer_52F168) and return 1 = fade & load the next map. Leaves nResult (0/2) when nothing triggered.
+// Scene advance / transition detector. Scans the ODS scene's refsFrames_134 for 'Jump' marker frames; when the hero is within radius ~5.2 of one
+// (fRelX^2+fRelZ^2<=27.04) and it is in front (fRelZ... pZpos < -0.85), reads the destination from the name: nTargetMap=atoi(name+4), nTargetSub=atoi(name+7).
+// (1) If nTargetMap is in this stage's engageMapTable slot (30*nStageIndex), set nResult=2 -> caller engages the scripted-cam/dialogue mode.
+// (2) Else if nTargetMap==finalMapTable[nStageIndex] ({21,13,16,4,2,14,16,22,17,6,8}) -> return 3 = stage complete.
+// (3) Otherwise advance: write *pnMapIndex=nTargetMap / *pnSubIndex=nTargetSub and, unless it is an excluded target ((23,0),(23,1), map 8, (22,10)),
+// play a transition SFX (pDSBuf for maps 16/17 else arrUIEffectDSBuffer_52F168) and return 1 = fade & load the next map. Leaves nResult (0/2) when nothing triggered.
 int __cdecl hook_CheckSceneTransition_459768(
   CHanaSceneT458_S504 *pScene,
   CHanaFrameT3EC_S354 *pHeroFrame,
@@ -2731,7 +2758,11 @@ int __cdecl hook_CheckSceneTransition_459768(
   return nResult;
 }
 
-// Trigger the ODS 'Event' the hero has reached and return its script time. Scans pScene->refsFrames_134 for children named 'Event'; when one is within radius 5 of pHeroFrame (fRelX^2+fRelZ^2<=25) and oriented/positioned (pZpos<-0.25 || pZXrot>0.25), reads nEventNo=atoi(name+13). If its bit is not yet set in g_sceneState_52F7E0.stc9C.gap30[nMapIndex+3] (the per-map event bitmask), sets fEventTime=1000*nEventNo and marks the bit. On a trigger it also finds the 'Otoko' child -> *pnCursor (hero node index) and the 'Camera' child, re-parenting/re-aiming g_pCameraFrame onto it (AttachChild + MtxMult + UpdateBoneLookAt). Returns fEventTime (0 = no event).
+// Trigger the ODS 'Event' the hero has reached and return its script time. Scans pScene->refsFrames_134 for children named 'Event'; when one is within radius 5
+// of pHeroFrame (fRelX^2+fRelZ^2<=25) and oriented/positioned (pZpos<-0.25 || pZXrot>0.25), reads nEventNo=atoi(name+13). If its bit is not yet set in
+// g_sceneState_52F7E0.stc9C.gap30[nMapIndex+3] (the per-map event bitmask), sets fEventTime=1000*nEventNo and marks the bit. On a trigger it also finds
+// the 'Otoko' child -> *pnCursor (hero node index) and the 'Camera' child, re-parenting/re-aiming g_pCameraFrame onto it (AttachChild + MtxMult + UpdateBoneLookAt).
+// Returns fEventTime (0 = no event).
 double __cdecl hook_GetSceneEventTime_459CA2(
   CHanaSceneT458_S504 *pScene,
   CHanaFrameT3EC_S354 *pHeroFrame,
@@ -2924,7 +2955,14 @@ void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpP
   }
 }
 
-// Target-select INTRO: the camera sweep played before ShowMouseSelectDialog. A timed shot list drives it - arrShotAngles/arrShotDurations = [(-90,10),(45,10),(180,900),(99999,sentinel)]: two 10s profile shots of the hero (yaw -90 then +45), then a long 180 rear shot ended only by the global 280s timeout. Per frame the hero frame is yawed to the shot angle (hero frame as scratch, restored after), the chase cam is snapped twice (bSnap=1) - once from hero+18up (look-at hero), once from hero - fCrane - 13 (fCrane rises -10 -> +5 at delta/13: a crane-down) - then the head node ('head', FindFrameByName) frames the shot: camera pushed out to a 5u minimum XZ distance from the head and BuildLookAt at it. After the crane bottoms out the FOV creeps 0.8 -> 1.2 (delta/80, zoom-out). Hero plays anim item 15 (select pose, skipped if already in 8/9) until done; the 8 target bodies (pSpriteNames) animate at delta/fAnimRate, go idle (item 0) after t>30, are hard re-cut to their current item (float_224=1) on each shot change, and
+// Target-select INTRO: the camera sweep played before ShowMouseSelectDialog. A timed shot list drives it - arrShotAngles/arrShotDurations =
+// [(-90,10),(45,10),(180,900),(99999,sentinel)]: two 10s profile shots of the hero (yaw -90 then +45), then a long 180 rear shot ended only by
+// the global 280s timeout. Per frame the hero frame is yawed to the shot angle (hero frame as scratch, restored after), the chase cam is snapped
+// twice (bSnap=1) - once from hero+18up (look-at hero), once from hero - fCrane - 13 (fCrane rises -10 -> +5 at delta/13: a crane-down) - then
+// the head node ('head', FindFrameByName) frames the shot: camera pushed out to a 5u minimum XZ distance from the head and BuildLookAt at it.
+// After the crane bottoms out the FOV creeps 0.8 -> 1.2 (delta/80, zoom-out). Hero plays anim item 15 (select pose, skipped if already in 8/9)
+// until done; the 8 target bodies (pSpriteNames) animate at delta/fAnimRate, go idle (item 0) after t>30, are hard re-cut to their current item
+// (float_224=1) on each shot change, and
 void __cdecl hook_PrepareTargetSelect_45B5BD(
   CSekBody *pHeroBody,
   CSekBody **pItemBodies,
@@ -3217,7 +3255,13 @@ void __cdecl hook_DrawSpriteListEcho_45B2FB(CHanaSpriteT3F6_S1FC **arrSprites, i
   }
 }
 
-// Mouse target-select dialog (follows PrepareTargetSelect's fade-in). Three temp sprites: pCursorSpr = mouse.bmp masked cursor (path id 1003) tracking the mouse; pBackdropSpr = 512x512 ONE-TIME capture of the frozen screen (D3DXLoadTextureFromSurface) drawn fullscreen as the backdrop; pWaveSpr = 128x128 LIVE-Capture shimmer - its texture is reloaded from the framebuffer EVERY frame and drawn as a full-screen quad whose corners wobble +/-1px (sin(fSinPhase)/cos(fCosPhase), rates 0.1/-0.07 per sec) - a water/heat-shimmer distortion over the whole dialog (the old 'swimming fish cursor' note was wrong). Sprites: [3] prompt (320,100) fades in; [8] hint (320,200); LEFT target pair [9]+glow[11] at (200,300); RIGHT pair [10]+glow[12] at (440,300); glows cross-fade +/- delta/10, active side re-drawn with DESTBLEND=2 (additive). Hover test: XZ distance to an anchor < 50px (2500 = 50^2). nChoice = 1 LEFT / 0 RIGHT / -1 neither. Loop exits on a fresh button PRESS edge (bCurBtn==1 != bPrevBtn) while hovering a side - so -1 
+// Mouse target-select dialog (follows PrepareTargetSelect's fade-in). Three temp sprites: pCursorSpr = mouse.bmp masked cursor (path id 1003) tracking the mouse;
+// pBackdropSpr = 512x512 ONE-TIME capture of the frozen screen (D3DXLoadTextureFromSurface) drawn fullscreen as the backdrop; pWaveSpr = 128x128 LIVE-Capture
+// shimmer - its texture is reloaded from the framebuffer EVERY frame and drawn as a full-screen quad whose corners wobble +/-1px (sin(fSinPhase)/cos(fCosPhase),
+// rates 0.1/-0.07 per sec) - a water/heat-shimmer distortion over the whole dialog (the old 'swimming fish cursor' note was wrong).
+// Sprites: [3] prompt (320,100) fades in; [8] hint (320,200); LEFT target pair [9]+glow[11] at (200,300); RIGHT pair [10]+glow[12] at (440,300);
+// glows cross-fade +/- delta/10, active side re-drawn with DESTBLEND=2 (additive). Hover test: XZ distance to an anchor < 50px (2500 = 50^2).
+// nChoice = 1 LEFT / 0 RIGHT / -1 neither. Loop exits on a fresh button PRESS edge (bCurBtn==1 != bPrevBtn) while hovering a side - so -1 
 int __cdecl hook_ShowMouseSelectDialog_4573CF(CHanaSpriteT3F6_S1FC **arrSprModes, LPDIRECTSOUNDBUFFER *pArrSndBuf)
 {
   float X; // [esp+30h] [ebp-1D4h]
@@ -3500,7 +3544,6 @@ void register_PlayExploring_45BCAE() {
   hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK]
 
   hnh_Hook(0x45b5bd, hook_PrepareTargetSelect_45B5BD, "PrepareTargetSelect_45B5BD");
-
 
   hnh_HookOff();
   hnh_Hook(0x407b73, hook_HanaMatrix_BuildLookAtAndTransform, "HanaMatrix_BuildLookAtAndTransform_407B73"); // [OK]
