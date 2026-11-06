@@ -393,7 +393,7 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   ├──0x4686f8 UpdateCutInSceneCameraFollow                            <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
     │   │   │   ├──0x47ad8d MenuGallery                                                         <- [HOOK+PTR MenuCharSelect.cpp]
     │   │   ├──0x44c38d PlayHunting_44C38D                                                      <- [HOOK+PTR PlayHunting_44C38D.cpp]
-    │   │   │   ├──0x455183 PlayVictoryCutscene_455183                                          <- [PTR PlayHunting_44C38D.cpp]
+    │   │   │   ├──0x455183 PlayVictoryCutscene_455183                                          <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   │   ├──0x458b3a UpdateVoicePlayback_458B3A                                      <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
     │   │   │   │   ├──0x44b23b DrawRecViewfinder_44B23B                                        <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   │   │   ├──0x414344 DrawSprite3D                                                <- [HOOK+PTR PlayHunting_44C38D.cpp]
@@ -431,7 +431,7 @@ Starting from 0x49f0e1
     │   │   │   ├──0x443dd5 BuildMapSubFrames_443DD5                                            <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   │   │   ├──0x407e5b Frame_ComputeWorldAABB                                          <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   │   ├──0x4535de WanaAttack_Close_4535DE                                             <- [HOOK+PTR PlayHunting_44C38D.cpp]
-    │   │   │   ├──0x455be2 PlayResultsCutscene_455BE2                                          <- [PTR PlayHunting_44C38D.cpp]
+    │   │   │   ├──0x455be2 PlayResultsCutscene_455BE2                                          <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   │   ├──0x455b0e HanaSurface_CreateAndFade                                       <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   │   ├──0x448c72 BindSceneActors_448C72                                              <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   ├──0x4536f6 WanaAttack_Knockback_4536F6                                         <- [HOOK+PTR PlayHunting_44C38D.cpp]
@@ -481,9 +481,9 @@ Done 460
 ## Stats
 
 - tree functions:      460
-- hooked:              424 (HOOK or HOOK+PTR)
+- hooked:              426 (HOOK or HOOK+PTR)
 - pinned:              424 (PTR or HOOK+PTR)
-- fully covered:       417 (HOOK+PTR)
+- fully covered:       419 (HOOK+PTR)
 - implemented only:    1
 - untouched:           28
 
@@ -752,7 +752,7 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              32 (31 func-ptr imports)
+  globals:              31 (31 func-ptr imports)
   functions:            32 (31 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   31/31
   hnh_Hook-registered:  31/31
@@ -779,12 +779,11 @@ structs:              0
 SUMMARY
 structs:              0
   globals:              29 (18 func-ptr imports)
-  functions:            17 (16 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   16/16
-  hnh_Hook-registered:  16/16
-  func-ptrs declared:   16/16
-  func-ptrs w/o hook:   2/18
-  no hook function for: PlayResultsCutscene_455BE2, PlayVictoryCutscene_455183
+  functions:            19 (18 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   18/18
+  hnh_Hook-registered:  18/18
+  func-ptrs declared:   18/18
+  func-ptrs w/o hook:   0/18
 ```
 
 ### hnhmods/src/PlayOdsDialogueScene_477F90.cpp
