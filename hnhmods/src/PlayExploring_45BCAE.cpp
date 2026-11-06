@@ -1350,14 +1350,7 @@ void __cdecl hook_Frame_ComputeWorldAABB(CHanaFrameT3EC_S354 *pFrame)
   D3DXVECTOR3 *m; // [esp+8h] [ebp-28Ch]
   int i; // [esp+Ch] [ebp-288h]
   D3DXMATRIX *k; // [esp+14h] [ebp-280h]
-  D3DXMATRIX cornerMatrices; // [esp+18h] [ebp-27Ch] BYREF
-  D3DXMATRIX cornerM1; // [esp+58h] [ebp-23Ch] BYREF
-  D3DXMATRIX cornerM2; // [esp+98h] [ebp-1FCh] BYREF
-  D3DXMATRIX cornerM3; // [esp+D8h] [ebp-1BCh] BYREF
-  D3DXMATRIX cornerM4; // [esp+118h] [ebp-17Ch] BYREF
-  D3DXMATRIX cornerM5; // [esp+158h] [ebp-13Ch] BYREF
-  D3DXMATRIX cornerM6; // [esp+198h] [ebp-FCh] BYREF
-  D3DXMATRIX cornerM7; // [esp+1D8h] [ebp-BCh] BYREF
+  D3DXMATRIX cornerMatrices[8]; // [esp+18h] [ebp-27Ch] BYREF
   D3DXVECTOR3 maxBound; // [esp+218h] [ebp-7Ch]
   D3DXVECTOR3 transformed[8]; // [esp+224h] [ebp-70h] BYREF
   int n; // [esp+284h] [ebp-10h]
@@ -1366,7 +1359,7 @@ void __cdecl hook_Frame_ComputeWorldAABB(CHanaFrameT3EC_S354 *pFrame)
   ONCELOG("[HNH:SUB] Frame_ComputeWorldAABB_407E5B\n");
  
   i = 8;
-  for ( k = &cornerMatrices; --i >= 0; ++k )
+  for ( k = cornerMatrices; --i >= 0; ++k )
     ;
   j = 8;
   for ( m = transformed; --j >= 0; ++m )
@@ -1388,20 +1381,20 @@ void __cdecl hook_Frame_ComputeWorldAABB(CHanaFrameT3EC_S354 *pFrame)
     maxBound.z = maxBound.z - 0.00050000002;
     minBound.z = minBound.z + 0.00050000002;
   }
-  D3DXMatrixTranslation(&cornerMatrices, maxBound.x, minBound.y, maxBound.z);
-  D3DXMatrixTranslation(&cornerM1, maxBound.x, minBound.y, minBound.z);
-  D3DXMatrixTranslation(&cornerM2, minBound.x, minBound.y, minBound.z);
-  D3DXMatrixTranslation(&cornerM3, minBound.x, minBound.y, maxBound.z);
-  D3DXMatrixTranslation(&cornerM4, maxBound.x, maxBound.y, maxBound.z);
-  D3DXMatrixTranslation(&cornerM5, maxBound.x, maxBound.y, minBound.z);
-  D3DXMatrixTranslation(&cornerM6, minBound.x, maxBound.y, minBound.z);
-  D3DXMatrixTranslation(&cornerM7, minBound.x, maxBound.y, maxBound.z);
+  D3DXMatrixTranslation(cornerMatrices, maxBound.x, minBound.y, maxBound.z);
+  D3DXMatrixTranslation(&cornerMatrices[1], maxBound.x, minBound.y, minBound.z);
+  D3DXMatrixTranslation(&cornerMatrices[2], minBound.x, minBound.y, minBound.z);
+  D3DXMatrixTranslation(&cornerMatrices[3], minBound.x, minBound.y, maxBound.z);
+  D3DXMatrixTranslation(&cornerMatrices[4], maxBound.x, maxBound.y, maxBound.z);
+  D3DXMatrixTranslation(&cornerMatrices[5], maxBound.x, maxBound.y, minBound.z);
+  D3DXMatrixTranslation(&cornerMatrices[6], minBound.x, maxBound.y, minBound.z);
+  D3DXMatrixTranslation(&cornerMatrices[7], minBound.x, maxBound.y, maxBound.z);
   for ( n = 0; n < 8; ++n )
   {
-    D3DXMatrixMultiply(&cornerMatrices + n, &cornerMatrices + n, &pFrame->mat4x4_after);
-    transformed[n].x = cornerMatrices.m[4 * n + 3][0];
-    transformed[n].y = cornerMatrices.m[4 * n + 3][1];
-    transformed[n].z = cornerMatrices.m[4 * n + 3][2];
+    D3DXMatrixMultiply(&cornerMatrices[n], &cornerMatrices[n], &pFrame->mat4x4_after);
+    transformed[n].x = cornerMatrices[0].m[4 * n + 3][0];
+    transformed[n].y = cornerMatrices[0].m[4 * n + 3][1];
+    transformed[n].z = cornerMatrices[0].m[4 * n + 3][2];
     pVertexOut = &transformed[n];
     pTrasnformedCorner = &pFrame->transformedCorners[n];
     pTrasnformedCorner->x = pVertexOut->x;
@@ -2817,10 +2810,20 @@ double __cdecl hook_GetSceneEventTime_459CA2(
   return fEventTime;
 }
 
+#define EVERYLOG(count, format, ...) \
+  { \
+    static int _counted = count; \
+    if (_counted-- == 0) { \
+      _counted = count; \
+      DebugLog(format, __VA_ARGS__); \
+    } \
+  }
+
+
 // Update the on-screen health gauge HUD from the pHudRes resource table, using fHpPct/fHpMaxPct (hero hp and max, passed divided by 100).
 void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpPct, int fHpMaxPct)
 {
-  POINT ptHud2; // rax
+  
   int v4; // eax
   int v5; // eax
   int v6; // [esp+20h] [ebp-68h]
@@ -2849,7 +2852,7 @@ void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpP
   if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
   {
     GetSurfaceWH(pHudRes[2]->pTexture_134, &texW, &texH);
-    SetRect(&rc, 253, 0, 254, 48);
+    SetRect(&rc, 253, 0, 254, 48);  // select red:area
     CHanaSpriteT3F6__SetSrcRect_414B28(pHudRes[2], &rc);
     parrPos[0].x = ConvertFrom640AsFloat(354.0);
     parrPos[0].y = ConvertFrom640AsFloat(13.0);
@@ -2863,13 +2866,22 @@ void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpP
     parrPos[3].x = ConvertFrom640AsFloat(368.0);
     parrPos[3].y = ConvertFrom640AsFloat(28.0);
     parrPos[3].z = 0.0;
-    DrawSprite3D(pHudRes[2], parrPos);
-    ptHud2 = *(POINT*)&pHudRes[2]->dwWidth_1F0;
+    DrawSprite3D(pHudRes[2], parrPos);  // draw red
+
+    // IDA HexRays issues related to, cdq, sub eax, edx, and sar 1.
+
+    //EVERYLOG(60, "[HNH:UpdateHudGauge] fHpPct=%d, fHpMaxPct=%d\n", fHpPct, fHpMaxPct);
+
+    // select: green area
+    int xBer = (pHudRes[2]->dwWidth_1F0 / 2) - fHpPct * (pHudRes[2]->dwWidth_1F0 / 2 - 1) / fHpMaxPct;
+
+    //EVERYLOG(60, "[HNH:UpdateHudGauge] xBer=%d\n", xBer);
+
     SetRect(
       &rc,
-      ((ptHud2.x - ptHud2.y) >> 1) - fHpPct * (pHudRes[2]->dwWidth_1F0 / 2 - 1) / fHpMaxPct,
+      xBer,
       0,
-      ((ptHud2.x - ptHud2.y) >> 1) - fHpPct * (pHudRes[2]->dwWidth_1F0 / 2 - 1) / fHpMaxPct,
+      xBer,
       48);
     CHanaSpriteT3F6__SetSrcRect_414B28(pHudRes[2], &rc);
     parrPos[0].x = ConvertFrom640AsFloat(354.0);
@@ -2886,12 +2898,16 @@ void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpP
     parrPos[3].x = ConvertFrom640AsFloat(368.0);
     parrPos[3].y = ConvertFrom640AsFloat(28.0);
     parrPos[3].z = 0.0;
-    DrawSprite3D(pHudRes[2], parrPos);
+    DrawSprite3D(pHudRes[2], parrPos); // draw greaan
+    
     v12 = ConvertFrom640AsInt(30);
     v8 = ConvertFrom640AsInt(640);
     v6 = ConvertFrom640AsInt(-2);
     v4 = ConvertFrom640AsInt(320);
     SetRect(&rc, v4, v6, v8, v12);
+
+    //EVERYLOG(60, "[HNH:UpdateHudGauge] pHudRes[1] name=%s\n", pHudRes[1]->szName_8);
+
     DrawSpriteLTRB(pHudRes[1], rc.left, rc.top, rc.right, rc.bottom);
     SetRect(&rc, 0, 1, 160, 47);
     CHanaSpriteT3F6__SetSrcRect_414B28(pHudRes[8], &rc);
@@ -2900,6 +2916,9 @@ void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpP
     v7 = ConvertFrom640AsInt(30);
     v5 = ConvertFrom640AsInt(480);
     SetRect(&rc, v5, v7, v9, v13);
+
+    //EVERYLOG(60, "[HNH:UpdateHudGauge] pHudRes[8] name=%s\n", pHudRes[8]->szName_8);
+
     DrawSpriteLTRB(pHudRes[8], rc.left, rc.top, rc.right, rc.bottom);
     g_pD3DDevice_4D6C78->EndScene();
   }
@@ -3480,31 +3499,29 @@ void register_PlayExploring_45BCAE() {
 
   hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK]
 
+  hnh_Hook(0x45b5bd, hook_PrepareTargetSelect_45B5BD, "PrepareTargetSelect_45B5BD");
+
+
+  hnh_HookOff();
+  hnh_Hook(0x407b73, hook_HanaMatrix_BuildLookAtAndTransform, "HanaMatrix_BuildLookAtAndTransform_407B73"); // [OK]
+  hnh_Hook(0x407e5b, hook_Frame_ComputeWorldAABB, "Frame_ComputeWorldAABB_407E5B");  // [OK]
+  hnh_Hook(0x443dd5, hook_BuildMapSubFrames_443DD5, "BuildMapSubFrames_443DD5");  // [OK]
   hnh_Hook(0x4490a7, hook_InitHudResources_4490A7, "InitHudResources_4490A7");  // [OK]
   hnh_Hook(0x4135ed, hook_HanaTexture_CreateFromFile, "HanaTexture_CreateFromFile_4135ED"); // [OK]
   hnh_Hook(0x459f81, hook_SetupItemBodies_459F81, "SetupItemBodies_459F81");  // [OK]
   hnh_Hook(0x45a513, hook_UpdateHeroControl_45A513, "UpdateHeroControl_45A513");  // [OK]
   hnh_Hook(0x45a1ad, hook_FindTargetInRange_45A1AD, "FindTargetInRange_45A1AD");  // [OK]
-
-  hnh_Hook(0x45a2ba, hook_ApplyTargetEffect_45A2BA, "ApplyTargetEffect_45A2BA");
   hnh_Hook(0x45953b, hook_UpdateLockonEvent_45953B, "UpdateLockonEvent_45953B"); // [OK]
   hnh_Hook(0x459768, hook_CheckSceneTransition_459768, "CheckSceneTransition_459768");  // [OK]
   hnh_Hook(0x459ca2, hook_GetSceneEventTime_459CA2, "GetSceneEventTime_459CA2"); // [OK]
-  hnh_Hook(0x44bc36, hook_UpdateHudGauge_44BC36, "UpdateHudGauge_44BC36"); // ~!~
+  hnh_Hook(0x44bc36, hook_UpdateHudGauge_44BC36, "UpdateHudGauge_44BC36"); // [OK]
+  hnh_Hook(0x45b2fb, hook_DrawSpriteListEcho_45B2FB, "DrawSpriteListEcho_45B2FB"); // [OK]
+  hnh_Hook(0x445525, hook_UpdateCameraFollowChase_445525, "UpdateCameraFollowChase_445525"); // [OK]
+  hnh_Hook(0x45a2ba, hook_ApplyTargetEffect_45A2BA, "ApplyTargetEffect_45A2BA"); // [OK]
+  hnh_Hook(0x404349, hook_CHanaAnimSetT3F1__RemoveAnimT3F0_404349, "CHanaAnimSetT3F1__RemoveAnimT3F0_404349"); // [OK] 
+  hnh_Hook(0x44451f, hook_UpdateCameraLinkedObjects_44451F, "UpdateCameraLinkedObjects_44451F"); // [OK]
+  hnh_Hook(0x455b0e, hook_HanaSurface_CreateAndFade, "HanaSurface_CreateAndFade_455B0E"); // [OK]
+  hnh_Hook(0x4573cf, hook_ShowMouseSelectDialog_4573CF, "ShowMouseSelectDialog_4573CF"); // [OK]
 
-  hnh_HookOff();
-  hnh_Hook(0x45b5bd, hook_PrepareTargetSelect_45B5BD, "PrepareTargetSelect_45B5BD");
-  hnh_Hook(0x455b0e, hook_HanaSurface_CreateAndFade, "HanaSurface_CreateAndFade_455B0E");
-  hnh_Hook(0x45b2fb, hook_DrawSpriteListEcho_45B2FB, "DrawSpriteListEcho_45B2FB");
-  hnh_Hook(0x4573cf, hook_ShowMouseSelectDialog_4573CF, "ShowMouseSelectDialog_4573CF");
-
-
-  hnh_Hook(0x445525, hook_UpdateCameraFollowChase_445525, "UpdateCameraFollowChase_445525");
-  hnh_Hook(0x407b73, hook_HanaMatrix_BuildLookAtAndTransform, "HanaMatrix_BuildLookAtAndTransform_407B73");
-  hnh_Hook(0x404349, hook_CHanaAnimSetT3F1__RemoveAnimT3F0_404349, "CHanaAnimSetT3F1__RemoveAnimT3F0_404349");
-  hnh_Hook(0x44451f, hook_UpdateCameraLinkedObjects_44451F, "UpdateCameraLinkedObjects_44451F");
-  hnh_Hook(0x443dd5, hook_BuildMapSubFrames_443DD5, "BuildMapSubFrames_443DD5");
-  hnh_Hook(0x407e5b, hook_Frame_ComputeWorldAABB, "Frame_ComputeWorldAABB_407E5B");
-  
   hnh_HookOn();
 }
