@@ -479,7 +479,9 @@ uint32_t &g_nSekStep_4CD764 = *(uint32_t *)0x4CD764; // WRITABLE
 BOOL __cdecl hook_CSekBody__UpdateAnim_4019E1(CSekBody *pSekBody, float fDelta)
 {
   BOOL bCompleted; // [esp+4h] [ebp-4h]
+
   ONCELOG("[HNH:SUB] CSekBody__UpdateAnim_4019E1\n");
+
   bCompleted = 0;
   if ( !pSekBody || pSekBody->field_24C || !pSekBody->pSekHeader_220 || !pSekBody->pSekHeader_220->pAnimSetT3F1 )
     return 0;
@@ -488,13 +490,22 @@ BOOL __cdecl hook_CSekBody__UpdateAnim_4019E1(CSekBody *pSekBody, float fDelta)
   if ( g_pSekItem_4CD760->float_58 <= (double)g_pSekItem_4CD760->float_60 )
   {
     bCompleted = 1;
-    if ( !g_pSekItem_4CD760->flag_0 && !g_pSekItem_4CD760->field_70 )
+    if ( !g_pSekItem_4CD760->flag_0 )
     {
-      g_pSekItem_4CD760->field_44 = g_pSekItem_4CD760->field_50;
-      g_nSekStep_4CD764 = g_pSekItem_4CD760->field_50 - 1;
-      pSekBody->field_244 = 1;
-      g_pSekItem_4CD760->float_60 = g_pSekItem_4CD760->float_58;
-    } else if ( g_pSekItem_4CD760->flag_0 == 1 )
+      if ( !g_pSekItem_4CD760->field_70 )
+      {
+        g_pSekItem_4CD760->field_44 = g_pSekItem_4CD760->field_50;
+        g_nSekStep_4CD764 = g_pSekItem_4CD760->field_50 - 1;
+        pSekBody->field_244 = 1;
+        g_pSekItem_4CD760->float_60 = g_pSekItem_4CD760->float_58;
+        goto LABEL_15;
+      }
+    LABEL_11:
+      CSekBody__CutToAnim_4018E1(pSekBody, g_pSekItem_4CD760->field_74);
+      pSekBody->float_21C = 0.0;
+      goto LABEL_15;
+    }
+    if ( g_pSekItem_4CD760->flag_0 == 1 )
     {
       ++g_pSekItem_4CD760->field_64;
       if ( !g_pSekItem_4CD760->field_70 || g_pSekItem_4CD760->field_64 < g_pSekItem_4CD760->gap78 )
@@ -504,14 +515,12 @@ BOOL __cdecl hook_CSekBody__UpdateAnim_4019E1(CSekBody *pSekBody, float fDelta)
         pSekBody->field_244 = 1;
         pSekBody->field_248 = 1;
         g_pSekItem_4CD760->float_60 = g_pSekItem_4CD760->float_54;
+        goto LABEL_15;
       }
-      else {
-        CSekBody__CutToAnim_4018E1(pSekBody, g_pSekItem_4CD760->field_74);
-        pSekBody->float_21C = 0.0;
-      }
+      goto LABEL_11;
     }
   }
-
+LABEL_15:
   if ( pSekBody->pSekHeader_220->pAnimSetT3F1 )
   {
     if ( pSekBody->float_21C != 0.0 )
@@ -523,7 +532,6 @@ BOOL __cdecl hook_CSekBody__UpdateAnim_4019E1(CSekBody *pSekBody, float fDelta)
     CHanaAnimSetT3F1__SetTime_403D61(pSekBody->pSekHeader_220->pAnimSetT3F1, g_pSekItem_4CD760->float_60);
     CHanaAnimSetT3F1__BlendStep_43A643(pSekBody->pSekHeader_220->pAnimSetT3F1, &pSekBody->float_224, fDelta);
   }
-
   return bCompleted;
 }
 
