@@ -1213,7 +1213,7 @@ void register_PlayAssault_4703AE() {
   hnh_Hook(0x4703AE, hook_PlayAssault_4703AE, "PlayAssault_4703AE"); // [OK]
 
  
-  hnh_Hook(0x466738, hook_Frame_SetPracticeAnimRootRecursive, "Frame_SetPracticeAnimRootRecursive_466738");
+  hnh_Hook(0x466738, hook_Frame_SetPracticeAnimRootRecursive, "Frame_SetPracticeAnimRootRecursive_466738"); // [OK]
 
   hnh_HookOff();
   hnh_Hook(0x4667a9, hook_InitializePracticeAnimations_4667A9, "InitializePracticeAnimations_4667A9"); // [OK]

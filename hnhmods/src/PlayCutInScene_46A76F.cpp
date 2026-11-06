@@ -295,7 +295,7 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
     WORD btnMouse = 0, btnMousePrev;
     int xMouse, yMouse;                 // cursor position
     int xDragStart, yDragStart;         // camera-drag origin
-    int xGrab, yGrab;                   // grab anchor of the active effect
+    int xGrab = 0, yGrab = 0;                   // grab anchor of the active effect
     int iCursorSlot;                    // arrMouseSprites index (0..3)
     int iHeroIdx;
     int nCurrentEffectIdx, nLastEffectIdx, nSelectedEffectIdx;
@@ -2878,38 +2878,38 @@ void __cdecl hook_Scene_ApplyFadeToPracticeFrames(float fadeAlpha)
 void register_PlayCutInScene_46A76F() {
   hnh_Hook(0x46A76F, hook_PlayCutInScene_46A76F, "PlayCutInScene_46A76F"); // [OK]
 
-  hnh_Hook(0x467bbd, hook_SyncObjectAnimationByName_467BBD, "SyncObjectAnimationByName_467BBD");
-  hnh_Hook(0x467d62, hook_IsParentValid_467D62, "IsParentValid_467D62");
-  hnh_Hook(0x467dfd, hook_IsObjectValidRecursive_467DFD, "IsObjectValidRecursive_467DFD");
-  hnh_Hook(0x4698e8, hook_SoundSE_ManageEffectsAndPlay, "SoundSE_ManageEffectsAndPlay_4698E8");
-  hnh_Hook(0x467e72, hook_AnimSet_MatchAndSortKutiRTibusaLFrames, "AnimSet_MatchAndSortKutiRTibusaLFrames_467E72");
-  hnh_Hook(0x401c67, hook_GetSekBodyCurrentAnimTime, "GetSekBodyCurrentAnimTime_401C67");
-  hnh_Hook(0x404277, hook_SetAnimSetTime, "SetAnimSetTime_404277");
-  hnh_Hook(0x4686f8, hook_UpdateCutInSceneCameraFollow, "UpdateCutInSceneCameraFollow_4686F8");
-  hnh_Hook(0x469eb6, hook_Character_UpdateAnimationState, "Character_UpdateAnimationState_469EB6");
-  hnh_Hook(0x48713f, hook_HanaObj_CheckFrameCondition, "HanaObj_CheckFrameCondition_48713F");
-  hnh_Hook(0x4690ab, hook_SoundAH_ManageEffectsAndAnimate, "SoundAH_ManageEffectsAndAnimate_4690AB");
-  hnh_Hook(0x481be0, hook_HanaMorp_AnimateAndPropagate, "HanaMorp_AnimateAndPropagate_481BE0");
-  hnh_Hook(0x466978, hook_CameraFrame_TrackBetweenObjectsAndLookAt, "CameraFrame_TrackBetweenObjectsAndLookAt_466978");
-  hnh_Hook(0x40799f, hook_HanaMatrix_ApplyTransform, "HanaMatrix_ApplyTransform_40799F");
-  hnh_Hook(0x467160, hook_CutInScene_CyclePosAndApplyCameraOffset, "CutInScene_CyclePosAndApplyCameraOffset_467160");
-  hnh_Hook(0x407945, hook_HanaFrame_GetMatAfter, "HanaFrame_GetMatAfter_407945");
-  hnh_Hook(0x4682d6, hook_MoveCutInSceneFramesWithCameraConstraint, "MoveCutInSceneFramesWithCameraConstraint_4682D6");
-  hnh_Hook(0x4680b4, hook_UpdateCutInSceneBoneTransforms, "UpdateCutInSceneBoneTransforms_4680B4");
-  hnh_Hook(0x46a503, hook_UpdateSekBodyAnimationMatrix, "UpdateSekBodyAnimationMatrix_46A503");
-  hnh_Hook(0x46a3e9, hook_UpdateFrameAnimationMatrix, "UpdateFrameAnimationMatrix_46A3E9");
-  hnh_Hook(0x4665f0, hook_Frame_CheckCameraDistanceAndRecurse, "Frame_CheckCameraDistanceAndRecurse_4665F0");
-  hnh_Hook(0x468a4a, hook_Cursor_ClampToCenterOrSprite, "Cursor_ClampToCenterOrSprite_468A4A");
-  hnh_Hook(0x4668ac, hook_Scene_ProcessPracticeFrames, "Scene_ProcessPracticeFrames_4668AC");
-  hnh_Hook(0x466bda, hook_CameraController_UpdateCutscene, "CameraController_UpdateCutscene_466BDA");
-  hnh_Hook(0x46a55d, hook_CameraFrame_ProjectFramePairOntoForwardRay, "CameraFrame_ProjectFramePairOntoForwardRay_46A55D");
-  hnh_Hook(0x47ea86, hook_FindFrameByNameSubstringRecursive, "FindFrameByNameSubstringRecursive_47EA86");
-  hnh_Hook(0x467abe, hook_AnimSet_ResetAndTransferAnimations, "AnimSet_ResetAndTransferAnimations_467ABE");
-  hnh_Hook(0x4679b2, hook_TransferAnimSetFrameAnimations_4679B2, "TransferAnimSetFrameAnimations_4679B2");
-  hnh_Hook(0x468da8, hook_DrawFadeTransition_Scene, "DrawFadeTransition_Scene_468DA8");
-  hnh_Hook(0x468b99, hook_Scene_ApplyFadeToPracticeFrames, "Scene_ApplyFadeToPracticeFrames_468B99");
+ 
 
   hnh_HookOff();
-
+  hnh_Hook(0x467bbd, hook_SyncObjectAnimationByName_467BBD, "SyncObjectAnimationByName_467BBD"); // [OK]
+  hnh_Hook(0x467d62, hook_IsParentValid_467D62, "IsParentValid_467D62");  // [OK]
+  hnh_Hook(0x467dfd, hook_IsObjectValidRecursive_467DFD, "IsObjectValidRecursive_467DFD"); // [OK]
+  hnh_Hook(0x4698e8, hook_SoundSE_ManageEffectsAndPlay, "SoundSE_ManageEffectsAndPlay_4698E8"); // [OK]
+  hnh_Hook(0x467e72, hook_AnimSet_MatchAndSortKutiRTibusaLFrames, "AnimSet_MatchAndSortKutiRTibusaLFrames_467E72"); // [OK]
+  hnh_Hook(0x401c67, hook_GetSekBodyCurrentAnimTime, "GetSekBodyCurrentAnimTime_401C67");  // [OK]
+  hnh_Hook(0x404277, hook_SetAnimSetTime, "SetAnimSetTime_404277");  // [OK]
+  hnh_Hook(0x4686f8, hook_UpdateCutInSceneCameraFollow, "UpdateCutInSceneCameraFollow_4686F8");  // [OK]
+  hnh_Hook(0x469eb6, hook_Character_UpdateAnimationState, "Character_UpdateAnimationState_469EB6");  // [OK]
+  hnh_Hook(0x48713f, hook_HanaObj_CheckFrameCondition, "HanaObj_CheckFrameCondition_48713F");  // [OK]
+  hnh_Hook(0x4690ab, hook_SoundAH_ManageEffectsAndAnimate, "SoundAH_ManageEffectsAndAnimate_4690AB");  // [OK]
+  hnh_Hook(0x481be0, hook_HanaMorp_AnimateAndPropagate, "HanaMorp_AnimateAndPropagate_481BE0");  // [OK]
+  hnh_Hook(0x466978, hook_CameraFrame_TrackBetweenObjectsAndLookAt, "CameraFrame_TrackBetweenObjectsAndLookAt_466978");  // [OK]
+  hnh_Hook(0x40799f, hook_HanaMatrix_ApplyTransform, "HanaMatrix_ApplyTransform_40799F");  // [OK]
+  hnh_Hook(0x467160, hook_CutInScene_CyclePosAndApplyCameraOffset, "CutInScene_CyclePosAndApplyCameraOffset_467160");  // [OK]
+  hnh_Hook(0x407945, hook_HanaFrame_GetMatAfter, "HanaFrame_GetMatAfter_407945");  // [OK]
+  hnh_Hook(0x4682d6, hook_MoveCutInSceneFramesWithCameraConstraint, "MoveCutInSceneFramesWithCameraConstraint_4682D6");  // [OK]
+  hnh_Hook(0x4680b4, hook_UpdateCutInSceneBoneTransforms, "UpdateCutInSceneBoneTransforms_4680B4");  // [OK]
+  hnh_Hook(0x46a503, hook_UpdateSekBodyAnimationMatrix, "UpdateSekBodyAnimationMatrix_46A503");  // [OK]
+  hnh_Hook(0x46a3e9, hook_UpdateFrameAnimationMatrix, "UpdateFrameAnimationMatrix_46A3E9");  // [OK]
+  hnh_Hook(0x4665f0, hook_Frame_CheckCameraDistanceAndRecurse, "Frame_CheckCameraDistanceAndRecurse_4665F0");  // [OK]
+  hnh_Hook(0x468a4a, hook_Cursor_ClampToCenterOrSprite, "Cursor_ClampToCenterOrSprite_468A4A");  // [OK]
+  hnh_Hook(0x4668ac, hook_Scene_ProcessPracticeFrames, "Scene_ProcessPracticeFrames_4668AC");  // [OK]
+  hnh_Hook(0x466bda, hook_CameraController_UpdateCutscene, "CameraController_UpdateCutscene_466BDA");  // [OK]
+  hnh_Hook(0x46a55d, hook_CameraFrame_ProjectFramePairOntoForwardRay, "CameraFrame_ProjectFramePairOntoForwardRay_46A55D");  // [OK]
+  hnh_Hook(0x47ea86, hook_FindFrameByNameSubstringRecursive, "FindFrameByNameSubstringRecursive_47EA86");  // [OK]
+  hnh_Hook(0x467abe, hook_AnimSet_ResetAndTransferAnimations, "AnimSet_ResetAndTransferAnimations_467ABE");  // [OK]
+  hnh_Hook(0x4679b2, hook_TransferAnimSetFrameAnimations_4679B2, "TransferAnimSetFrameAnimations_4679B2");  // [OK]
+  hnh_Hook(0x468da8, hook_DrawFadeTransition_Scene, "DrawFadeTransition_Scene_468DA8");  // [OK]
+  hnh_Hook(0x468b99, hook_Scene_ApplyFadeToPracticeFrames, "Scene_ApplyFadeToPracticeFrames_468B99");  // [OK]
   hnh_HookOn();
 }
