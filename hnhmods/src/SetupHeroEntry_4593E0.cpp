@@ -1432,7 +1432,7 @@ D3DXVECTOR2 *__cdecl hook_HanaGrid_FloodFill_4460AD(
 int __cdecl hook_DSBufferGetVolume_423C65(LPDIRECTSOUNDBUFFER pDSBuf)
 {
   LONG nVolume; // [esp+0h] [ebp-4h] BYREF
-
+  ONCELOG("[HNH:SUB] DSBufferGetVolume_423C65\n");
   nVolume = 0;
   if ( !g_bDSInited_5185C4 || !pDSBuf )
     return -100000;
@@ -1641,44 +1641,22 @@ void __cdecl hook_UpdateVoicePlayback_458B3A(
   }
 }
 
-/*
-
-+L82    func-ptr  UpdateHeroBody_44474E         0x44474E    [no hook fn]
-+L88    func-ptr  UpdateFoeAI_446A38            0x446A38    [no hook fn]
-+L94    func-ptr  UpdateVoicePlayback_458B3A    0x458B3A    [no hook fn]
-L100   func-ptr  WanaAttack_Close_4535DE       0x4535DE    [no hook fn]
-L104   func-ptr  WanaAttack_Knockback_4536F6   0x4536F6    [no hook fn]
-L108   func-ptr  WanaAttack_Charged_4539D1     0x4539D1    [no hook fn]
-L112   func-ptr  WanaAttack_Projectile_453B92  0x453B92    [no hook fn]
-L116   func-ptr  IsFoeWithinHeroRange_448B78   0x448B78    [no hook fn]
-L120   func-ptr  PlayCinematicSequence_45460A  0x45460A    [no hook fn]
-L131   func-ptr  RenderDualBodyScene_456807    0x456807    [no hook fn]
-L137   func-ptr  PlayResultsCutscene_455BE2    0x455BE2    [no hook fn]
-L145   func-ptr  PlayVictoryCutscene_455183    0x455183    [no hook fn]
-L154   func-ptr  DrawRecViewfinder_44B23B      0x44B23B    [no hook fn]
-L159   func-ptr  DrawFadeOutSpark_45669F       0x45669F    [no hook fn]
-+L163   func-ptr  BuildMapCollisionGrid_445B12  0x445B12    [no hook fn]
-L167   func-ptr  BindSceneActors_448C72        0x448C72    [no hook fn]
-L172   func-ptr  UpdateCameraFollow_44C028     0x44C028    [no hook fn]
-
-*/
-
-
 void register_SetupHeroEntry_4593E0() {
+  
+  hnh_HookOff();
   hnh_Hook(0x4593e0, hook_SetupHeroEntry_4593E0, "SetupHeroEntry_4593E0"); // [OK]
-  hnh_Hook(0x44474e, hook_UpdateHeroBody_44474E, "UpdateHeroBody_44474E");
-  hnh_Hook(0x4070ab, hook_Frame_RotateMatrixAxis_4070AB, "Frame_RotateMatrixAxis_4070AB");
-  hnh_Hook(0x443cc5, hook_CheckFrameCollision_443CC5, "CheckFrameCollision_443CC5");
-  hnh_Hook(0x442c1c, hook_HitOverheadSurface_442C1C, "HitOverheadSurface_442C1C");
-  hnh_Hook(0x4423b0, hook_HitSupportSurface_4423B0, "HitSupportSurface_4423B0");
-  hnh_Hook(0x407e1f, hook_ComputeMeshBounds_407E1F, "ComputeMeshBounds_407E1F");
-  hnh_Hook(0x443ec4, hook_TestBodyMoveHit_443EC4, "TestBodyMoveHit_443EC4");
-  hnh_Hook(0x4443fc, hook_TestMoveCollision_4443FC, "TestMoveCollision_4443FC");
-  hnh_Hook(0x445b12, hook_BuildMapCollisionGrid_445B12, "BuildMapCollisionGrid_445B12");
-  hnh_Hook(0x445c12, hook_HanaGrid_DFSPath, "HanaGrid_DFSPath_445C12");
-  hnh_Hook(0x4460ad, hook_HanaGrid_FloodFill_4460AD, "HanaGrid_FloodFill_4460AD");
-  hnh_Hook(0x458b3a, hook_UpdateVoicePlayback_458B3A, "UpdateVoicePlayback_458B3A");
-  hnh_Hook(0x423c65, hook_DSBufferGetVolume_423C65, "DSBufferGetVolume_423C65");
-
-
+  hnh_Hook(0x44474e, hook_UpdateHeroBody_44474E, "UpdateHeroBody_44474E"); // [OK]
+  hnh_Hook(0x4070ab, hook_Frame_RotateMatrixAxis_4070AB, "Frame_RotateMatrixAxis_4070AB"); // [OK]
+  hnh_Hook(0x443cc5, hook_CheckFrameCollision_443CC5, "CheckFrameCollision_443CC5"); // [OK]
+  hnh_Hook(0x442c1c, hook_HitOverheadSurface_442C1C, "HitOverheadSurface_442C1C"); // [OK]
+  hnh_Hook(0x4423b0, hook_HitSupportSurface_4423B0, "HitSupportSurface_4423B0"); // [OK]
+  hnh_Hook(0x407e1f, hook_ComputeMeshBounds_407E1F, "ComputeMeshBounds_407E1F"); // [OK]
+  hnh_Hook(0x443ec4, hook_TestBodyMoveHit_443EC4, "TestBodyMoveHit_443EC4"); // [OK]
+  hnh_Hook(0x4443fc, hook_TestMoveCollision_4443FC, "TestMoveCollision_4443FC"); // [OK]
+  hnh_Hook(0x445b12, hook_BuildMapCollisionGrid_445B12, "BuildMapCollisionGrid_445B12"); // [OK]
+  hnh_Hook(0x445c12, hook_HanaGrid_DFSPath, "HanaGrid_DFSPath_445C12"); // [OK]
+  hnh_Hook(0x4460ad, hook_HanaGrid_FloodFill_4460AD, "HanaGrid_FloodFill_4460AD");  // [OK]
+  hnh_Hook(0x458b3a, hook_UpdateVoicePlayback_458B3A, "UpdateVoicePlayback_458B3A");  // [OK]
+  hnh_Hook(0x423c65, hook_DSBufferGetVolume_423C65, "DSBufferGetVolume_423C65"); // [OK]
+  hnh_HookOn();
 }

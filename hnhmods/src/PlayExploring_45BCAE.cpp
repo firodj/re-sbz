@@ -87,6 +87,8 @@ void (__cdecl *Frame_ComputeWorldAABB)(CHanaFrameT3EC_S354 *pFrame)
 = reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x407e5b);
 void (__cdecl *HanaTexture_CreateFromFile)(CHanaSpriteT3F6_S1FC **ppOutSprite, CHAR *szFileName)
 = reinterpret_cast<void (__cdecl*)(CHanaSpriteT3F6_S1FC **ppOutSprite, CHAR *szFileName)>(0x4135ed);
+void (__cdecl *HanaSurface_CreateAndFade)()
+= reinterpret_cast<void (__cdecl*)()>(0x455b0e);
 
 
 // === FUNCTIONS ===
@@ -2453,17 +2455,18 @@ int __cdecl hook_FindTargetInRange_45A1AD(
   return v10;
 }
 
-// Apply the effect of the acquired target type to the hero. switch(nType): 1 -> +20000 hp (clamped to max) +10 blend; 2 -> +6600 hp & max +10 blend; 3 -> camera factor=1.25; 4 -> +30s time limit (capped 999); 5+ -> further item effects.
+// Apply the effect of the acquired target type to the hero. switch(nType): 1 -> +20000 hp (clamped to max) +10 blend;
+// 2 -> +6600 hp & max +10 blend; 3 -> camera factor=1.25; 4 -> +30s time limit (capped 999); 5+ -> further item effects.
 void __cdecl hook_ApplyTargetEffect_45A2BA(
-  int nType,
+  int nTargetSprite,
   float *pfHeroHp,
   float *pfHeroHpMax,
-  _DWORD *pnTimeLimit,
-  _DWORD *pfCamFactor,
+  int *pnTimeLimit,
+  float *pfCamFactor,
   float *pfBlendTime)
 {
   ONCELOG("[HNH:SUB] ApplyTargetEffect_45A2BA\n");
-  switch ( nType )
+  switch ( nTargetSprite )
   {
   case 1:
     *pfBlendTime = *pfBlendTime + 10.0;
@@ -2477,11 +2480,11 @@ void __cdecl hook_ApplyTargetEffect_45A2BA(
     *pfHeroHpMax = *pfHeroHpMax + 6600.0;
     break;
   case 3:
-    *pfCamFactor = 1069547520;
+    *pfCamFactor = 1.5;
     break;
   case 4:
     *pfBlendTime = *pfBlendTime + 10.0;
-    if ( (unsigned int)(*pnTimeLimit + 30) <= 0x3E7 )
+    if ( (unsigned int)(*pnTimeLimit + 30) <= 999 )
       *pnTimeLimit += 30;
     else
       *pnTimeLimit = 999;
@@ -2491,11 +2494,11 @@ void __cdecl hook_ApplyTargetEffect_45A2BA(
     *pfHeroHp = *pfHeroHp - 20000.0;
     break;
   case 6:
-    *pfCamFactor = 1056964608;
+    *pfCamFactor = 0.5;
     break;
   case 7:
     *pfBlendTime = *pfBlendTime + 20.0;
-    if ( *pnTimeLimit >= 0x1Eu )
+    if ( *pnTimeLimit >= 30 )
       *pnTimeLimit -= 30;
     else
       *pnTimeLimit = 0;
@@ -2831,23 +2834,14 @@ void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpP
   int nCount; // [esp+34h] [ebp-54h]
   D3DXVECTOR3 *i; // [esp+3Ch] [ebp-4Ch]
   DWORD texW; // [esp+40h] [ebp-48h] BYREF
-  D3DXVECTOR3 parrPos; // [esp+44h] [ebp-44h] BYREF
-  float v18; // [esp+50h] [ebp-38h]
-  float v19; // [esp+54h] [ebp-34h]
-  int v20; // [esp+58h] [ebp-30h]
-  float v21; // [esp+5Ch] [ebp-2Ch]
-  float v22; // [esp+60h] [ebp-28h]
-  int v23; // [esp+64h] [ebp-24h]
-  float v24; // [esp+68h] [ebp-20h]
-  float v25; // [esp+6Ch] [ebp-1Ch]
-  int v26; // [esp+70h] [ebp-18h]
+  D3DXVECTOR3 parrPos[4]; // [esp+44h] [ebp-44h] BYREF
   struct tagRECT rc; // [esp+74h] [ebp-14h] BYREF
   DWORD texH; // [esp+84h] [ebp-4h] BYREF
 
   ONCELOG("[HNH:SUB] UpdateHudGauge_44BC36\n");
  
   nCount = 4;
-  for ( i = &parrPos; --nCount >= 0; ++i )
+  for ( i = parrPos; --nCount >= 0; ++i )
     ;
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
@@ -2857,19 +2851,19 @@ void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpP
     GetSurfaceWH(pHudRes[2]->pTexture_134, &texW, &texH);
     SetRect(&rc, 253, 0, 254, 48);
     CHanaSpriteT3F6__SetSrcRect_414B28(pHudRes[2], &rc);
-    parrPos.x = ConvertFrom640AsFloat(354.0);
-    parrPos.y = ConvertFrom640AsFloat(13.0);
-    parrPos.z = 0.0;
-    v18 = ConvertFrom640AsFloat(600.0);
-    v19 = ConvertFrom640AsFloat(13.0);
-    v20 = 0;
-    v21 = ConvertFrom640AsFloat(614.0);
-    v22 = ConvertFrom640AsFloat(28.0);
-    v23 = 0;
-    v24 = ConvertFrom640AsFloat(368.0);
-    v25 = ConvertFrom640AsFloat(28.0);
-    v26 = 0;
-    DrawSprite3D(pHudRes[2], &parrPos);
+    parrPos[0].x = ConvertFrom640AsFloat(354.0);
+    parrPos[0].y = ConvertFrom640AsFloat(13.0);
+    parrPos[0].z = 0.0;
+    parrPos[1].x = ConvertFrom640AsFloat(600.0);
+    parrPos[1].y = ConvertFrom640AsFloat(13.0);
+    parrPos[1].z = 0.0;
+    parrPos[2].x = ConvertFrom640AsFloat(614.0);
+    parrPos[2].y = ConvertFrom640AsFloat(28.0);
+    parrPos[2].z = 0.0;
+    parrPos[3].x = ConvertFrom640AsFloat(368.0);
+    parrPos[3].y = ConvertFrom640AsFloat(28.0);
+    parrPos[3].z = 0.0;
+    DrawSprite3D(pHudRes[2], parrPos);
     ptHud2 = *(POINT*)&pHudRes[2]->dwWidth_1F0;
     SetRect(
       &rc,
@@ -2878,21 +2872,21 @@ void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpP
       ((ptHud2.x - ptHud2.y) >> 1) - fHpPct * (pHudRes[2]->dwWidth_1F0 / 2 - 1) / fHpMaxPct,
       48);
     CHanaSpriteT3F6__SetSrcRect_414B28(pHudRes[2], &rc);
-    parrPos.x = ConvertFrom640AsFloat(354.0);
-    parrPos.y = ConvertFrom640AsFloat(13.0);
-    parrPos.z = 0.0;
+    parrPos[0].x = ConvertFrom640AsFloat(354.0);
+    parrPos[0].y = ConvertFrom640AsFloat(13.0);
+    parrPos[0].z = 0.0;
     v10 = (double)(246 * fHpPct / fHpMaxPct) + 354.0;
-    v18 = ConvertFrom640AsFloat(v10);
-    v19 = ConvertFrom640AsFloat(13.0);
-    v20 = 0;
+    parrPos[1].x = ConvertFrom640AsFloat(v10);
+    parrPos[1].y = ConvertFrom640AsFloat(13.0);
+    parrPos[1].z = 0.0;
     v11 = (double)(246 * fHpPct / fHpMaxPct) + 368.0;
-    v21 = ConvertFrom640AsFloat(v11);
-    v22 = ConvertFrom640AsFloat(28.0);
-    v23 = 0;
-    v24 = ConvertFrom640AsFloat(368.0);
-    v25 = ConvertFrom640AsFloat(28.0);
-    v26 = 0;
-    DrawSprite3D(pHudRes[2], &parrPos);
+    parrPos[2].x = ConvertFrom640AsFloat(v11);
+    parrPos[2].y = ConvertFrom640AsFloat(28.0);
+    parrPos[2].z = 0.0;
+    parrPos[3].x = ConvertFrom640AsFloat(368.0);
+    parrPos[3].y = ConvertFrom640AsFloat(28.0);
+    parrPos[3].z = 0.0;
+    DrawSprite3D(pHudRes[2], parrPos);
     v12 = ConvertFrom640AsInt(30);
     v8 = ConvertFrom640AsInt(640);
     v6 = ConvertFrom640AsInt(-2);
@@ -2911,28 +2905,606 @@ void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpP
   }
 }
 
+// Target-select INTRO: the camera sweep played before ShowMouseSelectDialog. A timed shot list drives it - arrShotAngles/arrShotDurations = [(-90,10),(45,10),(180,900),(99999,sentinel)]: two 10s profile shots of the hero (yaw -90 then +45), then a long 180 rear shot ended only by the global 280s timeout. Per frame the hero frame is yawed to the shot angle (hero frame as scratch, restored after), the chase cam is snapped twice (bSnap=1) - once from hero+18up (look-at hero), once from hero - fCrane - 13 (fCrane rises -10 -> +5 at delta/13: a crane-down) - then the head node ('head', FindFrameByName) frames the shot: camera pushed out to a 5u minimum XZ distance from the head and BuildLookAt at it. After the crane bottoms out the FOV creeps 0.8 -> 1.2 (delta/80, zoom-out). Hero plays anim item 15 (select pose, skipped if already in 8/9) until done; the 8 target bodies (pSpriteNames) animate at delta/fAnimRate, go idle (item 0) after t>30, are hard re-cut to their current item (float_224=1) on each shot change, and
+void __cdecl hook_PrepareTargetSelect_45B5BD(
+  CSekBody *pHeroBody,
+  CSekBody **pItemBodies,
+  CSekBody **pSpriteNames,
+  CHanaFrameT3EC_S354 *pMapFrame,
+  CHanaSpriteT3F6_S1FC **pHudA,
+  CHanaSpriteT3F6_S1FC **pTargets,
+  float fHeroHp,
+  float fHeroHpMax,
+  int nTimeLimit,
+  unsigned int nElapsed)
+{
+  double v10; // st7
+  float fMountHiY; // [esp+0h] [ebp-D0h]
+  float fMountCraneY; // [esp+0h] [ebp-D0h]
+  float fYawNegRad; // [esp+4h] [ebp-CCh]
+  float fYawRad; // [esp+4h] [ebp-CCh]
+  float fTargetStep; // [esp+10h] [ebp-C0h]
+  float fHeroStep; // [esp+14h] [ebp-BCh]
+  float fHeadRelZ; // [esp+18h] [ebp-B8h] BYREF
+  float fHeadDist; // [esp+1Ch] [ebp-B4h]
+  float fHeadRelY; // [esp+20h] [ebp-B0h] BYREF
+  float fHeadRelX; // [esp+24h] [ebp-ACh] BYREF
+  float arrShotDurations[10]; // [esp+28h] [ebp-A8h] BYREF
+  float TimerScaleFactor; // [esp+50h] [ebp-80h]
+  __int16 bMouseReleased; // [esp+54h] [ebp-7Ch]
+  int nShot; // [esp+58h] [ebp-78h]
+  int v25; // [esp+5Ch] [ebp-74h]
+  float fShotTime; // [esp+60h] [ebp-70h]
+  int nMouseY; // [esp+64h] [ebp-6Ch] BYREF
+  int iTarget; // [esp+68h] [ebp-68h]
+  int nMouseX; // [esp+6Ch] [ebp-64h] BYREF
+  int bHeroIntroDone; // [esp+70h] [ebp-60h]
+  float fDelta; // [esp+74h] [ebp-5Ch]
+  float ProjectionFov_40DCF6; // [esp+78h] [ebp-58h]
+  CHanaFrameT3EC_S354 *pHeadFrame; // [esp+7Ch] [ebp-54h]
+  float fHeroZ; // [esp+80h] [ebp-50h] BYREF
+  float fFovTmp; // [esp+84h] [ebp-4Ch]
+  float fHeroY; // [esp+88h] [ebp-48h] BYREF
+  D3DXVECTOR3 vecUpAxis; // [esp+8Ch] [ebp-44h] BYREF
+  float fHeroX; // [esp+98h] [ebp-38h] BYREF
+  __int16 bMouseBtn; // [esp+9Ch] [ebp-34h] BYREF
+  float fAnimRate; // [esp+A0h] [ebp-30h]
+  float fCrane; // [esp+A4h] [ebp-2Ch]
+  float arrShotAngles[10]; // [esp+A8h] [ebp-28h] BYREF
+
+  ONCELOG("[HNH:SUB] PrepareTargetSelect_45B5BD\n");
+  
+  fCrane = -10.0;
+  fShotTime = 0.0;
+  fAnimRate = 1.0;
+  bMouseReleased = 0;
+  bHeroIntroDone = 0;
+  nShot = 0;
+  v25 = 0;
+  arrShotDurations[0] = 10.0;
+  arrShotDurations[1] = 10.0;
+  arrShotDurations[2] = 900.0;
+  arrShotDurations[3] = 99999.0;
+  memset(&arrShotDurations[4], 0, 0x18u);
+  arrShotAngles[0] = -90.0;
+  arrShotAngles[1] = 45.0;
+  arrShotAngles[2] = 180.0;
+  arrShotAngles[3] = 99999.0;
+  memset(&arrShotAngles[4], 0, 0x18u);
+  pHeadFrame = FindFrameByName_47E999(pHeroBody->pSekHeader_220->pFrameT3EC, "head");
+  vecUpAxis.x = 0.0;
+  vecUpAxis.y = 1.0;
+  vecUpAxis.z = 0.0;
+  if ( pHeroBody->field_200 != 9 && pHeroBody->field_200 != 8 )
+    SekBody__UpdateTo2_401647(pHeroBody, 15);
+  ProjectionFov_40DCF6 = GetProjectionFov_40DCF6();
+  SetProjectionFov_40DCA3(0.80000001);
+  TimerScaleFactor = GetTimerScaleFactor();
+  SetTimerScaleFactor(10.0);
+  FrameTimer_BeginFrame();
+  FrameTimer_EndFrame();
+  while ( 1 )
+  {
+    DoPeekMessages();
+    fDelta = GetFrameTime();
+    if ( fDelta > 5.0 )
+      fDelta = 5.0;
+    FrameTimer_EndFrame();
+    GetCursorPos_4811FA(&nMouseX, &nMouseY, &bMouseBtn);
+    if ( bMouseBtn )
+    {
+      if ( bMouseReleased == 1 )
+        fDelta = fDelta * 5.0;
+    }
+    else if ( !bMouseReleased )
+    {
+      bMouseReleased = 1;
+    }
+    if ( !bHeroIntroDone )
+    {
+      fHeroStep = fDelta / fAnimRate;
+      if ( CSekBody__UpdateAnim_4019E1(pHeroBody, fHeroStep) )
+      {
+        fAnimRate = 1.0;
+        bHeroIntroDone = 1;
+      }
+    }
+    if ( fShotTime < 90.0 )
+    {
+      for ( iTarget = 0; iTarget < 8; ++iTarget )
+      {
+        if ( pSpriteNames[iTarget] )
+        {
+          if ( fShotTime > 30.0 )
+            SekBody__UpdateTo2_401647(pSpriteNames[iTarget], 0);
+          fTargetStep = fDelta / fAnimRate;
+          CSekBody__UpdateAnim_4019E1(pSpriteNames[iTarget], fTargetStep);
+        }
+      }
+    }
+    fYawNegRad = -arrShotAngles[nShot] * 3.1400001 / 180.0;
+    Frame_RotateMatrixAxis_4070AB(pHeroBody->pSekHeader_220->pFrameT3EC, 1, &vecUpAxis, fYawNegRad);
+    HanaFrame_GetRelPosition(pHeroBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, &fHeroX, &fHeroY, &fHeroZ);
+    fMountHiY = fHeroY + 18.0;
+    MtxMult_4069DD(
+      pHeroBody->pSekHeader_220->pFrameT3EC,
+      (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+      fHeroX,
+      fMountHiY,
+      fHeroZ);
+    UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame, pMapFrame, fDelta, 1);
+    HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pHeroBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, 0);
+    fMountCraneY = fHeroY - fCrane - 13.0;
+    MtxMult_4069DD(
+      pHeroBody->pSekHeader_220->pFrameT3EC,
+      (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+      fHeroX,
+      fMountCraneY,
+      fHeroZ);
+    UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame, pMapFrame, fDelta, 1);
+    MtxMult_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fHeroY, fHeroZ);
+    fYawRad = arrShotAngles[nShot] * 3.1400001 / 180.0;
+    Frame_RotateMatrixAxis_4070AB(pHeroBody->pSekHeader_220->pFrameT3EC, 1, &vecUpAxis, fYawRad);
+    fCrane = fDelta / 13.0 + fCrane;
+    if ( fCrane > 5.0 )
+    {
+      fCrane = 5.0;
+      fFovTmp = GetProjectionFov_40DCF6();
+      fFovTmp = fDelta / 80.0 + fFovTmp;
+      if ( fFovTmp >= 1.2 )
+        fFovTmp = 1.2;
+      SetProjectionFov_40DCA3(fFovTmp);
+    }
+    v10 = fShotTime + fDelta;
+    fShotTime = v10;
+    if ( v10 > 280.0 )
+      break;
+    if ( fShotTime > (double)arrShotDurations[nShot] )
+    {
+      fCrane = -10.0;
+      fShotTime = 0.0;
+      if ( ++nShot > 1 )
+        fAnimRate = 3.0;
+      for ( iTarget = 0; iTarget < 8; ++iTarget )
+      {
+        if ( pSpriteNames[iTarget] )
+        {
+          CSekBody__CutToAnim_4018E1(pSpriteNames[iTarget], pSpriteNames[iTarget]->field_200);
+          pSpriteNames[iTarget]->float_224 = 1.0;
+        }
+      }
+    }
+    if ( pHeadFrame )
+    {
+      HanaFrame_GetRelPosition(g_pCameraFrame, pHeadFrame, &fHeadRelX, &fHeadRelY, &fHeadRelZ);
+      fHeadDist = sqrt(fHeadRelX * fHeadRelX + fHeadRelZ * fHeadRelZ);
+      if ( fHeadDist < 5.0 && fHeadDist != 0.0 )
+      {
+        fHeadRelX = 5.0 / fHeadDist * fHeadRelX;
+        fHeadRelZ = 5.0 / fHeadDist * fHeadRelZ;
+        MtxMult_4069DD(g_pCameraFrame, pHeadFrame, fHeadRelX, fHeadRelY, fHeadRelZ);
+      }
+      HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pHeadFrame, g_pSceneFrame, 0);
+    }
+    MtxStackStartMultLocal_4074EF();
+    g_pRenderCtx->Clear(3);
+    if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+    {
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+      HanaFrame_Draw((CHanaFrameT3EC_S354 *)g_pSceneFrame);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+      HanaVert_DrawBatch(1);
+      g_pD3DDevice_4D6C78->EndScene();
+    }
+    UpdateHudGauge_44BC36(pTargets, (__int64)fHeroHp / 100, (__int64)fHeroHpMax / 100);
+    DrawClockHud_44AF5B(pHudA, 100, -5, 100 * nTimeLimit - nElapsed / 0xA);
+    
+    PresentFrame();
+    HanaVert_DrawBatch(0);
+  }
+  SetTimerScaleFactor(TimerScaleFactor);
+  SetProjectionFov_40DCA3(ProjectionFov_40DCF6);
+  HanaSurface_CreateAndFade();
+}
+
+void hook_HanaSurface_CreateAndFade()
+{
+  DWORD w; // eax
+  int w2; // eax
+  COLORREF v2; // eax
+  COLORREF colorFade; // eax
+  int h2; // [esp-8h] [ebp-Ch]
+  DWORD h; // [esp-4h] [ebp-8h]
+  LPDIRECTDRAWSURFACE7 pSurface; // [esp+0h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] HanaSurface_CreateAndFade_455B0E\n");
+
+  h = ConvertFrom640AsInt(480);
+  w = ConvertFrom640AsInt(640);
+  pSurface = CreateSurfaceWH(w, h);
+  h2 = ConvertFrom640AsInt(480);
+  w2 = ConvertFrom640AsInt(640);
+  BltFastWH(pSurface, 0, 0, g_pPrimaryBuffer_4D6C88, 0, 0, w2, h2, 0);
+  v2 = RGBToSurfaceFormat(pSurface, 0xFF0000u);
+  PlayScreenFade(0, v2, pSurface, 25.0, 0);
+  SelfBltDC(pSurface);
+  colorFade = RGBToSurfaceFormat(pSurface, 0xFF0000u);
+  PlayScreenFade(1, colorFade, pSurface, 25.0, 0);
+  pSurface->Release();
+}
+
+// DrawSpriteListEcho(pSprites, nUnused, fFadeStep)
+// pSprites = CHanaSpriteT3F6_S1FC*[10]. Draws each sprite with alpha>0 plus a vertical
+// echo/ghost trail: SetScale 0.5f, SetPos (nX, nY - echoOff*dir), draw main; then 3 echo
+// copies stepping Y by +10*dir with alpha*0.3 each, restoring alpha/pos after. fFadeStep is
+// the per-frame alpha drop (fFadeStep/50). dir = +1 for i<5, -1 for i>=5.
+void __cdecl hook_DrawSpriteListEcho_45B2FB(CHanaSpriteT3F6_S1FC **arrSprites, int nTargetIdx, float fDeltaTime)
+{
+  double fPosYmin; // st7
+  float alpha; // [esp+4Ch] [ebp-18h]
+  float alphaa; // [esp+4Ch] [ebp-18h]
+  float fPosY3; // [esp+4Ch] [ebp-18h]
+  float alphac; // [esp+4Ch] [ebp-18h]
+  float fPosY2; // [esp+4Ch] [ebp-18h]
+  float fPosX; // [esp+50h] [ebp-14h] BYREF
+  int i; // [esp+54h] [ebp-10h]
+  float fOldAlpha; // [esp+58h] [ebp-Ch]
+  float fPosY; // [esp+5Ch] [ebp-8h] BYREF
+  float fDir; // [esp+60h] [ebp-4h]
+  int nTargetIdxa; // [esp+70h] [ebp+Ch]
+
+  ONCELOG("[HNH:SUB] DrawSpriteListEcho_45B2FB\n");
+  
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+  g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
+  if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+  {
+    for ( nTargetIdxa = 0; nTargetIdxa < 10; ++nTargetIdxa )
+    {
+      if ( arrSprites[nTargetIdxa] && arrSprites[nTargetIdxa]->fAlpha_144 > 0.0 )
+      {
+        if ( nTargetIdxa >= 5 )
+          fDir = -1.0;
+        else
+          fDir = 1.0;
+        CHanaSpriteT3F6__SetScale_414B09(arrSprites[nTargetIdxa], 2.5);
+        CHanaSpriteT3F6__GetPos_414A7A(arrSprites[nTargetIdxa], &fPosX, &fPosY);
+        alpha = arrSprites[nTargetIdxa]->fAlpha_144 - fDeltaTime / 50.0;
+        CHanaObj__SetAlpha3F6(arrSprites[nTargetIdxa], alpha);
+        alphaa = 150.0 - 150.0 * arrSprites[nTargetIdxa]->fAlpha_144;
+        fPosYmin = ConvertFrom640AsFloat(alphaa);
+        fPosY3 = fPosY - fPosYmin * fDir;
+        CHanaSpriteT3F6__SetPos_414A5D(arrSprites[nTargetIdxa], fPosX, fPosY3);
+        DrawSprite2D(arrSprites[nTargetIdxa]);
+        fOldAlpha = arrSprites[nTargetIdxa]->fAlpha_144;
+        arrSprites[nTargetIdxa]->fAlpha_144 = arrSprites[nTargetIdxa]->fAlpha_144 * 0.30000001;
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+        g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 2);
+        for ( i = 0; i < 3; ++i )
+        {
+          alphac = arrSprites[nTargetIdxa]->fAlpha_144 - fDeltaTime / 50.0;
+          CHanaObj__SetAlpha3F6(arrSprites[nTargetIdxa], alphac);
+          fPosY2 = 10.0 * fDir + arrSprites[nTargetIdxa]->destWHZ_138.y;
+          CHanaSpriteT3F6__SetPos_414A5D(arrSprites[nTargetIdxa], fPosX, fPosY2);
+          DrawSprite2D(arrSprites[nTargetIdxa]);
+        }
+        arrSprites[nTargetIdxa]->fAlpha_144 = fOldAlpha;
+        CHanaSpriteT3F6__SetPos_414A5D(arrSprites[nTargetIdxa], fPosX, fPosY);
+      }
+    }
+    g_pD3DDevice_4D6C78->EndScene();
+  }
+}
+
+// Mouse target-select dialog (follows PrepareTargetSelect's fade-in). Three temp sprites: pCursorSpr = mouse.bmp masked cursor (path id 1003) tracking the mouse; pBackdropSpr = 512x512 ONE-TIME capture of the frozen screen (D3DXLoadTextureFromSurface) drawn fullscreen as the backdrop; pWaveSpr = 128x128 LIVE-Capture shimmer - its texture is reloaded from the framebuffer EVERY frame and drawn as a full-screen quad whose corners wobble +/-1px (sin(fSinPhase)/cos(fCosPhase), rates 0.1/-0.07 per sec) - a water/heat-shimmer distortion over the whole dialog (the old 'swimming fish cursor' note was wrong). Sprites: [3] prompt (320,100) fades in; [8] hint (320,200); LEFT target pair [9]+glow[11] at (200,300); RIGHT pair [10]+glow[12] at (440,300); glows cross-fade +/- delta/10, active side re-drawn with DESTBLEND=2 (additive). Hover test: XZ distance to an anchor < 50px (2500 = 50^2). nChoice = 1 LEFT / 0 RIGHT / -1 neither. Loop exits on a fresh button PRESS edge (bCurBtn==1 != bPrevBtn) while hovering a side - so -1 
+int __cdecl hook_ShowMouseSelectDialog_4573CF(CHanaSpriteT3F6_S1FC **arrSprModes, LPDIRECTSOUNDBUFFER *pArrSndBuf)
+{
+  float X; // [esp+30h] [ebp-1D4h]
+  float Xa; // [esp+30h] [ebp-1D4h]
+  float Xb; // [esp+30h] [ebp-1D4h]
+  float Xc; // [esp+30h] [ebp-1D4h]
+  float Xd; // [esp+30h] [ebp-1D4h]
+  float Xe; // [esp+30h] [ebp-1D4h]
+  float fCurX; // [esp+30h] [ebp-1D4h]
+  float X_4; // [esp+34h] [ebp-1D0h]
+  float X_4a; // [esp+34h] [ebp-1D0h]
+  float X_4b; // [esp+34h] [ebp-1D0h]
+  float X_4c; // [esp+34h] [ebp-1D0h]
+  float X_4d; // [esp+34h] [ebp-1D0h]
+  float X_4e; // [esp+34h] [ebp-1D0h]
+  float fCurY; // [esp+34h] [ebp-1D0h]
+  float fW0X; // [esp+34h] [ebp-1D0h]
+  float fW0Y; // [esp+34h] [ebp-1D0h]
+  float fW1X; // [esp+34h] [ebp-1D0h]
+  float fW1Y; // [esp+34h] [ebp-1D0h]
+  float fW2X; // [esp+34h] [ebp-1D0h]
+  float fW2Y; // [esp+34h] [ebp-1D0h]
+  float fW3X; // [esp+34h] [ebp-1D0h]
+  float fW3Y; // [esp+34h] [ebp-1D0h]
+  float fGlowLIn; // [esp+34h] [ebp-1D0h]
+  float fGlowROut; // [esp+34h] [ebp-1D0h]
+  float fGlowLOut; // [esp+34h] [ebp-1D0h]
+  float fGlowRIn; // [esp+34h] [ebp-1D0h]
+  float fGlowLOut2; // [esp+34h] [ebp-1D0h]
+  float fGlowROut2; // [esp+34h] [ebp-1D0h]
+  float fDyRight; // [esp+38h] [ebp-1CCh]
+  float fDxRightSq; // [esp+3Ch] [ebp-1C8h]
+  float fDxRight; // [esp+40h] [ebp-1C4h]
+  float fDyLeft; // [esp+44h] [ebp-1C0h]
+  float fDxLeftSq; // [esp+48h] [ebp-1BCh]
+  float fDxLeft; // [esp+4Ch] [ebp-1B8h]
+  int nDeadInitCtr; // [esp+70h] [ebp-194h]
+  D3DXVECTOR3 *pDeadInitPtr; // [esp+78h] [ebp-18Ch]
+  float fTargetAlpha; // [esp+7Ch] [ebp-188h]
+  CHanaSpriteT3F6_S1FC *pBackdropSpr; // [esp+80h] [ebp-184h] BYREF
+  CHAR szBmpPath[256]; // [esp+84h] [ebp-180h] BYREF
+  float fPromptAlpha; // [esp+184h] [ebp-80h]
+  CHanaSpriteT3F6_S1FC *pWaveSpr; // [esp+188h] [ebp-7Ch] BYREF
+  __int16 bPrevBtn; // [esp+18Ch] [ebp-78h]
+  CInputState *pInput; // [esp+190h] [ebp-74h]
+  int nChoice; // [esp+194h] [ebp-70h]
+  D3DXVECTOR3 vtx0; // [esp+198h] [ebp-6Ch] BYREF
+  float vtx1X; // [esp+1A4h] [ebp-60h]
+  float vtx1Y; // [esp+1A8h] [ebp-5Ch]
+  int vtx1Z; // [esp+1ACh] [ebp-58h]
+  float vtx2X; // [esp+1B0h] [ebp-54h]
+  float vtx2Y; // [esp+1B4h] [ebp-50h]
+  int vtx2Z; // [esp+1B8h] [ebp-4Ch]
+  float vtx3X; // [esp+1BCh] [ebp-48h]
+  float vtx3Y; // [esp+1C0h] [ebp-44h]
+  int vtx3Z; // [esp+1C4h] [ebp-40h]
+  float fSinPhase; // [esp+1C8h] [ebp-3Ch]
+  float fCosPhase; // [esp+1CCh] [ebp-38h]
+  int nMouseY; // [esp+1D0h] [ebp-34h]
+  float fDelta; // [esp+1D4h] [ebp-30h]
+  CHanaSpriteT3F6_S1FC *pCursorSpr; // [esp+1D8h] [ebp-2Ch] BYREF
+  int nMouseX; // [esp+1DCh] [ebp-28h]
+  __int16 bCurBtn; // [esp+1E0h] [ebp-24h]
+  struct tagRECT rcScreen; // [esp+1E4h] [ebp-20h] BYREF
+  struct tagRECT rc; // [esp+1F4h] [ebp-10h] BYREF
+
+  ONCELOG("[HNH:SUB] ShowMouseSelectDialog_4573CF\n");
+
+  nChoice = -1;
+  fSinPhase = 0.0;
+  fCosPhase = 0.0;
+  fPromptAlpha = 0.0;
+  fTargetAlpha = -0.85000002;
+  rcScreen.left = 0;
+  rcScreen.top = 0;
+  rcScreen.right = ConvertFrom640AsInt(640);
+  rcScreen.bottom = ConvertFrom640AsInt(480);
+  nDeadInitCtr = 4;
+  for ( pDeadInitPtr = &vtx0; --nDeadInitCtr >= 0; ++pDeadInitPtr )
+    ;
+  pCursorSpr = 0;
+  pWaveSpr = 0;
+  pBackdropSpr = 0;
+  g_sceneState_52F7E0.byte_32 = 127;
+  StopAndRestartThread(0);
+  StopAndRestartThread(2u);
+  wsprintfA(szBmpPath, "mouse.bmp");
+  CHanaObj__GetRealPath_486D9A(szBmpPath, 1003);
+  LoadBmpWithMask_413A5E(&pCursorSpr, szBmpPath, szBmpPath);
+  CHanaObj__NewSprite3F6byWH(&pWaveSpr, 0x80u, 0x80u);
+  SetRect(&rc, 2, 2, pWaveSpr->dwWidth_1F0 - 2, pWaveSpr->dwHeight_1F4 - 2);
+  CHanaSpriteT3F6__SetSrcRect_414B28(pWaveSpr, &rc);
+  CHanaObj__SetAlpha3F6(pWaveSpr, 0.80000001);
+  CHanaObj__NewSprite3F6byWH(&pBackdropSpr, 0x200u, 0x200u);
+  SetRect(&rc, 0, 0, pBackdropSpr->dwWidth_1F0, pBackdropSpr->dwHeight_1F4);
+  CHanaSpriteT3F6__SetSrcRect_414B28(pBackdropSpr, &rc);
+  CHanaObj__SetAlpha3F6(pBackdropSpr, 1.0);
+  FlushD3DAndTouchSurface(g_pPrimaryBuffer_4D6C88);
+  D3DXLoadTextureFromSurface(
+    g_pD3DDevice_4D6C78,
+    pBackdropSpr->pTexture_134,
+    0xFFFFFFFF,
+    g_pPrimaryBuffer_4D6C88,
+    &rcScreen,
+    0,
+    D3DX_FT_POINT);
+  X_4 = ConvertFrom640AsFloat(100.0);
+  X = ConvertFrom640AsFloat(320.0);
+  CHanaSpriteT3F6__SetPos_414A5D(arrSprModes[3], X, X_4);
+  X_4a = ConvertFrom640AsFloat(200.0);
+  Xa = ConvertFrom640AsFloat(320.0);
+  CHanaSpriteT3F6__SetPos_414A5D(arrSprModes[8], Xa, X_4a);
+  X_4b = ConvertFrom640AsFloat(300.0);
+  Xb = ConvertFrom640AsFloat(200.0);
+  CHanaSpriteT3F6__SetPos_414A5D(arrSprModes[9], Xb, X_4b);
+  X_4c = ConvertFrom640AsFloat(300.0);
+  Xc = ConvertFrom640AsFloat(440.0);
+  CHanaSpriteT3F6__SetPos_414A5D(arrSprModes[10], Xc, X_4c);
+  X_4d = ConvertFrom640AsFloat(300.0);
+  Xd = ConvertFrom640AsFloat(200.0);
+  CHanaSpriteT3F6__SetPos_414A5D(arrSprModes[11], Xd, X_4d);
+  X_4e = ConvertFrom640AsFloat(300.0);
+  Xe = ConvertFrom640AsFloat(440.0);
+  CHanaSpriteT3F6__SetPos_414A5D(arrSprModes[12], Xe, X_4e);
+  CHanaObj__SetAlpha3F6(arrSprModes[11], 0.0);
+  CHanaObj__SetAlpha3F6(arrSprModes[12], 0.0);
+  g_pRenderCtx->Clear(2);
+  FrameTimer_BeginFrame();
+  FrameTimer_EndFrame();
+  MutexThreadWait_4815EC(1);
+  pInput = GetInputState_481B37();
+  bCurBtn = (unsigned __int8)pInput->mouseBtn_4;
+  MutexThreadWait_4815EC(1);
+  do
+  {
+    Sleep(0);
+    MutexThreadWait_4815EC(1);
+    pInput = GetInputState_481B37();
+    bPrevBtn = bCurBtn;
+    nMouseX = pInput->mouseX_0;
+    nMouseY = pInput->mouseY_2;
+    bCurBtn = (unsigned __int8)pInput->mouseBtn_4;
+    MutexThreadWait_4815EC(0);
+    fDelta = GetFrameTime();
+    FrameTimer_EndFrame();
+    fSinPhase = 0.1 * fDelta + fSinPhase;
+    fCosPhase = fCosPhase - 0.07 * fDelta;
+    fPromptAlpha = fDelta / 50.0 + fPromptAlpha;
+    if ( fPromptAlpha > 1.0 )
+      fPromptAlpha = 1.0;
+    CHanaObj__SetAlpha3F6(arrSprModes[3], fPromptAlpha);
+    fTargetAlpha = fDelta / 50.0 + fTargetAlpha;
+    if ( fTargetAlpha > 1.0 )
+      fTargetAlpha = 1.0;
+    CHanaObj__SetAlpha3F6(arrSprModes[8], fTargetAlpha);
+    CHanaObj__SetAlpha3F6(arrSprModes[9], fTargetAlpha);
+    CHanaObj__SetAlpha3F6(arrSprModes[10], fTargetAlpha);
+    CHanaObj__SetAlpha3F6(pCursorSpr, fTargetAlpha);
+    fCurY = (float)nMouseY;
+    fCurX = (float)nMouseX;
+    CHanaSpriteT3F6__SetPos_414A5D(pCursorSpr, fCurX, fCurY);
+    FlushD3DAndTouchSurface(g_pPrimaryBuffer_4D6C88);
+    D3DXLoadTextureFromSurface(
+      g_pD3DDevice_4D6C78,
+      pWaveSpr->pTexture_134,
+      0xFFFFFFFF,
+      g_pPrimaryBuffer_4D6C88,
+      &rcScreen,
+      0,
+      D3DX_FT_POINT);
+    nChoice = -1;
+    if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+    {
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
+      g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
+      DrawSpriteLTRB(pBackdropSpr, rcScreen.left, rcScreen.top, rcScreen.right, rcScreen.bottom);
+      fW0X = sin(fSinPhase) - 1.0;
+      vtx0.x = ConvertFrom640AsFloat(fW0X);
+      fW0Y = cos(fCosPhase) - 1.0;
+      vtx0.y = ConvertFrom640AsFloat(fW0Y);
+      vtx0.z = 0.0;
+      fW1X = sin(fSinPhase) + 640.0 + 1.0;
+      vtx1X = ConvertFrom640AsFloat(fW1X);
+      fW1Y = cos(fCosPhase) - 1.0;
+      vtx1Y = ConvertFrom640AsFloat(fW1Y);
+      vtx1Z = 0;
+      fW2X = sin(fSinPhase) + 640.0 + 1.0;
+      vtx2X = ConvertFrom640AsFloat(fW2X);
+      fW2Y = cos(fCosPhase) + 480.0 + 1.0;
+      vtx2Y = ConvertFrom640AsFloat(fW2Y);
+      vtx2Z = 0;
+      fW3X = sin(fSinPhase) - 1.0;
+      vtx3X = ConvertFrom640AsFloat(fW3X);
+      fW3Y = cos(fCosPhase) + 480.0 + 1.0;
+      vtx3Y = ConvertFrom640AsFloat(fW3Y);
+      vtx3Z = 0;
+      DrawSprite3D(pWaveSpr, &vtx0);
+      DrawSprite2D(arrSprModes[3]);
+      if ( fTargetAlpha > 0.0 )
+      {
+        DrawSprite2D(arrSprModes[8]);
+        fDxLeft = ConvertFrom640AsFloat(200.0) - (double)nMouseX;
+        fDxLeftSq = (ConvertFrom640AsFloat(200.0) - (double)nMouseX) * fDxLeft;
+        fDyLeft = ConvertFrom640AsFloat(300.0) - (double)nMouseY;
+        if ( (ConvertFrom640AsFloat(300.0) - (double)nMouseY) * fDyLeft + fDxLeftSq >= 2500.0 )
+        {
+          fDxRight = ConvertFrom640AsFloat(440.0) - (double)nMouseX;
+          fDxRightSq = (ConvertFrom640AsFloat(440.0) - (double)nMouseX) * fDxRight;
+          fDyRight = ConvertFrom640AsFloat(300.0) - (double)nMouseY;
+          if ( (ConvertFrom640AsFloat(300.0) - (double)nMouseY) * fDyRight + fDxRightSq >= 2500.0 )
+          {
+            nChoice = -1;
+            DrawSprite2D(arrSprModes[9]);
+            DrawSprite2D(arrSprModes[10]);
+            fGlowLOut2 = arrSprModes[11]->fAlpha_144 - fDelta / 10.0;
+            CHanaObj__SetAlpha3F6(arrSprModes[11], fGlowLOut2);
+            fGlowROut2 = arrSprModes[12]->fAlpha_144 - fDelta / 10.0;
+            CHanaObj__SetAlpha3F6(arrSprModes[12], fGlowROut2);
+            DrawSprite2D(arrSprModes[11]);
+          }
+          else
+          {
+            nChoice = 0;
+            fGlowLOut = arrSprModes[11]->fAlpha_144 - fDelta / 10.0;
+            CHanaObj__SetAlpha3F6(arrSprModes[11], fGlowLOut);
+            fGlowRIn = fDelta / 10.0 + arrSprModes[12]->fAlpha_144;
+            CHanaObj__SetAlpha3F6(arrSprModes[12], fGlowRIn);
+            DrawSprite2D(arrSprModes[9]);
+            DrawSprite2D(arrSprModes[11]);
+            DrawSprite2D(arrSprModes[12]);
+            g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 2);
+          }
+          DrawSprite2D(arrSprModes[12]);
+        }
+        else
+        {
+          nChoice = 1;
+          fGlowLIn = fDelta / 10.0 + arrSprModes[11]->fAlpha_144;
+          CHanaObj__SetAlpha3F6(arrSprModes[11], fGlowLIn);
+          fGlowROut = arrSprModes[12]->fAlpha_144 - fDelta / 10.0;
+          CHanaObj__SetAlpha3F6(arrSprModes[12], fGlowROut);
+          DrawSprite2D(arrSprModes[11]);
+          DrawSprite2D(arrSprModes[12]);
+          DrawSprite2D(arrSprModes[10]);
+          g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 2);
+          DrawSprite2D(arrSprModes[11]);
+        }
+        DrawSprite2D(pCursorSpr);
+      }
+      g_pD3DDevice_4D6C78->EndScene();
+    }
+ 
+    PresentFrame();
+  }
+  while ( bCurBtn != 1 || bCurBtn == bPrevBtn || nChoice < 0 );
+  if ( pArrSndBuf[2] )
+    DSBufferPlay(pArrSndBuf[2], 0);
+  if ( pCursorSpr )
+  {
+    CHanaObj__Free_40C1E4(pCursorSpr);
+    pCursorSpr = 0;
+  }
+  if ( pWaveSpr )
+  {
+    CHanaObj__Free_40C1E4(pWaveSpr);
+    pWaveSpr = 0;
+  }
+  if ( pBackdropSpr )
+  {
+    CHanaObj__Free_40C1E4(pBackdropSpr);
+    pBackdropSpr = 0;
+  }
+  StopAndRestartThread(0);
+  return nChoice;
+}
+
 void register_PlayExploring_45BCAE() {
 
   hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK]
 
+  hnh_Hook(0x4490a7, hook_InitHudResources_4490A7, "InitHudResources_4490A7");  // [OK]
+  hnh_Hook(0x4135ed, hook_HanaTexture_CreateFromFile, "HanaTexture_CreateFromFile_4135ED"); // [OK]
+  hnh_Hook(0x459f81, hook_SetupItemBodies_459F81, "SetupItemBodies_459F81");  // [OK]
+  hnh_Hook(0x45a513, hook_UpdateHeroControl_45A513, "UpdateHeroControl_45A513");  // [OK]
+  hnh_Hook(0x45a1ad, hook_FindTargetInRange_45A1AD, "FindTargetInRange_45A1AD");  // [OK]
+
+  hnh_Hook(0x45a2ba, hook_ApplyTargetEffect_45A2BA, "ApplyTargetEffect_45A2BA");
+  hnh_Hook(0x45953b, hook_UpdateLockonEvent_45953B, "UpdateLockonEvent_45953B"); // [OK]
+  hnh_Hook(0x459768, hook_CheckSceneTransition_459768, "CheckSceneTransition_459768");  // [OK]
+  hnh_Hook(0x459ca2, hook_GetSceneEventTime_459CA2, "GetSceneEventTime_459CA2"); // [OK]
+  hnh_Hook(0x44bc36, hook_UpdateHudGauge_44BC36, "UpdateHudGauge_44BC36"); // ~!~
+
   hnh_HookOff();
+  hnh_Hook(0x45b5bd, hook_PrepareTargetSelect_45B5BD, "PrepareTargetSelect_45B5BD");
+  hnh_Hook(0x455b0e, hook_HanaSurface_CreateAndFade, "HanaSurface_CreateAndFade_455B0E");
+  hnh_Hook(0x45b2fb, hook_DrawSpriteListEcho_45B2FB, "DrawSpriteListEcho_45B2FB");
+  hnh_Hook(0x4573cf, hook_ShowMouseSelectDialog_4573CF, "ShowMouseSelectDialog_4573CF");
+
+
   hnh_Hook(0x445525, hook_UpdateCameraFollowChase_445525, "UpdateCameraFollowChase_445525");
   hnh_Hook(0x407b73, hook_HanaMatrix_BuildLookAtAndTransform, "HanaMatrix_BuildLookAtAndTransform_407B73");
   hnh_Hook(0x404349, hook_CHanaAnimSetT3F1__RemoveAnimT3F0_404349, "CHanaAnimSetT3F1__RemoveAnimT3F0_404349");
   hnh_Hook(0x44451f, hook_UpdateCameraLinkedObjects_44451F, "UpdateCameraLinkedObjects_44451F");
   hnh_Hook(0x443dd5, hook_BuildMapSubFrames_443DD5, "BuildMapSubFrames_443DD5");
   hnh_Hook(0x407e5b, hook_Frame_ComputeWorldAABB, "Frame_ComputeWorldAABB_407E5B");
-  hnh_Hook(0x4490a7, hook_InitHudResources_4490A7, "InitHudResources_4490A7");
-  hnh_Hook(0x4135ed, hook_HanaTexture_CreateFromFile, "HanaTexture_CreateFromFile_4135ED");
-  hnh_Hook(0x459f81, hook_SetupItemBodies_459F81, "SetupItemBodies_459F81");
-  hnh_Hook(0x45a513, hook_UpdateHeroControl_45A513, "UpdateHeroControl_45A513");
-  hnh_Hook(0x45a1ad, hook_FindTargetInRange_45A1AD, "FindTargetInRange_45A1AD");
-  hnh_Hook(0x45a2ba, hook_ApplyTargetEffect_45A2BA, "ApplyTargetEffect_45A2BA");
-  hnh_Hook(0x45953b, hook_UpdateLockonEvent_45953B, "UpdateLockonEvent_45953B");
-  hnh_Hook(0x459768, hook_CheckSceneTransition_459768, "CheckSceneTransition_459768");
-  hnh_Hook(0x459ca2, hook_GetSceneEventTime_459CA2, "GetSceneEventTime_459CA2");
-  hnh_Hook(0x44bc36, hook_UpdateHudGauge_44BC36, "UpdateHudGauge_44BC36");
-
   
   hnh_HookOn();
 }

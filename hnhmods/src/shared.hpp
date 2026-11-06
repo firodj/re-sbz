@@ -617,7 +617,8 @@ extern void(__cdecl* DrawClockHud_44AF5B)(CHanaSpriteT3F6_S1FC** arrSprNumbers, 
   int nTimeLeft); // in: PlayCinematicSequence.cpp
 
 extern void(__cdecl* DrawSprite3D)(CHanaSpriteT3F6_S1FC* pSprite, D3DXVECTOR3* parrPos); // in: PlayHunting.cpp
-
+extern void(__cdecl* HanaSurface_CreateAndFade)(); // in: PlayExploring.cpp
+extern void(__cdecl* CHanaSpriteT3F6__GetPos_414A7A)(CHanaSpriteT3F6_S1FC* pSprite, float* pOutX, float* pOutY); // in: RunModeSelectScreen.cpp
 #endif
 
 // == MACROS

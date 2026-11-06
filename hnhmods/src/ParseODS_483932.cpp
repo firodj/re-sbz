@@ -1270,8 +1270,7 @@ void register_ParseODS_483932() {
  
   hnh_Hook(0x48564b, hook_LoadOdsEx_48564B, "LoadOdsEx_48564B");
   hnh_Hook(0x484a38, hook_ParseOdsEx_484A38, "ParseOdsEx_484A38");
-  hnh_Hook(0x4445dd, hook_LoadSekAndOdf_4445DD, "LoadSekAndOdf_4445DD");
-  hnh_Hook(0x4014e4, hook_SekBody__UpdateTo_4014E4, "SekBody__UpdateTo_4014E4");
+
   hnh_HookOff();
     hnh_Hook(0x483567, hook_ReadStrFile_483567, "ReadStrFile_483567"); // [OK]
     hnh_Hook(0x47E999, hook_FindFrameByName_47E999, "FindFrameByName_47E999"); // [OK]
@@ -1291,6 +1290,7 @@ void register_ParseODS_483932() {
     hnh_Hook(0x40fceb, hook_HanaMesh_AddVertexReference, "HanaMesh_AddVertexReference_40FCEB"); // [OK]
     hnh_Hook(0x401039, hook_ParseSekFile_401039, "ParseSekFile_401039"); // [OK]
     hnh_Hook(0x483704, hook_ParseOds3DON_483704, "ParseOds3DON_483704"); // [OK]
-
+    hnh_Hook(0x4445dd, hook_LoadSekAndOdf_4445DD, "LoadSekAndOdf_4445DD"); // [OK]
+    hnh_Hook(0x4014e4, hook_SekBody__UpdateTo_4014E4, "SekBody__UpdateTo_4014E4"); // [OK]
   hnh_HookOn();
 }
