@@ -1212,13 +1212,14 @@ void __cdecl hook_Frame_SetPracticeAnimRootRecursive(CHanaFrameT3EC_S354 *pFrame
 void register_PlayAssault_4703AE() {
   hnh_Hook(0x4703AE, hook_PlayAssault_4703AE, "PlayAssault_4703AE"); // [OK]
 
-  hnh_Hook(0x47e3e1, hook_ToggleWaitScreen, "ToggleWaitScreen_47E3E1");
-  hnh_Hook(0x47e1a2, hook_WaitScreenThreadProc, "WaitScreenThreadProc_47E1A2");
-  hnh_Hook(0x46777d, hook_Scene_FindMapFrame, "Scene_FindMapFrame_46777D");
-  hnh_Hook(0x4667a9, hook_InitializePracticeAnimations_4667A9, "InitializePracticeAnimations_4667A9");
+ 
   hnh_Hook(0x466738, hook_Frame_SetPracticeAnimRootRecursive, "Frame_SetPracticeAnimRootRecursive_466738");
 
   hnh_HookOff();
+  hnh_Hook(0x4667a9, hook_InitializePracticeAnimations_4667A9, "InitializePracticeAnimations_4667A9"); // [OK]
+  hnh_Hook(0x47e3e1, hook_ToggleWaitScreen, "ToggleWaitScreen_47E3E1"); // [OK]
+  hnh_Hook(0x47e1a2, hook_WaitScreenThreadProc, "WaitScreenThreadProc_47E1A2"); // [OK]
+  hnh_Hook(0x46777d, hook_Scene_FindMapFrame, "Scene_FindMapFrame_46777D"); // [OK]
 
   hnh_HookOn();
 }

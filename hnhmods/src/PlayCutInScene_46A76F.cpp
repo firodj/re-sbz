@@ -2908,6 +2908,7 @@ void register_PlayCutInScene_46A76F() {
   hnh_Hook(0x4679b2, hook_TransferAnimSetFrameAnimations_4679B2, "TransferAnimSetFrameAnimations_4679B2");
   hnh_Hook(0x468da8, hook_DrawFadeTransition_Scene, "DrawFadeTransition_Scene_468DA8");
   hnh_Hook(0x468b99, hook_Scene_ApplyFadeToPracticeFrames, "Scene_ApplyFadeToPracticeFrames_468B99");
+
   hnh_HookOff();
 
   hnh_HookOn();

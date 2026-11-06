@@ -3745,18 +3745,12 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
 
 void register_PlayHunting_44C38D() {
   hnh_Hook(0x44C38D, hook_PlayHunting_44C38D, "PlayHunting_44C38D"); // [OK]
-
-  hnh_Hook(0x4539d1, hook_WanaAttack_Charged_4539D1, "WanaAttack_Charged_4539D1");
-  hnh_Hook(0x453b92, hook_WanaAttack_Projectile_453B92, "WanaAttack_Projectile_453B92");
-  hnh_Hook(0x4581b0, hook_StepWanaProjectile_4581B0, "StepWanaProjectile_4581B0");
-  hnh_Hook(0x44c028, hook_UpdateCameraFollowDuel_44C028, "UpdateCameraFollowDuel_44C028");
-  hnh_Hook(0x456807, hook_RenderDualBodyScene_456807, "RenderDualBodyScene_456807");
-
-  hnh_Hook(0x457ee0, hook_StepFoeTurn_457EE0, "StepFoeTurn_457EE0");
-  hnh_Hook(0x455183, hook_PlayVictoryCutscene_455183, "PlayVictoryCutscene_455183");
-
+  
+  hnh_Hook(0x44c028, hook_UpdateCameraFollowDuel_44C028, "UpdateCameraFollowDuel_44C028"); 
 
   hnh_HookOff();
+
+  hnh_Hook(0x456807, hook_RenderDualBodyScene_456807, "RenderDualBodyScene_456807"); // [OK]
   hnh_Hook(0x446a38, hook_UpdateFoeAI_446A38, "UpdateFoeAI_446A38"); // [OK]
   hnh_Hook(0x4535de, hook_WanaAttack_Close_4535DE, "WanaAttack_Close_4535DE"); // [OK]
   hnh_Hook(0x448b78, hook_IsFoeWithinHeroRange_448B78, "IsFoeWithinHeroRange_448B78"); // [OK]
@@ -3767,6 +3761,11 @@ void register_PlayHunting_44C38D() {
   hnh_Hook(0x414344, hook_DrawSprite3D, "DrawSprite3D_414344"); // [OK]
   hnh_Hook(0x45804c, hook_StepFoeSpin_45804C, "StepFoeSpin_45804C"); // [OK]
   hnh_Hook(0x455be2, hook_PlayResultsCutscene_455BE2, "PlayResultsCutscene_455BE2"); // [OK]
+  hnh_Hook(0x453b92, hook_WanaAttack_Projectile_453B92, "WanaAttack_Projectile_453B92"); // [OK]
+  hnh_Hook(0x4581b0, hook_StepWanaProjectile_4581B0, "StepWanaProjectile_4581B0"); // [OK]
+  hnh_Hook(0x457ee0, hook_StepFoeTurn_457EE0, "StepFoeTurn_457EE0"); // [OK]
+  hnh_Hook(0x455183, hook_PlayVictoryCutscene_455183, "PlayVictoryCutscene_455183"); // [OK]
+  hnh_Hook(0x4539d1, hook_WanaAttack_Charged_4539D1, "WanaAttack_Charged_4539D1"); // [OK]
 
   hnh_HookOn();
 }
