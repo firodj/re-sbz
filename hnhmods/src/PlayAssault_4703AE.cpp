@@ -24,16 +24,6 @@ void (__cdecl*InitializePracticeAnimations_4667A9)(
     reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *)>(0x4667A9);
 
 
-int (__cdecl*PlayCutInScene_46A76F)(CHanaSceneT458_S504 *pScene,
-    CHanaSpriteT3F6_S1FC **arrMouseSprites, CHanaSpriteT3F6_S1FC **arrGoSprites,
-    CHanaSpriteT3F6_S1FC **arrPostureSprites, CSekBody *pLockOnBody,
-    CSekBody *pModeBody, int iGroup, CSoundStruct_8 **arrSoundAHs,
-    CSoundStruct_8 **arrSoundSEs, CSekBody **arrTearsBodies, int iMenuTab) =
-    reinterpret_cast<int(__cdecl*)(CHanaSceneT458_S504 *,
-      CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **,
-      CSekBody *, CSekBody *, int, CSoundStruct_8 **, CSoundStruct_8 **,
-      CSekBody **, int)>(0x46A76F);
-
 void (WINAPI *WaitScreenThreadProc)(LPVOID lpThreadParameter)
 = reinterpret_cast<void (WINAPI*)(LPVOID lpThreadParameter)>(0x47e1a2);
 void (__cdecl *Frame_SetPracticeAnimRootRecursive)(CHanaFrameT3EC_S354 *pFrame, CHanaFrameT3EC_S354 *pRootAnimFrame)

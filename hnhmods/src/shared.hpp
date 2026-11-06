@@ -415,6 +415,7 @@ extern void(__cdecl* ProjectToScreen_40E2A5)(D3DXMATRIX* pM, POINT* pOut);
 
 // === DEFINED RunModeSelectScreen.cpp ===
 
+extern void(__cdecl* Frame_ApplyFadeRecursive)(CHanaFrameT3EC_S354* pFrame, float alpha);
 extern int(__cdecl* RunModeSelectScreen)(CHanaSceneT458_S504* pScene,
   CHanaSpriteT3F6_S1FC** arrModeSprites, CHanaSpriteT3F6_S1FC** arrMouseSprites, int* piSelected,
   int iModeId, QWORD* pSelMask, int iMenuTab);
@@ -437,6 +438,15 @@ extern int(__cdecl* PlayExploring_45BCAE)(int nStageIndex);
 // (faithful pseudocode dump of the 0x6F3B-byte duel scene; helpers pinned in-file)
 
 extern int(__cdecl* PlayHunting_44C38D)(int nDuelIndex);
+
+// === DEFINED PlayAssault_4703AE.cpp ===
+
+extern CHanaFrameT3EC_S354 *(__cdecl* Scene_FindMapFrame)(CHanaSceneT458_S504 *pScene);
+extern int(__cdecl* PlayCutInScene_46A76F)(CHanaSceneT458_S504 *pScene,
+  CHanaSpriteT3F6_S1FC **arrMouseSprites, CHanaSpriteT3F6_S1FC **arrGOTypeSprites,
+  CHanaSpriteT3F6_S1FC **arrPostureSprites, CSekBody *pLockOnBody,
+  CSekBody *pModeBody, int iGroup, CSoundStruct_8 **arrSoundAHs,
+  CSoundStruct_8 **arrSoundSEs, CSekBody **arrTearsBodies, int iMenuTab);
 
 // === DEFINED MenuCharSelect.cpp (continued) ===
 
@@ -619,6 +629,15 @@ extern void(__cdecl* DrawClockHud_44AF5B)(CHanaSpriteT3F6_S1FC** arrSprNumbers, 
 extern void(__cdecl* DrawSprite3D)(CHanaSpriteT3F6_S1FC* pSprite, D3DXVECTOR3* parrPos); // in: PlayHunting.cpp
 extern void(__cdecl* HanaSurface_CreateAndFade)(); // in: PlayExploring.cpp
 extern void(__cdecl* CHanaSpriteT3F6__GetPos_414A7A)(CHanaSpriteT3F6_S1FC* pSprite, float* pOutX, float* pOutY); // in: RunModeSelectScreen.cpp
+
+extern void(__cdecl* ApplyMateAnimMaterial)(CHanaMateAnimT3F7_S148* pMateAnim, float fNum); // in: ParseODFContent.cpp
+
+extern int(__cdecl* PlayCutInScene_46A76F)(CHanaSceneT458_S504* pScene,
+  CHanaSpriteT3F6_S1FC** arrMouseSprites, CHanaSpriteT3F6_S1FC** arrGoSprites,
+  CHanaSpriteT3F6_S1FC** arrPostureSprites, CSekBody* pLockOnBody,
+  CSekBody* pModeBody, int iGroup, CSoundStruct_8** arrSoundAHs,
+  CSoundStruct_8** arrSoundSEs, CSekBody** arrTearsBodies, int iMenuTab); // in: PlayCutInScene.cpp
+
 #endif
 
 // == MACROS

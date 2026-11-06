@@ -359,38 +359,38 @@ Starting from 0x49f0e1
     │   │   │   │   │   ├──0x47e3e1 ToggleWaitScreen                                            <- [HOOK+PTR PlayAssault_4703AE.cpp]
     │   │   │   │   │   │   ├──0x47e1a2 WaitScreenThreadProc                                    <- [HOOK PlayAssault_4703AE.cpp]
     │   │   │   │   │   ├──0x423c65 DSBufferGetVolume_423C65                                    <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
-    │   │   │   │   │   ├──0x46a76f PlayCutInScene_46A76F                                       <- [PTR PlayAssault_4703AE.cpp]
-    │   │   │   │   │   │   ├──0x46a503 UpdateSekBodyAnimationMatrix                            <- [todo]
-    │   │   │   │   │   │   │   ├──0x46a3e9 UpdateFrameAnimationMatrix                          <- [todo]
-    │   │   │   │   │   │   │   ├──0x404277 SetAnimSetTime                                      <- [todo]
-    │   │   │   │   │   │   │   └──0x401c67 GetSekBodyCurrentAnimTime                           <- [todo]
-    │   │   │   │   │   │   ├──0x47ea86 FindFrameByNameSubstringRecursive                       <- [todo]
-    │   │   │   │   │   │   ├──0x466978 CameraFrame_TrackBetweenObjectsAndLookAt                <- [todo]
-    │   │   │   │   │   │   ├──0x468da8 DrawFadeTransition_Scene                                <- [todo]
+    │   │   │   │   │   ├──0x46a76f PlayCutInScene_46A76F                                       <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x46a503 UpdateSekBodyAnimationMatrix                            <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   │   ├──0x46a3e9 UpdateFrameAnimationMatrix                          <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   │   ├──0x404277 SetAnimSetTime                                      <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   │   └──0x401c67 GetSekBodyCurrentAnimTime                           <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x47ea86 FindFrameByNameSubstringRecursive                       <- [PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x466978 CameraFrame_TrackBetweenObjectsAndLookAt                <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x468da8 DrawFadeTransition_Scene                                <- [PTR PlayCutInScene_46A76F.cpp]
     │   │   │   │   │   │   │   ├──0x468b99 Scene_ApplyFadeToPracticeFrames                     <- [todo]
-    │   │   │   │   │   │   ├──0x4668ac Scene_ProcessPracticeFrames                             <- [todo]
-    │   │   │   │   │   │   │   └──0x4665f0 Frame_CheckCameraDistanceAndRecurse                 <- [todo]
-    │   │   │   │   │   │   ├──0x4690ab SoundAH_ManageEffectsAndAnimate                         <- [todo]
-    │   │   │   │   │   │   │   ├──0x481be0 HanaMorp_AnimateAndPropagate                        <- [todo]
-    │   │   │   │   │   │   ├──0x4680b4 UpdateCutInSceneBoneTransforms                          <- [todo]
-    │   │   │   │   │   │   ├──0x469eb6 Character_UpdateAnimationState                          <- [todo]
-    │   │   │   │   │   │   │   └──0x48713f HanaObj_CheckFrameCondition                         <- [todo]
-    │   │   │   │   │   │   ├──0x467abe AnimSet_ResetAndTransferAnimations                      <- [todo]
+    │   │   │   │   │   │   ├──0x4668ac Scene_ProcessPracticeFrames                             <- [PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   │   └──0x4665f0 Frame_CheckCameraDistanceAndRecurse                 <- [PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x4690ab SoundAH_ManageEffectsAndAnimate                         <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   │   ├──0x481be0 HanaMorp_AnimateAndPropagate                        <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x4680b4 UpdateCutInSceneBoneTransforms                          <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x469eb6 Character_UpdateAnimationState                          <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   │   └──0x48713f HanaObj_CheckFrameCondition                         <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x467abe AnimSet_ResetAndTransferAnimations                      <- [PTR PlayCutInScene_46A76F.cpp]
     │   │   │   │   │   │   │   ├──0x4679b2 TransferAnimSetFrameAnimations_4679B2               <- [todo]
     │   │   │   │   │   │   │   │   ├──0x404349 CHanaAnimSetT3F1::RemoveAnimT3F0_404349         <- [HOOK+PTR PlayExploring_45BCAE.cpp]
-    │   │   │   │   │   │   ├──0x468a4a Cursor_ClampToCenterOrSprite                            <- [todo]
-    │   │   │   │   │   │   ├──0x4682d6 MoveCutInSceneFramesWithCameraConstraint                <- [todo]
-    │   │   │   │   │   │   ├──0x466bda CameraController_UpdateCutscene                         <- [todo]
-    │   │   │   │   │   │   ├──0x46a55d CameraFrame_ProjectFramePairOntoForwardRay              <- [todo]
-    │   │   │   │   │   │   ├──0x467160 CutInScene_CyclePosAndApplyCameraOffset                 <- [todo]
-    │   │   │   │   │   │   │   ├──0x407945 HanaFrame_GetMatAfter                               <- [todo]
-    │   │   │   │   │   │   │   └──0x40799f HanaMatrix_ApplyTransform                           <- [todo]
-    │   │   │   │   │   │   ├──0x467dfd IsObjectValidRecursive_467DFD                           <- [todo]
-    │   │   │   │   │   │   │   ├──0x467d62 IsParentValid_467D62                                <- [todo]
-    │   │   │   │   │   │   │   │   └──0x467bbd SyncObjectAnimationByName_467BBD                <- [todo]
-    │   │   │   │   │   │   ├──0x4698e8 SoundSE_ManageEffectsAndPlay                            <- [todo]
-    │   │   │   │   │   │   ├──0x467e72 AnimSet_MatchAndSortKutiRTibusaLFrames                  <- [todo]
-    │   │   │   │   │   │   ├──0x4686f8 UpdateCutInSceneCameraFollow                            <- [todo]
+    │   │   │   │   │   │   ├──0x468a4a Cursor_ClampToCenterOrSprite                            <- [PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x4682d6 MoveCutInSceneFramesWithCameraConstraint                <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x466bda CameraController_UpdateCutscene                         <- [PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x46a55d CameraFrame_ProjectFramePairOntoForwardRay              <- [PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x467160 CutInScene_CyclePosAndApplyCameraOffset                 <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   │   ├──0x407945 HanaFrame_GetMatAfter                               <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   │   └──0x40799f HanaMatrix_ApplyTransform                           <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x467dfd IsObjectValidRecursive_467DFD                           <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   │   ├──0x467d62 IsParentValid_467D62                                <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   │   │   └──0x467bbd SyncObjectAnimationByName_467BBD                <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x4698e8 SoundSE_ManageEffectsAndPlay                            <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x467e72 AnimSet_MatchAndSortKutiRTibusaLFrames                  <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
+    │   │   │   │   │   │   ├──0x4686f8 UpdateCutInSceneCameraFollow                            <- [HOOK+PTR PlayCutInScene_46A76F.cpp]
     │   │   │   ├──0x47ad8d MenuGallery                                                         <- [HOOK+PTR MenuCharSelect.cpp]
     │   │   ├──0x44c38d PlayHunting_44C38D                                                      <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   ├──0x455183 PlayVictoryCutscene_455183                                          <- [PTR PlayHunting_44C38D.cpp]
@@ -427,12 +427,12 @@ Starting from 0x49f0e1
     │   │   │   │   ├──0x457ee0 StepFoeTurn_457EE0                                              <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   ├──0x44474e UpdateHeroBody_44474E                                               <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
     │   │   │   ├──0x4539d1 WanaAttack_Charged_4539D1                                           <- [HOOK+PTR PlayHunting_44C38D.cpp]
-    │   │   │   ├──0x4573cf ShowMouseSelectDialog_4573CF                                        <- [PTR PlayExploring_45BCAE.cpp]
+    │   │   │   ├──0x4573cf ShowMouseSelectDialog_4573CF                                        <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   │   ├──0x443dd5 BuildMapSubFrames_443DD5                                            <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   │   │   ├──0x407e5b Frame_ComputeWorldAABB                                          <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   │   ├──0x4535de WanaAttack_Close_4535DE                                             <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   ├──0x455be2 PlayResultsCutscene_455BE2                                          <- [PTR PlayHunting_44C38D.cpp]
-    │   │   │   │   ├──0x455b0e HanaSurface_CreateAndFade                                       <- [todo]
+    │   │   │   │   ├──0x455b0e HanaSurface_CreateAndFade                                       <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   │   ├──0x448c72 BindSceneActors_448C72                                              <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   ├──0x4536f6 WanaAttack_Knockback_4536F6                                         <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   ├──0x448b78 IsFoeWithinHeroRange_448B78                                         <- [HOOK+PTR PlayHunting_44C38D.cpp]
@@ -458,10 +458,10 @@ Starting from 0x49f0e1
     │   │   │   ├──0x44bc36 UpdateHudGauge_44BC36                                               <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   │   ├──0x45a2ba ApplyTargetEffect_45A2BA                                            <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   │   ├──0x45953b UpdateLockonEvent_45953B                                            <- [HOOK+PTR PlayExploring_45BCAE.cpp]
-    │   │   │   ├──0x45b5bd PrepareTargetSelect_45B5BD                                          <- [PTR PlayExploring_45BCAE.cpp]
+    │   │   │   ├──0x45b5bd PrepareTargetSelect_45B5BD                                          <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   │   ├──0x4593e0 SetupHeroEntry_4593E0                                               <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
     │   │   │   ├──0x459768 CheckSceneTransition_459768                                         <- [HOOK+PTR PlayExploring_45BCAE.cpp]
-    │   │   │   └──0x45b2fb DrawSpriteListEcho_45B2FB                                           <- [PTR PlayExploring_45BCAE.cpp]
+    │   │   │   └──0x45b2fb DrawSpriteListEcho_45B2FB                                           <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   ├──0x4795ce ShowBackdropAndWait_4795CE                                              <- [HOOK+PTR GameMainLoop_47F013.cpp]
     │   │   ├──0x4799e2 InGameMenu_4799E2                                                       <- [HOOK+PTR InGameMenu_4799E2.cpp]
     │   │   ├──0x47eeec ReleaseSoundEffects                                                     <- [HOOK+PTR LoadSoundEffects_47EB7F.cpp]
@@ -481,11 +481,11 @@ Done 460
 ## Stats
 
 - tree functions:      460
-- hooked:              389 (HOOK or HOOK+PTR)
-- pinned:              393 (PTR or HOOK+PTR)
-- fully covered:       382 (HOOK+PTR)
+- hooked:              414 (HOOK or HOOK+PTR)
+- pinned:              422 (PTR or HOOK+PTR)
+- fully covered:       407 (HOOK+PTR)
 - implemented only:    1
-- untouched:           59
+- untouched:           30
 
 ## Per-file status (scan_cpp.py)
 
@@ -575,13 +575,13 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              36 (35 func-ptr imports)
+  globals:              37 (36 func-ptr imports)
   functions:            15 (14 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   11/14
   hnh_Hook-registered:  11/14
   func-ptrs declared:   11/11
-  func-ptrs w/o hook:   24/35
-  no hook function for: D3DXUninitialize, D3DXInitialize, D3DXGetDeviceCount, D3DXGetMaxNumVideoModes, D3DXGetDeviceDescription, D3DXGetVideoMode, D3DXGetDeviceCaps, D3DXCreateContextEx, D3DXCreateContext, D3DXGetSurfaceFormat, D3DXGetMaxSurfaceFormats, D3DXCreateMatrixStack, D3DXCreateTexture, D3DXCheckTextureRequirements, D3DXLoadTextureFromSurface, D3DXDrawSpriteSimple, D3DXDrawSprite3D, D3DXQuaternionSlerp, D3DXMatrixRotationQuaternion, D3DXMatrixTranslation, D3DXMatrixScaling, D3DXVec3TransformCoord, D3DXVec3TransformNormal, D3DXCreateTextureFromFile
+  func-ptrs w/o hook:   25/36
+  no hook function for: D3DXUninitialize, D3DXInitialize, D3DXGetDeviceCount, D3DXGetMaxNumVideoModes, D3DXGetDeviceDescription, D3DXGetVideoMode, D3DXGetDeviceCaps, D3DXCreateContextEx, D3DXCreateContext, D3DXGetSurfaceFormat, D3DXGetMaxSurfaceFormats, D3DXCreateMatrixStack, D3DXCreateTexture, D3DXCheckTextureRequirements, D3DXLoadTextureFromSurface, D3DXDrawSpriteSimple, D3DXDrawSprite3D, D3DXQuaternionSlerp, D3DXMatrixRotationQuaternion, D3DXMatrixTranslation, D3DXMatrixScaling, D3DXVec3TransformCoord, D3DXVec3TransformNormal, D3DXCreateTextureFromFile, D3DXQuaternionRotationMatrix
   missing DebugLog:     hnh_HookOn, hnh_HookOff, hnh_Hook
   not registered:       hnh_HookOn, hnh_HookOff, hnh_Hook
 ```
@@ -726,13 +726,12 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              8 (5 func-ptr imports)
+  globals:              7 (4 func-ptr imports)
   functions:            7 (6 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   6/6
   hnh_Hook-registered:  6/6
   func-ptrs declared:   4/6
-  func-ptrs w/o hook:   1/5
-  no hook function for: PlayCutInScene_46A76F
+  func-ptrs w/o hook:   0/4
 ```
 
 ### hnhmods/src/PlayCinematicSequence_45460A.cpp
@@ -748,18 +747,31 @@ structs:              0
   func-ptrs w/o hook:   0/6
 ```
 
+### hnhmods/src/PlayCutInScene_46A76F.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              30 (29 func-ptr imports)
+  functions:            22 (21 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   21/21
+  hnh_Hook-registered:  21/21
+  func-ptrs declared:   21/21
+  func-ptrs w/o hook:   8/29
+  no hook function for: DrawFadeTransition_Scene, AnimSet_ResetAndTransferAnimations, FindFrameByNameSubstringRecursive, CameraFrame_ProjectFramePairOntoForwardRay, CameraController_UpdateCutscene, Scene_ProcessPracticeFrames, Cursor_ClampToCenterOrSprite, Frame_CheckCameraDistanceAndRecurse
+```
+
 ### hnhmods/src/PlayExploring_45BCAE.cpp
 
 ```
 SUMMARY
 structs:              0
-  globals:              27 (20 func-ptr imports)
-  functions:            18 (17 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   17/17
-  hnh_Hook-registered:  17/17
-  func-ptrs declared:   17/17
-  func-ptrs w/o hook:   3/20
-  no hook function for: PrepareTargetSelect_45B5BD, ShowMouseSelectDialog_4573CF, DrawSpriteListEcho_45B2FB
+  globals:              28 (21 func-ptr imports)
+  functions:            22 (21 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   21/21
+  hnh_Hook-registered:  21/21
+  func-ptrs declared:   21/21
+  func-ptrs w/o hook:   0/21
 ```
 
 ### hnhmods/src/PlayHunting_44C38D.cpp

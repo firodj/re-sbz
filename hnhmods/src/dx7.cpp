@@ -87,6 +87,11 @@ HRESULT(__stdcall* D3DXCreateTextureFromFile)(LPDIRECT3DDEVICE7 pd3dDevice,
     LPDIRECTDRAWSURFACE7* ppDDSurf,  LPDWORD pNumMipMaps,  LPSTR pSrcName,
     D3DX_FILTERTYPE filterType)>(0x48E807);
 
+
+D3DXQUATERNION* (__stdcall* D3DXQuaternionRotationMatrix)(D3DXQUATERNION* pOut,
+  const D3DXMATRIX* pM) = reinterpret_cast<D3DXQUATERNION* (__stdcall*)(D3DXQUATERNION* pOut,
+    const D3DXMATRIX* pM)>(0x48AEAD);
+
 // === FUNCTION IMPLEMENATIONS ===
 
 D3DXVECTOR3 *__stdcall hook_D3DXVec3Normalize(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV)

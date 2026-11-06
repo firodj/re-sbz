@@ -117,6 +117,9 @@
     <ClCompile Include="src\PlayAssault_4703AE.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\PlayCutInScene_46A76F.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="src\PlayCinematicSequence_45460A.cpp">
       <Filter>src</Filter>
     </ClCompile>

@@ -404,3 +404,7 @@ extern HRESULT(__stdcall* D3DXCreateTextureFromFile)(LPDIRECT3DDEVICE7 pd3dDevic
   D3DX_SURFACEFORMAT* pPixelFormat, LPDIRECTDRAWPALETTE pDDPal,
   LPDIRECTDRAWSURFACE7* ppDDSurf, LPDWORD pNumMipMaps, LPSTR pSrcName,
   D3DX_FILTERTYPE filterType);
+extern D3DXQUATERNION* (__stdcall* D3DXQuaternionRotationMatrix)(D3DXQUATERNION* pOut,
+  const D3DXMATRIX* pM);
+
+

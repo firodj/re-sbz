@@ -115,6 +115,7 @@ void register_PlayExploring_45BCAE();
 void register_SetupHeroEntry_4593E0();
 void register_PlayHunting_44C38D();
 void register_PlayAssault_4703AE();
+void register_PlayCutInScene_46A76F();
 
 HANDLE g_hStartEvent = NULL;
 
@@ -173,6 +174,7 @@ void InitHNH() {
 	register_SetupHeroEntry_4593E0();
 	register_PlayHunting_44C38D();
 	register_PlayAssault_4703AE();
+	register_PlayCutInScene_46A76F();
 
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)
