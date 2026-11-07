@@ -123,6 +123,9 @@
     <ClCompile Include="src\PlayCinematicSequence_45460A.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\PlayVideoWith3DAudio_4791A3.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

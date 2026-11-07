@@ -22,6 +22,10 @@ extern BOOL (__cdecl*DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd);
 
 // === DEFINED WndProcCheckSystem.cpp ===
 
+extern void (*HanaDS_Shutdown)();
+extern int(__cdecl* HanaDS_Init)(HWND hwnd);
+extern IDirectSound3DListener* (*HanaDS_Create3DListener)();
+
 extern LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78;
 extern D3DDEVICEDESC7    &g_d3dDevDesc_4D6980;
 

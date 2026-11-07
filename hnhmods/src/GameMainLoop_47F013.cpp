@@ -36,8 +36,7 @@ int(__cdecl* ConvertFrom1024AsInt)(int nNum) = reinterpret_cast<int(__cdecl*)(in
 double(__cdecl* ConvertFrom1024AsFloat)(float fNum) = reinterpret_cast<double(__cdecl*)(float fNum)>(0x47E69B);
 
 // ReleaseSoundEffects / LoadSoundEffects_47EB7F live in src/LoadSoundEffects_47EB7F.cpp (extern in shared.hpp)
-void (__cdecl*PlayVideoWith3DAudio_4791A3)(const char* szMoviePath, int bLoopFlags) =
-    reinterpret_cast<void(__cdecl*)(const char*, int)>(0x4791A3);
+
 // InGameMenu_4799E2 / MainMenu_47DF0D live in src/InGameMenu_4799E2.cpp (extern in shared.hpp)
 // PlayOdsDialogueScene_477F90 lives in src/PlayOdsDialogueScene_477F90.cpp (extern in shared.hpp)
 // PlayExploring_45BCAE lives in src/PlayExploring_45BCAE.cpp (extern in shared.hpp)
@@ -436,13 +435,6 @@ void __cdecl hook_BMP_Convert24bitTo16bitWithDither(CBMPFile *pBMPFile)
       }
     }
   }
-}
-
-LPVOID orig_PlayVideoWith3DAudio_4791A3 = NULL;
-
-void __cdecl hook_PlayVideoWith3DAudio_4791A3(const char* szMoviePath, int bLoopFlags) {
-  DebugLog("[HNH:SUB] %s path=%s loop=%d\n", "PlayVideoWith3DAudio_4791A3", szMoviePath, bLoopFlags);
-  // reinterpret_cast<void(__cdecl*)(const char* szMoviePath, int bLoopFlags)>(orig_PlayVideoWith3DAudio_4791A3)(szMoviePath, bLoopFlags);
 }
 
 
