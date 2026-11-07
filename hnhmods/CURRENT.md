@@ -1,6 +1,6 @@
 # CURRENT - GOALS coverage in hnhmods/src
 
-Generated 2026-11-06 by `py tools/gen_current.py` from `hnhmods/GOALS.md`
+Generated 2026-11-07 by `py tools/gen_current.py` from `hnhmods/GOALS.md`
 vs `hnhmods/src/*.cpp` (function data via `tools/scan_cpp.py`).
 
 Legend:
@@ -68,9 +68,9 @@ Starting from 0x49f0e1
     │   │   │   │   │   ├──0x40aefb AllocateDevicesDescArray                                    <- [HOOK+PTR ShowTitleMenu.cpp]
     │   │   │   │   │   └──0x40ac7c D3DDeinit                                                   <- [HOOK+PTR WndProcCheckSystem_485FC2.cpp]
     │   │   │   │   │       ├──0x40c1e4 CHanaObj__Free_40C1E4                                   <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
-    │   │   │   │   │       │   ├──0x410501 CHanaObj__FreeT3FC                                  <- [PTR CHanaObj__Free_40C1E4.cpp]
+    │   │   │   │   │       │   ├──0x410501 CHanaObj__FreeT3FC                                  <- [todo]
     │   │   │   │   │       │   │   ├──0x40bd4d CHanaObj__RemoveFromGlobalRef                   <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
-    │   │   │   │   │       │   │   └──0x4114df CHanaObj__FreeT3FD                              <- [PTR CHanaObj__Free_40C1E4.cpp]
+    │   │   │   │   │       │   │   └──0x4114df CHanaObj__FreeT3FD                              <- [todo]
     │   │   │   │   │       │   ├──0x415e05 CHanaObj__FreeTexCoordT3F2                          <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   ├──0x413f07 CHanaObj__FreeSpriteT3F6                            <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   ├──0x417a0c CHanaObj__FreeVertT3EA                              <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
@@ -81,7 +81,7 @@ Starting from 0x49f0e1
     │   │   │   │   │       │   ├──0x4054b3 CHanaObj__FreeFrameT3EC                             <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   │   ├──0x405421 Frame_FreeAttachedLight                         <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   │   ├──0x40536d Frame_FreeAttachedObject                        <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
-    │   │   │   │   │       │   ├──0x4166b5 CHanaObj__FreeT3FB                                  <- [PTR CHanaObj__Free_40C1E4.cpp]
+    │   │   │   │   │       │   ├──0x4166b5 CHanaObj__FreeT3FB                                  <- [todo]
     │   │   │   │   │       │   │   ├──0x416960 ReleaseHana3FBTexture                           <- [todo]
     │   │   │   │   │       │   │   ├──0x4169cb ReleaseHana3FBMaterial                          <- [todo]
     │   │   │   │   │       │   ├──0x40e6b6 CHanaObj__FreeMateAnimT3F7                          <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
@@ -97,7 +97,7 @@ Starting from 0x49f0e1
     │   │   │   │   │       │   ├──0x40fc5e CHanaObj__FreeMateT3EE                              <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   ├──0x414f62 CHanaObj__FreeTexAnimT3F3                           <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │   ├──0x40f3e5 CHanaObj__FreeMateAnimSetT3F8                       <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
-    │   │   │   │   │       │   ├──0x413075 CHanaObj__FreeT3FE                                  <- [PTR CHanaObj__Free_40C1E4.cpp]
+    │   │   │   │   │       │   ├──0x413075 CHanaObj__FreeT3FE                                  <- [todo]
     │   │   │   │   │       │   └──0x4821fa CHanaObj__FreeSceneT458                             <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │       └──0x4012fe CSekBody__Release_4012FE                        <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
     │   │   │   │   │       │           └──0x40d8f6 FreeSekHeader                               <- [HOOK+PTR CHanaObj__Free_40C1E4.cpp]
@@ -159,7 +159,7 @@ Starting from 0x49f0e1
     │   │   │   │   │       ├──0x40c54c HanaVert_DrawByType                                     <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   ├──0x434fc9 HanaMorpT457_Draw                                   <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       │   │   └──0x40fe8e HanaMeshT3F5_Draw                               <- [HOOK+PTR ProcessFrame_40600C.cpp]
-    │   │   │   │   │       │   ├──0x416776 HanaT3FB_Draw                                       <- [PTR ProcessFrame_40600C.cpp]
+    │   │   │   │   │       │   ├──0x416776 HanaT3FB_Draw                                       <- [todo]
     │   │   │   │   │       ├──0x40ce4e SetLightEnableMask                                      <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │       └──0x40d9c7 SortObjectsByDepth                                      <- [HOOK+PTR ProcessFrame_40600C.cpp]
     │   │   │   │   │           └──0x408c3e HanaFrame_GetCenterPosition_408C3E                  <- [HOOK+PTR ParseODFContent_441A5D.cpp]
@@ -439,14 +439,14 @@ Starting from 0x49f0e1
     │   │   ├──0x477f90 PlayOdsDialogueScene_477F90                                             <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   ├──0x41a039 Surface_AlphaBlendRect                                              <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
     │   │   │   │   └──0x4196fd Surface_LockAndGetPointer                                       <- [HOOK+PTR PlayOdsDialogueScene_477F90.cpp]
-    │   │   ├──0x4791a3 PlayVideoWith3DAudio_4791A3                                             <- [HOOK+PTR GameMainLoop_47F013.cpp]
-    │   │   │   ├──0x43a863 AviWndSetVolume_43A863                                              <- [todo]
-    │   │   │   ├──0x43a889 AviGetVolume_43A889                                                 <- [todo]
-    │   │   │   ├──0x43a6fa CheckIsVideoEndAndFlushMsg_43A6FA                                   <- [todo]
-    │   │   │   ├──0x43a6f0 GetAviWnd                                                           <- [todo]
-    │   │   │   ├──0x43a7d5 AviWnd_Pause                                                        <- [todo]
-    │   │   │   ├──0x43a7f8 AviWnd_Destroy                                                      <- [todo]
-    │   │   │   └──0x43a95b CreateAviWnd_43A95B                                                 <- [todo]
+    │   │   ├──0x4791a3 PlayVideoWith3DAudio_4791A3                                             <- [HOOK+PTR PlayVideoWith3DAudio_4791A3.cpp]
+    │   │   │   ├──0x43a863 AviWndSetVolume_43A863                                              <- [HOOK+PTR PlayVideoWith3DAudio_4791A3.cpp]
+    │   │   │   ├──0x43a889 AviGetVolume_43A889                                                 <- [HOOK+PTR PlayVideoWith3DAudio_4791A3.cpp]
+    │   │   │   ├──0x43a6fa CheckIsVideoEndAndFlushMsg_43A6FA                                   <- [HOOK+PTR PlayVideoWith3DAudio_4791A3.cpp]
+    │   │   │   ├──0x43a6f0 GetAviWnd                                                           <- [HOOK+PTR PlayVideoWith3DAudio_4791A3.cpp]
+    │   │   │   ├──0x43a7d5 AviWnd_Pause                                                        <- [HOOK+PTR PlayVideoWith3DAudio_4791A3.cpp]
+    │   │   │   ├──0x43a7f8 AviWnd_Destroy                                                      <- [HOOK+PTR PlayVideoWith3DAudio_4791A3.cpp]
+    │   │   │   └──0x43a95b CreateAviWnd_43A95B                                                 <- [HOOK+PTR PlayVideoWith3DAudio_4791A3.cpp]
     │   │   │       ├──0x43a8b0 IsFileExists_43A8B0                                             <- [todo]
     │   │   │       ├──0x49dfc2 VideoForWindowsVersion                                          <- [todo]
     │   │   │       └──0x49dfbc MCIWndCreateA                                                   <- [todo]
@@ -481,11 +481,11 @@ Done 460
 ## Stats
 
 - tree functions:      460
-- hooked:              426 (HOOK or HOOK+PTR)
-- pinned:              424 (PTR or HOOK+PTR)
-- fully covered:       419 (HOOK+PTR)
+- hooked:              433 (HOOK or HOOK+PTR)
+- pinned:              426 (PTR or HOOK+PTR)
+- fully covered:       426 (HOOK+PTR)
 - implemented only:    1
-- untouched:           28
+- untouched:           26
 
 ## Per-file status (scan_cpp.py)
 
@@ -507,13 +507,12 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              57 (37 func-ptr imports)
+  globals:              53 (33 func-ptr imports)
   functions:            34 (33 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   33/33
   hnh_Hook-registered:  33/33
   func-ptrs declared:   33/33
-  func-ptrs w/o hook:   4/37
-  no hook function for: CHanaObj__FreeT3FB, CHanaObj__FreeT3FC, CHanaObj__FreeT3FD, CHanaObj__FreeT3FE
+  func-ptrs w/o hook:   0/33
 ```
 
 ### hnhmods/src/CHanaObj__NewFrameT3EC_S354.cpp
@@ -591,12 +590,12 @@ structs:              0
 ```
 SUMMARY
 structs:              0
-  globals:              24 (11 func-ptr imports)
-  functions:            12 (11 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   11/11
-  hnh_Hook-registered:  11/11
-  func-ptrs declared:   11/11
-  func-ptrs w/o hook:   0/11
+  globals:              22 (10 func-ptr imports)
+  functions:            11 (10 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   10/10
+  hnh_Hook-registered:  10/10
+  func-ptrs declared:   10/10
+  func-ptrs w/o hook:   0/10
 ```
 
 ### hnhmods/src/InGameMenu_4799E2.cpp
@@ -612,18 +611,6 @@ structs:              0
   func-ptrs w/o hook:   0/19
   missing DebugLog:     ApplyMenuBgmVolume
   not registered:       ApplyMenuBgmVolume
-```
-
-### hnhmods/src/IsFileExists_47E8EE.cpp
-
-```
-SUMMARY
-structs:              0
-  globals:              0 (0 func-ptr imports)
-  functions:            0 (0 implemented + 0 registrar)
-  DebugLog [HNH:SUB]:   0/0
-  hnh_Hook-registered:  0/0
-  func-ptrs declared:   0/0
 ```
 
 ### hnhmods/src/LoadSoundEffects_47EB7F.cpp
@@ -666,18 +653,6 @@ structs:              0
   func-ptrs declared:   7/7
   func-ptrs w/o hook:   1/8
   no hook function for: PlayAssault_4703AE
-```
-
-### hnhmods/src/MtxStackRecursiveMulLocal.cpp
-
-```
-SUMMARY
-structs:              0
-  globals:              0 (0 func-ptr imports)
-  functions:            1 (0 implemented + 1 registrar)
-  DebugLog [HNH:SUB]:   0/0
-  hnh_Hook-registered:  0/0
-  func-ptrs declared:   0/0
 ```
 
 ### hnhmods/src/ParseExecStr_487D89.cpp
@@ -814,18 +789,30 @@ structs:              0
   func-ptrs w/o hook:   0/32
 ```
 
+### hnhmods/src/PlayVideoWith3DAudio_4791A3.cpp
+
+```
+SUMMARY
+structs:              0
+  globals:              13 (8 func-ptr imports)
+  functions:            9 (8 implemented + 1 registrar)
+  DebugLog [HNH:SUB]:   8/8
+  hnh_Hook-registered:  8/8
+  func-ptrs declared:   8/8
+  func-ptrs w/o hook:   0/8
+```
+
 ### hnhmods/src/ProcessFrame_40600C.cpp
 
 ```
 SUMMARY
 structs:              0
-  globals:              22 (19 func-ptr imports)
+  globals:              21 (18 func-ptr imports)
   functions:            22 (21 implemented + 1 registrar)
   DebugLog [HNH:SUB]:   18/21
   hnh_Hook-registered:  18/21
   func-ptrs declared:   18/18
-  func-ptrs w/o hook:   1/19
-  no hook function for: HanaT3FB_Draw
+  func-ptrs w/o hook:   0/18
   missing DebugLog:     VertNeedsAlphaPass, FixAlphaAndAddToPool, AlwaysTrue
   not registered:       VertNeedsAlphaPass, FixAlphaAndAddToPool, AlwaysTrue
 ```

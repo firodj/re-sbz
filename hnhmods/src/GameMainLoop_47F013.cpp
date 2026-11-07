@@ -560,8 +560,6 @@ void hook_ShowBackdropAndWait_4795CE()
 }
 
 void register_GameMainLoop_47F013() {
-  orig_PlayVideoWith3DAudio_4791A3 = hnh_Hook(0x4791A3, hook_PlayVideoWith3DAudio_4791A3, "PlayVideoWith3DAudio_4791A3");
-
   hnh_Hook(0x47F013, hook_GameMainLoop_47F013, "GameMainLoop_47F013"); // [OK] 
 
   hnh_Hook(0x421BD5, hook_BMP_DitherRGB24ToRGB565, "BMP_DitherRGB24ToRGB565");
