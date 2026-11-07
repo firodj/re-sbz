@@ -2522,7 +2522,7 @@ void __cdecl hook_ApplyTargetEffect_45A2BA(
 }
 
 // Lock-on targeter. Scans pScene->refsFrames_134 for 'Event' children whose bit (nEventNo=atoi(name+5)) is not yet set in the per-map event bitmask
-// g_sceneState_52F7E0.stc9C.gap30[nMapIndex+3]; keeps the nearest one within reach (default 400.0, squared). For the closest it positions/aims pLockonFrame
+// g_sceneState_52F7E0.ary33[nMapIndex]; keeps the nearest one within reach (default 400.0, squared). For the closest it positions/aims pLockonFrame
 // at that node (rel pos + local rotation vs g_pSceneFrame -> MtxMult + UpdateBoneLookAtTransform) and sets bFound=1. If none found, parks pLockonFrame
 // far off-screen (10000,1000,-1000). Returns bFound.
 void __cdecl hook_UpdateLockonEvent_45953B(

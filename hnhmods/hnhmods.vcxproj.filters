@@ -154,5 +154,6 @@
   <ItemGroup>
     <None Include="CURRENT.md" />
     <None Include="GOALS.md" />
+    <None Include="README.md" />
   </ItemGroup>
 </Project>
