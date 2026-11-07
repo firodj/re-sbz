@@ -2785,7 +2785,7 @@ void __cdecl hook_RenderDualBodyScene_456807(
   int v11; // [esp+1Ch] [ebp-9Ch]
   int v12; // [esp+20h] [ebp-98h]
   int v13; // [esp+24h] [ebp-94h]
-  struct tagRECT Rect; // [esp+28h] [ebp-90h] BYREF
+  RECT Rect; // [esp+28h] [ebp-90h] BYREF
   int nBoxL; // [esp+38h] [ebp-80h]
   int nBoxT; // [esp+3Ch] [ebp-7Ch]
   int nBoxR; // [esp+40h] [ebp-78h]

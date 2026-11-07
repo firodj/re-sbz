@@ -24,6 +24,16 @@ namespace py = pybind11;
 #include "src/shared.hpp"
 #undef HNHMAIN
 
+bool IsGameInputOn() {
+	if (!menu::isOpen) {
+		return true;
+	}
+	if (menu::isInputOff) {
+		return true;
+	}
+	return false;
+}
+
 // WinMain
 typedef std::add_pointer_t<int WINAPI(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)> WinMainFn;
 

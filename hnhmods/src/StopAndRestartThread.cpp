@@ -3,6 +3,7 @@
 
 #include "console.hpp"
 #include "shared.hpp"
+#include "../hnh_header.hpp"
 
 // === GLOBAL VARIABLES ===
 
@@ -15,6 +16,7 @@ CInputState *&g_pInputState_4C7354 = *(CInputState**) 0x4C7354;
 
 CInputState (&g_arrInputState1_52F1C0)[30] = *(CInputState (*)[30])0x52F1C0; // WRITABLE
 CInputState (&g_arrInputState2_52F2B0)[30] = *(CInputState (*)[30])0x52F2B0; // WRITABLE
+
 int &g_vkBtnRightAlt_4C7330 = *(int *)0x4C7330; // WRITABLE
 int &g_vkBtnLeftAlt_4C7334 = *(int *)0x4C7334; // WRITABLE
 int &g_vkBtnMidAlt_4C7338 = *(int *)0x4C7338; // WRITABLE
@@ -32,10 +34,12 @@ bool& g_bThreadInWaiting_52F3AE = *(bool*)0x52F3AE;
 
 // === GLOBAL FUNCTIONS ===
 
-void (__cdecl*StopAndRestartThread)(DWORD nThreadType) =
-reinterpret_cast<void(__cdecl*)(DWORD)>(0x481AE4);
-CInputState*(*GetInputState_481B37)(void) = reinterpret_cast<CInputState * (*)(void)>(0x481B37);
-void(__cdecl*MutexThreadWait_4815EC)(bool bWait) = reinterpret_cast<void(__cdecl*)(bool bWait)>(0x4815EC);
+void (__cdecl*StopAndRestartThread)(DWORD nThreadType)
+= reinterpret_cast<void(__cdecl*)(DWORD)>(0x481AE4);
+CInputState*(*GetInputState_481B37)(void)
+= reinterpret_cast<CInputState * (*)(void)>(0x481B37);
+void(__cdecl*MutexThreadWait_4815EC)(bool bWait)
+= reinterpret_cast<void(__cdecl*)(bool bWait)>(0x4815EC);
 
 HANDLE(__cdecl* TerminateThreadGracefully)(HANDLE hThread)
 = reinterpret_cast<HANDLE(__cdecl*)(HANDLE hThread)>(0x481A35);
@@ -192,11 +196,22 @@ __noreturn void __stdcall  hook_InputThread_Relative_481637(LPVOID lpThreadParam
       memcpy(&g_pInputState2_52F3A8[1], g_pInputState1_52F3A4, 0xE8u);
     }
     bKbdMove = GetCursorPos_4811FA(&nTmpX, &nTmpY, &wTmpBtn);
-    g_pInputState_4C7354->mouseX_0 = nTmpX;
-    g_pInputState_4C7354->mouseY_2 = nTmpY;
-    g_pInputState_4C7354->mouseBtn_4 = wTmpBtn;
-    g_pInputState_4C7354->kbdMove_5 = bKbdMove;
-    g_pInputState_4C7354->true_6 = 1;
+
+    if (IsGameInputOn()) {
+      g_pInputState_4C7354->mouseX_0 = nTmpX;
+      g_pInputState_4C7354->mouseY_2 = nTmpY;
+      g_pInputState_4C7354->mouseBtn_4 = wTmpBtn;
+      g_pInputState_4C7354->kbdMove_5 = bKbdMove;
+      g_pInputState_4C7354->true_6 = 1;
+    }
+    else {
+      g_pInputState_4C7354->mouseX_0 = nCenterX;
+      g_pInputState_4C7354->mouseY_2 = nCenterY;
+      g_pInputState_4C7354->mouseBtn_4 = 0;
+      g_pInputState_4C7354->kbdMove_5 = 0;
+      g_pInputState_4C7354->true_6 = 0;
+    }
+
     SetCursorPos(nCenterX, nCenterY);
     g_bThreadInWaiting_52F3AE = 1;
     Sleep(8u);
@@ -243,34 +258,51 @@ __noreturn void __stdcall hook_InputThread_Absolute_4817B1(LPVOID lpThreadParame
       memcpy(&g_pInputState2_52F3A8[1], g_pInputState1_52F3A4, 0xE8u);
     }
     bKbdMove = GetCursorPos_4811FA(&nTmpX, &nTmpY, &wTmpBtn);
-    g_pInputState_4C7354->mouseX_0 = nTmpX;
-    g_pInputState_4C7354->mouseY_2 = nTmpY;
-    g_pInputState_4C7354->mouseBtn_4 = wTmpBtn;
-    g_pInputState_4C7354->kbdMove_5 = bKbdMove;
-    g_pInputState_4C7354->true_6 = 1;
+
+    if (IsGameInputOn()) {
+      g_pInputState_4C7354->mouseX_0 = nTmpX;
+      g_pInputState_4C7354->mouseY_2 = nTmpY;
+      g_pInputState_4C7354->mouseBtn_4 = wTmpBtn;
+      g_pInputState_4C7354->kbdMove_5 = bKbdMove;
+      g_pInputState_4C7354->true_6 = 1;
+    }
+    else {
+      g_pInputState_4C7354->mouseX_0 = g_pInputState_4C7354[1].mouseX_0;
+      g_pInputState_4C7354->mouseY_2 = g_pInputState_4C7354[1].mouseY_2;
+      g_pInputState_4C7354->mouseBtn_4 = 0;
+      g_pInputState_4C7354->kbdMove_5 = 0;
+      g_pInputState_4C7354->true_6 = 0;
+    }
+
     g_bThreadInWaiting_52F3AE = 1;
     Sleep(8u);
     g_bThreadInWaiting_52F3AE = 0;
   }
 }
 
-// Poll the OS mouse once. GetCursorPos -> *pOutX/*pOutY (ptCursor). Build *pOutBtn as a button mask via GetAsyncKeyState: OR 1 = left button or keybind g_vkBtnLeftAlt_4C7334; OR 2 = right or g_vkBtnRightAlt_4C7330; OR 3 = middle or g_vkBtnMidAlt_4C7338. Keyboard-relative-mouse fallback: if the physical cursor did NOT move this frame (g_nMouseX_52F1B8==ptCursor.x && g_nMouseY_52F3A0==ptCursor.y), each of the 4 keybinds g_vkKbdLeft/Right/Up/Down (4C733C/340/344/348) nudges the virtual position by +/-9 and SetCursorPos applies it. Returns bKbdMove (1 if any keyboard nudge fired, else 0). Caches last-seen cursor in g_nMouseX_52F1B8/g_nMouseY_52F3A0.
+// Poll the OS mouse once. GetCursorPos -> *pOutX/*pOutY (ptCursor). Build *pOutBtn as a button mask via GetAsyncKeyState:
+// OR 1 = left button or keybind g_vkBtnLeftAlt_4C7334; OR 2 = right or g_vkBtnRightAlt_4C7330;
+// OR 3 = middle or g_vkBtnMidAlt_4C7338. Keyboard-relative-mouse fallback:
+// if the physical cursor did NOT move this frame (g_nMouseX_52F1B8==ptCursor.x && g_nMouseY_52F3A0==ptCursor.y),
+// each of the 4 keybinds g_vkKbdLeft/Right/Up/Down (4C733C/340/344/348) nudges the virtual position by +/-9 and SetCursorPos applies it.
+// Returns bKbdMove (1 if any keyboard nudge fired, else 0). Caches last-seen cursor in g_nMouseX_52F1B8/g_nMouseY_52F3A0.
 bool __cdecl hook_GetCursorPos_4811FA(int *pOutX, int *pOutY, __int16 *pOutBtn)
 {
   __int16 bLeftBtn; // dx
   __int16 bRightBtn; // ax
   __int16 bMidBtn; // cx
   POINT ptCursor; // [esp+0h] [ebp-Ch] BYREF
-  bool bKbdMove; // [esp+8h] [ebp-4h]
+  bool bKbdMove = 0; // [esp+8h] [ebp-4h]
 
-  static int log_GetCursorPos_4811FA = 1;
-  log_GetCursorPos_4811FA--;
-  if (!log_GetCursorPos_4811FA) {
-    DebugLog("[HNH:SUB] %s\n", "GetCursorPos_4811FA");
-    log_GetCursorPos_4811FA = 1000;
+  ONCELOG("[HNH:SUB] %s\n", "GetCursorPos_4811FA");
+
+  if (!IsGameInputOn()) {
+    *pOutX = g_nMouseX_52F1B8;
+    *pOutY = g_nMouseY_52F3A0;
+    *pOutBtn = 0;
+    return bKbdMove;
   }
 
-  bKbdMove = 0;
   Sleep(0);
   GetCursorPos(&ptCursor);
   *pOutX = ptCursor.x;
@@ -323,7 +355,52 @@ bool __cdecl hook_GetCursorPos_4811FA(int *pOutX, int *pOutY, __int16 *pOutBtn)
   return bKbdMove;
 }
 
-// Return the published input-state block g_pInputState_4C7354 (a CInputState*). This pointer is double-buffered by the input thread(s): it alternates between two 0xE8-byte backing blocks each frame so the game/render thread always reads a coherent snapshot. First 8 bytes hold mouse input: mouseX_0, mouseY_2 (cursor in virtual-640 space), mouseBtn_4 (button mask), ok_5, true_6 (fresh-data flag).
+/*
+  GetInputState_481B37 -- Return the published input - state block g_pInputState_4C7354(a CInputState*).
+  This pointer is double-buffered by the input thread(s): it alternates between two 0xE8-byte backing blocks each frame so the game/render thread
+  always reads a coherent snapshot. First 8 bytes hold mouse input: mouseX_0, mouseY_2 (cursor in virtual-640 space), mouseBtn_4 (button mask), ok_5, true_6 (fresh-data flag).
+
+  The producers
+
+  Two thread bodies (only one alive at a time, swapped via the g_bRequestThreadStop handshake you've seen in
+  StopAndRestartThread.cpp):
+
+  - InputThread_Relative_481637 -- gameplay mouse-look mode; re-pins the OS cursor to center each tick so relative motion
+  is unbounded
+  - InputThread_Absolute_4817B1 -- UI/menu mode; cursor moves freely
+
+  Both loop at ~120 Hz (Sleep(8)) and each tick does:
+
+  1. Ping-pong flip: g_pInputState_4C7354 is switched to the other backing array (g_arrInputState1_52F1C0 /
+  g_arrInputState2_52F2B0 -- 0x52F2B0 - 0x52F1C0 = 0xF0, so each is 240 B = 30 slots x 8 B).
+  2. Shift: memcpy(&new[1], old, 232) -- the entire old 29-slot state is copied one slot deeper into the new buffer.
+  3. Fresh sample: GetInputState_4811FA (GetCursorPos + GetAsyncKeyState button mask + keyboard-nudge emulation) writes
+  slot 0: {short x, short y, byte btn, byte kbdMove, byte fresh} in virtual-640 space.
+
+  Why the ring
+
+  Two reasons, and both are visible in the consumers:
+
+  1. Rate mismatch between poller and frame loop. The input thread samples at ~120 Hz, but the game loop consumes at ~30
+  fps -- 3 out of 4 input ticks are invisible to a frame that only reads "current" state. A one-tick click between
+  frames would vanish. The shift in step 2 makes the published block a 30-tick history: slot 0 = newest, slot k = k
+  ticks ago. You can see GetMouseBtn_45A41B @ 0x45A41B exploiting exactly this -- it scans inputState[0..4].mouseBtn_4 to
+  latch button presses across the last 5 ticks, and even consumes entries in place (if (btn3on)
+  inputState[i].mouseBtn_4 = 0) so a middle-click fires once. Without history, that debounce/latch logic would be
+  impossible.
+
+  2. Lock-free coherent snapshots. Reader and writer share no lock for the data itself. Flipping one aligned pointer is
+  atomic on x86, so a reader that grabbed the pointer holds a buffer the writer won't touch for the entire 8 ms tick --
+  no torn reads (this tick's X paired with last tick's Y). The only race window is the sub-millisecond between flip and
+  the slot-0 stores, and readers that care close it with MutexThreadWait_4815EC(1)/(0) -- a hand-rolled mutex that sets
+  g_bThreadWait_52F3AD, waits <=5 ms for the thread to acknowledge via g_bThreadInWaiting_52F3AE, reads, then releases.
+  That's also the pause the input threads honor at the top of their loops.
+
+  So it's really a shift-register ring (O(n) 232-byte memcpy per tick -- trivially cheap) implemented via
+  double-buffering, which is what makes the shift safe to observe concurrently. Very characteristic late-90s
+  Win9g/DirectX7-era threading: no critical sections, flag handshakes, and memcpy instead of indexed circular-buffer
+  math.
+*/
 CInputState *hook_GetInputState_481B37()
 {
   static int log_GetInputState_481B37 = 1;
@@ -359,14 +436,16 @@ void __cdecl hook_MutexThreadWait_4815EC(bool bWait)
 }
 
 void register_StopAndRestartThread_481AE4() {
+  hnh_Hook(0x4811FA, hook_GetCursorPos_4811FA, "GetCursorPos_4811FA"); // [OK] 
+  hnh_Hook(0x481637, hook_InputThread_Relative_481637, "InputThread_Relative_481637"); // [OK] 
+  hnh_Hook(0x4817B1, hook_InputThread_Absolute_4817B1, "InputThread_Absolute_4817B1"); // [OK] 
+
   hnh_HookOff();
   hnh_Hook(0x481AE4, hook_StopAndRestartThread, "StopAndRestartThread_481AE4"); // [OK] 
   hnh_Hook(0x481A35, hook_TerminateThreadGracefully, "TerminateThreadGracefully_481A35"); // [OK] 
   hnh_Hook(0x4818FD, hook_CreateNewThread, "CreateNewThread_4818FD"); // [OK] 
-  hnh_Hook(0x481637, hook_InputThread_Relative_481637, "InputThread_Relative_481637"); // [OK] 
-  hnh_Hook(0x4817B1, hook_InputThread_Absolute_4817B1, "InputThread_Absolute_4817B1"); // [OK] 
-  hnh_Hook(0x4811FA, hook_GetCursorPos_4811FA, "GetCursorPos_4811FA"); // [OK] 
-  hnh_Hook(0x481B37, hook_GetInputState_481B37, "GetInputState_481B37"); // [OK] 
+
+
   hnh_Hook(0x4815EC, hook_MutexThreadWait_4815EC, "MutexThreadWait_4815EC"); // [OK] 
   hnh_HookOn();
 }

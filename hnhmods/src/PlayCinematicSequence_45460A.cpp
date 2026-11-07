@@ -292,7 +292,17 @@ void __cdecl hook_PlayCinematicSequence_45460A(
   UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame, pMapFrame, fDelta, 0);
 }
 
-// Input-'struggle' pump for duel cinematics. Drains the shared 30-slot input-sample ring under the input mutex: consumes up to 20 active samples, accumulating fIntensity - kbdMove_5 samples add per-sample mouse deltas (|dx|,|dy| each clamped to 9, /40); other samples add |cursor - screen center| per axis /1000 (hold the cursor away from center). Every consumed slot and the rest of the ring is reset to center (320,240) with all flags cleared; *pnLastX/Y are then re-read from slot 0, i.e. ALWAYS screen center afterwards (cross-frame deltas effectively measure from center - likely unintended). Then advances both bodies' anims by fBaseDelta + bInputDrive*min(2*fIntensity,1) (fBaseDelta = caller's frame delta; bInputDrive is a 0/1 GATE, not a scale - callers push 0 or 1); if an anim item finishes, bodyA replays item 17 and bodyB item 7 (the old comment's '1/7' was wrong). Returns fIntensity*350*bInputDrive - the time credit the caller subtracts from its cutscene timeline. Callers: PlayCinematicSequence (bInputDrive 
+// Input-'struggle' pump for duel cinematics. Drains the shared 30-slot input-sample ring under
+// the input mutex: consumes up to 20 active samples, accumulating fIntensity - 
+// kbdMove_5 samples add per-sample mouse deltas (|dx|,|dy| each clamped to 9, /40);
+// other samples add |cursor - screen center| per axis /1000 (hold the cursor away from center).
+// Every consumed slot and the rest of the ring is reset to center (320,240) with all flags cleared;
+// *pnLastX/Y are then re-read from slot 0, i.e. ALWAYS screen center afterwards (cross-frame deltas effectively measure
+// from center - likely unintended). Then advances both bodies' anims by fBaseDelta + bInputDrive*min(2*fIntensity,1)
+// (fBaseDelta = caller's frame delta; bInputDrive is a 0/1 GATE, not a scale - callers push 0 or 1);
+// if an anim item finishes, bodyA replays item 17 and bodyB item 7 (the old comment's '1/7' was wrong).
+// Returns fIntensity*350*bInputDrive - the time credit the caller subtracts from its cutscene timeline.
+// Callers: PlayCinematicSequence (bInputDrive 
 double __cdecl hook_UpdateBodiesInput_4542E0(
   CSekBody *pBodyA,
   CSekBody *pBodyB,

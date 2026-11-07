@@ -230,7 +230,7 @@ BOOL WINAPI hookPeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wM
 }
 
 SHORT WINAPI hookGetAsyncKeyState(int vKey) {
-	if (menu::isInputOff) {
+	if (!IsGameInputOn()) {
 			return 0;
 	}
 	return globals::oGetAsyncKeyState(vKey);

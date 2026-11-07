@@ -2137,7 +2137,6 @@ char __cdecl hook_UpdateHeroControl_45A513(
 
   ONCELOG("[HNH:SUB] UpdateHeroControl_45A513\n");
 
-
   pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
   nMouseDX = 0;
   nMouseDY = 0;

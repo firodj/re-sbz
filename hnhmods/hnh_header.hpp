@@ -10,3 +10,4 @@ LPVOID GetTargetEntryPoint();
 void InitializePythonInterpreter();
 void DrawPythonREPL();
 void DrawJupyterNotebookREPL();
+bool IsGameInputOn();

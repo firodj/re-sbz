@@ -648,7 +648,6 @@ extern void(__cdecl* CHanaAnimSetT3F1__RemoveAnimT3F0_404349)(CHanaAnimSetT3F1_S
 
 extern CSekItem*& g_pSekItem_4CD760; // in: PlayOdsDialogueScene.cpp
 
-
 #endif
 
 // == MACROS
