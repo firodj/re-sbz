@@ -47,7 +47,7 @@ int  (__cdecl*InGameMenu_4799E2)(void)
 = reinterpret_cast<int(__cdecl*)()>(0x4799E2);
 
 // === PINNED GLOBALS ===
-float (&g_fVolumeDbTable)[10] = *(float(*)[10])0x4C6F4C;   // READ-ONLY
+// float (&g_fVolumeDbTable)[10] = *(float(*)[10])0x4C6F4C;   // READ-ONLY  // replaced by compiled-in copy
 int   (&g_Src)[10]            = *(int(*)[10])0x530238;     // WRITABLE
 DWORD &g_dwDSStatus_5185C8    = *(DWORD*)0x5185C8;         // WRITABLE
 

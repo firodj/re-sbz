@@ -309,7 +309,7 @@ extern void(__cdecl* DrawSpriteAtRect)(CHanaSpriteT3F6_S1FC* pSprite, D2D_RECT_F
 
 extern void (__cdecl*MainMenu_47DF0D)(void);
 extern int (__cdecl*InGameMenu_4799E2)(void);
-extern float (&g_fVolumeDbTable)[10];
+extern const float g_fVolumeDbTable[10];  // compiled-in copy of .rdata @0x4C6F4C (-10000/-2000/-1000/-500/0 dB ladder + 5 unused)
 extern HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam);
 extern DWORD& g_dwDSStatus_5185C8;
 
@@ -356,7 +356,7 @@ extern void(__cdecl* ShowFadeDialog_46164C)(CHanaSpriteT3F6_S1FC* pSprite,
 
 extern DWORD& g_dwUnlockedSaveSlots_530260;
 extern const int g_arrSceneStepThresholds_4B5970[40];  // compiled-in copy of .rdata @0x4B5970 (27 thresholds + 99 stopper + zero pad)
-extern char(&g_szSceneInfoText_4B5A10)[64000];
+extern char(&g_szSceneInfoText_4B5A10)[40][20][80];
 
 // === DEFINED SysMenu_LoadMenu_462851.cpp ===
 

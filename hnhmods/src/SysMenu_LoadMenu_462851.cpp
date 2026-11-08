@@ -98,7 +98,7 @@ int __cdecl hook_SysMenu_LoadMenu_462851(CSceneState arrScene[], CHAR arrSceneNa
                  && g_arrSceneStepThresholds_4B5970[j] <= arrScene[nHoverCell - 1].bActiveSceneStep;
                  ++j)
                 ;
-            wsprintfA(szText, "%s", &g_szSceneInfoText_4B5A10[1600 * j + 80 * i]);
+            wsprintfA(szText, "%s", &g_szSceneInfoText_4B5A10[j][i]);
             DrawTextOnSurface(g_pBackBuffer_4D6C90,
                 ConvertFrom640AsInt(320)
                     - (lstrlenA(szText) / 2) * ConvertFrom640AsInt(15) / 2,

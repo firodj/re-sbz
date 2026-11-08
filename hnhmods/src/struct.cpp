@@ -475,6 +475,24 @@ extern const int g_arrSceneStepThresholds_4B5970[40] = {
   0,  0,  0,  0, 0 
 };
 
+extern const int g_texCoordSizeLUT_4A8368[4] = { 2 ,3 ,4, 1 };
+
+// g_fVolumeDbTable -- [011019][TEATIME] AVI volume index -> DirectSound dB attenuation
+//
+// Extracted verbatim from the game binary (.rdata @0x4C6F4C, 0x28 bytes).
+// Indexed by g_nAviVolumeIndex_530266 (BYTE; default 2). Consumers clamp the
+// result (often - 1000 dB for BGM) to DirectSound's [-10000, 0] before
+// IDirectSoundBuffer::SetVolume: GameMainLoop AVI audio, InGameMenu/MenuCharSelect
+// menu BGM, SystemMenu, ParseExecStr script sound, PlayExploring/PlayHunting/
+// PlayAssault BGM and voice buffers.
+// [0..4] = mute/-20dB/-10dB/-5dB/0dB ladder; [5..9] zero (unreachable indices).
+
+
+extern const float g_fVolumeDbTable[10] = {
+  -10000.0f, -2000.0f, -1000.0f, -500.0f, 0.0f,   // [0..4] volume ladder
+  0.0f, 0.0f, 0.0f, 0.0f, 0.0f                    // [5..9] unused
+};
+
 
 void AssertHanaStructSize() {
   static_assert(sizeof(D3DMATERIAL7) == 0x44, "D3DMATERIAL7");
@@ -539,7 +557,11 @@ void AssertHanaStructSize() {
   static_assert(sizeof(g_aG00Gp_4C9FB0) == 0x1388, "g_aG00Gp_4C9FB0");
   static_assert(sizeof(g_arrSceneNo_4C6F78) == 0x320, "g_arrSceneNo_4C6F78");
   static_assert(sizeof(g_arrSceneStepThresholds_4B5970) == 0xA0, "g_arrSceneStepThresholds_4B5970");
-  //static_assert(sizeof(g_szSceneInfoText_4B5A10) == 0xFA00, "g_szSceneInfoText_4B5A10");
+  static_assert(sizeof(g_texCoordSizeLUT_4A8368) == 16, "g_texCoordSizeLUT_4A8368");
+  static_assert(sizeof(g_fVolumeDbTable) == 0x28, "g_fVolumeDbTable");
 
   DebugLog("[%s] %s\n", "INFO", "finished AssertHanaStructSize");
 }
+
+
+
