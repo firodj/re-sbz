@@ -145,7 +145,7 @@ float &g_fFoeSpinDir_52EF5C = *(float *)0x52EF5C; // WRITABLE
 // plays 'On'.
 //
 // Round loop (LABEL_68): park hero+foe at their captured pos/rot, camera
-// follow, per-duel foe-aggro max arrFoeAggroMax[12] (20000..45000), CutToAnim
+// follow, per-duel foe-aggro max arrFoeHpMax[12] (20000..45000), CutToAnim
 // (1)/PlayAnim on hero+foe, CutToAnim(0) on the wanas; the foe face frame is
 // found by name "_04_kao" (@0x4B5220). Inner frame loop: DoPeekMessages +
 // GetFrameTime (fDelta capped 5.0, divided by 4 while a cinematic is queued);
@@ -190,20 +190,20 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   CHanaFrameT3EC_S354 *pActorFrames[10]; // hero + foe + wanas
   CHanaAnimSetT3F1_S150 *pMapOdfAnimSet;  // map ODF throw-away anim set
   CHanaAnimSetT3F1_S150 *pMapObjAnimSet;  // map-object ODF ditto
-  String50 szArrWanaSeks[200];        // wana\\<sek>.sek base names
-  String50 azArrWanaOdfs[200];        // wana\\<odf>.ODF base names
-  String50 arrFoeAtkWavs[15];         // per-duel g_pArrSndBuf[3] override
-  String50 arrBgmWavs[15];            // s010/s006/s011.wav
-  String50 arrUiWavNames[10];         // Start/GameOver/On + "" filler
-  String50 arrFootWavNames[5];        // foot4/2/3/5
-  String50 arrVoiceWavNames[140];     // 5 acts x 20 slots act\A0X_NN.wav
-  String50 arrDuelEntries[20][4];     // 12 duel records (foe/map/ods)
-  char arrFoeBmpNames[6][2][25];      // foe face bmp/mask pairs per act
-  DWORD arrChapterActMap[20];         // duel -> act
-  DWORD arrWanaAtkTypes[160];         // per (duel,wana) attack fn index
-  float arrWanaAtkParams[160];        // per (duel,wana) attack param
-  float arrFoeAggroMax[20];           // per-duel foe aggro max
-  WanaAttackFn arrWanaAtkFns[4];      // Close/Knockback/Charged/Projectile
+  //String 50 szArrWanaSeks[200];        // wana\\<sek>.sek base names
+  //String 50 azArrWanaOdfs[200];        // wana\\<odf>.ODF base names
+  //String 50 arrFoeAtkWavs[15];         // per-duel g_pArrSndBuf[3] override
+  //String 50 arrBgmWavs[15];            // s010/s006/s011.wav
+  //String 50 arrUiWavNames[10];         // Start/GameOver/On + "" filler
+  //String 50 arrFootWavNames[5];        // foot4/2/3/5
+  //String 50 arrVoiceWavNames[140];     // 5 acts x 20 slots act\A0X_NN.wav
+  //String 50 arrDuelEntries[20][4];     // 12 duel records (foe/map/ods)
+  //char arrFoeBmpNames[6][2][25];      // foe face bmp/mask pairs per act
+  //DWORD arrChapterActMap[20];         // duel -> act
+  //DWORD arrWanaAtkTypes[160];         // per (duel,wana) attack fn index
+  //float arrWanaAtkParams[160];        // per (duel,wana) attack param
+  //float arrFoeHpMax[20];           // per-duel foe aggro max
+  //WanaAttackFn arrWanaAtkFns[4];      // Close/Knockback/Charged/Projectile
   CSoundStruct_8 *arrVoiceBufs[20];
   CSekBody *pWanaBodies[10];
   CHanaSpriteT3F6_S1FC *pArrHudMeters[15];  // clock digits (InitHudResources)
@@ -250,13 +250,39 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   ONCELOG("[HNH:SUB] PlayHunting_44C38D\n");
 
   // --- wana attack dispatch: 0 Close, 1 Knockback, 2 Charged, 3 Projectile
-  arrWanaAtkFns[0] = WanaAttack_Close_4535DE;
-  arrWanaAtkFns[1] = WanaAttack_Knockback_4536F6;
-  arrWanaAtkFns[2] = WanaAttack_Charged_4539D1;
-  arrWanaAtkFns[3] = WanaAttack_Projectile_453B92;
+  WanaAttackFn arrWanaAtkFns[4] = {
+    WanaAttack_Close_4535DE,
+    WanaAttack_Knockback_4536F6,
+    WanaAttack_Charged_4539D1,
+    WanaAttack_Projectile_453B92,
+  };
 
   // --- wana attack type per (duel, wana): rows of 8, duels 0..11
   // (memset'd rows are all-Close; rows past duel 11 are dead data)
+#if 1
+  DWORD arrWanaAtkTypes[20][8] = {
+    { 0, 0, 0, 0, 0, 0, 0, 1 }, // row 0 (indices 0-7, index 8 maps to [1][0])
+    { 1, 0, 0, 0, 0, 0, 0, 0 }, // row 1 (index 17 is at [2][1])
+    { 0, 0, 0, 0, 0, 0, 0, 0 }, // row 2 (indices 16, 17: arrWanaAtkTypes[17] = 1 -> [2][1])
+    { 0, 1, 0, 0, 0, 0, 0, 0 }, // row 3 (indices 24 = 1, 25 = 2 -> [3][0], [3][1])
+    { 2, 0, 0, 0, 0, 0, 0, 0 }, 
+    { 0, 0, 0, 0, 0, 0, 0, 3 }, // row 4 (index 32 = 3 -> [4][0])
+    { 0, 0, 2, 3, 1, 0, 0, 0 }, // row 5 (indices 40=2, 42=3, 43=1 -> [5][0], [5][2], [5][3])
+    { 0, 0, 0, 0, 0, 0, 0, 0 }, 
+    { 2, 2, 0, 0, 0, 0, 0, 0 }, // row 6 (indices 48=2, 49=2 -> [6][0], [6][1])
+    { 0, 0, 0, 0, 0, 0, 0, 0 }, 
+    { 2, 2, 2, 0, 0, 0, 0, 0 }, // row 7 (indices 56=2, 57=2, 58=2 -> [7][0], [7][1], [7][2])
+    { 0, 0, 0, 0, 0, 0, 0, 0 }, 
+    { 3, 3, 0, 0, 0, 0, 0, 0 }, // row 8 (indices 64=3, 65=3 -> [8][0], [8][1])
+    { 0, 0, 0, 0, 0, 0, 0, 0 }, 
+    { 3, 3, 2, 1, 1, 0, 0, 0 }, // row 9 (indices 72=3, 73=3, 74=2, 75=1, 76=1 -> [9][0..4])
+    { 0, 0, 0, 1, 0, 0, 0, 0 }, // row 10 (index 83 = 1 -> [10][3])
+    { 0, 0, 0, 0, 0, 0, 0, 0 }, 
+    { 2, 2, 2, 3, 3, 3, 3, 3 }, // row 11 (indices 88-90=2, 91-95=3 -> [11][0..7])
+    { 0, 0, 0, 0, 0, 0, 0, 0 }, 
+    { 0, 0, 0, 0, 0, 0, 0, 0 }  // row 19
+  };
+#else
   memset(arrWanaAtkTypes, 0, sizeof(arrWanaAtkTypes));
   arrWanaAtkTypes[8] = 1;                                        // duel 1
   arrWanaAtkTypes[17] = 1;                                       // duel 2
@@ -277,8 +303,33 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   arrWanaAtkTypes[91] = 3;  arrWanaAtkTypes[92] = 3;
   arrWanaAtkTypes[93] = 3;  arrWanaAtkTypes[94] = 3;
   arrWanaAtkTypes[95] = 3;
+#endif
 
   // --- wana attack param per (duel, wana)
+#if 1
+  float arrWanaAtkParams[20][8] = {
+    { 5000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, // duel 0 (index 0)
+    { 5000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, // duel 1 (index 8)
+    { 5000.0f, 5000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, // duel 2 (indices 16, 17)
+    { 5000.0f, 5500.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, // duel 3 (indices 24, 25)
+    { 7000.0f, 7000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, // duel 4 (indices 32, 33)
+    { 6000.0f, 5000.0f, 5000.0f, 5000.0f, 0.0f, 0.0f, 0.0f, 0.0f }, // duel 5 (indices 40-43)
+    { 6000.0f, 6000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, // duel 6 (indices 48, 49)
+    { 6000.0f, 7000.0f, 7000.0f, 7000.0f, 0.0f, 0.0f, 0.0f, 0.0f }, // duel 7 (indices 56-59)
+    { 7000.0f, 7000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, // duel 8 (indices 64, 65)
+    { 9000.0f, 9000.0f, 7000.0f, 6000.0f, 5500.0f, 0.0f, 0.0f, 0.0f }, // duel 9 (indices 72-76)
+    { 8000.0f, 8000.0f, 8000.0f, 8000.0f, 8000.0f, 8000.0f, 8000.0f, 0.0f }, // duel 10 (indices 80-86)
+    { 8000.0f, 8000.0f, 5000.0f, 8500.0f, 5000.0f, 5000.0f, 5000.0f, 5000.0f }, // duel 11 (indices 88-95)
+    { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }
+  };
+#else
   memset(arrWanaAtkParams, 0, sizeof(arrWanaAtkParams));
   arrWanaAtkParams[0] = 5000.0f;                                 // duel 0
   arrWanaAtkParams[8] = 5000.0f;                                 // duel 1
@@ -302,11 +353,48 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   arrWanaAtkParams[90] = 5000.0f;  arrWanaAtkParams[91] = 8500.0f;
   arrWanaAtkParams[92] = 5000.0f;  arrWanaAtkParams[93] = 5000.0f;
   arrWanaAtkParams[94] = 5000.0f;  arrWanaAtkParams[95] = 5000.0f; // duel 11
+#endif
 
   // --- wana sek/odf base names, 8 per duel (rows 8*nDuelIndex..+7).
   // Untouched rows are the runtime-empty "" rows (0xFF .data filler) and
   // rows past 111 are dead data, all zero here.
+#if 1
+  char szArrWanaSeks[25][8][50] = {
+    { "i33", "", "", "", "", "", "", ""}, // 0 - 7
+    { "i44", "", "", "", "", "", "", ""}, // 8 - 15
+    { "i34", "i42", "", "", "", "", "", ""}, // 16 - 23
+    { "i42", "i51_57", "", "", "", "", "", ""}, // 24 - 31
+    { "i71", "i34", "", "", "", "", "", ""}, // 32 - 39
+    { "i51_57", "i33", "i72", "i42", "", "", "", ""}, // 40 - 47
+    { "i51_57", "i51_57", "", "", "", "", "", ""}, // 48 - 55
+    { "i51_57", "i51_57", "i51_57", "i32", "", "", "", ""}, // 56 - 63
+    { "i71", "i71", "", "", "", "", "", ""}, // 64 - 71
+    { "i70", "i70", "i51_57", "i32", "i32", "", "", ""}, // 72 - 79
+    { "i31", "i31", "i31", "i44", "i31", "i31", "i31", ""}, // 80 - 87
+    { "i51_57", "i51_57", "i51_57", "i72", "i72", "i72", "i72", "i72"}, // 88 - 95
+    { "", "", "", "", "", "", "", ""}, // 96 - 103
+    { "i51_57", "i51_57", "i51_57", "i51_57", "i51_57", "i51_57", "i51_57", "i51_57"}, // 104 - 111
+    // Elements 112 through 199 will automatically be initialized to ""
+  };
+  char azArrWanaOdfs[25][8][50] = {
+    { "i33", "", "", "", "", "", "", "" },
+    { "i44", "", "", "", "", "", "", "" },
+    { "i34", "i42", "", "", "", "", "", "" },
+    { "i42", "i52", "", "", "", "", "", "" },
+    { "i71", "i34", "", "", "", "", "", "" },
+    { "i52", "i33", "i72", "i42", "", "", "", "" },
+    { "i51", "i53", "", "", "", "", "", "" },
+    { "i53", "i55", "i54", "i32", "", "", "", "" },
+    { "i71", "i71", "", "", "", "", "", "" },
+    { "i70", "i70", "i56", "i43", "i43", "", "", "" },
+    { "i31", "i31", "i31", "i44", "i31", "i31", "i31", "" },
+    { "i53", "i53", "i53", "i72", "i72", "i72", "i72", "i72" },
+    { "", "", "", "", "", "", "", "" },
+    { "i51", "i51_57", "i51_57", "i51_57", "i51_57", "i51_57", "i51_57", "i51_57" },
+  };
+#else
   memset(szArrWanaSeks, 0, sizeof(szArrWanaSeks));
+
   strcpy(szArrWanaSeks[0].str, "i33");      strcpy(szArrWanaSeks[8].str, "i44");
   strcpy(szArrWanaSeks[16].str, "i34");     strcpy(szArrWanaSeks[17].str, "i42");
   strcpy(szArrWanaSeks[24].str, "i42");     strcpy(szArrWanaSeks[25].str, "i51_57");
@@ -359,9 +447,26 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   strcpy(azArrWanaOdfs[106].str, "i51_57"); strcpy(azArrWanaOdfs[107].str, "i51_57");
   strcpy(azArrWanaOdfs[108].str, "i51_57"); strcpy(azArrWanaOdfs[109].str, "i51_57");
   strcpy(azArrWanaOdfs[110].str, "i51_57"); strcpy(azArrWanaOdfs[111].str, "i51_57");
+#endif
 
   // --- duel records: foe body / map ODF / map-object ODF / ODS scene
   // (rows 12..19 all zero)
+#if 1
+  char arrDuelEntries[20][4][50] = {
+    { "run\\o2\\o2a", "Map\\M07\\at07.ODF", "Map\\M07\\at07_o.ODF", "run\\Map04.ods" },
+    { "run\\o2\\o2b", "Map\\M07\\at07.ODF", "Map\\M07\\at07_o.ODF", "run\\Map04.ods" },
+    { "run\\o5\\o5a", "Map\\M21\\at21.ODF", "Map\\M21\\at21_o.ODF", "run\\Map10.ods" },
+    { "run\\o5\\o5b", "Map\\M13\\at13.ODF", "Map\\M13\\at13_o.ODF", "run\\Map06.ods" },
+    { "run\\o4\\o4a", "Map\\M16\\at16.ODF", "Map\\M16\\at16_o.ODF", "run\\Map08.ods" },
+    { "run\\o4\\o4b", "Map\\M04\\at04.ODF", "Map\\M04\\at04_o.ODF", "run\\Map02.ods" },
+    { "run\\o3\\o3a", "Map\\M02\\at02.ODF", "Map\\M02\\at02_o.ODF", "run\\Map01.ods" },
+    { "run\\o3\\o3b", "Map\\M14\\at14.ODF", "Map\\M14\\at14_o.ODF", "run\\Map07.ods" },
+    { "run\\o3\\o3c", "Map\\M16\\at16.ODF", "Map\\M16\\at16_o.ODF", "run\\Map11.ods" },
+    { "run\\o1\\o1a", "Map\\M17\\at17.ODF", "Map\\M17\\at17_o.ODF", "run\\Map09.ods" },
+    { "run\\o1\\o1b", "Map\\M06\\at06.ODF", "Map\\M06\\at06_o.ODF", "run\\Map03.ods" },
+    { "run\\o1\\o1c", "Map\\M08\\at08.ODF", "Map\\M08\\at08_o.ODF", "run\\Map05.ods" },
+  };
+#else
   memset(arrDuelEntries, 0, sizeof(arrDuelEntries));
   strcpy(arrDuelEntries[0][0].str, "run\\o2\\o2a");
   strcpy(arrDuelEntries[0][1].str, "Map\\M07\\at07.ODF");
@@ -411,8 +516,20 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   strcpy(arrDuelEntries[11][1].str, "Map\\M08\\at08.ODF");
   strcpy(arrDuelEntries[11][2].str, "Map\\M08\\at08_o.ODF");
   strcpy(arrDuelEntries[11][3].str, "run\\Map05.ods");
+#endif
+
 
   // --- duel -> act (rows 12..19 all zero)
+#if 1
+  DWORD arrChapterActMap[20] = {
+    0,  0,
+    1,  1,
+    2,  2,
+    3,  3,
+    3,  4,
+    14, 14,
+  };
+#else
   arrChapterActMap[0] = 0;   arrChapterActMap[1] = 0;
   arrChapterActMap[2] = 1;   arrChapterActMap[3] = 1;
   arrChapterActMap[4] = 2;   arrChapterActMap[5] = 2;
@@ -420,8 +537,25 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   arrChapterActMap[8] = 3;   arrChapterActMap[9] = 4;
   arrChapterActMap[10] = 4;  arrChapterActMap[11] = 4;
   memset(&arrChapterActMap[12], 0, 8 * 4);
+#endif
 
   // --- per-duel foe-attack SE for g_pArrSndBuf[3] (rows 12..14 zero)
+#if 1
+  char arrFoeAtkWavs[15][50] = {
+    "act\\Hit4",
+    "act\\Hit4",
+    "act\\Hit",
+    "act\\Hit",
+    "act\\Hit3",
+    "act\\Hit3",
+    "act\\Hit2",
+    "act\\Hit2",
+    "act\\Hit",
+    "act\\Hit",
+    "act\\Hit",
+    "act\\Hit",
+  };
+#else
   strcpy(arrFoeAtkWavs[0].str, "act\\Hit4");
   strcpy(arrFoeAtkWavs[1].str, "act\\Hit4");
   strcpy(arrFoeAtkWavs[2].str, "act\\Hit");
@@ -435,31 +569,86 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   strcpy(arrFoeAtkWavs[10].str, "act\\Hit");
   strcpy(arrFoeAtkWavs[11].str, "act\\Hit");
   memset(&arrFoeAtkWavs[12], 0, 3 * 50);
+#endif
 
-  // --- UI wav names (3..9 runtime-empty ""; loop below stops at [3])
+  // --- UI wav names (3..9 runtime-empty ""; loop below stops at [3]), Start/GameOver/On + "" filler
+#if 1
+  char arrUiWavNames[10][50] = {
+    "Start",
+    "GameOver",
+    "On",
+  };
+#else
   strcpy(arrUiWavNames[0].str, "Start");
   strcpy(arrUiWavNames[1].str, "GameOver");
   strcpy(arrUiWavNames[2].str, "On");
   memset(&arrUiWavNames[3], 0, 7 * 50);
+#endif
 
   // --- foot wavs for the 3D foe-hit SFX ([4] zero)
+#if 1
+  char arrFootWavNames[5][50] = {
+    "foot4",
+    "foot2",
+    "foot3",
+    "foot5",
+  };
+#else
   strcpy(arrFootWavNames[0].str, "foot4");
   strcpy(arrFootWavNames[1].str, "foot2");
   strcpy(arrFootWavNames[2].str, "foot3");
   strcpy(arrFootWavNames[3].str, "foot5");
   memset(&arrFootWavNames[4], 0, 50);
+#endif
 
   // --- BGM names ([3..14] zero)
+#if 1
+  char arrBgmWavs[15][50] = {
+    "s010.wav",
+    "s006.wav",
+    "s011.wav",
+  };
+#else
   strcpy(arrBgmWavs[0].str, "s010.wav");
   strcpy(arrBgmWavs[1].str, "s006.wav");
   strcpy(arrBgmWavs[2].str, "s011.wav");
   memset(&arrBgmWavs[3], 0, 12 * 50);
+#endif
 
   // --- voice wavs: act k holds act\A0k_00..12.wav in a 20-slot block
   // (13..19 of each block and the whole blocks 5..6 stay empty)
+#if 1
+  char arrVoiceWavNames[7][20][50] = {     // 5 acts x 20 slots act\A0X_NN.wav
+    {
+      "act\\A00_00.wav", "act\\A00_01.wav", "act\\A00_02.wav", "act\\A00_03.wav", "act\\A00_04.wav",
+      "act\\A00_05.wav", "act\\A00_06.wav", "act\\A00_07.wav", "act\\A00_08.wav", "act\\A00_09.wav",
+      "act\\A00_10.wav", "act\\A00_11.wav", "act\\A00_12.wav"
+    },
+    {
+      "act\\A01_00.wav", "act\\A01_01.wav", "act\\A01_02.wav", "act\\A01_03.wav", "act\\A01_04.wav",
+      "act\\A01_05.wav", "act\\A01_06.wav", "act\\A01_07.wav", "act\\A01_08.wav", "act\\A01_09.wav",
+      "act\\A01_10.wav", "act\\A01_11.wav", "act\\A01_12.wav"
+    },
+    {
+      "act\\A02_00.wav", "act\\A02_01.wav", "act\\A02_02.wav", "act\\A02_03.wav", "act\\A02_04.wav",
+      "act\\A02_05.wav", "act\\A02_06.wav", "act\\A02_07.wav", "act\\A02_08.wav", "act\\A02_09.wav",
+      "act\\A02_10.wav", "act\\A02_11.wav", "act\\A02_12.wav"
+    },
+    {
+      "act\\A03_00.wav", "act\\A03_01.wav", "act\\A03_02.wav", "act\\A03_03.wav", "act\\A03_04.wav",
+      "act\\A03_05.wav", "act\\A03_06.wav", "act\\A03_07.wav", "act\\A03_08.wav", "act\\A03_09.wav",
+      "act\\A03_10.wav", "act\\A03_11.wav", "act\\A03_12.wav"
+    },
+    {
+      "act\\A04_00.wav", "act\\A04_01.wav", "act\\A04_02.wav", "act\\A04_03.wav", "act\\A04_04.wav",
+      "act\\A04_05.wav", "act\\A04_06.wav", "act\\A04_07.wav", "act\\A04_08.wav", "act\\A04_09.wav",
+      "act\\A04_10.wav", "act\\A04_11.wav", "act\\A04_12.wav"
+    },
+  };
+#else
   memset(arrVoiceWavNames, 0, sizeof(arrVoiceWavNames));
   for (i = 0; i < 13; ++i)
-    wsprintfA(arrVoiceWavNames[i].str, "act\\A00_%02d.wav", i);
+    wsprintfA(arrVoiceWavNames[0][i], "act\\A00_%02d.wav", i);
   for (i = 0; i < 13; ++i)
     wsprintfA(arrVoiceWavNames[20 + i].str, "act\\A01_%02d.wav", i);
   for (i = 0; i < 13; ++i)
@@ -468,9 +657,26 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
     wsprintfA(arrVoiceWavNames[60 + i].str, "act\\A03_%02d.wav", i);
   for (i = 0; i < 13; ++i)
     wsprintfA(arrVoiceWavNames[80 + i].str, "act\\A04_%02d.wav", i);
-
+#endif
   // --- foe face bmp/mask pairs per act ([5] runtime-empty)
   // (.data copies spelled out; [4][1] was a literal in the original)
+#if 1
+  char arrFoeBmpNames[6][2][25] = {
+    {"run\\o2a.bmp",  "run\\o2b.bmp"},
+    {"run\\o5a.bmp",  "run\\o5b.bmp"},
+    {"run\\o4a.bmp",  "run\\o4b.bmp"},
+    {"run\\o3a.bmp",  "run\\o3b.bmp"},
+    {"run\\o1a.bmp",  "run\\o1b.bmp"},
+  };
+  float arrFoeHpMax[20] = {
+    20000.0f, 20000.0f,
+    40000.0f, 40000.0f,
+    35000.0f, 35000.0f,
+    45000.0f, 45000.0f,
+    45000.0f, 40000.0f,
+    40000.0f, 40000.0f,
+  };
+#else
   strcpy(arrFoeBmpNames[0][0], "run\\o2a.bmp");  strcpy(arrFoeBmpNames[0][1], "run\\o2b.bmp");
   strcpy(arrFoeBmpNames[1][0], "run\\o5a.bmp");  strcpy(arrFoeBmpNames[1][1], "run\\o5b.bmp");
   strcpy(arrFoeBmpNames[2][0], "run\\o4a.bmp");  strcpy(arrFoeBmpNames[2][1], "run\\o4b.bmp");
@@ -478,6 +684,15 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   strcpy(arrFoeBmpNames[4][0], "run\\o1a.bmp");  strcpy(arrFoeBmpNames[4][1], "run\\o1b.bmp");
   arrFoeBmpNames[5][0][0] = 0;
   arrFoeBmpNames[5][1][0] = 0;
+
+  arrFoeHpMax[0] = 20000.0f;   arrFoeHpMax[1] = 20000.0f;
+  arrFoeHpMax[2] = 40000.0f;   arrFoeHpMax[3] = 40000.0f;
+  arrFoeHpMax[4] = 35000.0f;   arrFoeHpMax[5] = 35000.0f;
+  arrFoeHpMax[6] = 45000.0f;   arrFoeHpMax[7] = 45000.0f;
+  arrFoeHpMax[8] = 45000.0f;   arrFoeHpMax[9] = 40000.0f;
+  arrFoeHpMax[10] = 40000.0f;  arrFoeHpMax[11] = 40000.0f;
+  memset(&arrFoeHpMax[12], 0, 8 * 4);
+#endif
 
   // --- state init
   nSysMenuResult = 0;
@@ -499,13 +714,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   fActTimer = 0.0f;
   fFoeHpMax = 99.0f;
   fFoeHpCur = 99.0f;
-  arrFoeAggroMax[0] = 20000.0f;   arrFoeAggroMax[1] = 20000.0f;
-  arrFoeAggroMax[2] = 40000.0f;   arrFoeAggroMax[3] = 40000.0f;
-  arrFoeAggroMax[4] = 35000.0f;   arrFoeAggroMax[5] = 35000.0f;
-  arrFoeAggroMax[6] = 45000.0f;   arrFoeAggroMax[7] = 45000.0f;
-  arrFoeAggroMax[8] = 45000.0f;   arrFoeAggroMax[9] = 40000.0f;
-  arrFoeAggroMax[10] = 40000.0f;  arrFoeAggroMax[11] = 40000.0f;
-  memset(&arrFoeAggroMax[12], 0, 8 * 4);
+
   bFirstFrameDone = 0;
   memcpy(&sceneStateEntry, &g_sceneState_52F7E0, sizeof(sceneStateEntry));
   SetProjectionFov_40DCA3(1.2f);
@@ -521,18 +730,18 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   memset(arrVoiceBufs, 0, sizeof(arrVoiceBufs));
 
   // --- one-time loads: UI SFX, foe-attack SE, foe-hit 3D SFX, voices, BGM
-  for (i = 0; i < 9 && arrUiWavNames[i].str[0]; ++i)
+  for (i = 0; i < 9 && arrUiWavNames[i][0]; ++i)
   {
-    wsprintfA(pszFileName, "%s.wav", arrUiWavNames[i].str);
+    wsprintfA(pszFileName, "%s.wav", arrUiWavNames[i]);
     CHanaObj__GetRealPath_486D9A(pszFileName, 1009);      // SE dir
     g_pArrSndBuf_5244AC[i] = LoadWav_422E7B(pszFileName);
   }
-  wsprintfA(pszFileName, "%s.wav", arrFoeAtkWavs[nDuelIndex].str);
+  wsprintfA(pszFileName, "%s.wav", arrFoeAtkWavs[nDuelIndex]);
   CHanaObj__GetRealPath_486D9A(pszFileName, 1009);          // SE dir
   g_pArrSndBuf_5244AC[3] = LoadWav_422E7B(pszFileName);
   for (i = 0; i < 4; ++i)
   {
-    wsprintfA(pszFileName, "%s.wav", arrFootWavNames[i].str);
+    wsprintfA(pszFileName, "%s.wav", arrFootWavNames[i]);
     CHanaObj__GetRealPath_486D9A(pszFileName, 1009);      // SE dir
     g_pFoeHitSfxE_5244E4[i] = LoadWavToDS3DBuffer_42277E(pszFileName);
     g_pFoeHitSfxB_5244D4[i] = LoadWavToDS3DBuffer_42277E(pszFileName);
@@ -540,7 +749,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   for (i = 0; i < 20; ++i)
   {
     wsprintfA(pszFileName, "%s",
-      arrVoiceWavNames[20 * arrChapterActMap[nDuelIndex] + i].str);
+      arrVoiceWavNames[arrChapterActMap[nDuelIndex]][i]);
     CHanaObj__GetRealPath_486D9A(pszFileName, 1009);      // SE dir
     arrVoiceBufs[i] = LoadWavToDS3DBuffer_42277E(pszFileName);
   }
@@ -551,7 +760,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
     i = 2;
   else
     i = 1;
-  wsprintfA(pszFileName, "%s", arrBgmWavs[i].str);
+  wsprintfA(pszFileName, "%s", arrBgmWavs[i]);
   CHanaObj__GetRealPath_486D9A(pszFileName, 1006);          // WAV dir
   pBgmBuf = LoadWav_422E7B(pszFileName);
   if (pBgmBuf)
@@ -586,17 +795,17 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   CHanaObj__GetRealPath_486D9A(String, 1005);               // ODF dir
   if (!LoadSekAndOdf_4445DD(pszFileName, String, &pHeroBody))
     return -1;
-  wsprintfA(pszFileName, "%s.sek", arrDuelEntries[nDuelIndex][0].str);
+  wsprintfA(pszFileName, "%s.sek", arrDuelEntries[nDuelIndex][0]);
   CHanaObj__GetRealPath_486D9A(pszFileName, 1005);          // ODF dir
-  wsprintfA(String, "%s.odf", arrDuelEntries[nDuelIndex][0].str);
+  wsprintfA(String, "%s.odf", arrDuelEntries[nDuelIndex][0]);
   CHanaObj__GetRealPath_486D9A(String, 1005);               // ODF dir
   if (!LoadSekAndOdf_4445DD(pszFileName, String, &pFoeBody))
     return -1;
-  for (i = 0; i < 8 && szArrWanaSeks[8 * nDuelIndex + i].str[0]; ++i)
+  for (i = 0; i < 8 && szArrWanaSeks[nDuelIndex][i][0]; ++i)
   {
-    wsprintfA(pszFileName, "wana\\%s.sek", szArrWanaSeks[8 * nDuelIndex + i].str);
+    wsprintfA(pszFileName, "wana\\%s.sek", szArrWanaSeks[nDuelIndex][i]);
     CHanaObj__GetRealPath_486D9A(pszFileName, 1005);      // ODF dir
-    wsprintfA(String, "wana\\%s.ODF", azArrWanaOdfs[8 * nDuelIndex + i].str);
+    wsprintfA(String, "wana\\%s.ODF", azArrWanaOdfs[nDuelIndex][i]);
     CHanaObj__GetRealPath_486D9A(String, 1005);           // ODF dir
     if (!LoadSekAndOdf_4445DD(pszFileName, String, &pWanaBodies[i]))
       return -1;
@@ -604,7 +813,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
 
   // map + map-object ODF frames, collision grid, ODS scene
   pMapOdfAnimSet = 0;
-  wsprintfA(pszFileName, arrDuelEntries[nDuelIndex][1].str);
+  wsprintfA(pszFileName, arrDuelEntries[nDuelIndex][1]);
   CHanaObj__GetRealPath_486D9A(pszFileName, 1005);          // ODF dir
   if (!ParseODFFile_441F19(pszFileName, &pMapFrame, &pMapOdfAnimSet))
     return -1;
@@ -620,7 +829,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   BuildMapSubFrames_443DD5(pMapFrame);
 
   pMapObjAnimSet = 0;
-  wsprintfA(pszFileName, arrDuelEntries[nDuelIndex][2].str);
+  wsprintfA(pszFileName, arrDuelEntries[nDuelIndex][2]);
   CHanaObj__GetRealPath_486D9A(pszFileName, 1005);          // ODF dir
   if (!ParseODFFile_441F19(pszFileName, &pMapObjFrame, &pMapObjAnimSet))
     return -1;
@@ -636,7 +845,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   BuildMapSubFrames_443DD5(pMapObjFrame);
   BuildMapCollisionGrid_445B12(pMapObjFrame, &pOccGrid);
 
-  wsprintfA(pszFileName, arrDuelEntries[nDuelIndex][3].str);
+  wsprintfA(pszFileName, arrDuelEntries[nDuelIndex][3]);
   CHanaObj__GetRealPath_486D9A(pszFileName, 1002);          // ODS dir
   if (!LoadOds_4843CF(pszFileName, &pOdsScene))
     return -1;
@@ -727,7 +936,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
       pXpos, pYpos, pZpos, pXYrot, pYXrot, pZXrot);
     UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC,
       g_pCameraFrame, pMapFrame, fDelta, 1);
-    fFoeHpMax = arrFoeAggroMax[nDuelIndex];
+    fFoeHpMax = arrFoeHpMax[nDuelIndex];
     fFoeHpCur = fFoeHpMax;
     fActTimer = 0.0f;
     pfExecTime = 0.0f;
@@ -848,9 +1057,9 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
         {
           if (pWanaBodies[i])
           {
-            updated = arrWanaAtkFns[arrWanaAtkTypes[8 * nDuelIndex + i]](
+            updated = arrWanaAtkFns[arrWanaAtkTypes[nDuelIndex][i]](
               pWanaBodies[i], pHeroBody, &fHeroHpCur, fDelta,
-              arrWanaAtkParams[8 * nDuelIndex + i], pMapFrame);
+              arrWanaAtkParams[nDuelIndex][i], pMapFrame);
             fActTimer = (float)(updated + fActTimer);
           }
         }
@@ -2326,14 +2535,14 @@ void __cdecl hook_BindSceneActors_448C72(
   unsigned int nCount)
 {
   float fRelZ; // [esp+4h] [ebp-248h] BYREF
-  size_t nNameLen[10]; // [esp+8h] [ebp-244h]
+  //size_t nNameLen[10]; // [esp+8h] [ebp-244h]
   float fRelY; // [esp+30h] [ebp-21Ch] BYREF
   float fRelX; // [esp+34h] [ebp-218h] BYREF
   unsigned int j; // [esp+38h] [ebp-214h]
   unsigned int i; // [esp+3Ch] [ebp-210h]
   float fDirUpZ; // [esp+40h] [ebp-20Ch] BYREF
-  String50 szActorNames[9]; // [esp+44h] [ebp-208h] BYREF
-  String50 szWana8; // [esp+206h] [ebp-46h] BYREF
+  //String50 szActorNames[9]; // [esp+44h] [ebp-208h] BYREF
+  //String50 szWana8; // [esp+206h] [ebp-46h] BYREF
   float dirForwardZ; // [esp+238h] [ebp-14h] BYREF
   float fDirUpY; // [esp+23Ch] [ebp-10h] BYREF
   float fDirForwardY; // [esp+240h] [ebp-Ch] BYREF
@@ -2341,6 +2550,32 @@ void __cdecl hook_BindSceneActors_448C72(
   float dirForwardX; // [esp+248h] [ebp-4h] BYREF
   ONCELOG("[HNH:SUB] BindSceneActors_448C72\n");
 
+#if 1
+  char szActorNames[10][50] = {
+    "otoko",
+    "onna",
+    "wana1",
+    "wana2",
+    "wana3",
+    "wana4",
+    "wana5",
+    "wana6",
+    "wana7",
+    "wana8"
+  };
+  size_t nNameLen[10] = {
+    5,
+    4,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+  };
+#else
   strcpy((char *)szActorNames[0].str, "otoko");
   memset((void *)&szActorNames[0].str[6], 0, 44u);
   strcpy((char *)szActorNames[1].str, "onna");
@@ -2372,6 +2607,8 @@ void __cdecl hook_BindSceneActors_448C72(
   nNameLen[7] = 5;
   nNameLen[8] = 5;
   nNameLen[9] = 5;
+#endif
+
   if ( pScene )
   {
     for ( i = 0; i < nCount; ++i )
@@ -2379,7 +2616,7 @@ void __cdecl hook_BindSceneActors_448C72(
       for ( j = 0; j < pScene->dwCount_130; ++j )
       {
         if ( pScene->refsFrames_134[j]
-          && !_strnicmp(pScene->refsFrames_134[j]->szName_8, szActorNames[i].str, nNameLen[i]) )
+          && !_strnicmp(pScene->refsFrames_134[j]->szName_8, szActorNames[i], nNameLen[i]) )
         {
           if ( i >= 2 )
           {
