@@ -30,7 +30,7 @@ void (__cdecl*SysMenu_SaveMenu_462135)(CSceneState sceneStates[], CHAR *arrScene
 // === PINNED GLOBALS ===
 DWORD &g_dwUnlockedSaveSlots_530260 = *(DWORD *)0x530260;                   // WRITABLE
 //int    (&g_arrSceneStepThresholds_4B5970)[40] = *(int (*)[40])0x4B5970;     // READ-ONLY
-char   (&g_szSceneInfoText_4B5A10)[40][20][80] = *(char (*)[40][20][80])0x4B5A10;     // READ-ONLY
+//char   (&g_szSceneInfoText_4B5A10)[40][20][80] = *(char (*)[40][20][80])0x4B5A10;     // READ-ONLY
 
 // === FUNCTIONS ===
 void __cdecl hook_SysMenu_SaveMenu_462135(CSceneState sceneStates[], CHAR *arrSceneName,
@@ -101,7 +101,7 @@ void __cdecl hook_SysMenu_SaveMenu_462135(CSceneState sceneStates[], CHAR *arrSc
                  && g_arrSceneStepThresholds_4B5970[j] <= sceneStates[nHoverCell - 1].bActiveSceneStep;
                  ++j)
                 ;
-            wsprintfA(szText, "%s", &g_szSceneInfoText_4B5A10[j][i]);
+            wsprintfA(szText, "%s", g_szSceneInfoText_4B5A10[j][i]);
             DrawTextOnSurface(g_pBackBuffer_4D6C90,
                 ConvertFrom640AsInt(320)
                     - (lstrlenA(szText) / 2) * ConvertFrom640AsInt(15) / 2,
