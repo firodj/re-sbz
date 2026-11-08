@@ -496,7 +496,7 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
         0)
         + 1;
       pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
-      wsprintfA(szFileName, "%s", g_ascSndFileNames_4C78A0[sndFileIndex_v33].str);
+      wsprintfA(szFileName, "%s", g_ascSndFileNames_4C78A0[sndFileIndex_v33]);
       CHanaObj__GetRealPath_486D9A(szFileName, 1006);
       if (pScene->pSndBuf_46C)
       {

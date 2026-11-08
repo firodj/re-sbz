@@ -7,9 +7,6 @@
 
 #ifndef HNHMAIN
 
-
-// 50-char sound-name table entry (g_ascSndFileNames_4C78A0 is [200] of
-// these; only 1..14 are used by this screen)
 struct String50 { char str[50]; };
 struct String20 { char str[20]; };
 struct String25 { char str[25]; };

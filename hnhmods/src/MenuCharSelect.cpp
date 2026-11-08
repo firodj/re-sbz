@@ -28,7 +28,7 @@ LPDIRECTDRAWSURFACE7 &g_lpDDSurface_519CF8 = *(LPDIRECTDRAWSURFACE7 *)0x519CF8; 
 char (&g_tempText_519D00)[50] = *(char (*)[50])0x519D00; // WRITABLE
 char (&g_arrGalleryUnlocked_5301A2)[150] = *(char(*)[150])0x5301A2;  // WRITABLE
 
-String50 (&g_ascSndFileNames_4C78A0)[200] = *(String50(*)[200])0x4C78A0;  // READ-ONLY
+// String50 (&g_ascSndFileNames_4C78A0)[200] = *(String50(*)[200])0x4C78A0;  // READ-ONLY
 
 // === FUNCTIONS ===
 
@@ -751,7 +751,7 @@ int __cdecl hook_MenuMusicSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3
             *ppBgmBuffer = NULL;
           }
         }
-        wsprintfA(szFileName, "%s", g_ascSndFileNames_4C78A0[nSoundIndex].str);
+        wsprintfA(szFileName, "%s", g_ascSndFileNames_4C78A0[nSoundIndex]);
         CHanaObj__GetRealPath_486D9A(szFileName, 1006);  // 1006 = WAV dir
         *ppBgmBuffer = LoadWav_422E7B(szFileName);
         if (*ppBgmBuffer)
