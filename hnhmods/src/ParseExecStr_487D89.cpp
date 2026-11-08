@@ -73,7 +73,7 @@ BOOL (__cdecl*ParseExecStr_487D89)(CHanaSceneT458_S504 *pScene, float *pfExecTim
 // === PINNED GLOBALS ===
 // "G00.GP" picture-name table, 50-char stride (same layout as String50)
 
-String50 (&g_aG00Gp)[100] =  *(String50 (*)[100])(0x4C9FB0);
+// String50 (&g_aG00Gp)[100] =  *(String50 (*)[100])(0x4C9FB0);  // replaced by compiled-in g_aG00Gp_4C9FB0
 
 void GotoLabel107(CHanaSceneT458_S504 *pScene) {
   int cchLabel; // [esp+2Ch] [ebp-244h]
@@ -442,7 +442,7 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
         0)
         + 1;
       pScene->dwPtrPos_444 = pScene->dwPtrCurrent_448;
-      wsprintfA(szFileName, "%s", g_aG00Gp[nGpIndex].str);
+      wsprintfA(szFileName, "%s", g_aG00Gp_4C9FB0[nGpIndex]);
       CHanaObj__GetRealPath_486D9A(szFileName, 1007);
       switch (nGpIndex)
       {

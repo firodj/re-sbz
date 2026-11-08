@@ -202,6 +202,9 @@ bool __cdecl hook_CheckInstalledDirRoot_4869A7(HWND hWnd)
     if (chCdRom)
         wsprintfA(g_szDriveLetr_52FC70, "%c:", chCdRom);
 
+    // 2a) Patched, should be error with:
+    //  MessageBoxA(hWnd, "u‰Ø‚Ì”ß–Âv‚Ì‚c‚‰‚“‚‹|‚Q‚ğ‘}“ü‚µ‚Ä‰º‚³‚¢", "", 1);
+
     // 3) activate: cwd = install dir, then fill ODS/SPR/Str/ODF/WAV/GRP/GRP800/SE/DATA paths
     SetCurrentDirectoryA(g_szHnhPath_530270);
     SetupDirPath_486630();

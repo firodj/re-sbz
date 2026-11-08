@@ -1,4 +1,4 @@
-// GAME: [011019][TEATIME] ‰Ø‚Ì”ß–Â@`‰ó‚ê‚½ÉŽq‚ÌS`
+// GAME: [011019][TEATIME] ‰Ø‚Ì”ß–Â@`‰ó‚ê‚½ÉŽq‚ÌS`
 #include "dx7.hpp"
 #include "struct.hpp"
 #include "console.hpp"
@@ -221,6 +221,118 @@ extern const char g_ascSndFileNames_4C78A0[200][50] = {
   ""
 };
 
+// g_aG00Gp_4C9FB0 -- [011019][TEATIME] picture-name lookup table (GRP dir)
+//
+// Extracted verbatim from the game binary (.rdata @0x4C9FB0, 0x1388 bytes).
+// Layout: 100 records x char[50], NUL-padded (String50 in hnhmods/src/struct.hpp).
+// [0..98] G%02d.GP event pictures; [99] is a literal '-' placeholder row.
+// Consumed by the scene-script picture command in ParseExecStr_487D89
+// (idx -> GRP dir -> LoadBmp). Sits directly after g_ascSndFileNames_4C78A0
+// (0x4C78A0+0x2710 == 0x4C9FB0): one contiguous String50-table rdata block.
+
+extern const char g_aG00Gp_4C9FB0[100][50] = {
+    "G00.GP",      // 0
+    "G01.GP",      // 1
+    "G02.GP",      // 2
+    "G03.GP",      // 3
+    "G04.GP",      // 4
+    "G05.GP",      // 5
+    "G06.GP",      // 6
+    "G07.GP",      // 7
+    "G08.GP",      // 8
+    "G09.GP",      // 9
+    "G10.GP",      // 10
+    "G11.GP",      // 11
+    "G12.GP",      // 12
+    "G13.GP",      // 13
+    "G14.GP",      // 14
+    "G15.GP",      // 15
+    "G16.GP",      // 16
+    "G17.GP",      // 17
+    "G18.GP",      // 18
+    "G19.GP",      // 19
+    "G20.GP",      // 20
+    "G21.GP",      // 21
+    "G22.GP",      // 22
+    "G23.GP",      // 23
+    "G24.GP",      // 24
+    "G25.GP",      // 25
+    "G26.GP",      // 26
+    "G27.GP",      // 27
+    "G28.GP",      // 28
+    "G29.GP",      // 29
+    "G30.GP",      // 30
+    "G31.GP",      // 31
+    "G32.GP",      // 32
+    "G33.GP",      // 33
+    "G34.GP",      // 34
+    "G35.GP",      // 35
+    "G36.GP",      // 36
+    "G37.GP",      // 37
+    "G38.GP",      // 38
+    "G39.GP",      // 39
+    "G40.GP",      // 40
+    "G41.GP",      // 41
+    "G42.GP",      // 42
+    "G43.GP",      // 43
+    "G44.GP",      // 44
+    "G45.GP",      // 45
+    "G46.GP",      // 46
+    "G47.GP",      // 47
+    "G48.GP",      // 48
+    "G49.GP",      // 49
+    "G50.GP",      // 50
+    "G51.GP",      // 51
+    "G52.GP",      // 52
+    "G53.GP",      // 53
+    "G54.GP",      // 54
+    "G55.GP",      // 55
+    "G56.GP",      // 56
+    "G57.GP",      // 57
+    "G58.GP",      // 58
+    "G59.GP",      // 59
+    "G60.GP",      // 60
+    "G61.GP",      // 61
+    "G62.GP",      // 62
+    "G63.GP",      // 63
+    "G64.GP",      // 64
+    "G65.GP",      // 65
+    "G66.GP",      // 66
+    "G67.GP",      // 67
+    "G68.GP",      // 68
+    "G69.GP",      // 69
+    "G70.GP",      // 70
+    "G71.GP",      // 71
+    "G72.GP",      // 72
+    "G73.GP",      // 73
+    "G74.GP",      // 74
+    "G75.GP",      // 75
+    "G76.GP",      // 76
+    "G77.GP",      // 77
+    "G78.GP",      // 78
+    "G79.GP",      // 79
+    "G80.GP",      // 80
+    "G81.GP",      // 81
+    "G82.GP",      // 82
+    "G83.GP",      // 83
+    "G84.GP",      // 84
+    "G85.GP",      // 85
+    "G86.GP",      // 86
+    "G87.GP",      // 87
+    "G88.GP",      // 88
+    "G89.GP",      // 89
+    "G90.GP",      // 90
+    "G91.GP",      // 91
+    "G92.GP",      // 92
+    "G93.GP",      // 93
+    "G94.GP",      // 94
+    "G95.GP",      // 95
+    "G96.GP",      // 96
+    "G97.GP",      // 97
+    "G98.GP",      // 98
+    "-------"
+};
+
 void AssertHanaStructSize() {
   static_assert(sizeof(D3DMATERIAL7) == 0x44, "D3DMATERIAL7");
   static_assert(sizeof(D3DXVECTOR3) == 0xC, "D3DXVECTOR3");
@@ -280,7 +392,9 @@ void AssertHanaStructSize() {
   static_assert(sizeof(CSceneState) == 0x190, "CSceneState");
   static_assert(sizeof(CInputState) == 0x8, "CInputState");
 
-  static_assert(sizeof(g_ascSndFileNames_4C78A0) == 0x2710, "table size");
+  static_assert(sizeof(g_ascSndFileNames_4C78A0) == 0x2710, "g_ascSndFileNames_4C78A0");
+  static_assert(sizeof(g_aG00Gp_4C9FB0) == 0x1388, "g_aG00Gp_4C9FB0");
 
   DebugLog("[%s] %s\n", "INFO", "finished AssertHanaStructSize");
 }
+

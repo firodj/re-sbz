@@ -49,7 +49,7 @@ extern int &g_bDSInited_5185C4;
 // written by ParseExecStr HITEMGET, memcpy'd into sceneState by MainMenu)
 extern int (&g_Src)[10];
 // 50-char name tables (entries: "GNN.GP" picture / sound wav names)
-extern char (&g_aG00Gp_4C9FB0)[100][50];       // READ-ONLY @0x4C9FB0
+extern const char g_aG00Gp_4C9FB0[100][50];    // compiled-in copy of .rdata @0x4C9FB0 (G00..G98.GP)
 
 //extern String50 (&g_ascSndFileNames_4C78A0)[200]; // READ-ONLY @0x4C78A0
 extern const char g_ascSndFileNames_4C78A0[200][50];
