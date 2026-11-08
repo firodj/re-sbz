@@ -39,17 +39,12 @@ void (__cdecl*PresentFrame)(void) = reinterpret_cast<void(__cdecl*)()>(0x40BF01)
 void(__cdecl*DrawSpriteAtRect)(CHanaSpriteT3F6_S1FC* pSprite, D2D_RECT_F* rc) =
   reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *pSprite, D2D_RECT_F *rc)>(0x4147ED);
 
-//void (__cdecl*nop_4863C3)(void) = reinterpret_cast<void(__cdecl*)()>(0x4863C3);
-
-HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam) = reinterpret_cast<HRESULT(__cdecl*)(int)>(0x40CEEC);
-// SystemMenu_4655AB lives in src/SystemMenu_4655AB.cpp (extern in shared.hpp)
-// MenuMusicSelect lives in src/MenuMusicSelect.cpp (extern in shared.hpp)
-// MenuGallery lives in src/MenuGallery.cpp (extern in shared.hpp)
-// MenuCharSelect + its pins live in src/MenuCharSelect.cpp (extern in shared.hpp)
-// PlayScreenFade lives in src/PlayScreenFade.cpp (extern in shared.hpp)
-
-void (__cdecl*MainMenu_47DF0D)(void) = reinterpret_cast<void(__cdecl*)()>(0x47DF0D);
-int  (__cdecl*InGameMenu_4799E2)(void) = reinterpret_cast<int(__cdecl*)()>(0x4799E2);
+HRESULT(__cdecl*HanaVert_DrawBatch)(BOOL bDraw)
+= reinterpret_cast<HRESULT(__cdecl*)(int)>(0x40CEEC);
+void (__cdecl*MainMenu_47DF0D)(void)
+= reinterpret_cast<void(__cdecl*)()>(0x47DF0D);
+int  (__cdecl*InGameMenu_4799E2)(void)
+= reinterpret_cast<int(__cdecl*)()>(0x4799E2);
 
 // === PINNED GLOBALS ===
 float (&g_fVolumeDbTable)[10] = *(float(*)[10])0x4C6F4C;   // READ-ONLY
@@ -1208,9 +1203,9 @@ void __cdecl hook_DrawSpriteAtRect(CHanaSpriteT3F6_S1FC *pSprite, D2D_RECT_F *rc
 //     per object: SetTransform(WORLD,&obj); ambient=nAmbient;
 //       lights via sub_40CE4E(bitLightEnables); fog from pFrame
 //       (flag_134 / fFogStart / fFogEnd / dwFogColor); skip if pFrame->flag_130
-//   bDraw==0: g_fObjBatchActive=0, g_nObjCount=0, g_pCurMatObj=g_pCurTexObj=0
-//   restore: g_fObjBatchActive=0, g_nObjCount=0, Z/ZWRITE/FOG on, CULL=BACK, ambient=saved
-void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
+//   bDraw==0: g_bObjBatchActive=0, g_nObjCount=0, g_pCurMatObj=g_pCurTexObj=0
+//   restore: g_bObjBatchActive=0, g_nObjCount=0, Z/ZWRITE/FOG on, CULL=BACK, ambient=saved
+void __cdecl hook_HanaVert_DrawBatch(BOOL bDraw)
 {
   CHanaVertT3EA_S1FC *pVertGlow; // [esp+0h] [ebp-18h]
   CHanaVertT3EA_S1FC *pVertTrans; // [esp+4h] [ebp-14h]
@@ -1220,11 +1215,13 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
   int i; // [esp+14h] [ebp-4h]
   ONCELOG("[HNH:SUB] HanaVert_DrawBatch_40CEEC\n");
 
-  if ( bClear )
-  {
+  if ( bDraw )
+  { 
     SortObjectsByDepth();
     g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_AMBIENT, &dwAmbientSaved);
-    g_fObjBatchActive = 1;
+    g_bObjBatchActive = 1;
+
+    // PASS 1 opaque:
     for ( i = 0; i < g_nObjCount; ++i )
     {
       pVert = g_pObjPool[i].pVert;
@@ -1236,7 +1233,7 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
       {
         g_pD3DDevice_4D6C78->SetTransform(
           D3DTRANSFORMSTATE_WORLD,
-          (LPD3DMATRIX)&g_pObjPool[i]);
+          (LPD3DMATRIX)&g_pObjPool[i].mat_0);
         if ( !g_pObjPool[i].pFrame->bAlphaDeferred_130 )
         {
           if ( g_pObjPool[i].pFrame->pAttachedObj_20C )
@@ -1286,6 +1283,8 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
         }
       }
     }
+
+    // PASS 2 translucent:
     for ( i = 0; i < g_nObjCount; ++i )
     {
       pVertTrans = g_pObjPool[i].pVert;
@@ -1295,7 +1294,7 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
         {
           g_pD3DDevice_4D6C78->SetTransform(
             D3DTRANSFORMSTATE_WORLD,
-            (LPD3DMATRIX)&g_pObjPool[i]);
+            (LPD3DMATRIX)&g_pObjPool[i].mat_0);
           if ( !g_pObjPool[i].pFrame->bAlphaDeferred_130 )
           {
             if ( g_pObjPool[i].pFrame->pAttachedObj_20C )
@@ -1344,6 +1343,8 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
         }
       }
     }
+
+    // PASS 3 glow/mask:
     for ( i = 0; i < g_nObjCount; ++i )
     {
       pVertGlow = g_pObjPool[i].pVert;
@@ -1351,14 +1352,14 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
       {
         g_pD3DDevice_4D6C78->SetTransform(
           D3DTRANSFORMSTATE_WORLD,
-          (LPD3DMATRIX)&g_pObjPool[i]);
+          (LPD3DMATRIX)&g_pObjPool[i].mat_0);
         if ( !g_pObjPool[i].pFrame->bAlphaDeferred_130
           && g_pObjPool[i].pFrame->pAttachedObj_20C
           && g_pObjPool[i].pVert->bAlphaPass2_1E8 )
         {
           g_pD3DDevice_4D6C78->SetTransform(
             D3DTRANSFORMSTATE_WORLD,
-            (LPD3DMATRIX)&g_pObjPool[i]);
+            (LPD3DMATRIX)&g_pObjPool[i].mat_0);
           g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_AMBIENT, 0xFFFFFF);
           g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
           SetLightEnableMask(0);
@@ -1377,7 +1378,8 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
         }
       }
     }
-    g_fObjBatchActive = 0;
+
+    g_bObjBatchActive = 0;
     g_nObjCount = 0;
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
@@ -1387,7 +1389,7 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
   }
   else
   {
-    g_fObjBatchActive = 0;
+    g_bObjBatchActive = 0;
     g_nObjCount = 0;
     g_pCurMatObj = 0;
     g_pCurTexObj = 0;
@@ -1397,7 +1399,8 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bClear)
 void register_InGameMenu_4799E2() {
   hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D"); // [OK]
   hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
-  
+  hnh_Hook(0x40CEEC, hook_HanaVert_DrawBatch, "HanaVert_DrawBatch_40CEEC"); // [OK]
+
   hnh_HookOff();
   hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2"); // [OK] 
   hnh_Hook(0x481550, hook_DoPeekMessages, "DoPeekMessages_481550"); // [OK] 
@@ -1415,6 +1418,6 @@ void register_InGameMenu_4799E2() {
   hnh_Hook(0x418905, hook_CreateSurfaceWH, "CreateSurfaceWH_418905");   // [OK] 
   hnh_Hook(0x40BF01, hook_PresentFrame, "PresentFrame_40BF01"); // [OK] 
   hnh_Hook(0x4147ED, hook_DrawSpriteAtRect, "DrawSpriteAtRect_4147ED"); // [OK]
-  hnh_Hook(0x40CEEC, hook_HanaVert_DrawBatch, "HanaVert_DrawBatch_40CEEC"); // [OK]
+ 
   hnh_HookOn();
 }

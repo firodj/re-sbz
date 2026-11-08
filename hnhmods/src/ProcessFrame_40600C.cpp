@@ -15,7 +15,7 @@
 //   3. world transform set, bIsRoot_1F8 = 1; g_fCurFrameIsScene latches to 1
 //      once the traversal reaches g_pCurFrame
 //   4. frames passing the render gate (!bAlphaDeferred_130 && cur-frame reached
-//      && !g_fRendering && AlwaysTrue()) get:
+//      && !g_bRendering && AlwaysTrue()) get:
 //        - transparent verts (masked texture / blend mode / alpha != 1)
 //          DEFERRED to the render pool (AddObjectToPool). Material diffuse
 //          alpha > 1 switches additive (mode +1, alpha -= 1), < 0
@@ -67,8 +67,8 @@ void (__cdecl * HanaMorpT457_Draw)(CHanaMorpT457_S40C *pMorp) = reinterpret_cast
 //void(__cdecl*HanaT3FB_Draw)(CHanaBase_S130* pObj) = reinterpret_cast<void(__cdecl*)(CHanaBase_S130*)>(0x416776);
 
 // === PINNED GLOBALS ===
-uint32_t &g_fRendering    = *(uint32_t *)0x4CD778;  // WRITABLE
-uint32_t &g_fObjBatchActive = *(uint32_t *)0x4D6CD8; // WRITABLE
+BOOL &g_bRendering      = *(BOOL*)0x4CD778;  // WRITABLE default = 0
+BOOL &g_bObjBatchActive = *(BOOL*)0x4D6CD8; // WRITABLE default = 0
 float (&g_floats_4CE958)[6000] = *(float (*)[6000])0x4CE958; // WRITABLE
 
 // === FUNCTIONS ===
@@ -153,12 +153,12 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
     if (pChildFrame == g_pCurFrame)
         g_fCurFrameIsScene = 1;
 
-    if (!pChildFrame->bAlphaDeferred_130 && g_fCurFrameIsScene && !g_fRendering && AlwaysTrue())
+    if (!pChildFrame->bAlphaDeferred_130 && g_fCurFrameIsScene && !g_bRendering && AlwaysTrue())
     {
         BOOL bPooledOnly = FALSE;
 
         // 4a) defer transparent verts to the render pool
-        if (!g_fObjBatchActive)
+        if (!g_bObjBatchActive)
         {
             pMesh = (CHanaMeshT3F5_S138 *)pChildFrame->pAttachedObj_20C;
             if (pMesh)
@@ -191,8 +191,8 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
                     break;
                 case 0x457:                       // morp (MP-N): verts of the inner mesh
                     {
-                        CHanaMeshT3F5_S138 *pInnerMesh =
-                            ((CHanaMorpT457_S40C *)pMesh)->pMeshT3F5_138;
+                        CHanaMorpT457_S40C* pMorp = (CHanaMorpT457_S40C*)pMesh;
+                        CHanaMeshT3F5_S138 *pInnerMesh = pMorp->pMeshT3F5_138;
                         nVertCount = CHanaObj__GetChildCountT3F5_40FF0F(pInnerMesh);
                         for (iVert = 0; iVert < nVertCount; ++iVert)
                         {
@@ -273,7 +273,7 @@ void __cdecl hook_SortObjectsByDepth()
   float centerY; // [esp+6Ch] [ebp-14h] BYREF
   float centerZ; // [esp+70h] [ebp-10h] BYREF
   CHanaFrameT3EC_S354 *tempFrame; // [esp+74h] [ebp-Ch]
-  int unused_11; // [esp+78h] [ebp-8h]
+  //int unused_11; // [esp+78h] [ebp-8h]
   CHanaVertT3EA_S1FC *tempVert; // [esp+7Ch] [ebp-4h]
 
   ONCELOG("[HNH:SUB] SortObjectsByDepth_40D9C7\n");
@@ -282,7 +282,7 @@ void __cdecl hook_SortObjectsByDepth()
   {
     if ( g_nObjCount >= 6000 )
       g_nObjCount = 6000;
-    unused_11 = 0;
+    //unused_11 = 0;
     for ( i = 0; i < g_nObjCount; ++i )
     {
       HanaFrame_GetCenterPosition_408C3E(g_pObjPool[i].pFrame, g_pCameraFrame, &centerX, &centerY, &centerZ);

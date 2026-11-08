@@ -867,7 +867,7 @@ LABEL_68:
 
             // draw: 3D pass + HUD
             MtxStackStartMultLocal_4074EF();
-            g_pRenderCtx->Clear(3);
+            g_pRenderCtx->Clear(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER);
             if (g_pD3DDevice_4D6C78->BeginScene() >= 0)
             {
                 g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);

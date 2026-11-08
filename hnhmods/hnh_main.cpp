@@ -410,6 +410,16 @@ void DrawHNH(const char *window_name) {
 
 		sviewer.fields.emplace_back(offsetof(CSceneState, bMaxSubStage), "bMaxSubStage", ImGuiDataType_S8, &g_sceneState_52F7E0.bMaxSubStage);
 	
+		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[0]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[0]);
+		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[1]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[1]);
+		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[2]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[2]);
+		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[3]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[3]);
+		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[4]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[4]);
+
+		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "protCurrentHP_C0", ImGuiDataType_Float, &g_sceneState_52F7E0.protCurrentHP_C0);
+		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "protMaximumHP_C4", ImGuiDataType_Float, &g_sceneState_52F7E0.protMaximumHP_C4);
+
+
 		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "qwSelMask_C8", ImGuiDataType_S64, &g_sceneState_52F7E0.qwSelMask_C8);
 		sviewer.fields.emplace_back(offsetof(CSceneState, field_D0), "field_D0", ImGuiDataType_S32, &g_sceneState_52F7E0.field_D0);
 		sviewer.fields.emplace_back(offsetof(CSceneState, gapD4), "gapD4", ImGuiDataType_U32, 10, &g_sceneState_52F7E0.gapD4);

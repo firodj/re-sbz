@@ -827,7 +827,7 @@ void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, dwAntiAliasSaved);
 }
 
-// HanaFrame_Draw - per-frame render/dispatch entry (thin wrapper sub_405BE1 sets g_fRendering=1 around it).
+// HanaFrame_Draw - per-frame render/dispatch entry (thin wrapper sub_405BE1 sets g_bRendering=1 around it).
 // 1) DS3D listener: CommitDeferredSettings; orient/position it to the camera relative to the scene (CalculateLocalRotationMatrix->SetOrientation, sub_406AB1->SetPosition).
 // 2) g_pCurFrame = pFrame; g_fCurFrameIsScene = (pFrame==g_pSceneFrame). sub_40773F() builds/pushes the world-matrix stack for all scene children.
 // 3) If the frame's skip-draw flag (*(pFrame+304)) is 0: prep the frame (sub_4339B2), save D3DRS_AMBIENT, then for each scene child frame:
@@ -835,7 +835,7 @@ void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
 //    - set per-frame fog (FOGENABLE/COLOR/START/END from bHasFog/dwFogColor/fFogStart/fFogEnd) or disable fog;
 //    - position & enable the frame's CHanaLight (sub_409510 positions by dltType, sub_40929C does SetLight+LightEnable / ambient), set its bit in bitLightEnables;
 //    - run the object updater sub_40600C(child, {bitLightEnables, ambient}) and restore ambient.
-// Returns ambient-restore HRESULT. g_pCurFrame/g_fCurFrameIsScene/g_fRendering are read by sub_40600C.
+// Returns ambient-restore HRESULT. g_pCurFrame/g_fCurFrameIsScene/g_bRendering are read by sub_40600C.
 void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
 {
   DWORD nAmbient; // [esp+8h] [ebp-7Ch] BYREF

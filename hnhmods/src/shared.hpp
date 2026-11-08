@@ -497,8 +497,8 @@ extern void(__cdecl*HanaFrame_PreDraw)(CHanaFrameT3EC_S354* pFrame);
 extern LPD3DXMATRIXSTACK& g_pMatrixStack_4CD77C;
 extern uint32_t& g_fCurFrameIsScene;
 extern CHanaFrameT3EC_S354 * &g_pCurFrame;
-extern uint32_t& g_fRendering;
-extern uint32_t& g_fObjBatchActive;
+extern BOOL& g_bRendering;
+extern BOOL& g_bObjBatchActive;
 
 // === DEFINED ParseODFContent.cpp ===
 
