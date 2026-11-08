@@ -818,44 +818,44 @@ D3DXMATRIX *__cdecl hook_MatrixRotateCubeMapFace(CHanaFrameT3EC_S354 *pFrame, in
   {
   case 0:
     // Direct rotation overwrite
-    D3DXMatrixRotationAxis(&pFrame->mat4x4_fmrx, pV, angle);
+    D3DXMatrixRotationAxis(&pFrame->matLocal_138, pV, angle);
     break;
 
   case 1:
     // Pre-multiplication: rotation * original (with translation preserved)
     D3DXMatrixRotationAxis(&rotationMatrix, pV, angle);
 
-    qmemcpy(&strippedMatrix, &pFrame->mat4x4_fmrx, sizeof(strippedMatrix));
+    qmemcpy(&strippedMatrix, &pFrame->matLocal_138, sizeof(strippedMatrix));
     memset(strippedMatrix.m[3], 0, 12); // Zero out translation row
 
-    savedTransXY = *(__int64*)&pFrame->mat4x4_fmrx.m[3][0];
-    savedTransZ = pFrame->mat4x4_fmrx._43;
+    savedTransXY = *(__int64*)&pFrame->matLocal_138.m[3][0];
+    savedTransZ = pFrame->matLocal_138._43;
 
-    D3DXMatrixMultiply(&pFrame->mat4x4_fmrx, &rotationMatrix, &strippedMatrix);
+    D3DXMatrixMultiply(&pFrame->matLocal_138, &rotationMatrix, &strippedMatrix);
 
-    *(__int64*)&pFrame->mat4x4_fmrx.m[3][0] = savedTransXY;
-    pFrame->mat4x4_fmrx._43 = savedTransZ;
+    *(__int64*)&pFrame->matLocal_138.m[3][0] = savedTransXY;
+    pFrame->matLocal_138._43 = savedTransZ;
     break;
 
   default:
     // Post-multiplication: original * rotation (with translation preserved)
     D3DXMatrixRotationAxis(&rotationMatrix, pV, angle);
 
-    qmemcpy(&strippedMatrix, &pFrame->mat4x4_fmrx, sizeof(strippedMatrix));
+    qmemcpy(&strippedMatrix, &pFrame->matLocal_138, sizeof(strippedMatrix));
     memset(strippedMatrix.m[3], 0, 12); // Zero out translation row
 
-    savedTransXY = *(__int64*)&pFrame->mat4x4_fmrx.m[3][0];
-    savedTransZ = pFrame->mat4x4_fmrx._43;
+    savedTransXY = *(__int64*)&pFrame->matLocal_138.m[3][0];
+    savedTransZ = pFrame->matLocal_138._43;
 
-    D3DXMatrixMultiply(&pFrame->mat4x4_fmrx, &strippedMatrix, &rotationMatrix);
+    D3DXMatrixMultiply(&pFrame->matLocal_138, &strippedMatrix, &rotationMatrix);
 
-    *(__int64*)&pFrame->mat4x4_fmrx.m[3][0] = savedTransXY;
-    pFrame->mat4x4_fmrx._43 = savedTransZ;
+    *(__int64*)&pFrame->matLocal_138.m[3][0] = savedTransXY;
+    pFrame->matLocal_138._43 = savedTransZ;
     break;
   }
 
   // Final combination matrix multiplication
-  return D3DXMatrixMultiply(&pFrame->mat4x4_after, &pFrame->mat4x4_fmrx, &pFrame->mat4x4_before);
+  return D3DXMatrixMultiply(&pFrame->matWorld_178, &pFrame->matLocal_138, &pFrame->matParentWorld_1B8);
 }
 
 void __cdecl hook_CalculateLocalRotationMatrix(
@@ -877,8 +877,8 @@ void __cdecl hook_CalculateLocalRotationMatrix(
     log_CalculateLocalRotationMatrix_407047 = 1000;
   }
 
-  D3DXMatrixInverse(&pOut, 0, &pSceneFrame->mat4x4_after);
-  D3DXMatrixMultiply(&pOut, &pCameraFrame->mat4x4_after, &pOut);
+  D3DXMatrixInverse(&pOut, 0, &pSceneFrame->matWorld_178);
+  D3DXMatrixMultiply(&pOut, &pCameraFrame->matWorld_178, &pOut);
   *pXYrot = pOut._12;
   *pYXrot = pOut._22;
   *pZXrot = pOut._32;

@@ -133,7 +133,7 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
             if (pLightChild && pLightChild->pHanaLight_210 && g_nLightningEnabled
                 && pLightChild->pHanaLight_210->d3dLight_134.dltType != (D3DLIGHTTYPE)-1)
             {
-                matLight = pLightChild->mat4x4_after;
+                matLight = pLightChild->matWorld_178;
                 ConfigureLight(pLightChild->pHanaLight_210,
                                matLight._41, matLight._42, matLight._43,    // position
                                matLight._13, matLight._23, matLight._33);   // direction (Z col)
@@ -148,7 +148,7 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
 
     if (pChildFrame->bUpdateBone_218)
         UpdateBoneTransform(pChildFrame, g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame);
-    g_pD3DDevice_4D6C78->SetTransform(D3DTRANSFORMSTATE_WORLD, (LPD3DMATRIX) & pChildFrame->mat4x4_after);
+    g_pD3DDevice_4D6C78->SetTransform(D3DTRANSFORMSTATE_WORLD, (LPD3DMATRIX) & pChildFrame->matWorld_178);
     pChildFrame->bIsRoot_1F8 = 1;
     if (pChildFrame == g_pCurFrame)
         g_fCurFrameIsScene = 1;
@@ -171,7 +171,7 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
                     // out-of-struct cast on the mesh type)
                     if (VertNeedsAlphaPass(pVert))
                     {
-                        FixAlphaAndAddToPool(&pChildFrame->mat4x4_after, pChildFrame, pVert,
+                        FixAlphaAndAddToPool(&pChildFrame->matWorld_178, pChildFrame, pVert,
                                              nAmbient, *(_QWORD *)qwBitLightEnables);
                         bPooledOnly = TRUE;       // skip the direct draw below
                     }
@@ -184,7 +184,7 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
                         if (VertNeedsAlphaPass(pVert))
                         {
                             pVert->nPrimType_154[0] = 1;  // pooled: direct draw skips it
-                            FixAlphaAndAddToPool(&pChildFrame->mat4x4_after, pChildFrame, pVert,
+                            FixAlphaAndAddToPool(&pChildFrame->matWorld_178, pChildFrame, pVert,
                                                  nAmbient, *(_QWORD *)qwBitLightEnables);
                         }
                     }
@@ -200,7 +200,7 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
                             if (VertNeedsAlphaPass(pVert))
                             {
                                 pVert->nPrimType_154[0] = 1;
-                                FixAlphaAndAddToPool(&pChildFrame->mat4x4_after, pChildFrame, pVert,
+                                FixAlphaAndAddToPool(&pChildFrame->matWorld_178, pChildFrame, pVert,
                                                      nAmbient, *(_QWORD *)qwBitLightEnables);
                             }
                         }
@@ -383,7 +383,7 @@ void __cdecl hook_UpdateVertTextureFromFrame(CHanaVertT3EA_S1FC *pVertArg, CHana
       FlushD3DAndTouchSurface(g_pBackBuffer_4D6C90);
       g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_ANTIALIAS, &oldAntialias);
       Sleep(0);
-      qmemcpy(&worldViewProj, &pFrameArg->mat4x4_after, sizeof(worldViewProj));
+      qmemcpy(&worldViewProj, &pFrameArg->matWorld_178, sizeof(worldViewProj));
       D3DXMatrixTranslation(
         &translationMatrix,
         pFrameArg->vertBoundMax_220.x,
@@ -391,7 +391,7 @@ void __cdecl hook_UpdateVertTextureFromFrame(CHanaVertT3EA_S1FC *pVertArg, CHana
         pFrameArg->vertBoundMax_220.z);
       D3DXMatrixMultiply(&worldViewProj, &translationMatrix, &worldViewProj);
       ProjectToScreen_40E2A5(&worldViewProj, &max);
-      qmemcpy(&worldViewProj, &pFrameArg->mat4x4_after, sizeof(worldViewProj));
+      qmemcpy(&worldViewProj, &pFrameArg->matWorld_178, sizeof(worldViewProj));
       D3DXMatrixTranslation(
         &translationMatrix,
         pFrameArg->vertBoundMin_22C.x,
@@ -723,13 +723,13 @@ void __cdecl hook_UpdateBoneTransform(
  *  harmless, since only the 3*3 part survives to the end.)
  *  
  *  3. Convert into the bone's local matrix:
- *  matLookRot = matLookRot * pParentFrame->mat4x4_after;      // parent space -> world space
- *  matBeforeInv = D3DXMatrixInverse(bone->mat4x4_before);     // bone rest/rest-pose inverse
+ *  matLookRot = matLookRot * pParentFrame->matWorld_178;      // parent space -> world space
+ *  matBeforeInv = D3DXMatrixInverse(bone->matParentWorld_1B8);     // bone rest/rest-pose inverse
  *  matLookRot = matLookRot * matBeforeInv;                    // strip bone's rest orientation
  *  
  *  4. Write back rotation-only (translation preserved) and recompose:
- *  pBoneFrame->mat4x4_fmrx._11.._33 = matLookRot._11.._33;    // 3*3 rotation only
- *  pBoneFrame->mat4x4_after = mat4x4_fmrx * mat4x4_before;    // world = local * parent-chain
+ *  pBoneFrame->matLocal_138._11.._33 = matLookRot._11.._33;    // 3*3 rotation only
+ *  pBoneFrame->matWorld_178 = matLocal_138 * matParentWorld_1B8;    // world = local * parent-chain
  *  
  *  Net effect
  *  
@@ -783,19 +783,19 @@ void __cdecl hook_UpdateBoneLookAtTransform(
   *(_QWORD *)&matLookRot.m[1][2] = LODWORD(pForward.y);
   matLookRot._33 = pForward.z;
   memset(&matLookRot.m[2][3], 0, 16);
-  D3DXMatrixMultiply(&matLookRot, &matLookRot, &pParentFrame->mat4x4_after);
-  D3DXMatrixInverse(&matBeforeInv, 0, &pBoneFrame->mat4x4_before);
+  D3DXMatrixMultiply(&matLookRot, &matLookRot, &pParentFrame->matWorld_178);
+  D3DXMatrixInverse(&matBeforeInv, 0, &pBoneFrame->matParentWorld_1B8);
   D3DXMatrixMultiply(&matLookRot, &matLookRot, &matBeforeInv);
-  pBoneFrame->mat4x4_fmrx._11 = matLookRot._11;
-  pBoneFrame->mat4x4_fmrx._21 = matLookRot._21;
-  pBoneFrame->mat4x4_fmrx._31 = matLookRot._31;
-  pBoneFrame->mat4x4_fmrx._12 = matLookRot._12;
-  pBoneFrame->mat4x4_fmrx._22 = matLookRot._22;
-  pBoneFrame->mat4x4_fmrx._32 = matLookRot._32;
-  pBoneFrame->mat4x4_fmrx._13 = matLookRot._13;
-  pBoneFrame->mat4x4_fmrx._23 = matLookRot._23;
-  pBoneFrame->mat4x4_fmrx._33 = matLookRot._33;
-  D3DXMatrixMultiply(&pBoneFrame->mat4x4_after, &pBoneFrame->mat4x4_fmrx, &pBoneFrame->mat4x4_before);
+  pBoneFrame->matLocal_138._11 = matLookRot._11;
+  pBoneFrame->matLocal_138._21 = matLookRot._21;
+  pBoneFrame->matLocal_138._31 = matLookRot._31;
+  pBoneFrame->matLocal_138._12 = matLookRot._12;
+  pBoneFrame->matLocal_138._22 = matLookRot._22;
+  pBoneFrame->matLocal_138._32 = matLookRot._32;
+  pBoneFrame->matLocal_138._13 = matLookRot._13;
+  pBoneFrame->matLocal_138._23 = matLookRot._23;
+  pBoneFrame->matLocal_138._33 = matLookRot._33;
+  D3DXMatrixMultiply(&pBoneFrame->matWorld_178, &pBoneFrame->matLocal_138, &pBoneFrame->matParentWorld_1B8);
 }
 
 /**
@@ -808,14 +808,14 @@ void __cdecl hook_UpdateBoneLookAtTransform(
  * rotation relative to the scene (CalculateLocalRotationMatrix, middle column).
  * Steps (modes 0 and -1):
  * 1. pLookDir = normalize(target.pos - camera.pos); positions read from the
- *    mat4x4_after (offset 0x178) translation row m[3][0..2] (fTgtMatrix vs fCamMatrix).
+ *    matWorld_178 (offset 0x178) translation row m[3][0..2] (fTgtMatrix vs fCamMatrix).
  * 2. pRightVec = normalize(up x pLookDir); pUpVec = normalize(pLookDir x pRightVec);
  *    mode -1 zeroes up components < 0.001 before normalizing.
- * 3. Writes basis into pCameraFrame->mat4x4_after: _1* = right, _2* = up,
+ * 3. Writes basis into pCameraFrame->matWorld_178: _1* = right, _2* = up,
  *    _3* = look dir; translation m[3][0..2] (fCamTrans01/fCamTrans2) and m[0][3]
  *    / m[3][3] kept.
- * 4. mat4x4_fmrx (0x138) = mat4x4_after x inv(mat4x4_before (0x1B8)); returns
- *    &pCameraFrame->mat4x4_fmrx (all callers ignore the return).
+ * 4. matLocal_138 (0x138) = matWorld_178 x inv(matParentWorld_1B8 (0x1B8)); returns
+ *    &pCameraFrame->matLocal_138 (all callers ignore the return).
  * Callers: sub_408283 (mode -1 wrapper), sub_466BDA (camera move-to-target,
  * mode -1 x3), sub_4686F8 (camera follow/physics), sub_46D9AF/sub_46F37E
  * (pause loop: look at the scene's "mune" frame when present).
@@ -844,8 +844,8 @@ void __cdecl hook_CameraLookAtFrame(
 
   ONCELOG("[HNH:SUB] CameraLookAtFrame_40873E\n");
 
-  qmemcpy(&fTgtMatrix, &pTargetFrame->mat4x4_after, sizeof(fTgtMatrix));
-  qmemcpy(&fCamMatrix, &pCameraFrame->mat4x4_after, sizeof(fCamMatrix));
+  qmemcpy(&fTgtMatrix, &pTargetFrame->matWorld_178, sizeof(fTgtMatrix));
+  qmemcpy(&fCamMatrix, &pCameraFrame->matWorld_178, sizeof(fCamMatrix));
   qCamTransXY = *(D3DXVECTOR3 *)&fCamMatrix.m[3][0];
   if ( iMode )
   {
@@ -881,18 +881,18 @@ void __cdecl hook_CameraLookAtFrame(
       crossFwdRightM1.z = vecLookDir.x * vecRight.y - vecLookDir.y * vecRight.x;
       vecUp = crossFwdRightM1;
       D3DXVec3Normalize(&vecUp, &vecUp);
-      pCameraFrame->mat4x4_after._11 = vecRight.x;
-      pCameraFrame->mat4x4_after._21 = vecUp.x;
-      pCameraFrame->mat4x4_after._31 = vecLookDir.x;
-      pCameraFrame->mat4x4_after._12 = vecRight.y;
-      pCameraFrame->mat4x4_after._22 = vecUp.y;
-      pCameraFrame->mat4x4_after._32 = vecLookDir.y;
-      pCameraFrame->mat4x4_after._13 = vecRight.z;
-      pCameraFrame->mat4x4_after._23 = vecUp.z;
-      pCameraFrame->mat4x4_after._33 = vecLookDir.z;
-      *(D3DXVECTOR3 *)&pCameraFrame->mat4x4_after.m[3][0] = qCamTransXY;
-      D3DXMatrixInverse(&matCamBeforeInvM1, 0, &pCameraFrame->mat4x4_before);
-      D3DXMatrixMultiply(&pCameraFrame->mat4x4_fmrx, &pCameraFrame->mat4x4_after, &matCamBeforeInvM1);
+      pCameraFrame->matWorld_178._11 = vecRight.x;
+      pCameraFrame->matWorld_178._21 = vecUp.x;
+      pCameraFrame->matWorld_178._31 = vecLookDir.x;
+      pCameraFrame->matWorld_178._12 = vecRight.y;
+      pCameraFrame->matWorld_178._22 = vecUp.y;
+      pCameraFrame->matWorld_178._32 = vecLookDir.y;
+      pCameraFrame->matWorld_178._13 = vecRight.z;
+      pCameraFrame->matWorld_178._23 = vecUp.z;
+      pCameraFrame->matWorld_178._33 = vecLookDir.z;
+      *(D3DXVECTOR3 *)&pCameraFrame->matWorld_178.m[3][0] = qCamTransXY;
+      D3DXMatrixInverse(&matCamBeforeInvM1, 0, &pCameraFrame->matParentWorld_1B8);
+      D3DXMatrixMultiply(&pCameraFrame->matLocal_138, &pCameraFrame->matWorld_178, &matCamBeforeInvM1);
     }
   }
   else
@@ -915,18 +915,18 @@ void __cdecl hook_CameraLookAtFrame(
     crossFwdRight0.z = vecLookDir.x * vecRight.y - vecLookDir.y * vecRight.x;
     vecUp = crossFwdRight0;
     D3DXVec3Normalize(&vecUp, &vecUp);
-    pCameraFrame->mat4x4_after._11 = vecRight.x;
-    pCameraFrame->mat4x4_after._21 = vecUp.x;
-    pCameraFrame->mat4x4_after._31 = vecLookDir.x;
-    pCameraFrame->mat4x4_after._12 = vecRight.y;
-    pCameraFrame->mat4x4_after._22 = vecUp.y;
-    pCameraFrame->mat4x4_after._32 = vecLookDir.y;
-    pCameraFrame->mat4x4_after._13 = vecRight.z;
-    pCameraFrame->mat4x4_after._23 = vecUp.z;
-    pCameraFrame->mat4x4_after._33 = vecLookDir.z;
-    *(D3DXVECTOR3 *)&pCameraFrame->mat4x4_after.m[3][0] = qCamTransXY;
-    D3DXMatrixInverse(&matCamBeforeInv0, 0, &pCameraFrame->mat4x4_before);
-    D3DXMatrixMultiply(&pCameraFrame->mat4x4_fmrx, &pCameraFrame->mat4x4_after, &matCamBeforeInv0);
+    pCameraFrame->matWorld_178._11 = vecRight.x;
+    pCameraFrame->matWorld_178._21 = vecUp.x;
+    pCameraFrame->matWorld_178._31 = vecLookDir.x;
+    pCameraFrame->matWorld_178._12 = vecRight.y;
+    pCameraFrame->matWorld_178._22 = vecUp.y;
+    pCameraFrame->matWorld_178._32 = vecLookDir.y;
+    pCameraFrame->matWorld_178._13 = vecRight.z;
+    pCameraFrame->matWorld_178._23 = vecUp.z;
+    pCameraFrame->matWorld_178._33 = vecLookDir.z;
+    *(D3DXVECTOR3 *)&pCameraFrame->matWorld_178.m[3][0] = qCamTransXY;
+    D3DXMatrixInverse(&matCamBeforeInv0, 0, &pCameraFrame->matParentWorld_1B8);
+    D3DXMatrixMultiply(&pCameraFrame->matLocal_138, &pCameraFrame->matWorld_178, &matCamBeforeInv0);
   }
 }
 

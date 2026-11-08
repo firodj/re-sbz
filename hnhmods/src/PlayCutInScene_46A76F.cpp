@@ -466,7 +466,7 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
         HanaFrame_GetRelPosition(pCameraFrame, g_pSceneFrame, &fRelX, &fRelY, &fRelZ);
         CalculateLocalRotationMatrix(pCameraFrame, (CHanaFrameT3EC_S354*)g_pSceneFrame, dirForwardX,
             &dirForwardY, &dirForwardZ, &dirUpX, dirUpY, &dirUpZ);
-        MtxMult_4069DD(pModeBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354*)g_pSceneFrame,
+        SetFramePosRel_4069DD(pModeBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354*)g_pSceneFrame,
                        fRelX, fRelY, fRelZ);
         UpdateBoneLookAtTransform(pModeBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354*)g_pSceneFrame,
             dirForwardX[0], dirForwardY, dirForwardZ, dirUpX, dirUpY[0], dirUpZ);
@@ -628,7 +628,7 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
             {
                 if ( arrKutiRFrames[k] )
                 {
-                    ProjectToScreen_40E2A5(&arrKutiRFrames[k]->mat4x4_after, &ptProj);
+                    ProjectToScreen_40E2A5(&arrKutiRFrames[k]->matWorld_178, &ptProj);
                     HanaFrame_GetCenterPosition_408C3E(arrKutiRFrames[k], g_pCameraFrame,
                                                        &fRelX, &fRelY, &fRelZ);
                     if ( fRelZ > 1.0f && !mousePressed )
@@ -891,14 +891,14 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
                 g_pSceneFrame, dirForwardX, &dirForwardY, &dirForwardZ);
             sceneScratch.fPosY_18C = dirForwardZ;
             sceneScratch.fPosX_188 = dirForwardY - frameTime / 5.0f;
-            MtxMult_4069DD(arrTearsBodies[0]->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354*)g_pSceneFrame,
+            SetFramePosRel_4069DD(arrTearsBodies[0]->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354*)g_pSceneFrame,
                 dirForwardX[0], sceneScratch.fPosX_188, dirForwardZ);
         }
         else
         {
             UpdateBoneLookAtTransform(arrTearsBodies[0]->pSekHeader_220->pFrameT3EC,
                 arrTearsFrames[0], 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
-            MtxMult_4069DD(arrTearsBodies[0]->pSekHeader_220->pFrameT3EC,
+            SetFramePosRel_4069DD(arrTearsBodies[0]->pSekHeader_220->pFrameT3EC,
                 arrTearsFrames[0], 0.0f, 0.0f, 0.0f);
         }
         for ( k = 1; k <= 2; ++k )
@@ -907,7 +907,7 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
             {
                 UpdateBoneLookAtTransform(arrTearsBodies[k]->pSekHeader_220->pFrameT3EC,
                     arrTearsFrames[k], 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
-                MtxMult_4069DD(arrTearsBodies[k]->pSekHeader_220->pFrameT3EC,
+                SetFramePosRel_4069DD(arrTearsBodies[k]->pSekHeader_220->pFrameT3EC,
                     arrTearsFrames[k], 0.0f, 0.0f, 0.0f);
             }
             CalculateLocalRotationMatrix(arrTearsFrames[k], (CHanaFrameT3EC_S354*)g_pSceneFrame,
@@ -1015,7 +1015,7 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
                                  &fRelX, &fRelY, &fRelZ);
         CalculateLocalRotationMatrix(pModeBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354*)g_pSceneFrame,
             dirForwardX, &dirForwardY, &dirForwardZ, &dirUpX, dirUpY, &dirUpZ);
-        MtxMult_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354*)g_pSceneFrame,
+        SetFramePosRel_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354*)g_pSceneFrame,
                        fRelX, fRelY, fRelZ);
         UpdateBoneLookAtTransform(pHeroBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354*)g_pSceneFrame,
             dirForwardX[0], dirForwardY, dirForwardZ, dirUpX, dirUpY[0], dirUpZ);
@@ -1507,15 +1507,15 @@ void __cdecl hook_UpdateCutInSceneCameraFollow(
       MtxStackStartMultLocal_4074EF();
       HanaFrame_GetRelPosition(g_pCameraFrame, pKutiRFrame, &targetRelPosX, &targetRelPosY, &targetRelPosZ);
       if ( targetRelPosZ <= 0.0 )
-        MtxMult_4069DD(g_pCameraFrame, pKutiRFrame, 0.0, 0.0, -15.0);
+        SetFramePosRel_4069DD(g_pCameraFrame, pKutiRFrame, 0.0, 0.0, -15.0);
       else
-        MtxMult_4069DD(g_pCameraFrame, pKutiRFrame, 0.0, 0.0, 15.0);
+        SetFramePosRel_4069DD(g_pCameraFrame, pKutiRFrame, 0.0, 0.0, 15.0);
       CameraLookAtFrame(g_pCameraFrame, pKutiRFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, -1);
       MtxStackStartMultLocal_4074EF();
       HanaFrame_GetRelPosition(pKutiRFrame, g_pCameraFrame, &targetRelToCamX, &pOutY, &targetRelToCamZ);
       X = pOutY - normVelY;
       adjustedX = targetRelToCamX + normVelX;
-      MtxMult_4069DD(pKutiRFrame, g_pCameraFrame, adjustedX, X, targetRelToCamZ);
+      SetFramePosRel_4069DD(pKutiRFrame, g_pCameraFrame, adjustedX, X, targetRelToCamZ);
       UpdateBoneLookAtTransform(
         g_pCameraFrame,
         (CHanaFrameT3EC_S354 *)g_pSceneFrame,
@@ -1525,7 +1525,7 @@ void __cdecl hook_UpdateCutInSceneCameraFollow(
         camUpX,
         dirUpY,
         dirUpZ);
-      MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, pOutX, camPosY, pOutZ);
+      SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, pOutX, camPosY, pOutZ);
       *pfAccumulator = *pfAccumulator - fFrameTime * *pfVelocity * 5.0 / 6.0 * fSpeed;
       pfAccumulator[1] = pfAccumulator[1] - fFrameTime * pfVelocity[1] * 5.0 / 6.0 * fSpeed;
       *pfVelocity = *pfVelocity + *pfAccumulator;
@@ -1961,10 +1961,10 @@ void __cdecl hook_CameraFrame_TrackBetweenObjectsAndLookAt(
         clampedZ = (v9 - distToClosest) * 1.0 / squaredDistAB + distToClosest;
         clampedY = (v10 - closestY) * 1.0 / squaredDistAB + closestY;
         clampedX = (frame_z - v8) * 1.0 / squaredDistAB + v8;
-        MtxMult_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, clampedX, clampedY, clampedZ);
+        SetFramePosRel_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, clampedX, clampedY, clampedZ);
       }
     }
-    MtxMult_4069DD(g_pCameraFrame, pFrame, objA_z, objA_y, objA_x);
+    SetFramePosRel_4069DD(g_pCameraFrame, pFrame, objA_z, objA_y, objA_x);
     UpdateBoneLookAtTransform(pFrame, parentStruct, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
   }
 }
@@ -1974,9 +1974,9 @@ void __cdecl hook_HanaMatrix_ApplyTransform(CHanaFrameT3EC_S354 *pFrame, const D
   D3DXMATRIX mInverse; // [esp+8h] [ebp-40h] BYREF
   ONCELOG("[HNH:SUB] HanaMatrix_ApplyTransform_40799F\n");
  
-  qmemcpy(&pFrame->mat4x4_after, pMat, sizeof(pFrame->mat4x4_after));
-  D3DXMatrixInverse(&mInverse, 0, &pFrame->mat4x4_before);
-  D3DXMatrixMultiply(&pFrame->mat4x4_fmrx, &pFrame->mat4x4_after, &mInverse);
+  qmemcpy(&pFrame->matWorld_178, pMat, sizeof(pFrame->matWorld_178));
+  D3DXMatrixInverse(&mInverse, 0, &pFrame->matParentWorld_1B8);
+  D3DXMatrixMultiply(&pFrame->matLocal_138, &pFrame->matWorld_178, &mInverse);
 }
 
 void __cdecl hook_CutInScene_CyclePosAndApplyCameraOffset(
@@ -2009,14 +2009,14 @@ void __cdecl hook_CutInScene_CyclePosAndApplyCameraOffset(
     ++*pPosIndex;
     *pPosIndex %= posFrameCount;
   }
-  MtxMult_4069DD(pChild, g_pCameraFrame, 0.0, 0.0, 15.0);
+  SetFramePosRel_4069DD(pChild, g_pCameraFrame, 0.0, 0.0, 15.0);
 }
 
 void __cdecl hook_HanaFrame_GetMatAfter(CHanaFrameT3EC_S354 *pFrame, D3DXMATRIX *pOutMat)
 {
   ONCELOG("[HNH:SUB] HanaFrame_GetMatAfter_407945\n");
 
-  qmemcpy(pOutMat, &pFrame->mat4x4_after, sizeof(D3DXMATRIX));
+  qmemcpy(pOutMat, &pFrame->matWorld_178, sizeof(D3DXMATRIX));
 }
 
 BOOL __cdecl hook_MoveCutInSceneFramesWithCameraConstraint(
@@ -2100,14 +2100,14 @@ BOOL __cdecl hook_MoveCutInSceneFramesWithCameraConstraint(
     frameBUpY,
     &frameBUpY[1]);
   HanaFrame_GetRelPosition(pChild, g_pSceneFrame, &frameBRelPosX, &fRelPosY, &v17);
-  MtxMult_4069DD(pChild, pFrameA, 0.0, 0.0, 0.0);
+  SetFramePosRel_4069DD(pChild, pFrameA, 0.0, 0.0, 0.0);
   UpdateBoneLookAtTransform(pChild, pFrameA, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
   HanaFrame_GetRelPosition(pFrameA, g_pCameraFrame, &frameARelToCamX, &frameARelToCamY, &frameARelToCamZ);
   adjustedY = frameARelToCamY - normDeltaY;
   adjustedX = frameARelToCamX + normDeltaX;
-  MtxMult_4069DD(pFrameA, g_pCameraFrame, adjustedX, adjustedY, frameARelToCamZ);
+  SetFramePosRel_4069DD(pFrameA, g_pCameraFrame, adjustedX, adjustedY, frameARelToCamZ);
   HanaFrame_GetRelPosition(pFrameA, pChild, v34, &frameARelToBY, &pOutZ);
-  MtxMult_4069DD(pFrameA, pChild, v34[0], frameARelToBY, 0.0);
+  SetFramePosRel_4069DD(pFrameA, pChild, v34[0], frameARelToBY, 0.0);
   UpdateBoneLookAtTransform(
     pChild,
     (CHanaFrameT3EC_S354 *)g_pSceneFrame,
@@ -2117,7 +2117,7 @@ BOOL __cdecl hook_MoveCutInSceneFramesWithCameraConstraint(
     frameBUpX,
     frameBUpY[0],
     frameBUpY[1]);
-  MtxMult_4069DD(pChild, (CHanaFrameT3EC_S354 *)g_pSceneFrame, frameBRelPosX, fRelPosY, v17);
+  SetFramePosRel_4069DD(pChild, (CHanaFrameT3EC_S354 *)g_pSceneFrame, frameBRelPosX, fRelPosY, v17);
   MtxStackStartMultLocal_4074EF();
   CalculateLocalRotationMatrix(
     pFrameA,
@@ -2129,14 +2129,14 @@ BOOL __cdecl hook_MoveCutInSceneFramesWithCameraConstraint(
     frameBUpY,
     &frameBUpY[1]);
   HanaFrame_GetRelPosition(pFrameA, g_pSceneFrame, &frameBRelPosX, &fRelPosY, &v17);
-  MtxMult_4069DD(pFrameA, pChild, 0.0, 0.0, 0.0);
+  SetFramePosRel_4069DD(pFrameA, pChild, 0.0, 0.0, 0.0);
   UpdateBoneLookAtTransform(pFrameA, pChild, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
   HanaFrame_GetRelPosition(pChild, g_pCameraFrame, &v33, &frameBRelToCamY, &frameBRelToCamZ);
   adjustedY2 = frameBRelToCamY - normDeltaY;
   adjustedX2 = v33 + normDeltaX;
-  MtxMult_4069DD(pChild, g_pCameraFrame, adjustedX2, adjustedY2, frameBRelToCamZ);
+  SetFramePosRel_4069DD(pChild, g_pCameraFrame, adjustedX2, adjustedY2, frameBRelToCamZ);
   HanaFrame_GetRelPosition(pChild, pFrameA, v34, &frameARelToBY, &pOutZ);
-  MtxMult_4069DD(pChild, pFrameA, v34[0], frameARelToBY, 0.0);
+  SetFramePosRel_4069DD(pChild, pFrameA, v34[0], frameARelToBY, 0.0);
   UpdateBoneLookAtTransform(
     pFrameA,
     (CHanaFrameT3EC_S354 *)g_pSceneFrame,
@@ -2146,7 +2146,7 @@ BOOL __cdecl hook_MoveCutInSceneFramesWithCameraConstraint(
     frameBUpX,
     frameBUpY[0],
     frameBUpY[1]);
-  MtxMult_4069DD(pFrameA, (CHanaFrameT3EC_S354 *)g_pSceneFrame, frameBRelPosX, fRelPosY, v17);
+  SetFramePosRel_4069DD(pFrameA, (CHanaFrameT3EC_S354 *)g_pSceneFrame, frameBRelPosX, fRelPosY, v17);
   MtxStackStartMultLocal_4074EF();
   UpdateBoneLookAtTransform(
     g_pCameraFrame,
@@ -2157,7 +2157,7 @@ BOOL __cdecl hook_MoveCutInSceneFramesWithCameraConstraint(
     camXYrot,
     camYXrot,
     camUpZ);
-  MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, camPosX, camPosY, camPosZ);
+  SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, camPosX, camPosY, camPosZ);
   MtxStackStartMultLocal_4074EF();
   return bClamped;
 }
@@ -2237,7 +2237,7 @@ void __cdecl hook_UpdateCutInSceneBoneTransforms(
         mainUpX,
         mainUpY,
         mainUpZ);
-      MtxMult_4069DD(pFramesMain[boneIndex], (CHanaFrameT3EC_S354 *)g_pSceneFrame, mainPosX, mainPosY, mainRelPosZ);
+      SetFramePosRel_4069DD(pFramesMain[boneIndex], (CHanaFrameT3EC_S354 *)g_pSceneFrame, mainPosX, mainPosY, mainRelPosZ);
       UpdateBoneLookAtTransform(
         pFramesKutiR[boneIndex],
         (CHanaFrameT3EC_S354 *)g_pSceneFrame,
@@ -2247,7 +2247,7 @@ void __cdecl hook_UpdateCutInSceneBoneTransforms(
         kutiRXYrot,
         pYXrot,
         pZXrot);
-      MtxMult_4069DD(pFramesKutiR[boneIndex], (CHanaFrameT3EC_S354 *)g_pSceneFrame, kutiRPosX, kutiRPosY, kutiRRelPosZ);
+      SetFramePosRel_4069DD(pFramesKutiR[boneIndex], (CHanaFrameT3EC_S354 *)g_pSceneFrame, kutiRPosX, kutiRPosY, kutiRRelPosZ);
     }
   }
 }
@@ -2276,13 +2276,13 @@ void __cdecl hook_UpdateFrameAnimationMatrix(CHanaFrameT3EC_S354 *pFrame, float 
   childFrame = 0;
   if ( pFrame->pHanaAnim_2C0 )
   {
-    D3DXMatrixInverse(&tempMatrix, 0, &pFrame->mat4x4_fmrx);
+    D3DXMatrixInverse(&tempMatrix, 0, &pFrame->matLocal_138);
     InterpolateHanaAnimFrame(pFrame->pHanaAnim_2C0, targetTime);
-    D3DXMatrixMultiply(&tempMatrix, &pFrame->mat4x4_fmrx, &tempMatrix);
+    D3DXMatrixMultiply(&tempMatrix, &pFrame->matLocal_138, &tempMatrix);
     memset(tempMatrix.m[3], 0, 12);
     D3DXQuaternionRotationMatrix(&quatRotation, &tempMatrix);
     InterpolateHanaAnimFrame(pFrame->pHanaAnim_2C0, currentTime);
-    D3DXMatrixMultiply(&pFrame->mat4x4_fmrx, &tempMatrix, &pFrame->mat4x4_fmrx);
+    D3DXMatrixMultiply(&pFrame->matLocal_138, &tempMatrix, &pFrame->matLocal_138);
   }
   if ( pFrame->nCountChild )
   {
@@ -2333,7 +2333,7 @@ BOOL __cdecl hook_Frame_CheckCameraDistanceAndRecurse(CHanaFrameT3EC_S354 *pFram
         moveZ = relPosZ * 3.0 / fDist;
         moveY = relPosY * 3.0 / fDist;
         moveX = relPosX * 3.0 / fDist;
-        MtxMult_4069DD(g_pCameraFrame, pFrame, moveX, moveY, moveZ);
+        SetFramePosRel_4069DD(g_pCameraFrame, pFrame, moveX, moveY, moveZ);
       }
     }
   }
@@ -2471,7 +2471,7 @@ void __cdecl hook_CameraController_UpdateCutscene(
     distXZ = sqrt(a3 * a3 + a5 * a5) / 150.0;   // Horizontal distance scaled by 1/150
     panY = (double)-panSpeedY * distXZ;         // Pan camera horizontally based on distance
     x = (double)panSpeedX * distXZ;
-    MtxMult_4069DD(g_pCameraFrame, g_pCameraFrame, x, panY, 0.0);
+    SetFramePosRel_4069DD(g_pCameraFrame, g_pCameraFrame, x, panY, 0.0);
     HanaFrame_GetRelPosition(g_pCameraFrame, pTargetFrame, &relPosX2, &relPosY2, &z);// Get new position after pan
     distXYZ_prev = sqrt(a3 * a3 + a4 * a4 + a5 * a5);
     distXYZ = sqrt(relPosX2 * relPosX2 + relPosY2 * relPosY2 + z * z);
@@ -2480,7 +2480,7 @@ void __cdecl hook_CameraController_UpdateCutscene(
       moveZ = z * distXYZ_prev / distXYZ;
       X = relPosY2 * distXYZ_prev / distXYZ;
       moveX = relPosX2 * distXYZ_prev / distXYZ;
-      MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, moveX, X, moveZ);
+      SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, moveX, X, moveZ);
     }
     HanaFrame_GetRelPosition(g_pCameraFrame, pTargetFrame, &relPosX2, &relPosY2, &z);// Anti-jitter: if too close (<2) or moved further away, push back
     distXZ = sqrt(relPosX2 * relPosX2 + z * z);
@@ -2490,14 +2490,14 @@ void __cdecl hook_CameraController_UpdateCutscene(
       {
         X_4 = (z + z) / distXZ;
         moveX2 = (relPosX2 + relPosX2) / distXZ;
-        MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, moveX2, a4, X_4);
+        SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, moveX2, a4, X_4);
       }
     }
   }
   if ( cameraMode == 3 )                        // Mode 3: Simple Dolly
   {
     moveZ2 = -(double)panSpeedY / 20.0;         // Just move camera forward/back along Z
-    MtxMult_4069DD(g_pCameraFrame, g_pCameraFrame, 0.0, 0.0, moveZ2);
+    SetFramePosRel_4069DD(g_pCameraFrame, g_pCameraFrame, 0.0, 0.0, moveZ2);
   }
   if ( cameraMode == 2 )                        // Mode 2: Offset LookAt
   {
@@ -2505,10 +2505,10 @@ void __cdecl hook_CameraController_UpdateCutscene(
     HanaFrame_GetRelPosition((CHanaFrameT3EC_S354 *)pTargetFrame, g_pCameraFrame, &relPosX2, &relPosY2, &z);//  Get target-relative camera position
     moveY = relPosY2 - (double)panSpeedY / 80.0;// Position camera at offset from target
     moveX3 = (double)panSpeedX / 80.0 + relPosX2;
-    MtxMult_4069DD((CHanaFrameT3EC_S354 *)pTargetFrame, g_pCameraFrame, moveX3, moveY, z);
+    SetFramePosRel_4069DD((CHanaFrameT3EC_S354 *)pTargetFrame, g_pCameraFrame, moveX3, moveY, z);
     Xa = -(double)panSpeedY / 80.0;             // Small camera self-pan
     panX2 = (double)panSpeedX / 80.0;
-    MtxMult_4069DD(g_pCameraFrame, g_pCameraFrame, panX2, Xa, 0.0);
+    SetFramePosRel_4069DD(g_pCameraFrame, g_pCameraFrame, panX2, Xa, 0.0);
   }                                             // All Modes: Distance Clamping
   HanaFrame_GetRelPosition(g_pCameraFrame, pTargetFrame, &a3, &a4, &a5);
   distXYZ = sqrt(a3 * a3 + a4 * a4 + a5 * a5);
@@ -2519,7 +2519,7 @@ void __cdecl hook_CameraController_UpdateCutscene(
       panZ = (a5 + a5) / distXYZ;
       Xb = (a4 + a4) / distXYZ;
       moveX5 = (a3 + a3) / distXYZ;
-      MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, moveX5, Xb, panZ);
+      SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, moveX5, Xb, panZ);
     }
   }
   else
@@ -2527,7 +2527,7 @@ void __cdecl hook_CameraController_UpdateCutscene(
     X_4a = a5 * 30.0 / distXYZ;
     moveY2 = a4 * 30.0 / distXYZ;
     moveX4 = a3 * 30.0 / distXYZ;
-    MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, moveX4, moveY2, X_4a);
+    SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)pTargetFrame, moveX4, moveY2, X_4a);
   }
   UpdateBoneLookAtTransform(
     (CHanaFrameT3EC_S354 *)pTargetFrame,
@@ -2544,8 +2544,8 @@ void __cdecl hook_CameraController_UpdateCutscene(
 // CameraFrame_ProjectFramePairOntoForwardRay positions a target frame at the point where the line between two frames
 // (FrameA, FrameB) intersects the camera's forward view ray in camera space. The X/Z position is the intersection with
 // the camera's central ray (X=0, Z from 0 to -10); the Y position is the average of the two frames' Y coordinates. The
-// resulting transform is computed via MtxMult_4069DD which builds a translation matrix, multiplies by the camera's world
-// matrix, and applies it to the target frame's mat4x4_after.
+// resulting transform is computed via SetFramePosRel_4069DD which builds a translation matrix, multiplies by the camera's world
+// matrix, and applies it to the target frame's matWorld_178.
 // 
 // This is likely used for UI/camera effects where an object (target frame) should appear centered between two 3D objects
 // from the camera's perspective.
@@ -2628,7 +2628,7 @@ void __cdecl hook_CameraFrame_ProjectFramePairOntoForwardRay(
       / ((frameB_posX - frameA_posX) * (camPosY_2 - camPosY_1) - (frameB_posY - frameA_posY) * (camPosX_2 - camPosX_1));
     avgY = (frameB_posY - frameA_posY) * t + frameA_posY;
   }
-  MtxMult_4069DD((CHanaFrameT3EC_S354 *)pTargetFrame, g_pCameraFrame, intersectX, avgY, intersectZ);
+  SetFramePosRel_4069DD((CHanaFrameT3EC_S354 *)pTargetFrame, g_pCameraFrame, intersectX, avgY, intersectZ);
 }
 
 CHanaFrameT3EC_S354 *__cdecl hook_FindFrameByNameSubstringRecursive(CHanaFrameT3EC_S354 *pFrame, LPCSTR pSearchStr)

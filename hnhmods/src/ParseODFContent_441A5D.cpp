@@ -62,7 +62,7 @@ void (__cdecl*HanaMorp_InitSubObject)(CHanaMorpT457_S40C *pMorpT457, int zero,
 void (__cdecl*CalcFrameBound_404B80)(CHanaFrameT3EC_S354 *pFrameT3EC, CHanaMorpT457_S40C *pMorpT3F5) =
     reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaMorpT457_S40C *)>(0x404B80);
 
-D3DXMATRIX *(__cdecl*MtxMult_4069DD)(CHanaFrameT3EC_S354 *pChildFrame, CHanaFrameT3EC_S354 *pParentFrame, float x, float y, float z) =
+D3DXMATRIX *(__cdecl*SetFramePosRel_4069DD)(CHanaFrameT3EC_S354 *pChildFrame, CHanaFrameT3EC_S354 *pParentFrame, float x, float y, float z) =
     reinterpret_cast<D3DXMATRIX *(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *, float, float, float)>(0x4069DD);
 void (__cdecl * ApplyQTS_4035B1)( D3DXMATRIX *pOut, D3DXQUATERNION *pQ, float x, float y, float z, float sx, float sy, float sz) =
   reinterpret_cast<void(__cdecl*)( D3DXMATRIX *pOut, 
@@ -218,7 +218,7 @@ BOOL __cdecl hook_ParseODFContent_441A5D(
         if ( !lstrcmpA(pParentList[iChild], pParentFrame->szName_8) )
         {
           AttachChild_4055FD(pParentFrame, pChild);
-          MtxMult_4069DD(pChild, pParentFrame, 0.0, 0.0, 0.0);
+          SetFramePosRel_4069DD(pChild, pParentFrame, 0.0, 0.0, 0.0);
 
           bFoundParent = TRUE; // original encodes this as iParent = -1
         }
@@ -235,7 +235,7 @@ BOOL __cdecl hook_ParseODFContent_441A5D(
     if ( !bFoundParent )
     {
       AttachChild_4055FD(pRootFrameT3EC, pChild);
-      MtxMult_4069DD(pChild, pRootFrameT3EC, 0.0, 0.0, 0.0);
+      SetFramePosRel_4069DD(pChild, pRootFrameT3EC, 0.0, 0.0, 0.0);
     }
 
     if ( pChild )
@@ -282,7 +282,7 @@ BOOL __cdecl hook_ParseODFContent_441A5D(
 //                                       bit2 -> bDisableFog_134, bit3 -> bFlagFFLG3_21C
 //   End-Objection (aEndObjection @0x4B411C) ends the attribute scan
 //   FMRX  [DWORD][DWORD nSize][matrix]  overwrite of the ROOT frame's
-//                                       mat4x4_fmrx
+//                                       matLocal_138
 // PARN and FMRX are searched within a 25-byte window byte-by-byte; the
 // attribute scan runs up to 25 iterations and handles tags in sequence.
 // (VX-N / MH-N / MP-N map to type codes 1002/1013/1111 that are computed and
@@ -400,7 +400,7 @@ CHanaFrameT3EC_S354 *__cdecl hook_ParseOdfFRAM_44106A(LPBYTE *ppBuf,
         if (!memcmp("FMRX", pScan, 4))
         {
             nSize = *((int *)pScan + 1);
-            memcpy(&pRootFrameT3EC->mat4x4_fmrx, pScan + 8, sizeof(pRootFrameT3EC->mat4x4_fmrx));
+            memcpy(&pRootFrameT3EC->matLocal_138, pScan + 8, sizeof(pRootFrameT3EC->matLocal_138));
             pBuf = pScan + 8 + nSize;
             break;
         }
@@ -876,7 +876,7 @@ void __cdecl hook_AssignLigthtToFrame_40539D(CHanaFrameT3EC_S354 *pHanaT3EC, CHa
     pHanaT3EC->pHanaLight_210 = pHanaLight;
     pHanaLight->pHanaT3EC_19C = pHanaT3EC;
     pHanaT3EC->bHasLight_214 = 1;
-    qmemcpy(&mat_v3, &pHanaT3EC->mat4x4_after, sizeof(mat_v3));
+    qmemcpy(&mat_v3, &pHanaT3EC->matWorld_178, sizeof(mat_v3));
     ConfigureLight(pHanaT3EC->pHanaLight_210, mat_v3._41, mat_v3._42, mat_v3._43, mat_v3._13, mat_v3._23, mat_v3._33);
     CHanaObj__AddRef_40BFC3(pHanaLight);
   }
@@ -1226,7 +1226,7 @@ bool __cdecl hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15(CHanaAnimSetT3F1_S150 *pA
   return 1;
 }
 
-// HanaFrame_GetCenterPosition - returns pFrame's vertCenter_2B4 expressed in pRelFrame's space. If pRelFrame is g_pSceneFrame: out = Translate(center)*mat4x4_after. Otherwise also premultiplies by the inverse of pRelFrame->mat4x4_after. Writes x/y/z into px/py/pz; zeroes them when pFrame is NULL.
+// HanaFrame_GetCenterPosition - returns pFrame's vertCenter_2B4 expressed in pRelFrame's space. If pRelFrame is g_pSceneFrame: out = Translate(center)*matWorld_178. Otherwise also premultiplies by the inverse of pRelFrame->matWorld_178. Writes x/y/z into px/py/pz; zeroes them when pFrame is NULL.
 void __cdecl hook_HanaFrame_GetCenterPosition_408C3E(
         CHanaFrameRootT3EC_S2D4 *pFrame,
         CHanaFrameRootT3EC_S2D4 *pRelFrame,
@@ -1248,13 +1248,13 @@ void __cdecl hook_HanaFrame_GetCenterPosition_408C3E(
     if ( pRelFrame == g_pSceneFrame )
     {
       D3DXMatrixTranslation(&pOut, pFrame->vertCenter_2B4.x, pFrame->vertCenter_2B4.y, pFrame->vertCenter_2B4.z);
-      D3DXMatrixMultiply(&pOut, &pOut, &pFrame->mat4x4_after);
+      D3DXMatrixMultiply(&pOut, &pOut, &pFrame->matWorld_178);
     }
     else
     {
       D3DXMatrixTranslation(&pOut, pFrame->vertCenter_2B4.x, pFrame->vertCenter_2B4.y, pFrame->vertCenter_2B4.z);
-      D3DXMatrixMultiply(&pM1, &pOut, &pFrame->mat4x4_after);
-      D3DXMatrixInverse(&pOut, 0, &pRelFrame->mat4x4_after);
+      D3DXMatrixMultiply(&pM1, &pOut, &pFrame->matWorld_178);
+      D3DXMatrixInverse(&pOut, 0, &pRelFrame->matWorld_178);
       D3DXMatrixMultiply(&pOut, &pM1, &pOut);
     }
     *pOutX = pOut._41;
@@ -1536,7 +1536,7 @@ void __cdecl hook_InterpolateHanaAnimFrame(CHanaAnimT3F0_S240 *pAnim, float fTim
     if ( HanaAnim_FindInterpolationFrame(pAnim, fTime, &pStartKeyframe, &pEndKeyframe, &iResult)
       || !pEndKeyframe && pStartKeyframe )
     {
-      qmemcpy(&pAnim->pHanaFram_130->mat4x4_fmrx, &pStartKeyframe->matLocal, sizeof(pAnim->pHanaFram_130->mat4x4_fmrx));
+      qmemcpy(&pAnim->pHanaFram_130->matLocal_138, &pStartKeyframe->matLocal, sizeof(pAnim->pHanaFram_130->matLocal_138));
       pAnim->keyCur_14C.fTime = fTime;
       pAnim->keyCur_14C.fPosX = pStartKeyframe->fPosX;
       pAnim->keyCur_14C.fPosY = pStartKeyframe->fPosY;
@@ -1545,7 +1545,7 @@ void __cdecl hook_InterpolateHanaAnimFrame(CHanaAnimT3F0_S240 *pAnim, float fTim
       pAnim->keyCur_14C.fScaleY = pStartKeyframe->fScaleY;
       pAnim->keyCur_14C.fScaleZ = pStartKeyframe->fScaleZ;
       pAnim->keyCur_14C.quatRot = pStartKeyframe->quatRot;
-      qmemcpy(&pAnim->keyCur_14C.matLocal, &pAnim->pHanaFram_130->mat4x4_fmrx, sizeof(pAnim->keyCur_14C.matLocal));
+      qmemcpy(&pAnim->keyCur_14C.matLocal, &pAnim->pHanaFram_130->matLocal_138, sizeof(pAnim->keyCur_14C.matLocal));
     }
     else if ( pStartKeyframe )
     {
@@ -1572,7 +1572,7 @@ void __cdecl hook_InterpolateHanaAnimFrame(CHanaAnimT3F0_S240 *pAnim, float fTim
       interpSy = (endTy - startTy) * fInterpolant + startTy;
       interpSz = (endTz - startTz) * fInterpolant + startTz;
       ApplyQTS_4035B1(
-        &pAnim->pHanaFram_130->mat4x4_fmrx,
+        &pAnim->pHanaFram_130->matLocal_138,
         &pOut,
         interpTx,
         interpTy,
@@ -1588,7 +1588,7 @@ void __cdecl hook_InterpolateHanaAnimFrame(CHanaAnimT3F0_S240 *pAnim, float fTim
       pAnim->keyCur_14C.fScaleY = interpSy;
       pAnim->keyCur_14C.fScaleZ = interpSz;
       pAnim->keyCur_14C.quatRot = pOut;
-      qmemcpy(&pAnim->keyCur_14C.matLocal, &pAnim->pHanaFram_130->mat4x4_fmrx, sizeof(pAnim->keyCur_14C.matLocal));
+      qmemcpy(&pAnim->keyCur_14C.matLocal, &pAnim->pHanaFram_130->matLocal_138, sizeof(pAnim->keyCur_14C.matLocal));
     }
   }
 }
@@ -1945,29 +1945,46 @@ BOOL __cdecl hook_FindMateAnimKeyframeBounds(
   }
 }
 
-void __cdecl hook_MtxMult_4069DD(
-  CHanaFrameT3EC_S354 *pCameraFrame,
-  CHanaFrameT3EC_S354 *pSceneFrame,
+// SetFramePosRel: place pFrameDst's origin at the world-space position of pFrameSrc's
+// local point (x,y,z) -- the engine's standard "move frame to point" primitive. Frame
+// transforms obey matWorld_178 = matLocal_138 * matParentWorld_1B8 (see
+// MtxStackRecursiveMulLocal_4075B0), so this is just:
+//   1. P = world position of pFrameSrc's local point (x,y,z)
+//   2. new local translation = P expressed in pFrameDst's parent space
+//   3. recompose the world matrix
+// Only the local translation row is written: matLocal_138's rotation/scale stay as-is,
+// so with identity rotation this is a pure translation (orientation preserved).
+// pFrameSrc == pFrameDst means "offset in my own local space" (-Z = forward); used as a
+// teleport, e.g. IsFoeWithinHeroRange_448B78's save / probe-2.5-ahead / restore pattern.
+void __cdecl hook_SetFramePosRel_4069DD(
+  CHanaFrameT3EC_S354 *pFrameDst,
+  CHanaFrameT3EC_S354 *pFrameSrc,
   float x,
   float y,
   float z)
 {
-  D3DXMATRIX pM2; // [esp+8h] [ebp-C0h] BYREF
-  D3DXMATRIX pOut; // [esp+48h] [ebp-80h] BYREF
-  D3DXMATRIX pM1; // [esp+88h] [ebp-40h] BYREF
+  D3DXMATRIX matPoint;         // T(x,y,z) * matWorld_178, then parent-inverted
+  D3DXMATRIX matParentWorldInv;
 
-  ONCELOG("[HNH:SUB] MtxMult_4069DD\n");
+  ONCELOG("[HNH:SUB] SetFramePosRel_4069DD\n");
 
-  D3DXMatrixTranslation(&pOut, x, y, z);
-  D3DXMatrixMultiply(&pOut, &pOut, &pSceneFrame->mat4x4_after);
-  qmemcpy(&pM1, &pCameraFrame->mat4x4_after, sizeof(pM1));
-  *(_QWORD *)&pM1.m[3][0] = *(_QWORD *)&pOut.m[3][0];
-  pM1._43 = pOut._43;
-  D3DXMatrixInverse(&pM2, 0, &pCameraFrame->mat4x4_before);
-  D3DXMatrixMultiply(&pM1, &pM1, &pM2);
-  *(_QWORD *)&pCameraFrame->mat4x4_fmrx.m[3][0] = *(_QWORD *)&pM1.m[3][0];
-  pCameraFrame->mat4x4_fmrx._43 = pM1._43;
-  D3DXMatrixMultiply(&pCameraFrame->mat4x4_after, &pCameraFrame->mat4x4_fmrx, &pCameraFrame->mat4x4_before);
+  // 1) P = world-space position of the local point (x,y,z) in pFrameSrc's space
+  D3DXMatrixTranslation(&matPoint, x, y, z);
+  D3DXMatrixMultiply(&matPoint, &matPoint, &pFrameSrc->matWorld_178);
+
+  // 2) re-express P in pFrameDst's parent space -> that IS the new local translation.
+  //    (The original built [dstWorld with row4 = P] * inv(parentWorld) and kept only
+  //    row 4 -- row 4 of a row-vector product ignores the left side's rotation, so
+  //    skipping the dstWorld copy is bit-identical.)
+  D3DXMatrixInverse(&matParentWorldInv, 0, &pFrameDst->matParentWorld_1B8);
+  D3DXMatrixMultiply(&matPoint, &matPoint, &matParentWorldInv);
+
+  pFrameDst->matLocal_138._41 = matPoint._41;
+  pFrameDst->matLocal_138._42 = matPoint._42;
+  pFrameDst->matLocal_138._43 = matPoint._43;
+
+  // 3) recompose: world = local * parentWorld (rotation/scale of matLocal_138 untouched)
+  D3DXMatrixMultiply(&pFrameDst->matWorld_178, &pFrameDst->matLocal_138, &pFrameDst->matParentWorld_1B8);
 }
 
 void __cdecl hook_HanaMorp_InitSubObject(
@@ -2187,7 +2204,7 @@ HRESULT __cdecl hook_CHanaObj__FillVertexBufferT3EA(
   ONCELOG("[HNH:SUB] CHanaObj__FillVertexBufferT3EA_416E65\n")
 
   hr = pHanaT3EA->pD3DVtxBuf_130->Lock(0x801, &pData, 0);
-  if ( hr < 0 )
+  if (FAILED(hr))
     return hr;
   qmemcpy(pData, pBufVertices, pHanaT3EA->dwVertexSize * dwNumVertices);
   pHanaT3EA->pD3DVtxBuf_130->Unlock();
@@ -2788,6 +2805,8 @@ void __cdecl hook_ParseOdfMeshVFLG_43FDEC(char **ppBuf, CHanaVertT3EA_S1FC *pHan
 }
 
 void register_ParseODFContent_441A5D() {
+  hnh_Hook(0x4069DD, hook_SetFramePosRel_4069DD, "SetFramePosRel_4069DD"); // [OK]
+
   hnh_HookOff();
     hnh_Hook(0x44106A, hook_ParseOdfFRAM_44106A, "ParseOdfFRAM_44106A"); // [OK]
     hnh_Hook(0x4414EB, hook_ParseOdfANIM_4414EB, "ParseOdfANIM_4414EB"); // [OK]
@@ -2818,7 +2837,6 @@ void register_ParseODFContent_441A5D() {
     hnh_Hook(0x40E969, hook_ApplyMateAnimMaterial, "ApplyMateAnimMaterial_40E969"); // [OK]
     hnh_Hook(0x40283C, hook_InterpolateHanaAnimFrame, "InterpolateHanaAnimFrame_40283C"); // [OK]
     hnh_Hook(0x40344A, hook_HanaAnim_FindInterpolationFrame, "HanaAnim_FindInterpolationFrame_40344A"); // [OK]
-    hnh_Hook(0x4069DD, hook_MtxMult_4069DD, "MtxMult_4069DD"); // [OK]
     hnh_Hook(0x439982, hook_HanaMorp_InitSubObject, "HanaMorp_InitSubObject_439982"); // [OK]
     hnh_Hook(0x434370, hook_HanaMorp_AddVertexRef, "HanaMorp_AddVertexRef_434370"); // [OK]
     hnh_Hook(0x433DA7, hook_CHanaObj__NewMorpT457, "CHanaObj__NewMorpT457_433DA7"); // [OK]

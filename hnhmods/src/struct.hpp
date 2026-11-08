@@ -1,3 +1,4 @@
+// GAME: [011019][TEATIME] âÿÇÃîﬂñ¬Å@Å`âÛÇÍÇΩè…éqÇÃêSÅ`
 #pragma once
 
 // #include "dx7.hpp"
@@ -54,13 +55,14 @@ struct CHanaAnimT3F0_S240;
 struct CHanaLightT3EF_S1A0;
 struct CHanaFrameT3EC_S354;
 
+// matWorld_178 = matLocal_138 (.) matParentWorld_1B8
 struct CHanaFrameRootT3EC_S2D4: public CHanaBase_S130
 {
     int bAlphaDeferred_130;
     int bDisableFog_134;
-    D3DXMATRIX mat4x4_fmrx;
-    D3DXMATRIX mat4x4_after;
-    D3DXMATRIX mat4x4_before;
+    D3DXMATRIX matLocal_138;
+    D3DXMATRIX matWorld_178;
+    D3DXMATRIX matParentWorld_1B8;
     int bIsRoot_1F8;
     CHanaFrameT3EC_S354 *pParent;
     CHanaNode *pFirstChildNode;

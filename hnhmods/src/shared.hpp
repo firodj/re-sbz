@@ -512,7 +512,7 @@ extern void (__cdecl * HanaFrame_GetCenterPosition_408C3E)( CHanaFrameRootT3EC_S
 extern BOOL(__cdecl* GetSoundBufferAverageLevel)(LPDIRECTSOUNDBUFFER pDSBuffer, float* pfPlayPos);
 extern void(__cdecl* CalcFrameBound_404B80)(CHanaFrameT3EC_S354* pFrameT3EC, CHanaMorpT457_S40C* pMorpT3F5);
 extern void(__cdecl* CHanaAnimSetT3F1__SetTime_403D61)(CHanaAnimSetT3F1_S150* pHanaT3F1, float t2);
-extern D3DXMATRIX* (__cdecl* MtxMult_4069DD)(CHanaFrameT3EC_S354* pChildFrame, CHanaFrameT3EC_S354* pParentFrame, float x, float y, float z);
+extern D3DXMATRIX* (__cdecl* SetFramePosRel_4069DD)(CHanaFrameT3EC_S354* pChildFrame, CHanaFrameT3EC_S354* pParentFrame, float x, float y, float z);
 
 // === DEFINED ParseODS.cpp ===
 

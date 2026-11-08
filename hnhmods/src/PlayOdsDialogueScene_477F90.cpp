@@ -615,7 +615,7 @@ void __cdecl hook_HanaAnim_UpdateBoneTransform(CHanaAnimT3F0_S240 *pAnim, float 
   endX = (pAnim->keyPrev_1C4.fScaleX - resultX) * fWeight + resultX;
   endY = (pAnim->keyPrev_1C4.fScaleY - resultY) * fWeight + resultY;
   endZ = (pAnim->keyPrev_1C4.fScaleZ - resultZ) * fWeight + resultZ;
-  ApplyQTS_4035B1(&pAnim->pHanaFram_130->mat4x4_fmrx, &resultQuat, startX, startY, startZ, endX, endY, endZ);
+  ApplyQTS_4035B1(&pAnim->pHanaFram_130->matLocal_138, &resultQuat, startX, startY, startZ, endX, endY, endZ);
   pAnim->keyCur_14C.fPosX = startX;
   pAnim->keyCur_14C.fPosY = startY;
   pAnim->keyCur_14C.fPosZ = startZ;
@@ -623,7 +623,7 @@ void __cdecl hook_HanaAnim_UpdateBoneTransform(CHanaAnimT3F0_S240 *pAnim, float 
   pAnim->keyCur_14C.fScaleY = endY;
   pAnim->keyCur_14C.fScaleZ = endZ;
   pAnim->keyCur_14C.quatRot = resultQuat;
-  qmemcpy(&pAnim->keyCur_14C.matLocal, &pAnim->pHanaFram_130->mat4x4_fmrx, sizeof(pAnim->keyCur_14C.matLocal));
+  qmemcpy(&pAnim->keyCur_14C.matLocal, &pAnim->pHanaFram_130->matLocal_138, sizeof(pAnim->keyCur_14C.matLocal));
 }
 
 // Drive the whole scene to a script time. pfExecTime is clamped to the anim-set length (pAnimSet_148->fRes_13C) and to WCurNum; bContinue=0 when the end is reached. Calls SetTime on the master anim set, updates the camera look-at (CalculateLocalRotationMatrix + UpdateBoneLookAtTransform + MtxMult) when by_474/pCamFrame_478 are set, then per body finds the first item prop whose start (flt_0) < fClampedTime and CutTo it (UpdateTo2_401647), advancing with UpdateAnim(fDelta). Returns bContinue.
@@ -673,7 +673,7 @@ bool __cdecl hook_UpdateSceneAtTime_4825D5(CHanaSceneT458_S504 *pScene, float *p
       dirUpY,
       dirUpZ);
     HanaFrame_GetRelPosition(pScene->pCamFrame_478, g_pSceneFrame, &dirForwardX, &dirForwardY, &dirForwardZ);
-    MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, dirForwardX, dirForwardY, dirForwardZ);
+    SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, dirForwardX, dirForwardY, dirForwardZ);
   }
   if ( pScene->arrSizes_144 )
   {

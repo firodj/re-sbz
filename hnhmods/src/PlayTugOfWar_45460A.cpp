@@ -127,9 +127,9 @@ void __cdecl hook_PlayTugOfWar_45460A(
   pHeroHeadFrame = FindFrameByName_47E999(pHeroBody->pSekHeader_220->pFrameT3EC, "head");
   pHeroBody->pSekHeader_220->pFrameT3EC->bAlphaDeferred_130 = 0;
   CHanaObj__NewFrameT3EC_S354(pHeroBody->pSekHeader_220->pFrameT3EC, &pCamPivotFrame);
-  MtxMult_4069DD(pCamPivotFrame, pHeroBody->pSekHeader_220->pFrameT3EC, 0.0, 0.0, -5.0);
+  SetFramePosRel_4069DD(pCamPivotFrame, pHeroBody->pSekHeader_220->pFrameT3EC, 0.0, 0.0, -5.0);
   AttachChild_4055FD(pCamPivotFrame, g_pCameraFrame);
-  MtxMult_4069DD(g_pCameraFrame, pCamPivotFrame, 0.0, 13.0, 8.0);
+  SetFramePosRel_4069DD(g_pCameraFrame, pCamPivotFrame, 0.0, 13.0, 8.0);
   pV.x = 0.0;
   pV.y = 1.0;
   pV.z = 0.0;
@@ -138,10 +138,10 @@ void __cdecl hook_PlayTugOfWar_45460A(
   HanaFrame_GetRelPosition(pFoeBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, &fPivotX, &y, &z);
   fFoeZOff = fHeroZ - 3.0;
   fFoeYOff = fHeroY + 14.0;
-  MtxMult_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fFoeYOff, fFoeZOff);
+  SetFramePosRel_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fFoeYOff, fFoeZOff);
   HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, 0);
-  MtxMult_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fPivotX, y, z);
-  MtxMult_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, pHeroBody->pSekHeader_220->pFrameT3EC, 0.0, 0.0, -5.0);
+  SetFramePosRel_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fPivotX, y, z);
+  SetFramePosRel_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, pHeroBody->pSekHeader_220->pFrameT3EC, 0.0, 0.0, -5.0);
   HanaMatrix_BuildLookAtAndTransform(
     pFoeBody->pSekHeader_220->pFrameT3EC,
     pHeroBody->pSekHeader_220->pFrameT3EC,
@@ -187,15 +187,15 @@ void __cdecl hook_PlayTugOfWar_45460A(
       }
       HanaFrame_GetRelPosition(pCamPivotFrame, g_pSceneFrame, &fPivotX, &y, &z);
       fPivotYLow = y - 16.0;
-      MtxMult_4069DD(pCamPivotFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fPivotX, fPivotYLow, z);
+      SetFramePosRel_4069DD(pCamPivotFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fPivotX, fPivotYLow, z);
       UpdateCameraFollowChase_445525(pCamPivotFrame, g_pCameraFrame, pMapFrame, fDelta, 1);
       fPivotYHigh = y + 12.0;
-      MtxMult_4069DD(pCamPivotFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fPivotX, fPivotYHigh, z);
+      SetFramePosRel_4069DD(pCamPivotFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fPivotX, fPivotYHigh, z);
       if ( pFoeFaceFrame )
         HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pFoeFaceFrame, g_pSceneFrame, 0);
       else
         HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pCamPivotFrame, g_pSceneFrame, 0);
-      MtxMult_4069DD(pCamPivotFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fPivotX, y, z);
+      SetFramePosRel_4069DD(pCamPivotFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fPivotX, y, z);
       updated = UpdateBodiesInput_4542E0(pHeroBody, pFoeBody, fDelta, 1u, (__int16 *)&lastX, (__int16 *)&lastY);
       fFoeHpSave = fFoeHpSave - updated;
     }
@@ -293,8 +293,8 @@ void __cdecl hook_PlayTugOfWar_45460A(
   }
   if ( fFoeHpSave > 0.0 )
   {
-    MtxMult_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fHeroY, fHeroZ);
-    MtxMult_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fFoeX, fFoeY, fFoeZ);
+    SetFramePosRel_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fHeroY, fHeroZ);
+    SetFramePosRel_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fFoeX, fFoeY, fFoeZ);
   }
   UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame, pMapFrame, fDelta, 1);
   UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame, pMapFrame, fDelta, 0);

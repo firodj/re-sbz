@@ -1212,7 +1212,7 @@ BOOL __cdecl hook_LoadSekAndOdf_4445DD(LPCSTR pszSekFile, LPCSTR pszOdfFile, CSe
     if ( pSekBody->pSekHeader_220->pFrameT3EC )
     {
       AttachChild_4055FD(g_pSceneFrame, pSekBody->pSekHeader_220->pFrameT3EC);
-      MtxMult_4069DD(pSekBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, 0.0, 0.0, 0.0);
+      SetFramePosRel_4069DD(pSekBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, 0.0, 0.0, 0.0);
       UpdateBoneLookAtTransform(
         pSekBody->pSekHeader_220->pFrameT3EC,
         (CHanaFrameT3EC_S354 *)g_pSceneFrame,

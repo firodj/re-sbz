@@ -614,7 +614,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
     pMapOdfAnimSet = 0;
   }
   AttachChild_4055FD(g_pSceneFrame, pMapFrame);
-  MtxMult_4069DD(pMapFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, 0.0f, 0.0f, 0.0f);
+  SetFramePosRel_4069DD(pMapFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, 0.0f, 0.0f, 0.0f);
   UpdateBoneLookAtTransform(pMapFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame,
     0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
   BuildMapSubFrames_443DD5(pMapFrame);
@@ -630,7 +630,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
     pMapObjAnimSet = 0;
   }
   AttachChild_4055FD(g_pSceneFrame, pMapObjFrame);
-  MtxMult_4069DD(pMapObjFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, 0.0f, 0.0f, 0.0f);
+  SetFramePosRel_4069DD(pMapObjFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, 0.0f, 0.0f, 0.0f);
   UpdateBoneLookAtTransform(pMapObjFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame,
     0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
   BuildMapSubFrames_443DD5(pMapObjFrame);
@@ -715,12 +715,12 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
       DSBufferPlay(pBgmBuf, 1);
     StopAndRestartThread(1);
     Sleep(0);
-    MtxMult_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC,
+    SetFramePosRel_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC,
       (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fHeroY, fHeroZ);
     UpdateBoneLookAtTransform(pHeroBody->pSekHeader_220->pFrameT3EC,
       (CHanaFrameT3EC_S354 *)g_pSceneFrame,
       dirForwardX, dirForwardY, dirForwardZ, dirUpX, dirUpY, dirUpZ);
-    MtxMult_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC,
+    SetFramePosRel_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC,
       (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, z);
     UpdateBoneLookAtTransform(pFoeBody->pSekHeader_220->pFrameT3EC,
       (CHanaFrameT3EC_S354 *)g_pSceneFrame,
@@ -1336,7 +1336,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
       fBlendFactor = 1.0;
     HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &x, &y, &z);
     HanaFrame_GetRelPosition(pHeroFrame, (CHanaFrameRootT3EC_S2D4 *)pFrame, &px, &py, &pz);
-    MtxMult_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, -2.0);
+    SetFramePosRel_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, -2.0);
     CalculateLocalRotationMatrix(
       pFrame,
       (CHanaFrameT3EC_S354 *)g_pSceneFrame,
@@ -1369,14 +1369,14 @@ double __cdecl hook_UpdateFoeAI_446A38(
       0.0,
       1.0,
       0.0);
-    MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, z);
+    SetFramePosRel_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, z);
     if ( pFoeBody->field_200 == 6 )
     {
       fBlendFactor = fDelta * arrFoeTuning[nDuelIndex][0];
       if ( nDuelIndex >= 4 && nDuelIndex <= 5 )
         fBlendFactor = fBlendFactor * -1.0;
       fZNudge = -fBlendFactor;
-      MtxMult_4069DD(pFrame, pFrame, 0.0, 0.0, fZNudge);
+      SetFramePosRel_4069DD(pFrame, pFrame, 0.0, 0.0, fZNudge);
     }
     else if ( pFoeBody->field_200 != 19 )
     {
@@ -1385,9 +1385,9 @@ double __cdecl hook_UpdateFoeAI_446A38(
         if ( pHeroBody->field_200 != 13 )
         {
           HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &px, &py, &pz);
-          MtxMult_4069DD(pFrame, pFrame, 0.0, 0.0, arrFoeTuning[nDuelIndex][3]);
+          SetFramePosRel_4069DD(pFrame, pFrame, 0.0, 0.0, arrFoeTuning[nDuelIndex][3]);
           HanaFrame_GetRelPosition(pFrame, (CHanaFrameRootT3EC_S2D4 *)pHeroFrame, &pOutX, &pOutY, &pOutZ);
-          MtxMult_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, px, py, pz);
+          SetFramePosRel_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, px, py, pz);
           fDist = sqrt(pOutX * pOutX + pOutZ * pOutZ);
           if ( fDist < (double)arrFoeTuning[nDuelIndex][4] && g_dwBattleMode >= 0 )
           {
@@ -1548,7 +1548,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
           fMoveZ_a = fStepZ / fDist * fMoveBudget + pz;
           fMoveX_a = fStepX / fDist * fMoveBudget + px;
         }
-        MtxMult_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fMoveX_a, py, fMoveZ_a);
+        SetFramePosRel_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fMoveX_a, py, fMoveZ_a);
       }
       if ( fMoveBudget > (double)fDist )
       {
@@ -1567,12 +1567,12 @@ double __cdecl hook_UpdateFoeAI_446A38(
             {
               fMoveZ_b = fStepZ / fDist * fMoveBudget + fWpProbeZ;
               fMoveX_b = fStepX / fDist * fMoveBudget + fWpProbeX;
-              MtxMult_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fMoveX_b, fWpProbeY, fMoveZ_b);
+              SetFramePosRel_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fMoveX_b, fWpProbeY, fMoveZ_b);
               break;
             }
             fWpMoveZ = (float)(5 * ppOutPathPts[i].y);
             fWpMoveX = (float)(5 * ppOutPathPts[i].x);
-            MtxMult_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fWpMoveX, fWpProbeY, fWpMoveZ);
+            SetFramePosRel_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fWpMoveX, fWpProbeY, fWpMoveZ);
           }
         }
       }
@@ -1644,7 +1644,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
         HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &fFoeX2, &fFoeY2, &fFoeZ2);
         fHeroPushZ = pz - (pz - fFoeSaveZ) * 10.0;
         fHeroPushX = px - (px - fFoeSaveX) * 10.0;
-        MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroPushX, fFoeY2, fHeroPushZ);
+        SetFramePosRel_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroPushX, fFoeY2, fHeroPushZ);
         HanaMatrix_BuildLookAtAndTransform(pFrame, pHeroFrame, g_pSceneFrame, 0);
         CalculateLocalRotationMatrix(
           pFrame,
@@ -1669,7 +1669,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
         CalculateLocalRotationMatrix(pFrame, pHeroFrame, &xpos, &ypos, &zpos, &xrot, &yrot, &zrot);
         if ( zpos >= 0.99000001 )
           Frame_RotateMatrixAxis_4070AB(pFrame, 1, &pV, 0.0034908999);
-        MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, z);
+        SetFramePosRel_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, z);
       }
       g_dwFoeCellXCache_52E4F8 = pnFoeCell.x;
       g_dwFoeCellYCache_52E4FC = pnFoeCell.y;
@@ -1692,7 +1692,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
       v41 = pOutY;
       fSepX = 5.0 / fDist * pOutX;
       fSepZ = 5.0 / fDist * pOutZ;
-      MtxMult_4069DD(pFrame, pHeroFrame, fSepX, pOutY, fSepZ);
+      SetFramePosRel_4069DD(pFrame, pHeroFrame, fSepX, pOutY, fSepZ);
       if ( bFoeActDone != 1 )
         g_dwFoeAiState_52ED20 = 5;
     }
@@ -1710,7 +1710,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
     if ( TestMoveCollision_4443FC(pFrame, pMapFrame, px, py2, pz, 0) )
       HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &px, &py2, &pz);
     else
-      MtxMult_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, px, py2, pz);
+      SetFramePosRel_4069DD(pFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, px, py2, pz);
   }
   if ( *pfFoeHpCur < 10.0 )
     *pfFoeHpCur = 10.0;
@@ -1771,7 +1771,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
       }
     }
   }
-  MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x2, y2, z2);
+  SetFramePosRel_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x2, y2, z2);
   return fHitImpact;
 }
 
@@ -1835,10 +1835,10 @@ bool __cdecl hook_IsFoeWithinHeroRange_448B78(CSekBody *pHeroBody, CSekBody *pFo
   pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
   pFoeFrame = pFoeBody->pSekHeader_220->pFrameT3EC;
   HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fHeroX, &fHeroY, &fHeroZ);
-  MtxMult_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, -2.5);
+  SetFramePosRel_4069DD(pHeroFrame, pHeroFrame, 0.0, 0.0, -2.5);
   HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fAfterHeroX, &fAfterHeroY, &fAfterHeroZ);
   HanaFrame_GetRelPosition(pFoeFrame, g_pSceneFrame, &fFoeX, &fFoeY, &fFoeZ);
-  MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fHeroY, fHeroZ);
+  SetFramePosRel_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fHeroY, fHeroZ);
   return sqrt((fAfterHeroX - fFoeX) * (fAfterHeroX - fFoeX) + (fAfterHeroZ - fFoeZ) * (fAfterHeroZ - fFoeZ)) < 5.0;
 }
 
@@ -1905,14 +1905,14 @@ double __cdecl hook_WanaAttack_Knockback_4536F6(
       HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fAnchorX, &fStartY, &fAnchorZ);
       fRelX = 6.0 / fDist * fRelX;
       fRelZ = 6.0 / fDist * fRelZ;
-      MtxMult_4069DD(pHeroFrame, pWanaFrame, fRelX, fRelY, fRelZ);
+      SetFramePosRel_4069DD(pHeroFrame, pWanaFrame, fRelX, fRelY, fRelZ);
       for ( iTry = 0; iTry < 3 && !CheckFrameCollision_443CC5(pHeroFrame, pMapFrame, 0); ++iTry )
       {
         HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fCurX, &fCurY, &fCurZ);
         if ( TestMoveCollision_4443FC(pHeroFrame, pMapFrame, fAnchorX, fStartY, fAnchorZ, 0) )
           HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &fAnchorX, &fCurY, &fAnchorZ);
         else
-          MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fAnchorX, fCurY, fAnchorZ);
+          SetFramePosRel_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fAnchorX, fCurY, fAnchorZ);
       }
     }
     goto LABEL_23;
@@ -2041,7 +2041,7 @@ double __cdecl hook_WanaAttack_Projectile_453B92(
   HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &heroRelX, &heroRelY, &heroRelZ);
   HanaFrame_GetRelPosition(pWanaFrame, g_pSceneFrame, &x, &y, &z);
   AttachChild_4055FD(g_pSceneFrame, pWanaFrame);
-  MtxMult_4069DD(pWanaFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, z);
+  SetFramePosRel_4069DD(pWanaFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, z);
   if ( fAmount <= 5000.0 || fAmount > 7000.0 )
   {
     bProjMode = 0;
@@ -2065,7 +2065,7 @@ double __cdecl hook_WanaAttack_Projectile_453B92(
   if ( fAmount > 5000.0 && fAmount <= 7000.0 )
   {
     HanaFrame_GetRelPosition(pWanaFrame, g_pSceneFrame, &wanaRelX, &wanaRelY, &wanaRelZ);
-    MtxMult_4069DD(pWanaFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, wanaRelX, heroRelY, wanaRelZ);
+    SetFramePosRel_4069DD(pWanaFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, wanaRelX, heroRelY, wanaRelZ);
   }
   HanaFrame_GetRelPosition(pHeroFrame, pWanaFrame, &x, &y, &z);
   fDist = sqrt(x * x + z * z);
@@ -2109,9 +2109,9 @@ double __cdecl hook_WanaAttack_Projectile_453B92(
   {
     X_4 = z * 4.0 / fDist;
     v7 = x * 4.0 / fDist;
-    MtxMult_4069DD(pHeroFrame, pWanaFrame, v7, y, X_4);
+    SetFramePosRel_4069DD(pHeroFrame, pWanaFrame, v7, y, X_4);
     if ( !CheckFrameCollision_443CC5(pHeroFrame, pMapFrame, 0) )
-      MtxMult_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, heroRelX, heroRelY, heroRelZ);
+      SetFramePosRel_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, heroRelX, heroRelY, heroRelZ);
   }
   CSekBody__UpdateAnim_4019E1(pWanaBody, fDelta);
   return fHitValue;
@@ -2241,12 +2241,12 @@ BOOL __cdecl hook_StepWanaProjectile_4581B0(
     {
       SekBody__UpdateTo2_401647(pWanaBody, 1);
       fFlyStepZ = -fDelta * fSpeed;
-      MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fFlyStepZ);
+      SetFramePosRel_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fFlyStepZ);
       if ( !CheckFrameCollision_443CC5(pProjFrame, pMapFrame, bProjMode) )
       {
         bAirborne = 1;
         fFlyRevertZ = fDelta * fSpeed;
-        MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fFlyRevertZ);
+        SetFramePosRel_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fFlyRevertZ);
         fFlySpinRad = -fDelta * 3.1418099 / 180.0 * fSpinRate;
         Frame_RotateMatrixAxis_4070AB(pProjFrame, 1, &vecSpinAxis, fFlySpinRad);
       }
@@ -2255,16 +2255,16 @@ BOOL __cdecl hook_StepWanaProjectile_4581B0(
     {
       SekBody__UpdateTo2_401647(pWanaBody, 2);
       fIdleProbeZ = -fDelta * fSpeed / 2.0;
-      MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fIdleProbeZ);
+      SetFramePosRel_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fIdleProbeZ);
       if ( !CheckFrameCollision_443CC5(pProjFrame, pMapFrame, bProjMode) )
       {
         fIdleProbe2Z = -fDelta * fSpeed / 2.0;
-        MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fIdleProbe2Z);
+        SetFramePosRel_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fIdleProbe2Z);
         if ( !CheckFrameCollision_443CC5(pProjFrame, pMapFrame, bProjMode) )
         {
           bAirborne = 1;
           fIdleRevertZ = fDelta * fSpeed;
-          MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fIdleRevertZ);
+          SetFramePosRel_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fIdleRevertZ);
           fIdleSpinRad = fDelta * 3.1418099 / 180.0 * fSpinRate;
           Frame_RotateMatrixAxis_4070AB(pProjFrame, 1, &vecSpinAxis, fIdleSpinRad);
         }
@@ -2276,7 +2276,7 @@ BOOL __cdecl hook_StepWanaProjectile_4581B0(
     if ( pWanaBody->field_200 != 4 )
     {
       fProbeZ = -fDelta * fSpeed * 1.5;
-      MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fProbeZ);
+      SetFramePosRel_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fProbeZ);
     }
     if ( pWanaBody->field_200 != 3 )
     {
@@ -2292,7 +2292,7 @@ BOOL __cdecl hook_StepWanaProjectile_4581B0(
       bAirborne = 1;
       SekBody__UpdateTo2_401647(pWanaBody, 2);
       fBackoffZ = (fDelta * fSpeed * 1.5 + fDelta * fSpeed * 1.5) / 3.0;
-      MtxMult_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fBackoffZ);
+      SetFramePosRel_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fBackoffZ);
       if ( bProjMode )
       {
         for ( iTry = 0; iTry < 2 && !CheckFrameCollision_443CC5(pProjFrame, pMapFrame, 1); ++iTry )
@@ -2301,7 +2301,7 @@ BOOL __cdecl hook_StepWanaProjectile_4581B0(
           if ( TestMoveCollision_4443FC(pProjFrame, pMapFrame, fAnchorX, fAnchorY, fAnchorZ, 1) )
             HanaFrame_GetRelPosition(pProjFrame, g_pSceneFrame, &fAnchorX, &fCurY, &fAnchorZ);
           else
-            MtxMult_4069DD(pProjFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fAnchorX, fAnchorY, fAnchorZ);
+            SetFramePosRel_4069DD(pProjFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fAnchorX, fAnchorY, fAnchorZ);
         }
       }
       else
@@ -2312,7 +2312,7 @@ BOOL __cdecl hook_StepWanaProjectile_4581B0(
           if ( TestMoveCollision_4443FC(pProjFrame, pMapFrame, fAnchorX, fCurY, fAnchorZ, 0) )
             HanaFrame_GetRelPosition(pProjFrame, g_pSceneFrame, &fAnchorX, &fCurY, &fAnchorZ);
           else
-            MtxMult_4069DD(pProjFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fAnchorX, fCurY, fAnchorZ);
+            SetFramePosRel_4069DD(pProjFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fAnchorX, fCurY, fAnchorZ);
         }
       }
     }
@@ -2384,13 +2384,13 @@ void __cdecl hook_BindSceneActors_448C72(
           if ( i >= 2 )
           {
             AttachChild_4055FD(pScene->refsFrames_134[j], pActorFrames[i]);
-            MtxMult_4069DD(pActorFrames[i], pScene->refsFrames_134[j], 0.0, 0.0, 0.0);
+            SetFramePosRel_4069DD(pActorFrames[i], pScene->refsFrames_134[j], 0.0, 0.0, 0.0);
             UpdateBoneLookAtTransform(pActorFrames[i], pScene->refsFrames_134[j], 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
           }
           else
           {
             HanaFrame_GetRelPosition(pScene->refsFrames_134[j], g_pSceneFrame, &fRelX, &fRelY, &fRelZ);
-            MtxMult_4069DD(pActorFrames[i], (CHanaFrameT3EC_S354 *)g_pSceneFrame, fRelX, fRelY, fRelZ);
+            SetFramePosRel_4069DD(pActorFrames[i], (CHanaFrameT3EC_S354 *)g_pSceneFrame, fRelX, fRelY, fRelZ);
             CalculateLocalRotationMatrix(
               pScene->refsFrames_134[j],
               (CHanaFrameT3EC_S354 *)g_pSceneFrame,
@@ -2417,7 +2417,13 @@ void __cdecl hook_BindSceneActors_448C72(
   }
 }
 
-// Duel overhead camera (hunting mode, hero anim <= 6 + g_btoggleC_530268). Moves g_pCameraFrame to 16 units above the hero (hero-local Y up), aims it at the FOE (foe frame temporarily repositioned to 2x hero-foe horizontal distance along hero-local Z and re-posed to anim time 0 for a stable look-at target, both restored at the end), flags the hero frame bAlphaDeferred_130=1 (deferred/ghosted so it does not block the overhead view), then SMOOTHS the camera transform from its entry state toward the snapped state (lerp factor fDelta/5) via UpdateBoneLookAtTransform. Uses foe AND hero bodies; NO map collision handling (unlike UpdateCameraFollowChase_445525). CalculateLocalRotationMatrix returns the camera transform in hero space: col-3 = position, col-2 = up vector.
+// Duel overhead camera (hunting mode, hero anim <= 6 + g_btoggleC_530268). Moves g_pCameraFrame to 16 units above
+// the hero (hero-local Y up), aims it at the FOE (foe frame temporarily repositioned to 2x hero-foe horizontal
+// distance along hero-local Z and re-posed to anim time 0 for a stable look-at target, both restored at the end),
+// flags the hero frame bAlphaDeferred_130=1 (deferred/ghosted so it does not block the overhead view),
+// then SMOOTHS the camera transform from its entry state toward the snapped state (lerp factor fDelta/5)
+// via UpdateBoneLookAtTransform. Uses foe AND hero bodies; NO map collision handling
+// (unlike UpdateCameraFollowChase_445525). CalculateLocalRotationMatrix returns the camera transform in hero space: col-3 = position, col-2 = up vector.
 void __cdecl hook_UpdateCameraFollowDuel_44C028(CSekBody *pHeroBody, CSekBody *pFoeBody, float fDelta)
 {
   double fHorizDist; // st7
@@ -2460,7 +2466,7 @@ void __cdecl hook_UpdateCameraFollowDuel_44C028(CSekBody *pHeroBody, CSekBody *p
     &fFoeRelZ);
   fHorizDist = sqrt(fFoeRelX * fFoeRelX + fFoeRelZ * fFoeRelZ);
   fFoeScratchZ = fHorizDist + fHorizDist;
-  MtxMult_4069DD(
+  SetFramePosRel_4069DD(
     pFoeBody->pSekHeader_220->pFrameT3EC,
     pHeroBody->pSekHeader_220->pFrameT3EC,
     0.0,
@@ -2476,7 +2482,7 @@ void __cdecl hook_UpdateCameraFollowDuel_44C028(CSekBody *pHeroBody, CSekBody *p
     &fStartUpY,
     &fStartUpZ);
   pHeroBody->pSekHeader_220->pFrameT3EC->bAlphaDeferred_130 = 1;
-  MtxMult_4069DD(g_pCameraFrame, pHeroBody->pSekHeader_220->pFrameT3EC, 0.0, 16.0, 0.0);
+  SetFramePosRel_4069DD(g_pCameraFrame, pHeroBody->pSekHeader_220->pFrameT3EC, 0.0, 16.0, 0.0);
   fFoeAnimTime = pFoeBody->pSekHeader_220->pAnimSetT3F1->field_130;
   for ( iAnim = 0; iAnim < pFoeBody->pSekHeader_220->pAnimSetT3F1->nAnimCount_134; ++iAnim )
     InterpolateHanaAnimFrame(pFoeBody->pSekHeader_220->pAnimSetT3F1->refsAnimT3F0_138[iAnim], 0.0);
@@ -2531,7 +2537,7 @@ void __cdecl hook_UpdateCameraFollowDuel_44C028(CSekBody *pHeroBody, CSekBody *p
     fSmUpX,
     fSmUpY,
     fSmUpZ);
-  MtxMult_4069DD(
+  SetFramePosRel_4069DD(
     pFoeBody->pSekHeader_220->pFrameT3EC,
     pHeroBody->pSekHeader_220->pFrameT3EC,
     fFoeRelX,
@@ -2857,7 +2863,7 @@ void __cdecl hook_RenderDualBodyScene_456807(
     {
       pStandInA = pScene->refsSekBody_13C[i];
       AttachChild_4055FD(pScene->refsFrames_134[i], pBodyA->pSekHeader_220->pFrameT3EC);
-      MtxMult_4069DD(pBodyA->pSekHeader_220->pFrameT3EC, pScene->refsFrames_134[i], 0.0, 0.0, 0.0);
+      SetFramePosRel_4069DD(pBodyA->pSekHeader_220->pFrameT3EC, pScene->refsFrames_134[i], 0.0, 0.0, 0.0);
       UpdateBoneLookAtTransform(
         pBodyA->pSekHeader_220->pFrameT3EC,
         pScene->refsFrames_134[i],
@@ -2878,7 +2884,7 @@ void __cdecl hook_RenderDualBodyScene_456807(
     {
       pStandInB = pScene->refsSekBody_13C[i];
       AttachChild_4055FD(pScene->refsFrames_134[i], pBodyB->pSekHeader_220->pFrameT3EC);
-      MtxMult_4069DD(pBodyB->pSekHeader_220->pFrameT3EC, pScene->refsFrames_134[i], 0.0, 0.0, 0.0);
+      SetFramePosRel_4069DD(pBodyB->pSekHeader_220->pFrameT3EC, pScene->refsFrames_134[i], 0.0, 0.0, 0.0);
       UpdateBoneLookAtTransform(
         pBodyB->pSekHeader_220->pFrameT3EC,
         pScene->refsFrames_134[i],
@@ -3026,7 +3032,7 @@ void __cdecl hook_RenderDualBodyScene_456807(
     &fAxisY,
     &fAxisZ);
   AttachChild_4055FD(g_pSceneFrame, pBodyA->pSekHeader_220->pFrameT3EC);
-  MtxMult_4069DD(pBodyA->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fBodyX, fBodyY, fBodyZ);
+  SetFramePosRel_4069DD(pBodyA->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fBodyX, fBodyY, fBodyZ);
   UpdateBoneLookAtTransform(
     pBodyA->pSekHeader_220->pFrameT3EC,
     (CHanaFrameT3EC_S354 *)g_pSceneFrame,
@@ -3047,7 +3053,7 @@ void __cdecl hook_RenderDualBodyScene_456807(
     &fAxisY,
     &fAxisZ);
   AttachChild_4055FD(g_pSceneFrame, pBodyB->pSekHeader_220->pFrameT3EC);
-  MtxMult_4069DD(pBodyB->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fBodyX, fBodyY, fBodyZ);
+  SetFramePosRel_4069DD(pBodyB->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fBodyX, fBodyY, fBodyZ);
   UpdateBoneLookAtTransform(
     pBodyB->pSekHeader_220->pFrameT3EC,
     (CHanaFrameT3EC_S354 *)g_pSceneFrame,
@@ -3112,11 +3118,11 @@ void __cdecl hook_StepFoeTurn_457EE0(
     fAngleOne = fDelta * 3.1418099 / 180.0 * fTurnDir * fSpinRate;
     Frame_RotateMatrixAxis_4070AB(pSpinFrame, 1, &vecSpinAxis, fAngleOne);
     anglea = -fDelta * fSpeed;
-    MtxMult_4069DD(pSpinFrame, pSpinFrame, 0.0, 0.0, anglea);
+    SetFramePosRel_4069DD(pSpinFrame, pSpinFrame, 0.0, 0.0, anglea);
     if ( !CheckFrameCollision_443CC5(pSpinFrame, pMapFrame, 0) )
     {
       z = fDelta * fSpeed;
-      MtxMult_4069DD(pSpinFrame, pSpinFrame, 0.0, 0.0, z);
+      SetFramePosRel_4069DD(pSpinFrame, pSpinFrame, 0.0, 0.0, z);
       fAngleHalf = fDelta * 3.1418099 / 180.0 * fTurnDir * fSpinRate;
       fAngleTwo = fAngleHalf + fAngleHalf;
       Frame_RotateMatrixAxis_4070AB(pSpinFrame, 1, &vecSpinAxis, fAngleTwo);
@@ -3154,7 +3160,7 @@ void __cdecl hook_StepFoeSpin_45804C(
   {
     SekBody__UpdateTo_4014E4(pFoeBody, 2);
     fAngleOne = -fDelta * fSpeed;
-    MtxMult_4069DD(pFoeSpinFrame, pFoeSpinFrame, 0.0, 0.0, fAngleOne);
+    SetFramePosRel_4069DD(pFoeSpinFrame, pFoeSpinFrame, 0.0, 0.0, fAngleOne);
     if ( CheckFrameCollision_443CC5(pFoeSpinFrame, pMapFrame, 0) )
     {
       g_bFoeSpun_52EF60 = 0;
@@ -3171,7 +3177,7 @@ void __cdecl hook_StepFoeSpin_45804C(
       }
       g_bFoeSpun_52EF60 = 1;
       fAngleRev = fDelta * fSpeed;
-      MtxMult_4069DD(pFoeSpinFrame, pFoeSpinFrame, 0.0, 0.0, fAngleRev);
+      SetFramePosRel_4069DD(pFoeSpinFrame, pFoeSpinFrame, 0.0, 0.0, fAngleRev);
       fAngleHalf = fDelta * 3.1418099 / 180.0 * g_fFoeSpinDir_52EF5C * fSpinRate;
       fAngleTwo = fAngleHalf + fAngleHalf;
       Frame_RotateMatrixAxis_4070AB(pFoeSpinFrame, 1, &vecSpinAxis, fAngleTwo);
@@ -3313,7 +3319,7 @@ void __cdecl hook_PlayVictoryCutscene_455183(
     fCamSwingZ1 = (fFoeRelZ - fRelZ) * -0.60000002 + fRelZ;
     fCamSwingY1 = fRelY - 1.0;
     fCamSwingX1 = (arrFoeRelPos[0] - fRelX) * -0.60000002 + fRelX;
-    MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fCamSwingX1, fCamSwingY1, fCamSwingZ1);
+    SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fCamSwingX1, fCamSwingY1, fCamSwingZ1);
     HanaFrame_GetRelPosition(
       g_pCameraFrame,
       pFoeBody->pSekHeader_220->pFrameT3EC,
@@ -3321,12 +3327,12 @@ void __cdecl hook_PlayVictoryCutscene_455183(
       &fCamFoeRelY,
       &fCamFoeRelZ);
     fFoeRelXBack8 = fCamFoeRelX - 8.0;
-    MtxMult_4069DD(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, fFoeRelXBack8, fCamFoeRelY, fCamFoeRelZ);
+    SetFramePosRel_4069DD(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, fFoeRelXBack8, fCamFoeRelY, fCamFoeRelZ);
     HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, 0);
     fCamSwingZ2 = (fFoeRelZ - fRelZ) * -0.60000002 + fRelZ;
     fCamSwingY2 = fRelY + 10.0;
     fCamSwingX2 = (arrFoeRelPos[0] - fRelX) * -0.60000002 + fRelX;
-    MtxMult_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fCamSwingX2, fCamSwingY2, fCamSwingZ2);
+    SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fCamSwingX2, fCamSwingY2, fCamSwingZ2);
     HanaFrame_GetRelPosition(
       g_pCameraFrame,
       pFoeBody->pSekHeader_220->pFrameT3EC,
@@ -3334,7 +3340,7 @@ void __cdecl hook_PlayVictoryCutscene_455183(
       &fCamFoeRelY,
       &fCamFoeRelZ);
     fFoeRelXBack6 = fCamFoeRelX - 6.0;
-    MtxMult_4069DD(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, fFoeRelXBack6, fCamFoeRelY, fCamFoeRelZ);
+    SetFramePosRel_4069DD(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, fFoeRelXBack6, fCamFoeRelY, fCamFoeRelZ);
     HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pFoeKubiFrame, g_pSceneFrame, 0);
   LABEL_23:
     MtxStackStartMultLocal_4074EF();
@@ -3421,10 +3427,10 @@ void __cdecl hook_PlayVictoryCutscene_455183(
   fKubiCamZ = fRelZ + 12.0 - fZoomOffset + 6.0;
   fKubiCamY = fRelY + 18.0 - fDollyOffset / 2.0;
   fKubiCamX = fRelX + 10.0 + fDollyOffset;
-  MtxMult_4069DD(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, fKubiCamX, fKubiCamY, fKubiCamZ);
+  SetFramePosRel_4069DD(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, fKubiCamX, fKubiCamY, fKubiCamZ);
   HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pFoeKubiFrame, g_pSceneFrame, 0);
   fKubiPullbackZ = -(fDollyOffset + 10.0) - (fDollyOffset + 10.0);
-  MtxMult_4069DD(g_pCameraFrame, g_pCameraFrame, 0.0, 0.0, fKubiPullbackZ);
+  SetFramePosRel_4069DD(g_pCameraFrame, g_pCameraFrame, 0.0, 0.0, fKubiPullbackZ);
   fDollyOffset = fDollyOffset + fDelta;
   fZoomOffset = fDelta / 15.0 + fZoomOffset;
   if ( fDollyOffset > 0.0 )
@@ -3598,7 +3604,7 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
     Frame_RotateMatrixAxis_4070AB(pHeroBody->pSekHeader_220->pFrameT3EC, 1, &vecRotAxis, fRotNegRad);
     HanaFrame_GetRelPosition(pHeroBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, &fRelX, &fRelY, &fRelZ);
     fHeroRaisedY = fRelY + 18.0;
-    MtxMult_4069DD(
+    SetFramePosRel_4069DD(
       pHeroBody->pSekHeader_220->pFrameT3EC,
       (CHanaFrameT3EC_S354 *)g_pSceneFrame,
       fRelX,
@@ -3607,14 +3613,14 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
     UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame, pMapFrame, FrameTime, 1);
     HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pHeroBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, 0);
     fHeroDroppedY = fRelY - fCameraDrift - 13.0;
-    MtxMult_4069DD(
+    SetFramePosRel_4069DD(
       pHeroBody->pSekHeader_220->pFrameT3EC,
       (CHanaFrameT3EC_S354 *)g_pSceneFrame,
       fRelX,
       fHeroDroppedY,
       fRelZ);
     UpdateCameraFollowChase_445525(pHeroBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame, pMapFrame, FrameTime, 1);
-    MtxMult_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fRelX, fRelY, fRelZ);
+    SetFramePosRel_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fRelX, fRelY, fRelZ);
     fRotRad = arrPhaseAngles[iPhase] * 3.1400001 / 180.0;
     Frame_RotateMatrixAxis_4070AB(pHeroBody->pSekHeader_220->pFrameT3EC, 1, &vecRotAxis, fRotRad);
     fCameraDrift = FrameTime / 13.0 + fCameraDrift;
@@ -3636,7 +3642,7 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
       nFoeAnimItem = 5;
       SekBody__UpdateTo2_401647(pFoeBody, 5);
       HanaFrame_GetRelPosition(pHeroBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, &fHeroX, &fHeroY, &fHeroZ);
-      MtxMult_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC, pHeroBody->pSekHeader_220->pFrameT3EC, 0.0, 0.0, -4.5);
+      SetFramePosRel_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC, pHeroBody->pSekHeader_220->pFrameT3EC, 0.0, 0.0, -4.5);
       HanaFrame_GetRelPosition(
         pFoeBody->pSekHeader_220->pFrameT3EC,
         pHeroBody->pSekHeader_220->pFrameT3EC,
@@ -3648,9 +3654,9 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
       {
         fRelX = (fScriptTime - 30.0) / 5.0 / fHeroFoeDist * fRelX;
         fRelZ = (fScriptTime - 30.0) / 5.0 / fHeroFoeDist * fRelZ;
-        MtxMult_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, pHeroBody->pSekHeader_220->pFrameT3EC, fRelX, fRelY, fRelZ);
+        SetFramePosRel_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, pHeroBody->pSekHeader_220->pFrameT3EC, fRelX, fRelY, fRelZ);
       }
-      MtxMult_4069DD(
+      SetFramePosRel_4069DD(
         pHeroBody->pSekHeader_220->pFrameT3EC,
         (CHanaFrameT3EC_S354 *)g_pSceneFrame,
         fHeroX,
@@ -3659,7 +3665,7 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
       if ( CheckFrameCollision_443CC5(pHeroBody->pSekHeader_220->pFrameT3EC, pMapFrame, 0) )
       {
         fColPushBackZ = -(fScriptTime - 30.0) / 4.0;
-        MtxMult_4069DD(
+        SetFramePosRel_4069DD(
           pHeroBody->pSekHeader_220->pFrameT3EC,
           pHeroBody->pSekHeader_220->pFrameT3EC,
           0.0,
@@ -3668,7 +3674,7 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
         if ( !CheckFrameCollision_443CC5(pHeroBody->pSekHeader_220->pFrameT3EC, pMapFrame, 0) )
         {
           fColNudgeZ = FrameTime / 4.0;
-          MtxMult_4069DD(
+          SetFramePosRel_4069DD(
             pHeroBody->pSekHeader_220->pFrameT3EC,
             pHeroBody->pSekHeader_220->pFrameT3EC,
             0.0,
@@ -3676,7 +3682,7 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
             fColNudgeZ);
         }
         fColPushFwdZ = (fScriptTime - 30.0) / 4.0;
-        MtxMult_4069DD(
+        SetFramePosRel_4069DD(
           pHeroBody->pSekHeader_220->pFrameT3EC,
           pHeroBody->pSekHeader_220->pFrameT3EC,
           0.0,
@@ -3721,7 +3727,7 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
       {
         fFoeRelX = 8.0 / fFoeCamDist * fFoeRelX;
         fFoeRelZ = 8.0 / fFoeCamDist * fFoeRelZ;
-        MtxMult_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame, fFoeRelX, fFoeRelY, fFoeRelZ);
+        SetFramePosRel_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, g_pCameraFrame, fFoeRelX, fFoeRelY, fFoeRelZ);
       }
       UpdateBoneLookAtTransform(
         g_pCameraFrame,
@@ -3764,11 +3770,9 @@ void register_PlayHunting_44C38D() {
   hnh_Hook(0x44C38D, hook_PlayHunting_44C38D, "PlayHunting_44C38D"); // [OK]
   hnh_Hook(0x456807, hook_RenderDualBodyScene_456807, "RenderDualBodyScene_456807"); // [OK]
 
-  hnh_Hook(0x44c028, hook_UpdateCameraFollowDuel_44C028, "UpdateCameraFollowDuel_44C028"); 
 
   hnh_HookOff();
 
- 
   hnh_Hook(0x446a38, hook_UpdateFoeAI_446A38, "UpdateFoeAI_446A38"); // [OK]
   hnh_Hook(0x4535de, hook_WanaAttack_Close_4535DE, "WanaAttack_Close_4535DE"); // [OK]
   hnh_Hook(0x448b78, hook_IsFoeWithinHeroRange_448B78, "IsFoeWithinHeroRange_448B78"); // [OK]
@@ -3776,6 +3780,8 @@ void register_PlayHunting_44C38D() {
   hnh_Hook(0x45669f, hook_DrawFadeOutSpark_45669F, "DrawFadeOutSpark_45669F"); // [OK]
   hnh_Hook(0x448c72, hook_BindSceneActors_448C72, "BindSceneActors_448C72"); // [OK]
   hnh_Hook(0x44b23b, hook_DrawDuelHealthHud_44B23B, "DrawDuelHealthHud_44B23B"); // [OK]
+  hnh_Hook(0x44c028, hook_UpdateCameraFollowDuel_44C028, "UpdateCameraFollowDuel_44C028"); // [OK]
+
   hnh_Hook(0x414344, hook_DrawSprite3D, "DrawSprite3D_414344"); // [OK]
   hnh_Hook(0x45804c, hook_StepFoeSpin_45804C, "StepFoeSpin_45804C"); // [OK]
   hnh_Hook(0x455be2, hook_PlayResultsCutscene_455BE2, "PlayResultsCutscene_455BE2"); // [OK]

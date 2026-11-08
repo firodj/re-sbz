@@ -521,7 +521,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     if (!pModeBody)
         return -1;
     AttachChild_4055FD(g_pSceneFrame, pModeBody->pSekHeader_220->pFrameT3EC);
-    MtxMult_4069DD(pModeBody->pSekHeader_220->pFrameT3EC,
+    SetFramePosRel_4069DD(pModeBody->pSekHeader_220->pFrameT3EC,
             (CHanaFrameT3EC_S354 *)g_pSceneFrame, 0.0f, 0.0f, 0.0f);
     UpdateBoneLookAtTransform(pModeBody->pSekHeader_220->pFrameT3EC,
             (CHanaFrameT3EC_S354 *)g_pSceneFrame,

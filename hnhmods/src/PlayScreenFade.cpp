@@ -328,8 +328,8 @@ void hook_FrameTimer_EndFrame()
 }
 
 // HanaFrame_GetRelPosition - get the position of pFrame expressed in pRefFrame's coordinate system.
-// If pRefFrame is the scene root (g_pSceneFrame) it returns pFrame's own world-space translation (row-4 of mat4x4_after);
-// otherwise it returns the translation row of (pFrame->mat4x4_after * inverse(pRefFrame->mat4x4_after)).
+// If pRefFrame is the scene root (g_pSceneFrame) it returns pFrame's own world-space translation (row-4 of matWorld_178);
+// otherwise it returns the translation row of (pFrame->matWorld_178 * inverse(pRefFrame->matWorld_178)).
 // Writes the x/y/z result into *pOutX, *pOutY, *pOutZ. Heavily used across scene callbacks and
 // HanaFrame_Draw to query relative positions.
 void __cdecl hook_HanaFrame_GetRelPosition(
@@ -344,14 +344,14 @@ void __cdecl hook_HanaFrame_GetRelPosition(
 
   if ( pRefFrame == g_pSceneFrame )
   {
-    *pOutX = pFrame->mat4x4_after._41;
-    *pOutY = pFrame->mat4x4_after._42;
-    *pOutZ = pFrame->mat4x4_after._43;
+    *pOutX = pFrame->matWorld_178._41;
+    *pOutY = pFrame->matWorld_178._42;
+    *pOutZ = pFrame->matWorld_178._43;
   }
   else
   {
-    D3DXMatrixInverse(&pRelMat, 0, &pRefFrame->mat4x4_after);
-    D3DXMatrixMultiply(&pRelMat, &pFrame->mat4x4_after, &pRelMat);
+    D3DXMatrixInverse(&pRelMat, 0, &pRefFrame->matWorld_178);
+    D3DXMatrixMultiply(&pRelMat, &pFrame->matWorld_178, &pRelMat);
     *pOutX = pRelMat._41;
     *pOutY = pRelMat._42;
     *pOutZ = pRelMat._43;
@@ -359,7 +359,7 @@ void __cdecl hook_HanaFrame_GetRelPosition(
 }
 
 // HanaFrame_BuildMatrixStack - build and traverse the global D3D matrix stack for the frame tree.
-// Creates pMatrixStack_4CD77C, pushes it, loads the scene frame's base matrix (g_pSceneFrame->mat4x4_fmrx),
+// Creates pMatrixStack_4CD77C, pushes it, loads the scene frame's base matrix (g_pSceneFrame->matLocal_138),
 // recursively pushes every descendant node via HanaFrame_PushNode (which also updates each node's light from
 // the stack top and special-cases the camera frame), then pops and releases the stack. Calledfrom
 //  HanaFrame_Draw before per-object rendering.
@@ -372,7 +372,7 @@ void hook_HanaFrame_BuildMatrixStack()
 
   D3DXCreateMatrixStack(0, &g_pMatrixStack_4CD77C);
   g_pMatrixStack_4CD77C->Push();
-  g_pMatrixStack_4CD77C->LoadMatrix(&g_pSceneFrame->mat4x4_fmrx);
+  g_pMatrixStack_4CD77C->LoadMatrix(&g_pSceneFrame->matLocal_138);
   if ( g_pSceneFrame->nCountChild )
   {
     pFirstChildNode = g_pSceneFrame->pFirstChildNode;
@@ -577,7 +577,7 @@ void __cdecl hook_HanaFrame_PushNode(CHanaFrameT3EC_S354 *pFrame)
   ONCELOG("[HNH:SUB] HanaFrame_PushNode_407800\n");
 
   g_pMatrixStack_4CD77C->Push();
-  g_pMatrixStack_4CD77C->MultMatrixLocal(& pFrame->mat4x4_fmrx);
+  g_pMatrixStack_4CD77C->MultMatrixLocal(& pFrame->matLocal_138);
   if ( pFrame->pHanaLight_210 )
   {
     qmemcpy(&fTopMat, g_pMatrixStack_4CD77C->GetTop(), sizeof(fTopMat));
@@ -924,7 +924,7 @@ void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
             && g_nLightningEnabled
             && pChildFrame->pHanaLight_210->d3dLight_134.dltType != (D3DLIGHT_FORCE_DWORD|0x80000000) )
           {
-            qmemcpy(&posX, &pChildFrame->mat4x4_after, sizeof(posX));
+            qmemcpy(&posX, &pChildFrame->matWorld_178, sizeof(posX));
             ConfigureLight(pChildFrame->pHanaLight_210, posX._41, posX._42, posX._43, posX._13, posX._23, posX._33);
             *(QWORD *)qwBitLightEnables |= static_cast<QWORD>(1) << pChildFrame->pHanaLight_210->dwLightIndex_130;
           }
@@ -994,7 +994,7 @@ void __cdecl hook_HanaMorp_ApplyTree(CHanaFrameT3EC_S354 *pFrame)
   HanaMorpT457_Animate(pFrame, fMorpParam, 0.0, 0);
 }
 
-// HanaMorp_ApplySubTree - second recursive pass of the frame-tree prep (from HanaFrame_PreDraw). For each frame whose pMorpT457_20C is a T457 object (CHanaObj::GetType==0x457==1111), run sub_4365B9(frame): it walks the morph's arrS8_144 sub-object list and, for each entry with a target vertex set, transforms the affected vertices between frame space (inverse of mat4x4_after, times a fixed axis rotation) and the subobject's local space, applying per-subobject position/normal offsets (pos/norm) and an arrFun_4 callback, writing back into the mesh vertex buffer. Then recurse into every child frame (self-before-children).
+// HanaMorp_ApplySubTree - second recursive pass of the frame-tree prep (from HanaFrame_PreDraw). For each frame whose pMorpT457_20C is a T457 object (CHanaObj::GetType==0x457==1111), run sub_4365B9(frame): it walks the morph's arrS8_144 sub-object list and, for each entry with a target vertex set, transforms the affected vertices between frame space (inverse of matWorld_178, times a fixed axis rotation) and the subobject's local space, applying per-subobject position/normal offsets (pos/norm) and an arrFun_4 callback, writing back into the mesh vertex buffer. Then recurse into every child frame (self-before-children).
 void __cdecl hook_HanaMorp_ApplySubTree(CHanaFrameT3EC_S354 *pFrame)
 {
   unsigned int i; // [esp+4h] [ebp-10h]
@@ -1142,7 +1142,7 @@ void __cdecl hook_HanaVert_BlendMorph(
   }
 }
 
-// HanaMorpT457_ApplySubs - apply the T457 morph's secondary/sub-object vertex transforms. For the frame's T457 object, walk pMorp->arrS8_144 (each entry has pS120 = {n1 target vertex index, pVert_14 source vertex, parrS2C per-vertex mapping, nCountS2C_0 count, field_118 matrix offset} and arrFun_4 = per-vertex callback array). For each such entry: build pTgtMat = inverse(frame->mat4x4_after) * pAxisRot; lock target vertex buffer pTgtBuf (mesh refsVertT3EA[n1]) and source pSrcBuf (pVert_14); then for each of nCountSubObjs vertices (pSubObjArr[j]):
+// HanaMorpT457_ApplySubs - apply the T457 morph's secondary/sub-object vertex transforms. For the frame's T457 object, walk pMorp->arrS8_144 (each entry has pS120 = {n1 target vertex index, pVert_14 source vertex, parrS2C per-vertex mapping, nCountS2C_0 count, field_118 matrix offset} and arrFun_4 = per-vertex callback array). For each such entry: build pTgtMat = inverse(frame->matWorld_178) * pAxisRot; lock target vertex buffer pTgtBuf (mesh refsVertT3EA[n1]) and source pSrcBuf (pVert_14); then for each of nCountSubObjs vertices (pSubObjArr[j]):
 //   vtxTgt = HanaVert_Transform(target vert, frame matrix); vtxSrc = HanaVert_Transform(source vert, matrix at (nMatOff+376));
 //   arrFun_4[j](vtxTgt, vtxSrc, flt_8)  // per-vertex custom blend/deform callback
 //   writeback = HanaVert_Transform(vtxTgt, pTgtMat); store into target buffer; then subtract the subobject's pos (x,y,z) and norm (x,y,z) offsets.
@@ -1197,7 +1197,7 @@ void __cdecl hook_HanaMorpT457_ApplySubs(CHanaFrameT3EC_S354 *pFrame)
               if ( nCountSubObjs )
               {
                 nMatOff = pMorp->arrSubObj_144[i].pSubObj_0->pFrame_118;
-                D3DXMatrixInverse(&pTgtMat, 0, &pFrame->mat4x4_after);
+                D3DXMatrixInverse(&pTgtMat, 0, &pFrame->matWorld_178);
                 D3DXMatrixMultiply(&pTgtMat, &pAxisRot, &pTgtMat);
                 pTgtVert = pMorp->pMeshT3F5_138->refsVertT3EA[pMorp->arrSubObj_144[i].pSubObj_0->n1];
                 pSrcVert = pMorp->arrSubObj_144[i].pSubObj_0->pVert_14;
@@ -1216,11 +1216,11 @@ void __cdecl hook_HanaMorpT457_ApplySubs(CHanaFrameT3EC_S354 *pFrame)
                 {
                   qmemcpy(
                     vtxTgt,
-                    HanaVert_Transform(&vtxTmp0, &pFrame->mat4x4_after, (D3DXVECTOR3 *)&pTgtBuf[pSubObjArr[j].nFrame_4]),
+                    HanaVert_Transform(&vtxTmp0, &pFrame->matWorld_178, (D3DXVECTOR3 *)&pTgtBuf[pSubObjArr[j].nFrame_4]),
                     sizeof(vtxTgt));
                   qmemcpy(
                     &vtxSrc,
-                    HanaVert_Transform(&vtxTmp1, &nMatOff->mat4x4_after, (D3DXVECTOR3 *)&pSrcBuf[pSubObjArr[j].nSrc_0]),
+                    HanaVert_Transform(&vtxTmp1, &nMatOff->matWorld_178, (D3DXVECTOR3 *)&pSrcBuf[pSubObjArr[j].nSrc_0]),
                     sizeof(vtxSrc));
                   pMorp->arrSubObj_144[i].arrFun_4[j]((float *)vtxTgt, &vtxSrc.x, pSubObjArr[j].fWeight_8);
                   pVtx = HanaVert_Transform(&vtxTmp2, &pTgtMat, (D3DXVECTOR3 *)vtxTgt);

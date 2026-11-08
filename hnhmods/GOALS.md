@@ -273,7 +273,7 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   │   │   │   └──0x43a43f HanaAnim_UpdateBoneTransform
     │   │   │   │   │   │   │   │   └──0x43a371 CHanaAnimSetT3F1::BeginBlend_43A371
     │   │   │   │   │   │   │   ├──0x401647 SekBody__UpdateTo2_401647
-    │   │   │   │   │   │   │   └──0x4069dd MtxMult_4069DD
+    │   │   │   │   │   │   │   └──0x4069dd SetFramePosRel_4069DD
     │   │   │   │   │   │   ├──0x467af3 SetFrameVisibilityAndGetHIndex
     │   │   │   │   │   │   └──0x4827fe UpdateSceneTimer_4827FE
     │   │   │   │   │   ├──0x40dca3 SetProjectionFov_40DCA3

@@ -218,7 +218,7 @@ BOOL WINAPI hookPeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wM
 			// ImGuiIO& io = ImGui::GetIO();
 		}
 
-		if (logging) {
+		if (logging && false) {
 			DebugLog("[user32] PeekMessage req.hWnd=0x%x hWnd=0x%x message=0x%x(%s) wParam=0x%x lParam=0x%x time=%d pt=(%d,%d)\n",
 				hWnd, lpMsg->hwnd,
 				lpMsg->message, msgName, lpMsg->wParam, lpMsg->lParam,

@@ -34,18 +34,18 @@ void __cdecl hook_CHanaObj__NewFrameT3EC_S354(CHanaFrameT3EC_S354 *pParent, CHan
     pNewFrame->dwType = 0x3EC;
 
     // Initialize two 4x4 matrices to identity
-    // mat4x4_fmrx (frame matrix)
-    pNewFrame->mat4x4_fmrx._11 = 1.0f;
-    pNewFrame->mat4x4_fmrx._22 = 1.0f;
-    pNewFrame->mat4x4_fmrx._33 = 1.0f;
-    pNewFrame->mat4x4_fmrx._44 = 1.0f;
+    // matLocal_138 (frame matrix)
+    pNewFrame->matLocal_138._11 = 1.0f;
+    pNewFrame->matLocal_138._22 = 1.0f;
+    pNewFrame->matLocal_138._33 = 1.0f;
+    pNewFrame->matLocal_138._44 = 1.0f;
     // Off-diagonal elements zeroed by memset, explicit zero stores for specific elements
 
-    // mat4x4_after
-    pNewFrame->mat4x4_after._11 = 1.0f;
-    pNewFrame->mat4x4_after._22 = 1.0f;
-    pNewFrame->mat4x4_after._33 = 1.0f;
-    pNewFrame->mat4x4_after._44 = 1.0f;
+    // matWorld_178
+    pNewFrame->matWorld_178._11 = 1.0f;
+    pNewFrame->matWorld_178._22 = 1.0f;
+    pNewFrame->matWorld_178._33 = 1.0f;
+    pNewFrame->matWorld_178._44 = 1.0f;
 
     // Initialize child count
     pNewFrame->nCountChild = 0;
@@ -78,23 +78,23 @@ void __cdecl hook_MtxStackRecursiveMulLocal_4075B0(CHanaFrameT3EC_S354 *pFrame)
 
   ONCELOG("[HNH:SUB] MtxStackRecursiveMulLocal_4075B0\n");
 
-  // Copy current stack top (parent's world matrix) to frame's mat4x4_before
+  // Copy current stack top (parent's world matrix) to frame's matParentWorld_1B8
   qmemcpy(
-    &pFrame->mat4x4_before,
+    &pFrame->matParentWorld_1B8,
     g_pMatrixStack_4CD77C->GetTop(),
-    sizeof(pFrame->mat4x4_before));
+    sizeof(pFrame->matParentWorld_1B8));
 
   // Push new matrix onto stack
   g_pMatrixStack_4CD77C->Push();
 
-  // Multiply by this frame's local matrix (mat4x4_fmrx)
-  g_pMatrixStack_4CD77C->MultMatrixLocal(&pFrame->mat4x4_fmrx);
+  // Multiply by this frame's local matrix (matLocal_138)
+  g_pMatrixStack_4CD77C->MultMatrixLocal(&pFrame->matLocal_138);
 
-  // Copy result (this frame's world matrix) to mat4x4_after
+  // Copy result (this frame's world matrix) to matWorld_178
   qmemcpy(
-    &pFrame->mat4x4_after,
+    &pFrame->matWorld_178,
     g_pMatrixStack_4CD77C->GetTop(),
-    sizeof(pFrame->mat4x4_after));
+    sizeof(pFrame->matWorld_178));
 
   // Mark as processed/root (though this seems odd for non-root frames)
   pFrame->bIsRoot_1F8 = 1;
@@ -131,25 +131,25 @@ void __cdecl hook_CHanaObj__NewFrameRootT3EC_S2D4(CHanaFrameRootT3EC_S2D4 **ppOu
   pFrameRoot->dwType = 0x3EC;  // 1004 decimal
 
   // Initialize three 4x4 matrices to identity
-  // mat4x4_fmrx (frame matrix?)
-  pFrameRoot->mat4x4_fmrx._11 = 1.0f;
-  pFrameRoot->mat4x4_fmrx._22 = 1.0f;
-  pFrameRoot->mat4x4_fmrx._33 = 1.0f;
-  pFrameRoot->mat4x4_fmrx._44 = 1.0f;
+  // matLocal_138 (frame matrix?)
+  pFrameRoot->matLocal_138._11 = 1.0f;
+  pFrameRoot->matLocal_138._22 = 1.0f;
+  pFrameRoot->matLocal_138._33 = 1.0f;
+  pFrameRoot->matLocal_138._44 = 1.0f;
   // Off-diagonal elements zeroed by memset, explicit zero stores:
   // m[3][1], m[2][3], m[2][0], m[1][2], m[0][3], m[0][1] = 0
 
-  // mat4x4_after
-  pFrameRoot->mat4x4_after._11 = 1.0f;
-  pFrameRoot->mat4x4_after._22 = 1.0f;
-  pFrameRoot->mat4x4_after._33 = 1.0f;
-  pFrameRoot->mat4x4_after._44 = 1.0f;
+  // matWorld_178
+  pFrameRoot->matWorld_178._11 = 1.0f;
+  pFrameRoot->matWorld_178._22 = 1.0f;
+  pFrameRoot->matWorld_178._33 = 1.0f;
+  pFrameRoot->matWorld_178._44 = 1.0f;
 
-  // mat4x4_before
-  pFrameRoot->mat4x4_before._11 = 1.0f;
-  pFrameRoot->mat4x4_before._22 = 1.0f;
-  pFrameRoot->mat4x4_before._33 = 1.0f;
-  pFrameRoot->mat4x4_before._44 = 1.0f;
+  // matParentWorld_1B8
+  pFrameRoot->matParentWorld_1B8._11 = 1.0f;
+  pFrameRoot->matParentWorld_1B8._22 = 1.0f;
+  pFrameRoot->matParentWorld_1B8._33 = 1.0f;
+  pFrameRoot->matParentWorld_1B8._44 = 1.0f;
 
   // Initialize root frame flags
   pFrameRoot->bIsRoot_1F8 = 1;      // This is a root frame
@@ -178,7 +178,7 @@ void __cdecl hook_MtxStackStartMultLocal_4074EF()
 
   // Push initial matrix and load scene root frame matrix
   g_pMatrixStack_4CD77C->Push();
-  g_pMatrixStack_4CD77C->LoadMatrix(&g_pSceneFrame->mat4x4_fmrx);
+  g_pMatrixStack_4CD77C->LoadMatrix(&g_pSceneFrame->matLocal_138);
 
   // Recursively multiply local matrices for all children of scene root
   if (g_pSceneFrame->nCountChild > 0)
