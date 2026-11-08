@@ -268,7 +268,7 @@ extern int(__cdecl* ConvertFrom640AsInt)(int nNum);
 extern double(__cdecl*ConvertFrom640AsFloat)(float fNum);
 extern int(__cdecl* ConvertFrom1024AsInt)(int nNum);
 extern double(__cdecl* ConvertFrom1024AsFloat)(float fNum);
-extern CSceneSlot(&g_arrSceneNo_4C6F78)[10];
+extern const CSceneSlot g_arrSceneNo_4C6F78[100];  // compiled-in copy of .data @0x4C6F78 ([1..82] steps, 83=terminator)
 extern BYTE &g_nAviVolumeIndex_530266;
 extern BYTE& g_nAviFrameMultipler_530267;
 extern BYTE(&g_byData0Dat_530170)[256];

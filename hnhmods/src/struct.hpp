@@ -586,7 +586,7 @@ struct CBMPFile  // sizeof=0x10
 };
 
 
-// Scene-chapter table entry @0x4C6F78 (g_arrSceneNo_4C6F78, CSceneSlot[10]).
+// Scene-chapter table entry @0x4C6F78 (g_arrSceneNo_4C6F78, CSceneSlot[100]).
 struct CSceneSlot  // sizeof=0x8
 {
   int nSceneType;  // 0=terminator 1=ODS dialogue 2=map battle 3=duel 4=practice 5=ending 6=backdrop

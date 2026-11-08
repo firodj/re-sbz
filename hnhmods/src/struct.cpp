@@ -333,6 +333,129 @@ extern const char g_aG00Gp_4C9FB0[100][50] = {
     "-------"
 };
 
+
+// g_arrSceneNo_4C6F78 -- [011019][TEATIME] scene-chapter sequence table
+//
+// Extracted verbatim from the game binary (.data @0x4C6F78, 0x320 bytes).
+// Element type CSceneSlot (mirrors hnhmods/src/struct.hpp):
+//   struct CSceneSlot { int nSceneType; int nStrIndex; };  // 0x8
+//
+// The game walks this with bActiveSceneStep (CSceneState): GameMainLoop_47F013
+// dispatches on nSceneType and pre-increments the step until type == 0.
+// SysMenu_SaveMenu/LoadMenu_46 read table[saved step].nSceneType for status text.
+//
+// [0]      {0,0}  pad -- loop pre-increments past it (fresh game starts at step 1)
+// [1..82]  live:  47 dialogues (1, str 0..46), 11 explores (2), 12 hunts (3),
+//                10 assaults (4), ending at [80] (5: ED.avi, step:=0, progress:=2),
+//                dialogue [81], backdrop [82] (6: step:=0, progress:=1 when 0)
+// [83..99] {0,0}  zero tail (terminator + padding). Next rdata object @0x4C7298
+//                is the "door" string -- confirms the [100] allocation bound.
+
+extern const CSceneSlot g_arrSceneNo_4C6F78[100] = {
+  { 0,  0 },    // 0 pad (pre-incremented past)
+  { 1,  0 },
+  { 1,  1 },
+  { 1,  2 },
+  { 1,  3 },
+  { 1,  4 },    // 5 ODS dialogue
+  { 1,  5 },
+  { 3,  0 },
+  { 1,  6 },
+  { 3,  1 },
+  { 4,  0 },    // 10 assault
+  { 4,  1 },
+  { 1,  7 },
+  { 1,  8 },
+  { 1,  9 },
+  { 1, 10 },    // 15 ODS dialogue
+  { 1, 11 },
+  { 1, 12 },
+  { 1, 13 },
+  { 1, 14 },
+  { 2,  0 },    // 20 explore
+  { 3,  2 },
+  { 1, 15 },
+  { 2,  1 },
+  { 3,  3 },
+  { 4,  2 },    // 25 assault
+  { 4,  3 },
+  { 1, 16 },
+  { 1, 17 },
+  { 1, 18 },
+  { 1, 19 },    // 30 ODS dialogue
+  { 1, 20 },
+  { 1, 21 },
+  { 1, 22 },
+  { 2,  2 },
+  { 3,  4 },    // 35 hunt
+  { 1, 23 },
+  { 2,  3 },
+  { 3,  5 },
+  { 4,  4 },
+  { 4,  5 },    // 40 assault
+  { 1, 24 },
+  { 1, 25 },
+  { 1, 26 },
+  { 1, 27 },
+  { 1, 28 },    // 45 ODS dialogue
+  { 1, 29 },
+  { 1, 30 },
+  { 2,  4 },
+  { 3,  6 },
+  { 1, 31 },    // 50 ODS dialogue
+  { 2,  5 },
+  { 3,  7 },
+  { 1, 32 },
+  { 2,  6 },
+  { 3,  8 },    // 55 hunt
+  { 4,  6 },
+  { 4,  7 },
+  { 1, 33 },
+  { 1, 34 },
+  { 1, 35 },    // 60 ODS dialogue
+  { 1, 36 },
+  { 1, 37 },
+  { 2,  7 },
+  { 1, 38 },
+  { 1, 39 },    // 65 ODS dialogue
+  { 2,  8 },
+  { 3,  9 },
+  { 1, 40 },
+  { 2,  9 },
+  { 3, 10 },    // 70 hunt
+  { 1, 41 },
+  { 2, 10 },
+  { 3, 11 },
+  { 4,  8 },
+  { 4,  9 },    // 75 assault
+  { 1, 42 },
+  { 1, 43 },
+  { 1, 44 },
+  { 1, 45 },
+  { 5,  0 },    // 80 ending
+  { 1, 46 },
+  { 6,  0 },    // 82 backdrop
+  { 0,  0 },    // 83 terminator
+  { 0,  0 },
+  { 0,  0 },
+  { 0,  0 },
+  { 0,  0 },
+  { 0,  0 },
+  { 0,  0 },
+  { 0,  0 },    // 90
+  { 0,  0 },
+  { 0,  0 },
+  { 0,  0 },
+  { 0,  0 },
+  { 0,  0 },
+  { 0,  0 },
+  { 0,  0 },
+  { 0,  0 },
+  { 0,  0 }
+};
+
+
+
 void AssertHanaStructSize() {
   static_assert(sizeof(D3DMATERIAL7) == 0x44, "D3DMATERIAL7");
   static_assert(sizeof(D3DXVECTOR3) == 0xC, "D3DXVECTOR3");
@@ -394,7 +517,7 @@ void AssertHanaStructSize() {
 
   static_assert(sizeof(g_ascSndFileNames_4C78A0) == 0x2710, "g_ascSndFileNames_4C78A0");
   static_assert(sizeof(g_aG00Gp_4C9FB0) == 0x1388, "g_aG00Gp_4C9FB0");
+  static_assert(sizeof(g_arrSceneNo_4C6F78) == 0x320, "g_arrSceneNo_4C6F78");
 
   DebugLog("[%s] %s\n", "INFO", "finished AssertHanaStructSize");
 }
-

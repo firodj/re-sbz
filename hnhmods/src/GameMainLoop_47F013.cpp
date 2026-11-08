@@ -10,18 +10,11 @@
 // table g_arrSceneNo_4C6F78 dispatching on nSceneType -> autosave data0.dat ->
 // back to the menu, until the menu returns 1 (quit).
 //
-// Scene-chapter table (CSceneSlot[10] @0x4C6F78, {nSceneType, nStrIndex}):
-//   step  type  str   meaning
-//     1    1     0    ODS dialogue
-//     2    1     1    ODS dialogue
-//     3    2     1    map battle
-//     4    3     1    duel
-//     5    4     1    practice
-//     6    5     3    ending: ED.avi, step := 0, progress := 2
-//     7    0     -    chapter terminator
-//     8    6     3    backdrop, step := 0, progress := 1 when still 0
-//     9    1     4    ODS dialogue
-//    10    0     -    table end (first dword past the [10] array is 0)
+// Scene-chapter table (CSceneSlot[100] @0x4C6F78, {nSceneType, nStrIndex}; extracted
+// copy in struct.cpp): [0]={0,0} pad (loop pre-increments past it), [1..82] live --
+// 47 ODS dialogues (type 1, str 0..46), 11 explores (2), 12 hunts (3), 10 assaults
+// (4), ending at [80] (5: ED.avi, step := 0, progress := 2), dialogue [81], backdrop
+// [82] (6: step := 0, progress := 1 when still 0) -- [83..99] zero (83 terminates).
 // A scene returning 1 ends the chapter; >= 2 replays the SAME step (the scene
 // itself moved bActiveSceneStep); anything else advances until
 // nSceneType == 0. g_sceneProgressFlag_530269: 0 = fresh, 1 = backdrop seen,
@@ -57,7 +50,7 @@ BYTE &g_nAviVolumeIndex_530266       = *(BYTE*)0x530266; // WRITABLE
 BYTE &g_nAviFrameMultipler_530267    = *(BYTE*)0x530267; // WRITABLE
 BYTE &g_sceneProgressFlag_530269     = *(BYTE*)0x530269; // WRITABLE
 CSceneState &g_sceneState_52F7E0     = *(CSceneState*)0x52F7E0; // WRITABLE
-CSceneSlot (&g_arrSceneNo_4C6F78)[10] = *(CSceneSlot(*)[10])0x4C6F78; // READ-ONLY
+// CSceneSlot (&g_arrSceneNo_4C6F78)[10] = *(CSceneSlot(*)[10])0x4C6F78; // READ-ONLY  // replaced by compiled-in [100] copy
 // Vestigial save-name format string. Past .data's raw image (runtime zero-fill,
 // IDA shows 0xFF filler) and never written -- this file holds its only xref --
 // so it is always the empty string. The guard below really tests the DATA
