@@ -29,7 +29,7 @@ void (__cdecl*SysMenu_SaveMenu_462135)(CSceneState sceneStates[], CHAR *arrScene
 
 // === PINNED GLOBALS ===
 DWORD &g_dwUnlockedSaveSlots_530260 = *(DWORD *)0x530260;                   // WRITABLE
-int    (&g_arrSceneStepThresholds_4B5970)[40] = *(int (*)[40])0x4B5970;     // READ-ONLY
+//int    (&g_arrSceneStepThresholds_4B5970)[40] = *(int (*)[40])0x4B5970;     // READ-ONLY
 char   (&g_szSceneInfoText_4B5A10)[64000] = *(char (*)[64000])0x4B5A10;     // READ-ONLY
 
 // === FUNCTIONS ===

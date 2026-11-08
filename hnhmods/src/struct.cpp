@@ -455,6 +455,26 @@ extern const CSceneSlot g_arrSceneNo_4C6F78[100] = {
 };
 
 
+// g_arrSceneStepThresholds_4B5970 -- [011019][TEATIME] scene-step -> info-chapter thresholds
+//
+// Extracted verbatim from the game binary (.rdata @0x4B5970, 0xA0 bytes).
+// Used by SysMenu_SaveMenu_462135 / SysMenu_LoadMenu_462851 to pick the save-slot
+// description block: j = first index with threshold > bActiveSceneStep (scan stops
+// at j < 39), then draw g_szSceneInfoText_4B5A10[1600*j .. ] (40 blocks x 1600).
+// [0..25] real thresholds 1..77; [26]=99 catch-all (>= any reachable step <= 82);
+// [27..39] zero padding, unreachable past the 99 stopper.
+
+extern const int g_arrSceneStepThresholds_4B5970[40] = {
+  1,  6,  9, 13, 15,  // [0..4]
+  19, 22, 25, 28, 30,
+  34, 37, 39, 42, 44,
+  48, 50, 53, 56, 59,
+  61, 64, 68, 71, 74,
+  77, 99,  0,  0,  0,  // [25]=77, [26]=99 catch-all
+  0,  0,  0,  0,  0,  // [30..] zero padding
+  0,  0,  0,  0, 0 
+};
+
 
 void AssertHanaStructSize() {
   static_assert(sizeof(D3DMATERIAL7) == 0x44, "D3DMATERIAL7");
@@ -518,6 +538,8 @@ void AssertHanaStructSize() {
   static_assert(sizeof(g_ascSndFileNames_4C78A0) == 0x2710, "g_ascSndFileNames_4C78A0");
   static_assert(sizeof(g_aG00Gp_4C9FB0) == 0x1388, "g_aG00Gp_4C9FB0");
   static_assert(sizeof(g_arrSceneNo_4C6F78) == 0x320, "g_arrSceneNo_4C6F78");
+  static_assert(sizeof(g_arrSceneStepThresholds_4B5970) == 0xA0, "g_arrSceneStepThresholds_4B5970");
+  //static_assert(sizeof(g_szSceneInfoText_4B5A10) == 0xFA00, "g_szSceneInfoText_4B5A10");
 
   DebugLog("[%s] %s\n", "INFO", "finished AssertHanaStructSize");
 }

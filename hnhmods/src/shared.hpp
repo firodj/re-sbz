@@ -355,7 +355,7 @@ extern void(__cdecl* ShowFadeDialog_46164C)(CHanaSpriteT3F6_S1FC* pSprite,
   CHanaSpriteT3F6_S1FC* pPanelSprite, LPCSTR szText);
 
 extern DWORD& g_dwUnlockedSaveSlots_530260;
-extern int(&g_arrSceneStepThresholds_4B5970)[40];
+extern const int g_arrSceneStepThresholds_4B5970[40];  // compiled-in copy of .rdata @0x4B5970 (27 thresholds + 99 stopper + zero pad)
 extern char(&g_szSceneInfoText_4B5A10)[64000];
 
 // === DEFINED SysMenu_LoadMenu_462851.cpp ===
