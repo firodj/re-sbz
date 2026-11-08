@@ -120,7 +120,7 @@
     <ClCompile Include="src\PlayCutInScene_46A76F.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\PlayCinematicSequence_45460A.cpp">
+    <ClCompile Include="src\PlayTugOfWar_45460A.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\PlayVideoWith3DAudio_4791A3.cpp">

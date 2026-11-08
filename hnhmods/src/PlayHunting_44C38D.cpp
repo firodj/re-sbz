@@ -151,7 +151,7 @@ float &g_fFoeSpinDir_52EF5C = *(float *)0x52EF5C; // WRITABLE
 // GetFrameTime (fDelta capped 5.0, divided by 4 while a cinematic is queued);
 // menu key snapshots the live scene state, restores the entry state, stops
 // the voices and opens SystemMenu on the BGM (>= 1 exits, else live state is
-// put back); cinematic branch plays PlayCinematicSequence (cut-in; wanas are
+// put back); cinematic branch plays PlayTugOfWar (cut-in; wanas are
 // alpha-deferred for it, dead ones stay hidden) and grants a 120-unit action
 // timer; otherwise: hero action-intro timer (x3/2 speed while it lasts) or
 // UpdateHeroBody (bActing), toggle-C camera (UpdateCameraFollow_44C028 while
@@ -798,7 +798,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
           if (pWanaBodies[i])
             pWanaBodies[i]->pSekHeader_220->pFrameT3EC->bAlphaDeferred_130 = 1;
         }
-        PlayCinematicSequence_45460A(
+        PlayTugOfWar_45460A(
           pOdsScene, pHeroBody, pFoeBody, pMapFrame,
           pArrHudMeters, pArrSprites,
           &fHeroHpCur, fHeroHpMax, &fFoeHpCur, fFoeHpMax,

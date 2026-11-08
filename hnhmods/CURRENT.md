@@ -397,10 +397,10 @@ Starting from 0x49f0e1
     │   │   │   │   ├──0x458b3a UpdateVoicePlayback_458B3A                                      <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
     │   │   │   │   ├──0x44b23b DrawDuelHealthHud_44B23B                                        <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   │   │   ├──0x414344 DrawSprite3D                                                <- [HOOK+PTR PlayHunting_44C38D.cpp]
-    │   │   │   │   ├──0x44af5b DrawClockHud_44AF5B                                             <- [HOOK+PTR PlayCinematicSequence_45460A.cpp]
+    │   │   │   │   ├──0x44af5b DrawClockHud_44AF5B                                             <- [HOOK+PTR PlayTugOfWar_45460A.cpp]
     │   │   │   │   ├──0x407b73 HanaMatrix_BuildLookAtAndTransform                              <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   │   ├──0x456807 RenderDualBodyScene_456807                                          <- [HOOK+PTR PlayHunting_44C38D.cpp]
-    │   │   │   ├──0x45460a PlayCinematicSequence_45460A                                        <- [HOOK+PTR PlayCinematicSequence_45460A.cpp]
+    │   │   │   ├──0x45460a PlayTugOfWar_45460A                                        <- [HOOK+PTR PlayTugOfWar_45460A.cpp]
     │   │   │   │   ├──0x445525 UpdateCameraFollow_445525                                       <- [HOOK+PTR PlayExploring_45BCAE.cpp]
     │   │   │   │   │   ├──0x443cc5 CheckFrameCollision_443CC5                                  <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
     │   │   │   │   │   │   ├──0x4423b0 HitSupportSurface_4423B0                                <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
@@ -408,10 +408,10 @@ Starting from 0x49f0e1
     │   │   │   │   │   │   └──0x442c1c HitOverheadSurface_442C1C                               <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
     │   │   │   │   │   ├──0x4443fc TestMoveCollision_4443FC                                    <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
     │   │   │   │   │   │   ├──0x443ec4 TestBodyMoveHit_443EC4                                  <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
-    │   │   │   │   ├──0x453fac DrawTransitionFlash_453FAC                                      <- [HOOK+PTR PlayCinematicSequence_45460A.cpp]
-    │   │   │   │   ├──0x4532d0 DrawProgressFill_4532D0                                         <- [HOOK+PTR PlayCinematicSequence_45460A.cpp]
-    │   │   │   │   ├──0x4542e0 UpdateBodiesInput_4542E0                                        <- [HOOK+PTR PlayCinematicSequence_45460A.cpp]
-    │   │   │   │   ├──0x44b97b DrawHudSpriteNumber_44B97B                                      <- [HOOK+PTR PlayCinematicSequence_45460A.cpp]
+    │   │   │   │   ├──0x453fac DrawTransitionFlash_453FAC                                      <- [HOOK+PTR PlayTugOfWar_45460A.cpp]
+    │   │   │   │   ├──0x4532d0 DrawProgressFill_4532D0                                         <- [HOOK+PTR PlayTugOfWar_45460A.cpp]
+    │   │   │   │   ├──0x4542e0 UpdateBodiesInput_4542E0                                        <- [HOOK+PTR PlayTugOfWar_45460A.cpp]
+    │   │   │   │   ├──0x44b97b DrawHudSpriteNumber_44B97B                                      <- [HOOK+PTR PlayTugOfWar_45460A.cpp]
     │   │   │   ├──0x453b92 WanaAttack_Projectile_453B92                                        <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   │   ├──0x4581b0 StepWanaProjectile_4581B0                                       <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   ├──0x445b12 BuildMapCollisionGrid_445B12                                        <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
@@ -709,7 +709,7 @@ structs:              0
   func-ptrs w/o hook:   0/4
 ```
 
-### hnhmods/src/PlayCinematicSequence_45460A.cpp
+### hnhmods/src/PlayTugOfWar_45460A.cpp
 
 ```
 SUMMARY

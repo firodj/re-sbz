@@ -387,7 +387,7 @@ Starting from 0x49f0e1
     │   │   │   │   ├──0x44af5b DrawClockHud_44AF5B
     │   │   │   │   ├──0x407b73 HanaMatrix_BuildLookAtAndTransform
     │   │   │   ├──0x456807 RenderDualBodyScene_456807
-    │   │   │   ├──0x45460a PlayCinematicSequence_45460A
+    │   │   │   ├──0x45460a PlayTugOfWar_45460A
     │   │   │   │   ├──0x445525 UpdateCameraFollow_445525
     │   │   │   │   │   ├──0x443cc5 CheckFrameCollision_443CC5
     │   │   │   │   │   │   ├──0x4423b0 HitSupportSurface_4423B0

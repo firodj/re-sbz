@@ -188,7 +188,7 @@
     <ClCompile Include="src\MemAlloc_40DEF7.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\PlayCinematicSequence_45460A.cpp">
+    <ClCompile Include="src\PlayTugOfWar_45460A.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\PlayExploring_45BCAE.cpp">

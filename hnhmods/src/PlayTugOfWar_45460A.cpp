@@ -6,12 +6,12 @@
 
 // === PINNED GAME FUNCTIONS ===
 
-void (__cdecl*PlayCinematicSequence_45460A)(CHanaSceneT458_S504 *pOdsScene, 
+void (__cdecl*PlayTugOfWar_45460A)(CHanaSceneT458_S504 *pOdsScene, 
   CSekBody *pHeroBody, CSekBody *pFoeBody, CHanaFrameT3EC_S354 *pMapFrame, 
   CHanaSpriteT3F6_S1FC **pArrHudMeters, CHanaSpriteT3F6_S1FC **pArrSprites, 
-  float *pfHeroHp, float fFieldC4, float *pfAggro, float fAggroMax, 
+  float *pfHeroHpCur, float fHeroHpMax, float *pfFoeHpCur, float fFoeHpMax, 
   int *pnClockBase, unsigned int *pdwElapsedMs, int dwClockBase2, 
-  CSoundStruct_8 **arrVoiceBufs, CHanaSpriteT3F6_S1FC *pMaskBmp) =
+  CSoundStruct_8 **pArrVoiceBufs, CHanaSpriteT3F6_S1FC *pMaskBmp) =
   reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, CSekBody *,
     CSekBody *, CHanaFrameT3EC_S354 *, CHanaSpriteT3F6_S1FC **,
     CHanaSpriteT3F6_S1FC **, float *, float, float *, float, int *, unsigned int *,
@@ -30,28 +30,36 @@ void (__cdecl *DrawTransitionFlash_453FAC)(CHanaSpriteT3F6_S1FC *pSprites[], uns
 void (__cdecl *DrawHudSpriteNumber_44B97B)(CHanaSpriteT3F6_S1FC **pDigitSprites, int xScreen, int yScreen, int nValue)
 = reinterpret_cast<void (__cdecl*)(CHanaSpriteT3F6_S1FC **pDigitSprites, int xScreen, int yScreen, int nValue)>(0x44b97b);
 
-// PlayCinematicSequence(pCtrl, pBodyA, pBodyB, pCamFrame, a5..a14, pHudSprite)
+// PlayTugOfWar(pCtrl, pBodyA, pBodyB, pCamFrame, a5..a14, pHudSprite)
 // Timed cinematic/cutscene player (~3.75s budget, v43=3750ms). Renders two CSekBody models
 // under an animated camera (g_pCameraFrame + cube-map face matrices) with a countdown HUD.
 // Per frame: bone/anim update (sub_458B3A), body render (sub_4542E0), camera follow,
 // sound pos (sub_44B23B), HUD text (sub_44AF5B), progress bar (sub_4532D0), and the
 // transition flash (DrawTransitionFlash_453FAC). Loops until elapsed>3750ms, the pCtrl
 // timeline (a11/derived v48) reaches 0, or a pause-timeout; returns 1.
-void __cdecl hook_PlayCinematicSequence_45460A(
+/*
+void (__cdecl*PlayTugOfWar_45460A)(CHanaSceneT458_S504 *pOdsScene, 
+CSekBody *pHeroBody, CSekBody *pFoeBody, CHanaFrameT3EC_S354 *pMapFrame, 
+CHanaSpriteT3F6_S1FC **pArrHudMeters, CHanaSpriteT3F6_S1FC **pArrSprites, 
+float *pfHeroHpCur, float fHeroHpMax, float *pfFoeHpCur, float fFoeHpMax, 
+int *pnClockBase, unsigned int *pdwElapsedMs, int dwClockBase2, 
+CSoundStruct_8 **pArrVoiceBufs, CHanaSpriteT3F6_S1FC *pMaskBmp)
+*/
+void __cdecl hook_PlayTugOfWar_45460A(
   CHanaSceneT458_S504 *pOdsScene,
   CSekBody *pHeroBody,
   CSekBody *pFoeBody,
   CHanaFrameT3EC_S354 *pMapFrame,
   CHanaSpriteT3F6_S1FC **pArrHudMeters,
   CHanaSpriteT3F6_S1FC **pArrSprites,
-  float *pfHeroHP,
-  float fFoeHp,
-  float *pFAggro,
-  float fAggroMax,
+  float *pfHeroHpCur,
+  float fHeroHpMax,
+  float *pfFoeHpCur,
+  float fFoeHpMax,
   int *nClockBase,
   DWORD *dwElapsedMs,
   int dwClockBase2,
-  CSoundStruct_8 **arrVoiceBufs,
+  CSoundStruct_8 **pArrVoiceBufs,
   CHanaSpriteT3F6_S1FC *pHudSprite)
 {
   double updated; // st7
@@ -84,7 +92,7 @@ void __cdecl hook_PlayCinematicSequence_45460A(
   float fHeroY; // [esp+9Ch] [ebp-48h] BYREF
   float fFoeZ; // [esp+A0h] [ebp-44h] BYREF
   int bRotating; // [esp+A4h] [ebp-40h]
-  float fAggroSave; // [esp+A8h] [ebp-3Ch]
+  float fFoeHpSave; // [esp+A8h] [ebp-3Ch]
   int lastY; // [esp+ACh] [ebp-38h] BYREF
   float fHeroX; // [esp+B0h] [ebp-34h] BYREF
   float fFoeY; // [esp+B4h] [ebp-30h] BYREF
@@ -98,10 +106,10 @@ void __cdecl hook_PlayCinematicSequence_45460A(
   D3DXVECTOR3 pV; // [esp+D4h] [ebp-10h] BYREF
   DWORD dwElapsedNow; // [esp+E0h] [ebp-4h]
 
-  ONCELOG("[HNH:SUB] PlayCinematicSequence_45460A\n");
+  ONCELOG("[HNH:SUB] PlayTugOfWar_45460A\n");
 
-  fHeroHpSave = *pfHeroHP;
-  fAggroSave = *pFAggro;
+  fHeroHpSave = *pfHeroHpCur;
+  fFoeHpSave = *pfFoeHpCur;
   nClockBaseSave = *nClockBase;
   dwElapsedNow = *dwElapsedMs;
   pfExecTime = 0.0;
@@ -157,7 +165,7 @@ void __cdecl hook_PlayCinematicSequence_45460A(
     FrameTimer_EndFrame();
     if ( (int)(nSeqBudgetMs - dwSeqElapsed) <= 3000 )
     {
-      UpdateVoicePlayback_458B3A(pFoeBody, pFoeFaceFrame, arrVoiceBufs, fDelta);
+      UpdateVoicePlayback_458B3A(pFoeBody, pFoeFaceFrame, pArrVoiceBufs, fDelta);
       SetProjectionFov_40DCA3(0.5);
       if ( bRotating )
       {
@@ -189,11 +197,11 @@ void __cdecl hook_PlayCinematicSequence_45460A(
         HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pCamPivotFrame, g_pSceneFrame, 0);
       MtxMult_4069DD(pCamPivotFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fPivotX, y, z);
       updated = UpdateBodiesInput_4542E0(pHeroBody, pFoeBody, fDelta, 1u, (__int16 *)&lastX, (__int16 *)&lastY);
-      fAggroSave = fAggroSave - updated;
+      fFoeHpSave = fFoeHpSave - updated;
     }
     else
     {
-      UpdateVoicePlayback_458B3A(pFoeBody, pFoeFaceFrame, arrVoiceBufs, fDelta);
+      UpdateVoicePlayback_458B3A(pFoeBody, pFoeFaceFrame, pArrVoiceBufs, fDelta);
       if ( nSeqBudgetMs - dwSeqElapsed > 0xC80 )
       {
         fFovZoom = ((double)(nSeqBudgetMs - dwSeqElapsed) - 3000.0) / 1000.0
@@ -249,9 +257,9 @@ void __cdecl hook_PlayCinematicSequence_45460A(
     DrawDuelHealthHud_44B23B(
       pArrSprites,
       (__int64)fHeroHpSave / 100,
-      (__int64)fFoeHp / 100,
-      (__int64)fAggroSave / 100,
-      (__int64)fAggroMax / 100);
+      (__int64)fHeroHpMax / 100,
+      (__int64)fFoeHpSave / 100,
+      (__int64)fFoeHpMax / 100);
     DrawClockHud_44AF5B(pArrHudMeters, 320, 16, 100 * nClockBaseSave - dwElapsedNow / 0xA);
     fProgress = 1.0 - (double)(nSeqBudgetMs - dwSeqElapsed) / 3750.0;
     DrawCountdownFlash_4532D0(pHudSprite, fProgress);
@@ -262,7 +270,7 @@ void __cdecl hook_PlayCinematicSequence_45460A(
 
     PresentFrame();
     HanaVert_DrawBatch(0);
-    if ( dwSeqElapsed >= nSeqBudgetMs || 100 * nClockBaseSave == dwElapsedNow / 0xA || fAggroSave <= 0.0 )
+    if ( dwSeqElapsed >= nSeqBudgetMs || 100 * nClockBaseSave == dwElapsedNow / 0xA || fFoeHpSave <= 0.0 )
       break;
     Sleep(0);
   }
@@ -273,17 +281,17 @@ void __cdecl hook_PlayCinematicSequence_45460A(
     pCamPivotFrame = 0;
   }
   SetProjectionFov_40DCA3(fFovSaved);
-  *pfHeroHP = fHeroHpSave;
-  *pFAggro = fAggroSave;
+  *pfHeroHpCur = fHeroHpSave;
+  *pfFoeHpCur = fFoeHpSave;
   *nClockBase = nClockBaseSave;
   *dwElapsedMs = dwElapsedNow;
-  if ( 100 * nClockBaseSave != dwElapsedNow / 10 && fAggroSave > 0.0 )
+  if ( 100 * nClockBaseSave != dwElapsedNow / 10 && fFoeHpSave > 0.0 )
   {
     SekBody__UpdateTo2_401647(pHeroBody, 9);
     SekBody__UpdateTo2_401647(pFoeBody, 20);
     CSekBody__UpdateAnim_4019E1(pFoeBody, 0.0);
   }
-  if ( fAggroSave > 0.0 )
+  if ( fFoeHpSave > 0.0 )
   {
     MtxMult_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fHeroY, fHeroZ);
     MtxMult_4069DD(pFoeBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fFoeX, fFoeY, fFoeZ);
@@ -302,7 +310,7 @@ void __cdecl hook_PlayCinematicSequence_45460A(
 // (fBaseDelta = caller's frame delta; bInputDrive is a 0/1 GATE, not a scale - callers push 0 or 1);
 // if an anim item finishes, bodyA replays item 17 and bodyB item 7 (the old comment's '1/7' was wrong).
 // Returns fIntensity*350*bInputDrive - the time credit the caller subtracts from its cutscene timeline.
-// Callers: PlayCinematicSequence (bInputDrive 
+// Callers: PlayTugOfWar (bInputDrive 
 double __cdecl hook_UpdateBodiesInput_4542E0(
   CSekBody *pBodyA,
   CSekBody *pBodyB,
@@ -387,7 +395,7 @@ double __cdecl hook_UpdateBodiesInput_4542E0(
   return fIntensity * 350.0 * (double)(unsigned __int8)bInputDrive;
 }
 
-// Countdown 'time running out' flash overlay (old name DrawProgressFill was wrong). Caller (PlayCinematicSequence, sole call) passes fRemainFrac = 1 - elapsed/3750 computed right next to DrawClockHud; fPhase = fRemainFrac*3.5 and the guard fPhase<=1 means the overlay only draws during the LAST ~28.6% (~1.07s) of the 3.75s countdown. Two 6-segment key tables: alpha keys [0,1,1,.75,.5,.25,0] and width keys [1,.5,0,...]; per segment lerps fAlpha/fBleed with t = frac(fPhase*6)/1.6666 (note: 5/3 divisor, so each step spans only 60% of its segment - stepped envelope, not smooth). The quad is (0-w, -80-w)-(640+w, 560+w) with w = 200*fBleed: base rect already covers the 640x480 screen, so fBleed is EDGE BLEED stretching the sprite texture outward (NOT a left-to-right bar grow as previously noted). Net effect: flash ramps up, peaks at full alpha during segment 1 (fPhase 1/6..2/6), then fades through stepped 0.85/0.6/0.35/0.1 levels while the bleed collapses, vanishing exactly at expiry (fPhase=0 -> alpha key 0). At exac
+// Countdown 'time running out' flash overlay (old name DrawProgressFill was wrong). Caller (PlayTugOfWar, sole call) passes fRemainFrac = 1 - elapsed/3750 computed right next to DrawClockHud; fPhase = fRemainFrac*3.5 and the guard fPhase<=1 means the overlay only draws during the LAST ~28.6% (~1.07s) of the 3.75s countdown. Two 6-segment key tables: alpha keys [0,1,1,.75,.5,.25,0] and width keys [1,.5,0,...]; per segment lerps fAlpha/fBleed with t = frac(fPhase*6)/1.6666 (note: 5/3 divisor, so each step spans only 60% of its segment - stepped envelope, not smooth). The quad is (0-w, -80-w)-(640+w, 560+w) with w = 200*fBleed: base rect already covers the 640x480 screen, so fBleed is EDGE BLEED stretching the sprite texture outward (NOT a left-to-right bar grow as previously noted). Net effect: flash ramps up, peaks at full alpha during segment 1 (fPhase 1/6..2/6), then fades through stepped 0.85/0.6/0.35/0.1 levels while the bleed collapses, vanishing exactly at expiry (fPhase=0 -> alpha key 0). At exac
 void __cdecl hook_DrawCountdownFlash_4532D0(CHanaSpriteT3F6_S1FC *pSprite, float fRemainFrac)
 {
   int nBottomAdd; // esi
@@ -458,7 +466,7 @@ void __cdecl hook_DrawCountdownFlash_4532D0(CHanaSpriteT3F6_S1FC *pSprite, float
   }
 }
 
-// Snapshot/shutter transition overlay (sole caller: PlayCinematicSequence, right after DrawClockHud + DrawCountdownFlash). Active while dwElapsed <= 3000ms. pSprites[4..7] = 4-frame cycling icon (frame index dwElapsed/100 % 4, i.e. 100ms per frame) drawn centered at (320,412) scale 1.0. pSprites[3] = frame/outline box sprite drawn as rect (192,330)-(448,394): first normal alpha blend at fFrameAlpha, then DESTBLEND switched to 2 (D3DBLEND_ONE => ADDITIVE glow) with a sin pulse alpha sin(dwElapsed/90)/4+0.25 (0..0.5, ~565ms period), then 10 expanding outline echoes - each pass grows the rect +10/+8 per side and multiplies fAlpha_144 by 0.6 (shockwave rings). fStartClock: caller passes the sequence START TICK (var_18), not a 0..500 progress - so fFade = 1-fStartClock/500 clamps to 0 and fFrameAlpha is effectively always 1; the fFade*300 store and the rect offsets (+/-fFade) are DEAD code (offsets hardcoded to 0). Looks like leftover dev math intended to expand/fade the box with progress.
+// Snapshot/shutter transition overlay (sole caller: PlayTugOfWar, right after DrawClockHud + DrawCountdownFlash). Active while dwElapsed <= 3000ms. pSprites[4..7] = 4-frame cycling icon (frame index dwElapsed/100 % 4, i.e. 100ms per frame) drawn centered at (320,412) scale 1.0. pSprites[3] = frame/outline box sprite drawn as rect (192,330)-(448,394): first normal alpha blend at fFrameAlpha, then DESTBLEND switched to 2 (D3DBLEND_ONE => ADDITIVE glow) with a sin pulse alpha sin(dwElapsed/90)/4+0.25 (0..0.5, ~565ms period), then 10 expanding outline echoes - each pass grows the rect +10/+8 per side and multiplies fAlpha_144 by 0.6 (shockwave rings). fStartClock: caller passes the sequence START TICK (var_18), not a 0..500 progress - so fFade = 1-fStartClock/500 clamps to 0 and fFrameAlpha is effectively always 1; the fFade*300 store and the rect offsets (+/-fFade) are DEAD code (offsets hardcoded to 0). Looks like leftover dev math intended to expand/fade the box with progress.
 void __cdecl hook_DrawTransitionFlash_453FAC(CHanaSpriteT3F6_S1FC *pSprites[], unsigned int dwElapsed, float fStartClock)
 {
   int v3; // eax
@@ -519,7 +527,7 @@ void __cdecl hook_DrawTransitionFlash_453FAC(CHanaSpriteT3F6_S1FC *pSprites[], u
   }
 }
 
-// Digital clock/timer HUD: renders nTimeLeft (clamped >= 0) as XXX:XX - a 3-digit high group (decimal places 10^4..10^2, i.e. value/100) then the colon sprite (arrSprNumbers[10]) then a 2-digit low group (places 10^1..10^0, value%100). Digit k = (t % 10^(k+1)) / 10^k via IntPow_44AF15. Layout anchored at nXAnchor = nX+24 with a 26px digit pitch: high-group quads run left from nXAnchor-26*k (58 wide, y nY+16..nY+48), low-group quads at nXAnchor+6-26*j (52 wide, y nY+22..nY+48 - 6px LOWER than the high group), colon at (nX+8, nY+20)-(nX+40, nY+52). Quads overlap on the 26px pitch - sprite art carries its own padding. Caller (PlayCinematicSequence, sole) computes nTimeLeft = var_68*100 - var_4/10 (a countdown against the duel clock drawn right before DrawCountdownFlash).
+// Digital clock/timer HUD: renders nTimeLeft (clamped >= 0) as XXX:XX - a 3-digit high group (decimal places 10^4..10^2, i.e. value/100) then the colon sprite (arrSprNumbers[10]) then a 2-digit low group (places 10^1..10^0, value%100). Digit k = (t % 10^(k+1)) / 10^k via IntPow_44AF15. Layout anchored at nXAnchor = nX+24 with a 26px digit pitch: high-group quads run left from nXAnchor-26*k (58 wide, y nY+16..nY+48), low-group quads at nXAnchor+6-26*j (52 wide, y nY+22..nY+48 - 6px LOWER than the high group), colon at (nX+8, nY+20)-(nX+40, nY+52). Quads overlap on the 26px pitch - sprite art carries its own padding. Caller (PlayTugOfWar, sole) computes nTimeLeft = var_68*100 - var_4/10 (a countdown against the duel clock drawn right before DrawCountdownFlash).
 void __cdecl hook_DrawClockHud_44AF5B(CHanaSpriteT3F6_S1FC **arrSprNumbers, int nX, int nY, int nTimeLeft)
 {
   int v4; // eax
@@ -586,7 +594,7 @@ void __cdecl hook_DrawClockHud_44AF5B(CHanaSpriteT3F6_S1FC **arrSprNumbers, int 
   }
 }
 
-// Compact digit-sprite number renderer, sibling of DrawClockHud_44AF5B: renders nValue (clamped >= 0) as X:XX - ONE hundreds digit (value/100) via the degenerate loop `for (kPlaceHi = 2; kPlaceHi < 3)` (runs exactly once - copy-paste vestige of the clock's 2..4 loop), colon sprite pDigitSprites[10], then tens/ones (value%100). 20px digit pitch (clock uses 26), anchor nXAnchor = xScreen+8: high digit quad (nXAnchor-40, yScreen)-(nXAnchor+20, yScreen+20); colon (xScreen-12, yScreen+4)-(nXAnchor, yScreen+24); low group at nXAnchor+6-20*j, y yScreen+6..+20 (6px lower, same offset pattern as the clock). No null-check on digit sprites (the clock has one). Sole caller PlayCinematicSequence draws the elapsed STOPWATCH at (320,448) with nValue = elapsed_ms/10 => S:CC format, only while elapsed <= 3000ms - the running photo-timer under the DrawTransitionFlash snapshot overlay.
+// Compact digit-sprite number renderer, sibling of DrawClockHud_44AF5B: renders nValue (clamped >= 0) as X:XX - ONE hundreds digit (value/100) via the degenerate loop `for (kPlaceHi = 2; kPlaceHi < 3)` (runs exactly once - copy-paste vestige of the clock's 2..4 loop), colon sprite pDigitSprites[10], then tens/ones (value%100). 20px digit pitch (clock uses 26), anchor nXAnchor = xScreen+8: high digit quad (nXAnchor-40, yScreen)-(nXAnchor+20, yScreen+20); colon (xScreen-12, yScreen+4)-(nXAnchor, yScreen+24); low group at nXAnchor+6-20*j, y yScreen+6..+20 (6px lower, same offset pattern as the clock). No null-check on digit sprites (the clock has one). Sole caller PlayTugOfWar draws the elapsed STOPWATCH at (320,448) with nValue = elapsed_ms/10 => S:CC format, only while elapsed <= 3000ms - the running photo-timer under the DrawTransitionFlash snapshot overlay.
 void __cdecl hook_DrawHudSpriteNumber_44B97B(CHanaSpriteT3F6_S1FC **pDigitSprites, int xScreen, int yScreen, int nValue)
 {
   int v4; // eax
@@ -651,10 +659,10 @@ void __cdecl hook_DrawHudSpriteNumber_44B97B(CHanaSpriteT3F6_S1FC **pDigitSprite
   }
 
 }
-void register_PlayCinematicSequence_45460A() {
+void register_PlayTugOfWar_45460A() {
 
   hnh_HookOff();
-  hnh_Hook(0x45460a, hook_PlayCinematicSequence_45460A, "PlayCinematicSequence_45460A"); // [OK]
+  hnh_Hook(0x45460a, hook_PlayTugOfWar_45460A, "PlayTugOfWar_45460A"); // [OK]
   hnh_Hook(0x4532d0, hook_DrawCountdownFlash_4532D0, "DrawCountdownFlash_4532D0"); // [OK]
   hnh_Hook(0x4542e0, hook_UpdateBodiesInput_4542E0, "UpdateBodiesInput_4542E0"); // [OK]
   hnh_Hook(0x453fac, hook_DrawTransitionFlash_453FAC, "DrawTransitionFlash_453FAC"); // [OK]

@@ -126,7 +126,7 @@ void register_SetupHeroEntry_4593E0();
 void register_PlayHunting_44C38D();
 void register_PlayAssault_4703AE();
 void register_PlayCutInScene_46A76F();
-void register_PlayCinematicSequence_45460A();
+void register_PlayTugOfWar_45460A();
 void register_PlayVideoWith3DAudio_4791A3();
 
 HANDLE g_hStartEvent = NULL;
@@ -187,7 +187,7 @@ void InitHNH() {
 	register_PlayHunting_44C38D();
 	register_PlayAssault_4703AE();
 	register_PlayCutInScene_46A76F();
-	register_PlayCinematicSequence_45460A();
+	register_PlayTugOfWar_45460A();
 	register_PlayVideoWith3DAudio_4791A3();
 
 	DebugLog("[HNH] All hooking done !\n");

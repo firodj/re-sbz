@@ -619,16 +619,16 @@ extern void(__cdecl* InterpolateHanaAnimFrame)(CHanaAnimT3F0_S240* pAnim, float 
 extern void(__cdecl* HanaMate_SetMaterial)(CHanaMateT3EE_S184* pMate); // in: ProcessFrame.cpp
 extern double (*GetProjectionFov_40DCF6)(); // in: ProcessFrame.cpp
 
-extern void(__cdecl* PlayCinematicSequence_45460A)(CHanaSceneT458_S504* pOdsScene,
+extern void(__cdecl* PlayTugOfWar_45460A)(CHanaSceneT458_S504* pOdsScene,
   CSekBody* pHeroBody, CSekBody* pFoeBody, CHanaFrameT3EC_S354* pMapFrame,
   CHanaSpriteT3F6_S1FC** pArrHudMeters, CHanaSpriteT3F6_S1FC** pArrSprites,
   float* pfHeroHp, float fFieldC4, float* pfAggro, float fAggroMax,
   int* pnClockBase, unsigned int* pdwElapsedMs, int dwClockBase2,
-  CSoundStruct_8** arrVoiceBufs, CHanaSpriteT3F6_S1FC* pMaskBmp); // in: PlayCinematicSequence.cpp
+  CSoundStruct_8** arrVoiceBufs, CHanaSpriteT3F6_S1FC* pMaskBmp); // in: PlayTugOfWar.cpp
 extern void* (__cdecl* DrawDuelHealthHud_44B23B)(CHanaSpriteT3F6_S1FC** pSprites,
   int nHeroHp, int nHeroHpMax, int nAggro, int nAggroMax); // in: PlayHunting.cpp
 extern void(__cdecl* DrawClockHud_44AF5B)(CHanaSpriteT3F6_S1FC** arrSprNumbers, int nX, int nY,
-  int nTimeLeft); // in: PlayCinematicSequence.cpp
+  int nTimeLeft); // in: PlayTugOfWar.cpp
 
 extern void(__cdecl* DrawSprite3D)(CHanaSpriteT3F6_S1FC* pSprite, D3DXVECTOR3* parrPos); // in: PlayHunting.cpp
 extern void(__cdecl* HanaSurface_CreateAndFade)(); // in: PlayExploring.cpp
