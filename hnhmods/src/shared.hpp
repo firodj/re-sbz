@@ -625,7 +625,7 @@ extern void(__cdecl* PlayCinematicSequence_45460A)(CHanaSceneT458_S504* pOdsScen
   float* pfHeroHp, float fFieldC4, float* pfAggro, float fAggroMax,
   int* pnClockBase, unsigned int* pdwElapsedMs, int dwClockBase2,
   CSoundStruct_8** arrVoiceBufs, CHanaSpriteT3F6_S1FC* pMaskBmp); // in: PlayCinematicSequence.cpp
-extern void* (__cdecl* DrawRecViewfinder_44B23B)(CHanaSpriteT3F6_S1FC** pSprites,
+extern void* (__cdecl* DrawDuelHealthHud_44B23B)(CHanaSpriteT3F6_S1FC** pSprites,
   int nHeroHp, int nHeroHpMax, int nAggro, int nAggroMax); // in: PlayHunting.cpp
 extern void(__cdecl* DrawClockHud_44AF5B)(CHanaSpriteT3F6_S1FC** arrSprNumbers, int nX, int nY,
   int nTimeLeft); // in: PlayCinematicSequence.cpp

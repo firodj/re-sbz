@@ -7,11 +7,11 @@
 // === PINNED GAME FUNCTIONS ===
 
 void (__cdecl*PlayCinematicSequence_45460A)(CHanaSceneT458_S504 *pOdsScene, 
-CSekBody *pHeroBody, CSekBody *pFoeBody, CHanaFrameT3EC_S354 *pMapFrame, 
-CHanaSpriteT3F6_S1FC **pArrHudMeters, CHanaSpriteT3F6_S1FC **pArrSprites, 
-float *pfHeroHp, float fFieldC4, float *pfAggro, float fAggroMax, 
-int *pnClockBase, unsigned int *pdwElapsedMs, int dwClockBase2, 
-CSoundStruct_8 **arrVoiceBufs, CHanaSpriteT3F6_S1FC *pMaskBmp) =
+  CSekBody *pHeroBody, CSekBody *pFoeBody, CHanaFrameT3EC_S354 *pMapFrame, 
+  CHanaSpriteT3F6_S1FC **pArrHudMeters, CHanaSpriteT3F6_S1FC **pArrSprites, 
+  float *pfHeroHp, float fFieldC4, float *pfAggro, float fAggroMax, 
+  int *pnClockBase, unsigned int *pdwElapsedMs, int dwClockBase2, 
+  CSoundStruct_8 **arrVoiceBufs, CHanaSpriteT3F6_S1FC *pMaskBmp) =
   reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, CSekBody *,
     CSekBody *, CHanaFrameT3EC_S354 *, CHanaSpriteT3F6_S1FC **,
     CHanaSpriteT3F6_S1FC **, float *, float, float *, float, int *, unsigned int *,
@@ -246,7 +246,7 @@ void __cdecl hook_PlayCinematicSequence_45460A(
       CHanaObj__SetAlpha3F6(pArrHudMeters[11], fFlashAlpha);
       DrawSprite2D(pArrHudMeters[11]);
     }
-    DrawRecViewfinder_44B23B(
+    DrawDuelHealthHud_44B23B(
       pArrSprites,
       (__int64)fHeroHpSave / 100,
       (__int64)fFoeHp / 100,

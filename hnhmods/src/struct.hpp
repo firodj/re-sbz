@@ -271,7 +271,7 @@ struct CHanaVertT3EA_S1FC: public CHanaBase_S130
 {
     LPDIRECT3DVERTEXBUFFER7 pD3DVtxBuf_130;
     int dwNumVertices_134;
-    int field_138;
+    int gap138;
     WORD *pVtxIndices;
     int dwNumIndices_140;
     CHanaTextureT3EB_S2CC *pTexT3EB;
@@ -284,15 +284,15 @@ struct CHanaVertT3EA_S1FC: public CHanaBase_S130
     int bForceAlphaPass_1CC;
     int nBlendMode_1D0;
     int flg_1D4;
-    int fFlatShade_1D8;
+    int bFlatShade_1D8;
     int flg_1DC;
     int bShadowOnly_1E0;
     int bUnlit_1E4;
     int bAlphaPass2_1E8;
-    int nFogDensity_1EC;
-    int nAlphaOpSel_1F0;
-    int fNoTexPersp_1F4;
-    int alpr_1F8;
+    int nZBias_1EC; // Z-Bias
+    int nTexAddrMode_1F8;  // Texture Address Mode
+    int bNoTexPersp_1F4; 
+    int nAlphaPriority_1F8; // Alpha Priority
 };
 
 struct  CHanaFrameArrayT3ED_S138 : public CHanaBase_S130

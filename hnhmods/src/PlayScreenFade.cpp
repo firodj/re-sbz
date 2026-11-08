@@ -4,28 +4,6 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-// PlayScreenFade_4874DE -- the universal screen-fade transition (24 xrefs:
-// every scene function, SystemMenu, menus, ParseExecStr, HanaSurface helper).
-//
-//   bFadeOut:  0 = fade in  (alpha 0 -> 1)
-//              1 = fade out (alpha 1 -> 0)
-//              >1 = setup only, returns before animating -- and LEAKS the two
-//                   sprites and the captured frame (no caller passes > 1)
-//   colorref:  solid fade color
-//   pDdSurface: optional pre-fade background; NULL = re-render the 3D scene
-//               (RenderClear + HanaFrame_Draw over the scene frame)
-//   fTimeScale: timer scale for the fade duration (SetTimerScaleFactor)
-//   bFlush:    RenderFlush_4874A5() the captured pre-fade frame first
-//
-// Setup: a 128x128 solid-color tile -> color sprite, plus a second sprite
-// textured by CreateTextureFromSurfaceWithAlphaMask(tile, Darken.BMP) for the
-// darken overlay. The pre-fade frame is captured into an offscreen surface.
-// Each frame: blit the captured frame back, then draw color rect + darken
-// overlay twice -- pass 1 DESTBLEND=INVSRCALPHA, pass 2 DESTBLEND=D3DBLEND_ONE
-// (SRCALPHA both times). Alpha steps 0.025 * frameTime*2.1 (min 0.01) per
-// frame; the darken sprite runs at alpha * 1.25. Teardown frees everything,
-// restores Z states, frame timer and timer scale, and ANTIALIAS.
-
 // === PINNED GAME FUNCTIONS ===
 LPDIRECTDRAWSURFACE7(__cdecl* PlayScreenFade)(int bisGo, COLORREF colorref,
   LPDIRECTDRAWSURFACE7 pDdSurface, float fFade, char bFlags) =
@@ -626,6 +604,29 @@ void __cdecl hook_HanaFrame_PushNode(CHanaFrameT3EC_S354 *pFrame)
   }
 }
 
+
+// PlayScreenFade_4874DE -- the universal screen-fade transition (24 xrefs:
+// every scene function, SystemMenu, menus, ParseExecStr, HanaSurface helper).
+//
+//   bFadeOut:  0 = fade in  (alpha 0 -> 1)
+//              1 = fade out (alpha 1 -> 0)
+//              >1 = setup only, returns before animating -- and LEAKS the two
+//                   sprites and the captured frame (no caller passes > 1)
+//   colorref:  solid fade color
+//   pDdSurface: optional pre-fade background; NULL = re-render the 3D scene
+//               (RenderClear + HanaFrame_Draw over the scene frame)
+//   fTimeScale: timer scale for the fade duration (SetTimerScaleFactor)
+//   bFlush:    RenderFlush_4874A5() the captured pre-fade frame first
+//
+// Setup: a 128x128 solid-color tile -> color sprite, plus a second sprite
+// textured by CreateTextureFromSurfaceWithAlphaMask(tile, Darken.BMP) for the
+// darken overlay. The pre-fade frame is captured into an offscreen surface.
+// Each frame: blit the captured frame back, then draw color rect + darken
+// overlay twice -- pass 1 DESTBLEND=INVSRCALPHA, pass 2 DESTBLEND=D3DBLEND_ONE
+// (SRCALPHA both times). Alpha steps 0.025 * frameTime*2.1 (min 0.01) per
+// frame; the darken sprite runs at alpha * 1.25. Teardown frees everything,
+// restores Z states, frame timer and timer scale, and ANTIALIAS.
+
 void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
                                  LPDIRECTDRAWSURFACE7 pDdSurface, float fTimeScale, char bFlush)
 {
@@ -828,7 +829,7 @@ void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
 }
 
 // HanaFrame_Draw - per-frame render/dispatch entry (thin wrapper sub_405BE1 sets g_bRendering=1 around it).
-// 1) DS3D listener: CommitDeferredSettings; orient/position it to the camera relative to the scene (CalculateLocalRotationMatrix->SetOrientation, sub_406AB1->SetPosition).
+// 1) DS3D listener: CommitDeferredSettings; orient/position it to the camera relative to the scene (CalculateLocalRotationMatrix->SetOrientation, HanaFrame_GetRelPosition->SetPosition).
 // 2) g_pCurFrame = pFrame; g_fCurFrameIsScene = (pFrame==g_pSceneFrame). sub_40773F() builds/pushes the world-matrix stack for all scene children.
 // 3) If the frame's skip-draw flag (*(pFrame+304)) is 0: prep the frame (sub_4339B2), save D3DRS_AMBIENT, then for each scene child frame:
 //    - reset the light mask; when g_dwLightningState, disable all 0x40 lights;

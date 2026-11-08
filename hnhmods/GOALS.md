@@ -382,7 +382,7 @@ Starting from 0x49f0e1
     │   │   ├──0x44c38d PlayHunting_44C38D
     │   │   │   ├──0x455183 PlayVictoryCutscene_455183
     │   │   │   │   ├──0x458b3a UpdateVoicePlayback_458B3A
-    │   │   │   │   ├──0x44b23b DrawRecViewfinder_44B23B
+    │   │   │   │   ├──0x44b23b DrawDuelHealthHud_44B23B
     │   │   │   │   │   ├──0x414344 DrawSprite3D
     │   │   │   │   ├──0x44af5b DrawClockHud_44AF5B
     │   │   │   │   ├──0x407b73 HanaMatrix_BuildLookAtAndTransform

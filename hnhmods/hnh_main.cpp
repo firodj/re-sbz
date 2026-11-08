@@ -384,85 +384,114 @@ public:
 	}
 };
 
-void DrawHNH(const char *window_name) {
-	static_assert(sizeof(CSceneState) == 0x190, "CSceneState");
-
-	//CSceneState& g_sceneState_52F7E0 = *(CSceneState*)0x52F7E0;
-
-	static bool isOpen = true;
-	// Window flags
-	ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
-	ImGui::SetNextWindowSize(ImVec2(450, 600), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowPos(ImVec2(25, 25), ImGuiCond_FirstUseEver);
-
-	
-	ImGuiTableFlags table_flags = ImGuiTableFlags_Resizable;
-	
-	static StructViewer sviewer;
-	if (sviewer.fields.size() == 0) {
-		sviewer.fields.emplace_back(offsetof(CSceneState, bActiveSceneStep), "bActiveSceneStep", ImGuiDataType_U8, &g_sceneState_52F7E0.bActiveSceneStep);
-		sviewer.fields.emplace_back(offsetof(CSceneState, bCurrentSubStage), "bCurrentSubStage", ImGuiDataType_U8, &g_sceneState_52F7E0.bCurrentSubStage);
-		sviewer.fields.emplace_back(offsetof(CSceneState, byte_2), "byte_2", ImGuiDataType_U8, 2, &g_sceneState_52F7E0.byte_2);
-		sviewer.fields.emplace_back(offsetof(CSceneState, nSceneDataIndices), "nSceneDataIndices", ImGuiDataType_S32, 11, &g_sceneState_52F7E0.nSceneDataIndices);
-		sviewer.fields.emplace_back(offsetof(CSceneState, gap30), "gap30", ImGuiDataType_U8, 2, &g_sceneState_52F7E0.gap30);
-		sviewer.fields.emplace_back(offsetof(CSceneState, byte_32), "byte_32", ImGuiDataType_S8, &g_sceneState_52F7E0.byte_32);
-		sviewer.fields.emplace_back(offsetof(CSceneState, ary33), "ary33", ImGuiDataType_U8, 100, &g_sceneState_52F7E0.ary33);
-
-		sviewer.fields.emplace_back(offsetof(CSceneState, bMaxSubStage), "bMaxSubStage", ImGuiDataType_S8, &g_sceneState_52F7E0.bMaxSubStage);
-	
-		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[0]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[0]);
-		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[1]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[1]);
-		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[2]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[2]);
-		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[3]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[3]);
-		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[4]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[4]);
-
-		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "protCurrentHP_C0", ImGuiDataType_Float, &g_sceneState_52F7E0.protCurrentHP_C0);
-		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "protMaximumHP_C4", ImGuiDataType_Float, &g_sceneState_52F7E0.protMaximumHP_C4);
-
-
-		sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "qwSelMask_C8", ImGuiDataType_S64, &g_sceneState_52F7E0.qwSelMask_C8);
-		sviewer.fields.emplace_back(offsetof(CSceneState, field_D0), "field_D0", ImGuiDataType_S32, &g_sceneState_52F7E0.field_D0);
-		sviewer.fields.emplace_back(offsetof(CSceneState, gapD4), "gapD4", ImGuiDataType_U32, 10, &g_sceneState_52F7E0.gapD4);
-		sviewer.fields.emplace_back(offsetof(CSceneState, field_FC), "field_FC", ImGuiDataType_S32, &g_sceneState_52F7E0.field_FC);
-		sviewer.fields.emplace_back(offsetof(CSceneState, gap100), "gap100", ImGuiDataType_U32, 31, &g_sceneState_52F7E0.gap100);
-		sviewer.fields.emplace_back(offsetof(CSceneState, flt_17C), "flt_17C", ImGuiDataType_Float, &g_sceneState_52F7E0.flt_17C);
-		sviewer.fields.emplace_back(offsetof(CSceneState, frameTimeMultiplied_180), "frameTimeMultiplied_180", ImGuiDataType_Float, &g_sceneState_52F7E0.frameTimeMultiplied_180);
-		sviewer.fields.emplace_back(offsetof(CSceneState, lpDDSurface_184), "lpDDSurface_184", ImGuiDataType_U32, &g_sceneState_52F7E0.lpDDSurface_184);
-		sviewer.fields.emplace_back(offsetof(CSceneState, fPosX_188), "fPosX_188", ImGuiDataType_Float, &g_sceneState_52F7E0.fPosX_188);
-		sviewer.fields.emplace_back(offsetof(CSceneState, fPosY_18C), "fPosY_18C", ImGuiDataType_Float, &g_sceneState_52F7E0.fPosY_18C);
-	}
-
-	if (ImGui::Begin(window_name, &isOpen, flags)) {
-		ImGui::Text("Press <INSERT> to toggle menu.");
-		if (ImGui::TreeNode("g_SceneState")) {
-			if (ImGui::BeginTable("table1", 3, table_flags))
-			{
-				// Submit columns name with TableSetupColumn() and call TableHeadersRow() to create a row with a header in each column.
-				// (Later we will show how TableSetupColumn() has other uses, optional flags, sizing weight etc.)
-				ImGui::TableSetupColumn("Address");
-				ImGui::TableSetupColumn("Name");
-				ImGui::TableSetupColumn("Value");
-				ImGui::TableHeadersRow();
-
-				sviewer.Draw();
-
-				ImGui::EndTable();
+bool DrawHNH(const char *window_name) {
+	if (!strcmp("MenuBar", window_name)) {
+		if (ImGui::BeginMenuBar())
+		{
+			if (ImGui::BeginMenu("File")) {
+				if (ImGui::MenuItem("Exit")) {}
+				ImGui::EndMenu();
 			}
-			
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("Others")) {
-			BYTE step = 1;
-			if (ImGui::InputScalar("g_sceneProgressFlag_530269",
-				ImGuiDataType_U8,
-				&g_sceneProgressFlag_530269,
-				&step, NULL, "%u")) {
-				if (g_sceneProgressFlag_530269 > 2) g_sceneProgressFlag_530269 = 2;
+			if (ImGui::BeginMenu("View")) {
+				if (ImGui::MenuItem("Relayout")) {
+					menu::bFirstFrame = true;
+				}
+				ImGui::EndMenu();
 			}
-			ImGui::TreePop();
+			menu::MenuBarInputIndicator();
+			ImGui::EndMenuBar();
 		}
+
+		return true;
 	}
-	ImGui::End();
+	else if (!strcmp("World Viewer", window_name)) {
+		static_assert(sizeof(CSceneState) == 0x190, "CSceneState");
+
+		//CSceneState& g_sceneState_52F7E0 = *(CSceneState*)0x52F7E0;
+
+		static bool isOpen = true;
+		// Window flags
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
+		ImGui::SetNextWindowSize(ImVec2(450, 600), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2(25, 25), ImGuiCond_FirstUseEver);
+
+
+		ImGuiTableFlags table_flags = ImGuiTableFlags_Resizable;
+
+		static StructViewer sviewer;
+		if (sviewer.fields.size() == 0) {
+			sviewer.fields.emplace_back(offsetof(CSceneState, bActiveSceneStep), "bActiveSceneStep", ImGuiDataType_U8, &g_sceneState_52F7E0.bActiveSceneStep);
+			sviewer.fields.emplace_back(offsetof(CSceneState, bCurrentSubStage), "bCurrentSubStage", ImGuiDataType_U8, &g_sceneState_52F7E0.bCurrentSubStage);
+			sviewer.fields.emplace_back(offsetof(CSceneState, byte_2), "byte_2", ImGuiDataType_U8, 2, &g_sceneState_52F7E0.byte_2);
+			sviewer.fields.emplace_back(offsetof(CSceneState, nSceneDataIndices), "nSceneDataIndices", ImGuiDataType_S32, 11, &g_sceneState_52F7E0.nSceneDataIndices);
+			sviewer.fields.emplace_back(offsetof(CSceneState, gap30), "gap30", ImGuiDataType_U8, 2, &g_sceneState_52F7E0.gap30);
+			sviewer.fields.emplace_back(offsetof(CSceneState, byte_32), "byte_32", ImGuiDataType_S8, &g_sceneState_52F7E0.byte_32);
+			sviewer.fields.emplace_back(offsetof(CSceneState, ary33), "ary33", ImGuiDataType_U8, 100, &g_sceneState_52F7E0.ary33);
+
+			sviewer.fields.emplace_back(offsetof(CSceneState, bMaxSubStage), "bMaxSubStage", ImGuiDataType_S8, &g_sceneState_52F7E0.bMaxSubStage);
+
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[0]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[0]);
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[1]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[1]);
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[2]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[2]);
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[3]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[3]);
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneFlags_98[4]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneFlags_98[4]);
+
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "protCurrentHP_C0", ImGuiDataType_Float, &g_sceneState_52F7E0.protCurrentHP_C0);
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "protMaximumHP_C4", ImGuiDataType_Float, &g_sceneState_52F7E0.protMaximumHP_C4);
+
+
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "qwSelMask_C8", ImGuiDataType_S64, &g_sceneState_52F7E0.qwSelMask_C8);
+			sviewer.fields.emplace_back(offsetof(CSceneState, field_D0), "field_D0", ImGuiDataType_S32, &g_sceneState_52F7E0.field_D0);
+			sviewer.fields.emplace_back(offsetof(CSceneState, gapD4), "gapD4", ImGuiDataType_U32, 10, &g_sceneState_52F7E0.gapD4);
+			sviewer.fields.emplace_back(offsetof(CSceneState, field_FC), "field_FC", ImGuiDataType_S32, &g_sceneState_52F7E0.field_FC);
+			sviewer.fields.emplace_back(offsetof(CSceneState, gap100), "gap100", ImGuiDataType_U32, 31, &g_sceneState_52F7E0.gap100);
+			sviewer.fields.emplace_back(offsetof(CSceneState, flt_17C), "flt_17C", ImGuiDataType_Float, &g_sceneState_52F7E0.flt_17C);
+			sviewer.fields.emplace_back(offsetof(CSceneState, frameTimeMultiplied_180), "frameTimeMultiplied_180", ImGuiDataType_Float, &g_sceneState_52F7E0.frameTimeMultiplied_180);
+			sviewer.fields.emplace_back(offsetof(CSceneState, lpDDSurface_184), "lpDDSurface_184", ImGuiDataType_U32, &g_sceneState_52F7E0.lpDDSurface_184);
+			sviewer.fields.emplace_back(offsetof(CSceneState, fPosX_188), "fPosX_188", ImGuiDataType_Float, &g_sceneState_52F7E0.fPosX_188);
+			sviewer.fields.emplace_back(offsetof(CSceneState, fPosY_18C), "fPosY_18C", ImGuiDataType_Float, &g_sceneState_52F7E0.fPosY_18C);
+		}
+
+		if (ImGui::Begin(window_name, &isOpen, flags)) {
+			ImGui::Text("Press <INSERT> to toggle menu.");
+
+			if (ImGui::CollapsingHeader("MENU")) {
+				if (ImGui::TreeNode("g_SceneState")) {
+					if (ImGui::BeginTable("table1", 3, table_flags))
+					{
+						// Submit columns name with TableSetupColumn() and call TableHeadersRow() to create a row with a header in each column.
+						// (Later we will show how TableSetupColumn() has other uses, optional flags, sizing weight etc.)
+						ImGui::TableSetupColumn("Address");
+						ImGui::TableSetupColumn("Name");
+						ImGui::TableSetupColumn("Value");
+						ImGui::TableHeadersRow();
+
+						sviewer.Draw();
+
+						ImGui::EndTable();
+					}
+
+					ImGui::TreePop();
+				}
+				if (ImGui::TreeNode("Others")) {
+					BYTE step = 1;
+					if (ImGui::InputScalar("g_sceneProgressFlag_530269",
+						ImGuiDataType_U8,
+						&g_sceneProgressFlag_530269,
+						&step, NULL, "%u")) {
+						if (g_sceneProgressFlag_530269 > 2) g_sceneProgressFlag_530269 = 2;
+					}
+					ImGui::TreePop();
+				}
+			}
+		}
+		ImGui::End();
+
+		return true;
+	} else if (!strcmp("Scene Preview", window_name)) {
+		return true;
+	}
+	return false;
 }
 
 //////////////////

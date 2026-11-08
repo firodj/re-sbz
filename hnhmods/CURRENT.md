@@ -395,7 +395,7 @@ Starting from 0x49f0e1
     │   │   ├──0x44c38d PlayHunting_44C38D                                                      <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   ├──0x455183 PlayVictoryCutscene_455183                                          <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   │   ├──0x458b3a UpdateVoicePlayback_458B3A                                      <- [HOOK+PTR SetupHeroEntry_4593E0.cpp]
-    │   │   │   │   ├──0x44b23b DrawRecViewfinder_44B23B                                        <- [HOOK+PTR PlayHunting_44C38D.cpp]
+    │   │   │   │   ├──0x44b23b DrawDuelHealthHud_44B23B                                        <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   │   │   ├──0x414344 DrawSprite3D                                                <- [HOOK+PTR PlayHunting_44C38D.cpp]
     │   │   │   │   ├──0x44af5b DrawClockHud_44AF5B                                             <- [HOOK+PTR PlayCinematicSequence_45460A.cpp]
     │   │   │   │   ├──0x407b73 HanaMatrix_BuildLookAtAndTransform                              <- [HOOK+PTR PlayExploring_45BCAE.cpp]

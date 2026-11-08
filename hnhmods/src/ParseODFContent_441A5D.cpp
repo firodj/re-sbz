@@ -2734,7 +2734,7 @@ void __cdecl hook_ParseOdfMeshVFLG_43FDEC(char **ppBuf, CHanaVertT3EA_S1FC *pHan
   pBuf = (LPBYTE)(*ppBuf + 4);
   dwFlags_v3 = *(WORD *)pBuf;
   pHanaT3EA->flg_1D4 = (*(WORD *)pBuf & 2) != 0;
-  pHanaT3EA->fFlatShade_1D8 = (dwFlags_v3 & 4) != 0;
+  pHanaT3EA->bFlatShade_1D8 = (dwFlags_v3 & 4) != 0;
   pHanaT3EA->flg_1DC = (dwFlags_v3 & 0x80) != 0;
   pHanaT3EA->bForceAlphaPass_1CC = (dwFlags_v3 & 0x100) != 0;
   if ( (dwFlags_v3 & 0x200) != 0 )
@@ -2756,33 +2756,33 @@ void __cdecl hook_ParseOdfMeshVFLG_43FDEC(char **ppBuf, CHanaVertT3EA_S1FC *pHan
   if ( !memcmp("BIAS", pBuf2, 4u) )
   {
     Buf2b = pBuf2 + 4;
-    pHanaT3EA->nFogDensity_1EC = *(unsigned __int16 *)Buf2b;
+    pHanaT3EA->nZBias_1EC = *(unsigned __int16 *)Buf2b;
     pBuf2 = Buf2b + 2;
   }
   else
   {
-    pHanaT3EA->nFogDensity_1EC = 0;
+    pHanaT3EA->nZBias_1EC = 0;
   }
   if ( !memcmp("ADRS", pBuf2, 4u) )
   {
     Buf2c = pBuf2 + 4;
-    pHanaT3EA->nAlphaOpSel_1F0 = (char)*Buf2c++;
-    pHanaT3EA->fNoTexPersp_1F4 = (char)*Buf2c;
+    pHanaT3EA->nTexAddrMode_1F8 = (char)*Buf2c++;
+    pHanaT3EA->bNoTexPersp_1F4 = (char)*Buf2c;
     pBuf2 = Buf2c + 1;
   }
   else
   {
-    pHanaT3EA->nAlphaOpSel_1F0 = 0;
-    pHanaT3EA->fNoTexPersp_1F4 = 0;
+    pHanaT3EA->nTexAddrMode_1F8 = 0;
+    pHanaT3EA->bNoTexPersp_1F4 = 0;
   }
   if ( !memcmp("ALPR", pBuf2, 4u) )
   {
-    pHanaT3EA->alpr_1F8 = *((DWORD *)pBuf2 + 1);
+    pHanaT3EA->nAlphaPriority_1F8 = *((DWORD *)pBuf2 + 1);
     pBuf2 += 8;
   }
   else
   {
-    pHanaT3EA->alpr_1F8 = 0;
+    pHanaT3EA->nAlphaPriority_1F8 = 0;
   }
   *ppBuf = (char *)pBuf2;
 }

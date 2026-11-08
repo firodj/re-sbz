@@ -69,7 +69,7 @@ void (__cdecl * HanaMorpT457_Draw)(CHanaMorpT457_S40C *pMorp) = reinterpret_cast
 // === PINNED GLOBALS ===
 BOOL &g_bRendering      = *(BOOL*)0x4CD778;  // WRITABLE default = 0
 BOOL &g_bObjBatchActive = *(BOOL*)0x4D6CD8; // WRITABLE default = 0
-float (&g_floats_4CE958)[6000] = *(float (*)[6000])0x4CE958; // WRITABLE
+float (&g_floats_4CE958)[6000] = *(float (*)[6000])0x4CE958; // WRITABLE default = 0
 
 // === FUNCTIONS ===
 // alpha/blend-vert test shared by all three object kinds
@@ -286,7 +286,7 @@ void __cdecl hook_SortObjectsByDepth()
     for ( i = 0; i < g_nObjCount; ++i )
     {
       HanaFrame_GetCenterPosition_408C3E(g_pObjPool[i].pFrame, g_pCameraFrame, &centerX, &centerY, &centerZ);
-      g_floats_4CE958[i] = centerZ - (double)(1000 * g_pObjPool[i].pVert->alpr_1F8);
+      g_floats_4CE958[i] = centerZ - (double)(1000 * g_pObjPool[i].pVert->nAlphaPriority_1F8);
     }
     for ( i = 0; i < g_nObjCount - 1; ++i )
     {
@@ -509,11 +509,11 @@ void __cdecl hook_UpdateVertTextureFromFrame(CHanaVertT3EA_S1FC *pVertArg, CHana
 // - early-out if pVert->fShadowOnly_1E0 && shadows off (g_dwShadowOff)
 // - texstage0 = modulate; material = pVert->pMateT3EE (or g_pMaterial),
 //   skip if material diffuse.a <= 0.0
-// - bind pVert->pTexT3EB (ALPHAOP per nAlphaOpSel_1F0, TEXPERSP per fNoTexPersp_1F4)
+// - bind pVert->pTexT3EB (ALPHAOP per nTexAddrMode_1F8, TEXPERSP per bNoTexPersp_1F4)
 //   or no-texture modulate
 // - COLOROP = select texture when fUnlit_1E4 or lighting disabled
 // - alpha blend per nBlendMode_1D0: 1=SRCALPHA/INVSRCALPHA, -1=additive
-// - shade: fFlatShade_1D8 ? FLAT : GOURAUD; fog density = nFogDensity_1EC
+// - shade: bFlatShade_1D8 ? FLAT : GOURAUD; fog density = nZBias_1EC
 // - primitive per nPrimType_154: 0=Indexed TRIANGLELIST, 1=TRIANGLESTRIP, else=TRIANGLEFAN
 // - restore LIGHTING=1, SHADEMODE=GOURAUD, ALPHABLENDENABLE=0
 void __cdecl hook_HanaVertT3EA_Draw(CHanaVertT3EA_S1FC *pVert)
@@ -541,9 +541,9 @@ void __cdecl hook_HanaVertT3EA_Draw(CHanaVertT3EA_S1FC *pVert)
     if ( pVert->pTexT3EB )
     {
       g_pD3DDevice_4D6C78->SetTexture(0, pVert->pTexT3EB->pDDSurf);
-      if ( pVert->nAlphaOpSel_1F0 )
+      if ( pVert->nTexAddrMode_1F8 )
       {
-        if ( pVert->nAlphaOpSel_1F0 == 1 )
+        if ( pVert->nTexAddrMode_1F8 == 1 )
           g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ADDRESS, 2);
         else
           g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ADDRESS, 3);
@@ -552,7 +552,7 @@ void __cdecl hook_HanaVertT3EA_Draw(CHanaVertT3EA_S1FC *pVert)
       {
         g_pD3DDevice_4D6C78->SetTextureStageState(0, D3DTSS_ADDRESS, 1);
       }
-      if ( pVert->fNoTexPersp_1F4 )
+      if ( pVert->bNoTexPersp_1F4 )
         g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 0);
       else
         g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 1);
@@ -577,11 +577,11 @@ void __cdecl hook_HanaVertT3EA_Draw(CHanaVertT3EA_S1FC *pVert)
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 1);
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 4);
     }
-    if ( pVert->fFlatShade_1D8 == 1 )
+    if ( pVert->bFlatShade_1D8 == 1 )
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
     else
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
-    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZBIAS, pVert->nFogDensity_1EC);
+    g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZBIAS, pVert->nZBias_1EC);
     if ( pVert->nPrimType_154[1] )
     {
       if ( pVert->nPrimType_154[1] == 1 )
