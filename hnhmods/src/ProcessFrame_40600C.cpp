@@ -1042,9 +1042,31 @@ CHanaVertT3EA_S1FC *__cdecl hook_CHanaObj__GetVertsAtT3F5_40FF1D(CHanaMeshT3F5_S
 }
 
 void register_ProcessFrame_40600C() {
-    hnh_Hook(0x40600C, hook_ProcessFrame, "ProcessFrame_40600C"); // [OK]
-    
+  ProcessFrame = hook_ProcessFrame;
+  UpdateBoneTransform = hook_UpdateBoneTransform;
+   
+  AddObjectToPool = hook_AddObjectToPool;
+  CHanaObj__GetChildCountT3F5_40FF0F = hook_CHanaObj__GetChildCountT3F5_40FF0F;
+  HanaVert_DrawByType = hook_HanaVert_DrawByType;
+  CHanaObj__GetVertsAtT3F5_40FF1D = hook_CHanaObj__GetVertsAtT3F5_40FF1D;
+
+  SortObjectsByDepth = hook_SortObjectsByDepth;
+  SetLightEnableMask = hook_SetLightEnableMask;
+  UpdateVertTextureFromFrame = hook_UpdateVertTextureFromFrame;
+  ProjectToScreen_40E2A5 = hook_ProjectToScreen_40E2A5;
+  BuildViewportMatrix = hook_BuildViewportMatrix;
+  GetProjectionFov_40DCF6 = hook_GetProjectionFov_40DCF6;
+  HanaVertT3EA_Draw = hook_HanaVertT3EA_Draw;
+  HanaMate_SetMaterial = hook_HanaMate_SetMaterial;
+  UpdateBoneLookAtTransform = hook_UpdateBoneLookAtTransform;
+  CameraLookAtFrame = hook_CameraLookAtFrame;
+  HanaMeshT3F5_Draw = hook_HanaMeshT3F5_Draw;
+  HanaMorpT457_Draw = hook_HanaMorpT457_Draw;
+
     hnh_HookOff();
+    hnh_Hook(0x40600C, hook_ProcessFrame, "ProcessFrame_40600C"); // [OK]
+
+
     hnh_Hook(0x40CD32, hook_AddObjectToPool, "AddObjectToPool_40CD32"); // [OK]
     hnh_Hook(0x40D9C7, hook_SortObjectsByDepth, "SortObjectsByDepth_40D9C7"); // [OK]
     hnh_Hook(0x40873E, hook_CameraLookAtFrame, "CameraLookAtFrame_40873E"); // [OK]

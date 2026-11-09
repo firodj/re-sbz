@@ -9,15 +9,15 @@ int (__cdecl*ParseODS_483932)(LPBYTE pBuf, CHanaSceneT458_S504 *pScene) =
     reinterpret_cast<int(__cdecl*)(LPBYTE, CHanaSceneT458_S504 *)>(0x483932);
 BOOL (__cdecl*LoadOdsEx_48564B)(LPCSTR lpFileName, CHanaSceneT458_S504 **ppScene,
   CHanaFrameT3EC_S354 **arrFrames, CHanaAnimSetT3F1_S150 **arrAnimSets,
-  unsigned int nCount) =
+  int nCount) =
   reinterpret_cast<BOOL(__cdecl*)(LPCSTR, CHanaSceneT458_S504 **,
-    CHanaFrameT3EC_S354 **, CHanaAnimSetT3F1_S150 **, unsigned int)>(0x48564B);
+    CHanaFrameT3EC_S354 **, CHanaAnimSetT3F1_S150 **, int)>(0x48564B);
 
 BOOL (__cdecl*LoadSekAndOdf_4445DD)(LPCSTR pszSekFile, LPCSTR pszOdfFile, CSekBody **ppSekBody) =
 reinterpret_cast<int(__cdecl*)(LPCSTR, LPCSTR, CSekBody **)>(0x4445DD);
 
-DWORD (__cdecl*ReadStrFile_483567)(CHanaSceneT458_S504 *pScene, const char *szFileName) =
-    reinterpret_cast<DWORD(__cdecl*)(CHanaSceneT458_S504 *, const char *)>(0x483567);
+void (__cdecl*ReadStrFile_483567)(CHanaSceneT458_S504 *pScene, const char *szFileName) =
+    reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, const char *)>(0x483567);
 int (__cdecl*ParseODFFile_441F19)(LPCSTR lpFileName, CHanaFrameT3EC_S354 **pOutRootFrameT3EC,
     CHanaAnimSetT3F1_S150 **pOutT3F1) =
     reinterpret_cast<int(__cdecl*)(LPCSTR, CHanaFrameT3EC_S354 **, CHanaAnimSetT3F1_S150 **)>(0x441F19);
@@ -37,8 +37,8 @@ void (__cdecl * CHanaObj__NewMeshT3F5)(CHanaMeshT3F5_S138 **pOut)
   = reinterpret_cast<void(__cdecl*)(CHanaMeshT3F5_S138 **pOut)>(0x40FCA0);
 CHanaMeshT3F5_S138 * (__cdecl * GetMeshT3F5FromObj_434FE0)(CHanaMorpT457_S40C *pVerOrMeshOrMorp)
   = reinterpret_cast<CHanaMeshT3F5_S138 *(__cdecl*)(CHanaMorpT457_S40C *pVerOrMeshOrMorp)>(0x434FE0);
-void (__cdecl * HanaMorpT457_SetupFuns)(CHanaMorpT457_S40C *pMorpT457, CHanaFrameT3EC_S354 *pFrame)
-  = reinterpret_cast<void(__cdecl*)(CHanaMorpT457_S40C *pMorpT457, CHanaFrameT3EC_S354 *pFrame)>(0x4372BA);
+int (__cdecl * HanaMorpT457_SetupFuns)(CHanaMorpT457_S40C *pMorpT457, CHanaFrameT3EC_S354 *pFrame)
+  = reinterpret_cast<int(__cdecl*)(CHanaMorpT457_S40C *pMorpT457, CHanaFrameT3EC_S354 *pFrame)>(0x4372BA);
 void (__cdecl * CHanaObj__NewAnimSetT3F1_S150)(CHanaAnimSetT3F1_S150 **ppOut) = reinterpret_cast<void(__cdecl*)(CHanaAnimSetT3F1_S150 **ppOut)>(0x403A00);
 void (__cdecl * HanaFrame_PropagateFogToChildren)(CHanaFrameT3EC_S354 *pFrame) = reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame)>(0x441E7E);
 CSekHeader * (__cdecl *SekHeader_CloneClean)(const CSekHeader *pSrcHdr)
@@ -1269,10 +1269,33 @@ void __cdecl hook_SekBody__UpdateTo_4014E4(CSekBody *pSekBody, int nItem)
 
 void register_ParseODS_483932() {
  
-  hnh_Hook(0x48564b, hook_LoadOdsEx_48564B, "LoadOdsEx_48564B");
-  hnh_Hook(0x484a38, hook_ParseOdsEx_484A38, "ParseOdsEx_484A38");
+  ParseODS_483932 = hook_ParseODS_483932;
+  LoadOdsEx_48564B = hook_LoadOdsEx_48564B;
+  LoadSekAndOdf_4445DD = hook_LoadSekAndOdf_4445DD;
+  ReadStrFile_483567 = hook_ReadStrFile_483567;
+  ParseODFFile_441F19 = hook_ParseODFFile_441F19;
+  ParseSekFile_401039 = hook_ParseSekFile_401039;
+  CSekBody__PlayAnim_40179D = hook_CSekBody__PlayAnim_40179D;
+  FindFrameByName_47E999 = hook_FindFrameByName_47E999;
+  ParseOds3DON_483704 = hook_ParseOds3DON_483704;
+  HanaMesh_AddVertexReference = hook_HanaMesh_AddVertexReference;
+  HanaMorpT457_SetupFunsSubtree = hook_HanaMorpT457_SetupFunsSubtree;
+  CHanaObj__NewMeshT3F5 = hook_CHanaObj__NewMeshT3F5;
+  GetMeshT3F5FromObj_434FE0 = hook_GetMeshT3F5FromObj_434FE0;
+  HanaMorpT457_SetupFuns = hook_HanaMorpT457_SetupFuns;
+  CHanaObj__NewAnimSetT3F1_S150 = hook_CHanaObj__NewAnimSetT3F1_S150;
+  HanaFrame_PropagateFogToChildren = hook_HanaFrame_PropagateFogToChildren;
+  SekHeader_CloneClean = hook_SekHeader_CloneClean;
+  CHanaFrameT3EC__FindByName_483650 = hook_CHanaFrameT3EC__FindByName_483650;
+  ParseOdsEx_484A38 = hook_ParseOdsEx_484A38;
+  SekBody__UpdateTo_4014E4 = hook_SekBody__UpdateTo_4014E4;
+  HanaVert_CopyMorph = hook_HanaVert_CopyMorph;
+  HanaVert_LerpMorph = hook_HanaVert_LerpMorph;
 
   hnh_HookOff();
+    hnh_Hook(0x48564b, hook_LoadOdsEx_48564B, "LoadOdsEx_48564B");
+    hnh_Hook(0x484a38, hook_ParseOdsEx_484A38, "ParseOdsEx_484A38");
+
     hnh_Hook(0x483567, hook_ReadStrFile_483567, "ReadStrFile_483567"); // [OK]
     hnh_Hook(0x47E999, hook_FindFrameByName_47E999, "FindFrameByName_47E999"); // [OK]
     hnh_Hook(0x403A00, hook_CHanaObj__NewAnimSetT3F1_S150, "CHanaObj__NewAnimSetT3F1_S150_403A00"); // [OK]

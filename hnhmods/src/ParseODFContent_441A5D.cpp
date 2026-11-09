@@ -45,15 +45,15 @@ bool (__cdecl*CHanaAnimSetT3F1__AddAnimT3F0_403C15)(CHanaAnimSetT3F1_S150 *pAnim
 void (__cdecl*CHanaAnimSetT3F1__SetTime_403D61)(CHanaAnimSetT3F1_S150 *pHanaT3F1, float t2) =
     reinterpret_cast<void(__cdecl*)(CHanaAnimSetT3F1_S150 *, float)>(0x403D61);
 
-int (__cdecl*ParseVERT_440288)(LPBYTE *ppBuf, CHanaVertT3EA_S1FC **ppVert,
+void (__cdecl*ParseVERT_440288)(LPBYTE *ppBuf, CHanaVertT3EA_S1FC **ppVert,
     CHanaAnimSetT3F1_S150 *pAnimSetT3F1, CHanaFrameT3EC_S354 *pRootFrameT3EC) =
-    reinterpret_cast<int(__cdecl*)(LPBYTE *, CHanaVertT3EA_S1FC **,
+    reinterpret_cast<void(__cdecl*)(LPBYTE *, CHanaVertT3EA_S1FC **,
       CHanaAnimSetT3F1_S150 *, CHanaFrameT3EC_S354 *)>(0x440288);
 
 int (__cdecl*CHanaObj__NewMorpT457)(CHanaMorpT457_S40C **ppOut, CHanaMeshT3F5_S138 *pMeshT3F5) =
     reinterpret_cast<int(__cdecl*)(CHanaMorpT457_S40C **, CHanaMeshT3F5_S138 *)>(0x433DA7);
-int (__cdecl*HanaMorp_AddVertexRef)(CHanaMorpT457_S40C *pMorpT457, CHanaVertT3EA_S1FC *pVertT3EA) =
-    reinterpret_cast<int(__cdecl*)(CHanaMorpT457_S40C *, CHanaVertT3EA_S1FC *)>(0x434370);
+void (__cdecl*HanaMorp_AddVertexRef)(CHanaMorpT457_S40C *pMorpT457, CHanaVertT3EA_S1FC *pVertT3EA) =
+    reinterpret_cast<void(__cdecl*)(CHanaMorpT457_S40C *, CHanaVertT3EA_S1FC *)>(0x434370);
 void (__cdecl*HanaMorp_InitSubObject)(CHanaMorpT457_S40C *pMorpT457, int zero,
     int n1, int n0, int n2, int n3, CHanaSubObj_S2C *parrS2C, int n4count,
     const char *sz, int idx) =
@@ -62,8 +62,8 @@ void (__cdecl*HanaMorp_InitSubObject)(CHanaMorpT457_S40C *pMorpT457, int zero,
 void (__cdecl*CalcFrameBound_404B80)(CHanaFrameT3EC_S354 *pFrameT3EC, CHanaMorpT457_S40C *pMorpT3F5) =
     reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaMorpT457_S40C *)>(0x404B80);
 
-D3DXMATRIX *(__cdecl*SetFramePosRel_4069DD)(CHanaFrameT3EC_S354 *pChildFrame, CHanaFrameT3EC_S354 *pParentFrame, float x, float y, float z) =
-    reinterpret_cast<D3DXMATRIX *(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *, float, float, float)>(0x4069DD);
+void (__cdecl*SetFramePosRel_4069DD)(CHanaFrameT3EC_S354 *pChildFrame, CHanaFrameT3EC_S354 *pParentFrame, float x, float y, float z) =
+    reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *, float, float, float)>(0x4069DD);
 void (__cdecl * ApplyQTS_4035B1)( D3DXMATRIX *pOut, D3DXQUATERNION *pQ, float x, float y, float z, float sx, float sy, float sz) =
   reinterpret_cast<void(__cdecl*)( D3DXMATRIX *pOut, 
     D3DXQUATERNION *pQ, float x, float y, float z, float sx, float sy, float sz)>(0x4035B1);
@@ -2805,9 +2805,60 @@ void __cdecl hook_ParseOdfMeshVFLG_43FDEC(char **ppBuf, CHanaVertT3EA_S1FC *pHan
 }
 
 void register_ParseODFContent_441A5D() {
-  hnh_Hook(0x4069DD, hook_SetFramePosRel_4069DD, "SetFramePosRel_4069DD"); // [OK]
+  ParseODFContent_441A5D = hook_ParseODFContent_441A5D;
+  ParseOdfFRAM_44106A = hook_ParseOdfFRAM_44106A;
+  ParseOdfMESH_44068C = hook_ParseOdfMESH_44068C;
+  ParseOdfMORP_440896 = hook_ParseOdfMORP_440896;
+  ParseOdfANIM_4414EB = hook_ParseOdfANIM_4414EB;
+  ParseOdf3DON_44189C = hook_ParseOdf3DON_44189C;
+  AssignLigthtToFrame_40539D = hook_AssignLigthtToFrame_40539D;
+  CHanaObj__NewAnimT3F0 = hook_CHanaObj__NewAnimT3F0;
+  HanaAnim_GetDuration = hook_HanaAnim_GetDuration;
+  CHanaAnimT3F0__BakeKeyframesT3F0_402D0E = hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E;
+  HanaFrame_GetFrameName = hook_HanaFrame_GetFrameName;
+  HanaAnim_LinkFrame = hook_HanaAnim_LinkFrame;
+  InterpolateHanaAnimFrame = hook_InterpolateHanaAnimFrame;
+  CHanaAnimSetT3F1__AddAnimT3F0_403C15 = hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15;
+  CHanaAnimSetT3F1__SetTime_403D61 = hook_CHanaAnimSetT3F1__SetTime_403D61;
+
+  ParseVERT_440288 = hook_ParseVERT_440288;
+
+  CHanaObj__NewMorpT457 = hook_CHanaObj__NewMorpT457;
+  HanaMorp_AddVertexRef = hook_HanaMorp_AddVertexRef;
+  HanaMorp_InitSubObject = hook_HanaMorp_InitSubObject;
+  CalcFrameBound_404B80 = hook_CalcFrameBound_404B80;
+
+  SetFramePosRel_4069DD = hook_SetFramePosRel_4069DD;
+  ApplyQTS_4035B1 = hook_ApplyQTS_4035B1;
+  ConfigureLight = hook_ConfigureLight;
+  HanaFrame_GetCenterPosition_408C3E = hook_HanaFrame_GetCenterPosition_408C3E;
+  GetSoundBufferAverageLevel = hook_GetSoundBufferAverageLevel;
+  HanaAnim_FindInterpolationFrame = hook_HanaAnim_FindInterpolationFrame;
+  FindMateAnimKeyframeBounds = hook_FindMateAnimKeyframeBounds;
+
+  ApplyMateAnimMaterial = hook_ApplyMateAnimMaterial;
+
+  CHanaObj__FillVertexBufferT3EA = hook_CHanaObj__FillVertexBufferT3EA;
+  CHanaObj__NewVertT3EA = hook_CHanaObj__NewVertT3EA;
+  GetVertByName_4400C3 = hook_GetVertByName_4400C3;
+  ParseOdfMeshMATE_43F8FE = hook_ParseOdfMeshMATE_43F8FE;
+  HanaVert_SetMaterial = hook_HanaVert_SetMaterial;
+  FreeMate_41828C = hook_FreeMate_41828C;
+  HanaMateAnim_InsertKeyframe = hook_HanaMateAnim_InsertKeyframe;
+  ParseOdfMeshMANM_43FBD1 = hook_ParseOdfMeshMANM_43FBD1;
+  HanaMateAnim_SetMaterial = hook_HanaMateAnim_SetMaterial;
+  CHanaObj__NewMateAnimT3F7 = hook_CHanaObj__NewMateAnimT3F7;
+  HanaAnimSet_AddMaterialAnimRef = hook_HanaAnimSet_AddMaterialAnimRef;
+  ParseOdfMeshTEXT_43F460 = hook_ParseOdfMeshTEXT_43F460;
+  HanaVert_SetTexture = hook_HanaVert_SetTexture;
+  HanaVert_ReleaseTexture = hook_HanaVert_ReleaseTexture;
+  FindObjByType_40BC13 = hook_FindObjByType_40BC13;
+  ParseOdfMeshVFLG_43FDEC = hook_ParseOdfMeshVFLG_43FDEC;
 
   hnh_HookOff();
+    hnh_Hook(0x4069DD, hook_SetFramePosRel_4069DD, "SetFramePosRel_4069DD"); // [OK]
+
+
     hnh_Hook(0x44106A, hook_ParseOdfFRAM_44106A, "ParseOdfFRAM_44106A"); // [OK]
     hnh_Hook(0x4414EB, hook_ParseOdfANIM_4414EB, "ParseOdfANIM_4414EB"); // [OK]
     hnh_Hook(0x44068C, hook_ParseOdfMESH_44068C, "ParseOdfMESH_44068C"); // [OK]

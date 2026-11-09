@@ -233,5 +233,8 @@ void __cdecl hook_SysMenu_Graphics_46380D(int *arrGfxOpts /*unused*/,
 }
 
 void register_SysMenu_Graphics_46380D() {
+  SysMenu_Graphics_46380D = hook_SysMenu_Graphics_46380D;
+  hnh_HookOff();
     hnh_Hook(0x46380D, hook_SysMenu_Graphics_46380D, "SysMenu_Graphics_46380D");  // [OK]
+  hnh_HookOff();
 }

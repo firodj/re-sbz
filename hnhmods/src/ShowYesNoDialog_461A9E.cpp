@@ -188,5 +188,8 @@ int __cdecl hook_ShowYesNoDialog_461A9E(CHanaSpriteT3F6_S1FC *pCursor,
 }
 
 void register_ShowYesNoDialog_461A9E() {
+  ShowYesNoDialog_461A9E = hook_ShowYesNoDialog_461A9E;
+  hnh_HookOff();
     hnh_Hook(0x461A9E, hook_ShowYesNoDialog_461A9E, "ShowYesNoDialog_461A9E");  // [OK]
+  hnh_HookOn();
 }

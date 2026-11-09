@@ -182,5 +182,8 @@ int __cdecl hook_SysMenu_LoadMenu_462851(CSceneState arrScene[], CHAR arrSceneNa
 }
 
 void register_SysMenu_LoadMenu_462851() {
+  SysMenu_LoadMenu_462851 = hook_SysMenu_LoadMenu_462851;
+  hnh_HookOff();
     hnh_Hook(0x462851, hook_SysMenu_LoadMenu_462851, "SysMenu_LoadMenu_462851");  // [OK]
+  hnh_HookOn();
 }

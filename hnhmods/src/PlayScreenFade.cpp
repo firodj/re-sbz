@@ -5,35 +5,35 @@
 #include "shared.hpp"
 
 // === PINNED GAME FUNCTIONS ===
-LPDIRECTDRAWSURFACE7(__cdecl* PlayScreenFade)(int bisGo, COLORREF colorref,
+void (__cdecl* PlayScreenFade)(int bisGo, COLORREF colorref,
   LPDIRECTDRAWSURFACE7 pDdSurface, float fFade, char bFlags) =
-    reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(int, COLORREF,
+    reinterpret_cast<void(__cdecl*)(int, COLORREF,
       LPDIRECTDRAWSURFACE7, float, char)>(0x4874DE);
 
 DWORD(__cdecl* RGBToSurfaceFormat)(LPDIRECTDRAWSURFACE7 surface, COLORREF color) =
     reinterpret_cast<DWORD(__cdecl*)(LPDIRECTDRAWSURFACE7, COLORREF)>(0x41973F);
-int(__cdecl* CHanaObj__NewSpriteT3F6bySurf)(CHanaSpriteT3F6_S1FC **pOut, LPDIRECTDRAWSURFACE7 pSurfaceSrc) =
-    reinterpret_cast<int(__cdecl*)(CHanaSpriteT3F6_S1FC **, LPDIRECTDRAWSURFACE7)>(0x4137D1);
-int(__cdecl* CHanaObj__ReplaceTexture3F6)(CHanaSpriteT3F6_S1FC *pSprite, LPDIRECTDRAWSURFACE7 *pTexture) =
-    reinterpret_cast<int(__cdecl*)(CHanaSpriteT3F6_S1FC *, LPDIRECTDRAWSURFACE7 *)>(0x413D78);
+void(__cdecl* CHanaObj__NewSpriteT3F6bySurf)(CHanaSpriteT3F6_S1FC **pOut, LPDIRECTDRAWSURFACE7 pSurfaceSrc) =
+    reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC **, LPDIRECTDRAWSURFACE7)>(0x4137D1);
+void(__cdecl* CHanaObj__ReplaceTexture3F6)(CHanaSpriteT3F6_S1FC *pSprite, LPDIRECTDRAWSURFACE7 *pTexture) =
+    reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *, LPDIRECTDRAWSURFACE7 *)>(0x413D78);
 void(__cdecl* CHanaObj__SetAlpha3F6)(CHanaSpriteT3F6_S1FC *pSprite, float alpha) =
     reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *, float)>(0x414ABA);
-int(__cdecl* DrawSpriteLTRB)(CHanaSpriteT3F6_S1FC *pSprite, int left, int top, int right, int bottom) =
-    reinterpret_cast<int(__cdecl*)(CHanaSpriteT3F6_S1FC *, int, int, int, int)>(0x414589);
-int(__cdecl* BltFastWH)(LPDIRECTDRAWSURFACE7 pSurf, int xDest, int yDest, LPDIRECTDRAWSURFACE7 pSrc,
+void(__cdecl* DrawSpriteLTRB)(CHanaSpriteT3F6_S1FC *pSprite, int left, int top, int right, int bottom) =
+    reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *, int, int, int, int)>(0x414589);
+void(__cdecl* BltFastWH)(LPDIRECTDRAWSURFACE7 pSurf, int xDest, int yDest, LPDIRECTDRAWSURFACE7 pSrc,
     int left, int top, int width, int height, int ddbltfastFlags) =
-    reinterpret_cast<int(__cdecl*)(LPDIRECTDRAWSURFACE7, int, int, LPDIRECTDRAWSURFACE7,
+    reinterpret_cast<void(__cdecl*)(LPDIRECTDRAWSURFACE7, int, int, LPDIRECTDRAWSURFACE7,
       int, int, int, int, int)>(0x419D16);
 void(__cdecl* RenderFlush_4874A5)(void) = reinterpret_cast<void(__cdecl*)()>(0x4874A5);
-HRESULT(__cdecl* RenderClear_40BF4F)(DWORD ClearFlags) =
-    reinterpret_cast<HRESULT(__cdecl*)(DWORD)>(0x40BF4F);
-HRESULT(__cdecl* HanaFrame_Draw)(CHanaFrameT3EC_S354 *pFrame) =
-    reinterpret_cast<HRESULT(__cdecl*)(CHanaFrameT3EC_S354 *)>(0x405C06);
+void(__cdecl* RenderClear_40BF4F)(DWORD ClearFlags) =
+    reinterpret_cast<void(__cdecl*)(DWORD)>(0x40BF4F);
+void(__cdecl* HanaFrame_Draw)(CHanaFrameT3EC_S354 *pFrame) =
+    reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *)>(0x405C06);
 double(__cdecl* GetTimerScaleFactor)(void) = reinterpret_cast<double(__cdecl*)()>(0x47E78F);
 void(__cdecl* SetTimerScaleFactor)(float fTimeScale) =
     reinterpret_cast<void(__cdecl*)(float)>(0x47E782);
-int (__cdecl* FrameTimer_BeginFrame)(void) = reinterpret_cast<int(__cdecl*)()>(0x47E768);
-DWORD(__cdecl* FrameTimer_EndFrame)(void) = reinterpret_cast<DWORD(__cdecl*)()>(0x47E7D5);
+void (__cdecl* FrameTimer_BeginFrame)(void) = reinterpret_cast<void(__cdecl*)()>(0x47E768);
+void(__cdecl* FrameTimer_EndFrame)(void) = reinterpret_cast<void(__cdecl*)()>(0x47E7D5);
 double(__cdecl* GetFrameTime)(void) = reinterpret_cast<double(__cdecl*)()>(0x47E79A);
 void (__cdecl * HanaFrame_GetRelPosition)( CHanaFrameT3EC_S354 *pFrame, CHanaFrameRootT3EC_S2D4 *pRefFrame, float *pOutX, float *pOutY, float *pOutZ) = 
   reinterpret_cast<void(__cdecl*)( CHanaFrameT3EC_S354 *pFrame, CHanaFrameRootT3EC_S2D4 *pRefFrame, float *pOutX, float *pOutY, float *pOutZ)>(0x406AB1);
@@ -43,8 +43,8 @@ void (* HanaFrame_BuildMatrixStack)() = reinterpret_cast<void(*)()>(0x40773F);
 void (__cdecl * CHanaObj__LockVtxBufT3EA_418544)(CHanaVertT3EA_S1FC *pVert, DWORD *pNumVertices, LPVOID *ppData) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert, DWORD *pNumVertices, LPVOID *ppData)>(0x418544);
 void (__cdecl * CHanaObj__UnlockVrxBufT3EA_41858E)(CHanaVertT3EA_S1FC *pVert) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert)>(0x41858E);
 unsigned int (* CalculateVertexSize)(DWORD fvf) = reinterpret_cast<unsigned int(*)(DWORD fvf)>(0x417F88); 
-HRESULT(__cdecl* HanaFrame_PushNode)(CHanaFrameT3EC_S354* pFrame) =
-  reinterpret_cast<HRESULT(__cdecl*)(CHanaFrameT3EC_S354* pFrame)>(0x407800);
+void(__cdecl* HanaFrame_PushNode)(CHanaFrameT3EC_S354* pFrame) =
+  reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354* pFrame)>(0x407800);
 void (__cdecl * HanaMorpT457_Animate)(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim) =
   reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim)>(0x433569);
 int  (__cdecl*CHanaObj__GetType_40BBF4)(CHanaBase_S130* pObj) = reinterpret_cast<int(__cdecl*)(CHanaBase_S130*)>(0x40BBF4);
@@ -1273,11 +1273,46 @@ D3DVERTEX *__cdecl hook_HanaVert_Transform(D3DVERTEX *pOutVtx, D3DXMATRIX *pM, D
 }
 
 void register_PlayScreenFade_4874DE() {
-  hnh_Hook(0x4874DE, hook_PlayScreenFade, "PlayScreenFade_4874DE"); // [OK]
-  hnh_Hook(0x4874A5, hook_RenderFlush_4874A5,            "RenderFlush_4874A5");
-  
+
+  PlayScreenFade = hook_PlayScreenFade;
+  RGBToSurfaceFormat = hook_RGBToSurfaceFormat;
+  CHanaObj__NewSpriteT3F6bySurf = hook_CHanaObj__NewSpriteT3F6bySurf;
+  CHanaObj__ReplaceTexture3F6 = hook_CHanaObj__ReplaceTexture3F6;
+  CHanaObj__SetAlpha3F6 = hook_CHanaObj__SetAlpha3F6;
+  DrawSpriteLTRB = hook_DrawSpriteLTRB;
+  BltFastWH = hook_BltFastWH;
+  RenderFlush_4874A5 = hook_RenderFlush_4874A5;
+  RenderClear_40BF4F = hook_RenderClear_40BF4F;
+  HanaFrame_Draw = hook_HanaFrame_Draw;
+  GetTimerScaleFactor = hook_GetTimerScaleFactor;
+  SetTimerScaleFactor = hook_SetTimerScaleFactor;
+  FrameTimer_BeginFrame = hook_FrameTimer_BeginFrame;
+  FrameTimer_EndFrame = hook_FrameTimer_EndFrame;
+  GetFrameTime = hook_GetFrameTime;
+  HanaFrame_GetRelPosition = hook_HanaFrame_GetRelPosition;
+
+  SelfBltDC = hook_SelfBltDC;
+  HanaFrame_BuildMatrixStack = hook_HanaFrame_BuildMatrixStack;
+  CHanaObj__LockVtxBufT3EA_418544 = hook_CHanaObj__LockVtxBufT3EA_418544;
+  CHanaObj__UnlockVrxBufT3EA_41858E = hook_CHanaObj__UnlockVrxBufT3EA_41858E;
+  CalculateVertexSize = hook_CalculateVertexSize;
+  HanaFrame_PushNode = hook_HanaFrame_PushNode;
+  HanaMorpT457_Animate = hook_HanaMorpT457_Animate;
+  CHanaObj__GetType_40BBF4 = hook_CHanaObj__GetType_40BBF4;
+  SetInversTransf_405BB4 = hook_SetInversTransf_405BB4;
+  HanaFrame_PreDraw = hook_HanaFrame_PreDraw;
+  HanaMorp_ApplyTree = hook_HanaMorp_ApplyTree;
+  HanaMorp_ApplySubTree = hook_HanaMorp_ApplySubTree;
+  HanaVert_Transform = hook_HanaVert_Transform;
+  HanaMorpT457_Interp = hook_HanaMorpT457_Interp;
+  HanaMorpT457_ApplySubs = hook_HanaMorpT457_ApplySubs;
+  HanaVert_BlendMorph = hook_HanaVert_BlendMorph;
 
   hnh_HookOff();
+  hnh_Hook(0x4874DE, hook_PlayScreenFade, "PlayScreenFade_4874DE"); // [OK]
+  hnh_Hook(0x4874A5, hook_RenderFlush_4874A5,            "RenderFlush_4874A5");
+
+
   hnh_Hook(0x47E78F, hook_GetTimerScaleFactor,           "GetTimerScaleFactor_47E78F"); // [OK] 
   hnh_Hook(0x47E782, hook_SetTimerScaleFactor,           "SetTimerScaleFactor_47E782"); // [OK] 
   hnh_Hook(0x41973F, hook_RGBToSurfaceFormat,            "RGBToSurfaceFormat_41973F"); // [OK] 

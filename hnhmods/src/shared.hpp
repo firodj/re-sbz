@@ -469,22 +469,20 @@ extern char(&g_arrGalleryUnlocked_5301A2)[150];
 
 // === DEFINED PlayScreenFade.cpp ===
 
-extern LPDIRECTDRAWSURFACE7(__cdecl* PlayScreenFade)(int bisGo, COLORREF colorref,
-  LPDIRECTDRAWSURFACE7 pDdSurface, float fFade, char bFlags);
-
+extern void(__cdecl* PlayScreenFade)(int bisGo, COLORREF colorref, LPDIRECTDRAWSURFACE7 pDdSurface, float fFade, char bFlags);
 extern DWORD  (__cdecl* RGBToSurfaceFormat)(LPDIRECTDRAWSURFACE7 surface, COLORREF color);
-extern int  (__cdecl* CHanaObj__NewSpriteT3F6bySurf)(CHanaSpriteT3F6_S1FC **pOut, LPDIRECTDRAWSURFACE7 pSurfaceSrc);
-extern int  (__cdecl* CHanaObj__ReplaceTexture3F6)(CHanaSpriteT3F6_S1FC *pSprite, LPDIRECTDRAWSURFACE7 *pTexture);
+extern void (__cdecl* CHanaObj__NewSpriteT3F6bySurf)(CHanaSpriteT3F6_S1FC **pOut, LPDIRECTDRAWSURFACE7 pSurfaceSrc);
+extern void (__cdecl* CHanaObj__ReplaceTexture3F6)(CHanaSpriteT3F6_S1FC *pSprite, LPDIRECTDRAWSURFACE7 *pTexture);
 extern void (__cdecl* CHanaObj__SetAlpha3F6)(CHanaSpriteT3F6_S1FC *pSprite, float alpha);
-extern int  (__cdecl* DrawSpriteLTRB)(CHanaSpriteT3F6_S1FC *pSprite, int left, int top, int right, int bottom);
-extern int  (__cdecl* BltFastWH)(LPDIRECTDRAWSURFACE7 pSurf, int xDest, int yDest, LPDIRECTDRAWSURFACE7 pSrc, int left, int top, int width, int height, int ddbltfastFlags);
+extern void (__cdecl* DrawSpriteLTRB)(CHanaSpriteT3F6_S1FC *pSprite, int left, int top, int right, int bottom);
+extern void (__cdecl* BltFastWH)(LPDIRECTDRAWSURFACE7 pSurf, int xDest, int yDest, LPDIRECTDRAWSURFACE7 pSrc, int left, int top, int width, int height, int ddbltfastFlags);
 extern void (__cdecl* RenderFlush_4874A5)(void);
-extern HRESULT  (__cdecl* RenderClear_40BF4F)(DWORD ClearFlags);
-extern HRESULT  (__cdecl* HanaFrame_Draw)(CHanaFrameT3EC_S354 *pFrame);
+extern void (__cdecl* RenderClear_40BF4F)(DWORD ClearFlags);
+extern void (__cdecl* HanaFrame_Draw)(CHanaFrameT3EC_S354 *pFrame);
 extern double (__cdecl* GetTimerScaleFactor)(void);
 extern void   (__cdecl* SetTimerScaleFactor)(float fTimeScale);
-extern int    (__cdecl* FrameTimer_BeginFrame)(void);
-extern DWORD  (__cdecl* FrameTimer_EndFrame)(void);
+extern void   (__cdecl* FrameTimer_BeginFrame)(void);
+extern void  (__cdecl* FrameTimer_EndFrame)(void);
 extern double (__cdecl* GetFrameTime)(void);
 extern void   (__cdecl * HanaFrame_GetRelPosition)( CHanaFrameT3EC_S354 *pFrame, CHanaFrameRootT3EC_S2D4 *pRefFrame, float *pOutX, float *pOutY, float *pOutZ);
 extern void   (__cdecl*SelfBltDC)(LPDIRECTDRAWSURFACE7 pDDSurf);
@@ -492,7 +490,7 @@ extern void   (* HanaFrame_BuildMatrixStack)();
 extern void   (__cdecl * CHanaObj__LockVtxBufT3EA_418544)(CHanaVertT3EA_S1FC *pVert, DWORD *pNumVertices, LPVOID *ppData);
 extern void   (__cdecl * CHanaObj__UnlockVrxBufT3EA_41858E)(CHanaVertT3EA_S1FC *pVert);
 extern unsigned int (* CalculateVertexSize)(DWORD fvf);
-extern HRESULT  (__cdecl* HanaFrame_PushNode)(CHanaFrameT3EC_S354* pFrame);
+extern void  (__cdecl* HanaFrame_PushNode)(CHanaFrameT3EC_S354* pFrame);
 extern void   (__cdecl * HanaMorpT457_Animate)(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim);
 extern int    (__cdecl*CHanaObj__GetType_40BBF4)(CHanaBase_S130* pObj);
 extern void(__cdecl* SetInversTransf_405BB4)(D3DXMATRIX* pM);
@@ -516,7 +514,7 @@ extern void (__cdecl * HanaFrame_GetCenterPosition_408C3E)( CHanaFrameRootT3EC_S
 extern BOOL(__cdecl* GetSoundBufferAverageLevel)(LPDIRECTSOUNDBUFFER pDSBuffer, float* pfPlayPos);
 extern void(__cdecl* CalcFrameBound_404B80)(CHanaFrameT3EC_S354* pFrameT3EC, CHanaMorpT457_S40C* pMorpT3F5);
 extern void(__cdecl* CHanaAnimSetT3F1__SetTime_403D61)(CHanaAnimSetT3F1_S150* pHanaT3F1, float t2);
-extern D3DXMATRIX* (__cdecl* SetFramePosRel_4069DD)(CHanaFrameT3EC_S354* pChildFrame, CHanaFrameT3EC_S354* pParentFrame, float x, float y, float z);
+extern void (__cdecl* SetFramePosRel_4069DD)(CHanaFrameT3EC_S354* pChildFrame, CHanaFrameT3EC_S354* pParentFrame, float x, float y, float z);
 
 // === DEFINED ParseODS.cpp ===
 
@@ -525,7 +523,7 @@ extern void(__cdecl* CHanaObj__NewMeshT3F5)(CHanaMeshT3F5_S138** pOut);
 extern void(__cdecl* CHanaObj__NewAnimSetT3F1_S150)(CHanaAnimSetT3F1_S150** ppOut);
 extern BOOL(__cdecl* LoadOdsEx_48564B)(LPCSTR lpFileName, CHanaSceneT458_S504** ppScene,
   CHanaFrameT3EC_S354** arrFrames, CHanaAnimSetT3F1_S150** arrAnimSets,
-  unsigned int nCount);
+  int nCount);
 extern void(__cdecl* SekBody__UpdateTo_4014E4)(CSekBody* pSekBody, int nItem);
 
 extern BOOL(__cdecl* LoadSekAndOdf_4445DD)(LPCSTR pszSekFile, LPCSTR pszOdfFile, CSekBody** ppSekBody);

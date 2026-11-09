@@ -181,5 +181,9 @@ void __cdecl hook_SysMenu_Options_462FE9(CSceneState *sceneStates /*unused*/,
 }
 
 void register_SysMenu_Options_462FE9() {
+  SysMenu_Options_462FE9 = hook_SysMenu_Options_462FE9;
+  
+  hnh_HookOff();
     hnh_Hook(0x462FE9, hook_SysMenu_Options_462FE9, "SysMenu_Options_462FE9");  // [OK]
+  hnh_HookOn();
 }

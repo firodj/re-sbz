@@ -364,5 +364,9 @@ int __cdecl hook_SystemMenu_4655AB(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int
 }
 
 void register_SystemMenu_4655AB() {
+  SystemMenu_4655AB = hook_SystemMenu_4655AB;
+
+  hnh_HookOff();
     hnh_Hook(0x4655AB, hook_SystemMenu_4655AB, "SystemMenu_4655AB"); // [OK]
+  hnh_HookOn();
 }
