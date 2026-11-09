@@ -559,21 +559,23 @@ LRESULT __stdcall hook_WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wPa
 
 // ---
 
-void register_WndProcCheckSystem_485FC2() {
-  WndProcCheckSystem_485FC2 = hook_WndProcCheckSystem_485FC2;
+void register_WndProcCheckSystem_485FC2(int cfg) {
+  if (cfg == 1) {
+    WndProcCheckSystem_485FC2 = hook_WndProcCheckSystem_485FC2;
 
-  D3DDeinit = hook_D3DDeinit;
-  Renderer_InitializeTrigTablesAndPixelFormat=hook_Renderer_InitializeTrigTablesAndPixelFormat;
-  HanaDS_SetErrStr=hook_HanaDS_SetErrStr;
-  HanaHeap_Create=hook_HanaHeap_Create;
-  HanaDS_InitHeap=hook_HanaDS_InitHeap;
-  HanaDS_Init=hook_HanaDS_Init;
-  HanaHeap_Destroy=hook_HanaHeap_Destroy;
-  HanaDS_DestroyHeap=hook_HanaDS_DestroyHeap;
-  HanaDS_Shutdown=hook_HanaDS_Shutdown;
-  HanaDS_Create3DListener=hook_HanaDS_Create3DListener;
-  Renderer_CleanupFont=hook_Renderer_CleanupFont;
-  SetUiFont_419BCD=hook_SetUiFont_419BCD;
+    D3DDeinit = hook_D3DDeinit;
+    Renderer_InitializeTrigTablesAndPixelFormat = hook_Renderer_InitializeTrigTablesAndPixelFormat;
+    HanaDS_SetErrStr = hook_HanaDS_SetErrStr;
+    HanaHeap_Create = hook_HanaHeap_Create;
+    HanaDS_InitHeap = hook_HanaDS_InitHeap;
+    HanaDS_Init = hook_HanaDS_Init;
+    HanaHeap_Destroy = hook_HanaHeap_Destroy;
+    HanaDS_DestroyHeap = hook_HanaDS_DestroyHeap;
+    HanaDS_Shutdown = hook_HanaDS_Shutdown;
+    HanaDS_Create3DListener = hook_HanaDS_Create3DListener;
+    Renderer_CleanupFont = hook_Renderer_CleanupFont;
+    SetUiFont_419BCD = hook_SetUiFont_419BCD;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x423CCC, hook_HanaDS_SetErrStr, "HanaDS_SetErrStr_423CCC");

@@ -232,8 +232,10 @@ void __cdecl hook_SysMenu_Graphics_46380D(int *arrGfxOpts /*unused*/,
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);  // D3DBLEND_INVSRCALPHA
 }
 
-void register_SysMenu_Graphics_46380D() {
-  SysMenu_Graphics_46380D = hook_SysMenu_Graphics_46380D;
+void register_SysMenu_Graphics_46380D(int cfg) {
+  if (cfg == 1) {
+    SysMenu_Graphics_46380D = hook_SysMenu_Graphics_46380D;
+  }
   hnh_HookOff();
     hnh_Hook(0x46380D, hook_SysMenu_Graphics_46380D, "SysMenu_Graphics_46380D");  // [OK]
   hnh_HookOff();

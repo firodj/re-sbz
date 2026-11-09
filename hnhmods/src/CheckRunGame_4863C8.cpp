@@ -882,21 +882,23 @@ void __cdecl hook_CalculateLocalRotationMatrix(
   *pZpos = pOut._33;
 }
 
-void register_CheckRunGame_4863C8() {
-  CheckRunGame_4863C8=hook_CheckRunGame_4863C8;
-  DisplayConfig_ProcessDriverDesc =hook_DisplayConfig_ProcessDriverDesc;
-  IsVideoModeSupported =hook_IsVideoModeSupported;
-  DisplayConfig_Init =hook_DisplayConfig_Init;
-  ReadFileToBuffer =hook_ReadFileToBuffer;
-  WriteBufferToFile =hook_WriteBufferToFile;
-  ShowTitleMenuWnd_428927 =hook_ShowTitleMenuWnd_428927;
-  SetLightingState =hook_SetLightingState;
-  D3DInitBuffers_40AF60 =hook_D3DInitBuffers_40AF60;
-  CHanaObj__NewLightT3EF =hook_CHanaObj__NewLightT3EF;
-  CHanaObj__AddObjItemRef_40B848 =hook_CHanaObj__AddObjItemRef_40B848;
-  AttachHanaObj_40BAB8 =hook_AttachHanaObj_40BAB8;
-  MatrixRotateCubeMapFace =hook_MatrixRotateCubeMapFace;
-  CalculateLocalRotationMatrix =hook_CalculateLocalRotationMatrix;
+void register_CheckRunGame_4863C8(int cfg) {
+  if (cfg == 1) {
+    CheckRunGame_4863C8 = hook_CheckRunGame_4863C8;
+    DisplayConfig_ProcessDriverDesc = hook_DisplayConfig_ProcessDriverDesc;
+    IsVideoModeSupported = hook_IsVideoModeSupported;
+    DisplayConfig_Init = hook_DisplayConfig_Init;
+    ReadFileToBuffer = hook_ReadFileToBuffer;
+    WriteBufferToFile = hook_WriteBufferToFile;
+    ShowTitleMenuWnd_428927 = hook_ShowTitleMenuWnd_428927;
+    SetLightingState = hook_SetLightingState;
+    D3DInitBuffers_40AF60 = hook_D3DInitBuffers_40AF60;
+    CHanaObj__NewLightT3EF = hook_CHanaObj__NewLightT3EF;
+    CHanaObj__AddObjItemRef_40B848 = hook_CHanaObj__AddObjItemRef_40B848;
+    AttachHanaObj_40BAB8 = hook_AttachHanaObj_40BAB8;
+    MatrixRotateCubeMapFace = hook_MatrixRotateCubeMapFace;
+    CalculateLocalRotationMatrix = hook_CalculateLocalRotationMatrix;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x4863C8, hook_CheckRunGame_4863C8, "CheckRunGame_4863C8"); // [OK] 

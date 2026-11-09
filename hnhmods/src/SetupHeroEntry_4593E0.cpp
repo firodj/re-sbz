@@ -1642,21 +1642,23 @@ void __cdecl hook_UpdateVoicePlayback_458B3A(
   }
 }
 
-void register_SetupHeroEntry_4593E0() {
-  SetupHeroEntry_4593E0 = hook_SetupHeroEntry_4593E0;
-  UpdateHeroBody_44474E = hook_UpdateHeroBody_44474E;
-  BuildMapCollisionGrid_445B12 = hook_BuildMapCollisionGrid_445B12;
-  Frame_RotateMatrixAxis_4070AB = hook_Frame_RotateMatrixAxis_4070AB;
-  CheckFrameCollision_443CC5 = hook_CheckFrameCollision_443CC5;
-  HitOverheadSurface_442C1C = hook_HitOverheadSurface_442C1C;
-  HitSupportSurface_4423B0 = hook_HitSupportSurface_4423B0;
-  ComputeMeshBounds_407E1F = hook_ComputeMeshBounds_407E1F;
-  TestBodyMoveHit_443EC4 = hook_TestBodyMoveHit_443EC4;
-  TestMoveCollision_4443FC = hook_TestMoveCollision_4443FC;
-  HanaGrid_DFSPath = hook_HanaGrid_DFSPath;
-  HanaGrid_FloodFill_4460AD = hook_HanaGrid_FloodFill_4460AD;
-  UpdateVoicePlayback_458B3A = hook_UpdateVoicePlayback_458B3A;
-  DSBufferGetVolume_423C65 = hook_DSBufferGetVolume_423C65;
+void register_SetupHeroEntry_4593E0(int cfg) {
+  if (cfg == 1) {
+    SetupHeroEntry_4593E0 = hook_SetupHeroEntry_4593E0;
+    UpdateHeroBody_44474E = hook_UpdateHeroBody_44474E;
+    BuildMapCollisionGrid_445B12 = hook_BuildMapCollisionGrid_445B12;
+    Frame_RotateMatrixAxis_4070AB = hook_Frame_RotateMatrixAxis_4070AB;
+    CheckFrameCollision_443CC5 = hook_CheckFrameCollision_443CC5;
+    HitOverheadSurface_442C1C = hook_HitOverheadSurface_442C1C;
+    HitSupportSurface_4423B0 = hook_HitSupportSurface_4423B0;
+    ComputeMeshBounds_407E1F = hook_ComputeMeshBounds_407E1F;
+    TestBodyMoveHit_443EC4 = hook_TestBodyMoveHit_443EC4;
+    TestMoveCollision_4443FC = hook_TestMoveCollision_4443FC;
+    HanaGrid_DFSPath = hook_HanaGrid_DFSPath;
+    HanaGrid_FloodFill_4460AD = hook_HanaGrid_FloodFill_4460AD;
+    UpdateVoicePlayback_458B3A = hook_UpdateVoicePlayback_458B3A;
+    DSBufferGetVolume_423C65 = hook_DSBufferGetVolume_423C65;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x4593e0, hook_SetupHeroEntry_4593E0, "SetupHeroEntry_4593E0"); // [OK]

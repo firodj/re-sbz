@@ -1267,30 +1267,31 @@ void __cdecl hook_SekBody__UpdateTo_4014E4(CSekBody *pSekBody, int nItem)
 }
 
 
-void register_ParseODS_483932() {
- 
-  ParseODS_483932 = hook_ParseODS_483932;
-  LoadOdsEx_48564B = hook_LoadOdsEx_48564B;
-  LoadSekAndOdf_4445DD = hook_LoadSekAndOdf_4445DD;
-  ReadStrFile_483567 = hook_ReadStrFile_483567;
-  ParseODFFile_441F19 = hook_ParseODFFile_441F19;
-  ParseSekFile_401039 = hook_ParseSekFile_401039;
-  CSekBody__PlayAnim_40179D = hook_CSekBody__PlayAnim_40179D;
-  FindFrameByName_47E999 = hook_FindFrameByName_47E999;
-  ParseOds3DON_483704 = hook_ParseOds3DON_483704;
-  HanaMesh_AddVertexReference = hook_HanaMesh_AddVertexReference;
-  HanaMorpT457_SetupFunsSubtree = hook_HanaMorpT457_SetupFunsSubtree;
-  CHanaObj__NewMeshT3F5 = hook_CHanaObj__NewMeshT3F5;
-  GetMeshT3F5FromObj_434FE0 = hook_GetMeshT3F5FromObj_434FE0;
-  HanaMorpT457_SetupFuns = hook_HanaMorpT457_SetupFuns;
-  CHanaObj__NewAnimSetT3F1_S150 = hook_CHanaObj__NewAnimSetT3F1_S150;
-  HanaFrame_PropagateFogToChildren = hook_HanaFrame_PropagateFogToChildren;
-  SekHeader_CloneClean = hook_SekHeader_CloneClean;
-  CHanaFrameT3EC__FindByName_483650 = hook_CHanaFrameT3EC__FindByName_483650;
-  ParseOdsEx_484A38 = hook_ParseOdsEx_484A38;
-  SekBody__UpdateTo_4014E4 = hook_SekBody__UpdateTo_4014E4;
-  HanaVert_CopyMorph = hook_HanaVert_CopyMorph;
-  HanaVert_LerpMorph = hook_HanaVert_LerpMorph;
+void register_ParseODS_483932(int cfg) {
+  if (cfg == 1) {
+    ParseODS_483932 = hook_ParseODS_483932;
+    LoadOdsEx_48564B = hook_LoadOdsEx_48564B;
+    LoadSekAndOdf_4445DD = hook_LoadSekAndOdf_4445DD;
+    ReadStrFile_483567 = hook_ReadStrFile_483567;
+    ParseODFFile_441F19 = hook_ParseODFFile_441F19;
+    ParseSekFile_401039 = hook_ParseSekFile_401039;
+    CSekBody__PlayAnim_40179D = hook_CSekBody__PlayAnim_40179D;
+    FindFrameByName_47E999 = hook_FindFrameByName_47E999;
+    ParseOds3DON_483704 = hook_ParseOds3DON_483704;
+    HanaMesh_AddVertexReference = hook_HanaMesh_AddVertexReference;
+    HanaMorpT457_SetupFunsSubtree = hook_HanaMorpT457_SetupFunsSubtree;
+    CHanaObj__NewMeshT3F5 = hook_CHanaObj__NewMeshT3F5;
+    GetMeshT3F5FromObj_434FE0 = hook_GetMeshT3F5FromObj_434FE0;
+    HanaMorpT457_SetupFuns = hook_HanaMorpT457_SetupFuns;
+    CHanaObj__NewAnimSetT3F1_S150 = hook_CHanaObj__NewAnimSetT3F1_S150;
+    HanaFrame_PropagateFogToChildren = hook_HanaFrame_PropagateFogToChildren;
+    SekHeader_CloneClean = hook_SekHeader_CloneClean;
+    CHanaFrameT3EC__FindByName_483650 = hook_CHanaFrameT3EC__FindByName_483650;
+    ParseOdsEx_484A38 = hook_ParseOdsEx_484A38;
+    SekBody__UpdateTo_4014E4 = hook_SekBody__UpdateTo_4014E4;
+    HanaVert_CopyMorph = hook_HanaVert_CopyMorph;
+    HanaVert_LerpMorph = hook_HanaVert_LerpMorph;
+  }
 
   hnh_HookOff();
     hnh_Hook(0x48564b, hook_LoadOdsEx_48564B, "LoadOdsEx_48564B");

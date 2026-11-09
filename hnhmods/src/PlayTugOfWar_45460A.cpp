@@ -659,13 +659,15 @@ void __cdecl hook_DrawHudSpriteNumber_44B97B(CHanaSpriteT3F6_S1FC **pDigitSprite
   }
 
 }
-void register_PlayTugOfWar_45460A() {
-  PlayTugOfWar_45460A = hook_PlayTugOfWar_45460A;
-  DrawCountdownFlash_4532D0 = hook_DrawCountdownFlash_4532D0;
-  UpdateBodiesInput_4542E0 = hook_UpdateBodiesInput_4542E0;
-  DrawClockHud_44AF5B = hook_DrawClockHud_44AF5B;
-  DrawTransitionFlash_453FAC = hook_DrawTransitionFlash_453FAC;
-  DrawHudSpriteNumber_44B97B = hook_DrawHudSpriteNumber_44B97B;
+void register_PlayTugOfWar_45460A(int cfg) {
+  if (cfg == 1) {
+    PlayTugOfWar_45460A = hook_PlayTugOfWar_45460A;
+    DrawCountdownFlash_4532D0 = hook_DrawCountdownFlash_4532D0;
+    UpdateBodiesInput_4542E0 = hook_UpdateBodiesInput_4542E0;
+    DrawClockHud_44AF5B = hook_DrawClockHud_44AF5B;
+    DrawTransitionFlash_453FAC = hook_DrawTransitionFlash_453FAC;
+    DrawHudSpriteNumber_44B97B = hook_DrawHudSpriteNumber_44B97B;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x45460a, hook_PlayTugOfWar_45460A, "PlayTugOfWar_45460A"); // [OK]

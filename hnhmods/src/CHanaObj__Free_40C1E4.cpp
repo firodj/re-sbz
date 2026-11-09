@@ -1185,40 +1185,42 @@ void __cdecl hook_CHanaObj__AddRef_40BFC3(CHanaBase_S130 *pObj)
   ++pObj->nCount_12C;
 }
 
-void register_CHanaObj__Free_40C1E4() {
-  CHanaObj__RemoveFromGlobalRef = hook_CHanaObj__RemoveFromGlobalRef;
-  CHanaObj__FreeVertT3EA = hook_CHanaObj__FreeVertT3EA;
-  CHanaObj__FreeTextureT3EB = hook_CHanaObj__FreeTextureT3EB;
-  Frame_FreeAttachedObject = hook_Frame_FreeAttachedObject;
-  Frame_FreeAttachedLight = hook_Frame_FreeAttachedLight;
-  RemoveChild_4058C3 = hook_RemoveChild_4058C3;
-  CHanaObj__FreeFrameT3EC = hook_CHanaObj__FreeFrameT3EC;
-  CHanaObj__FreeMateT3EE = hook_CHanaObj__FreeMateT3EE;
-  CHanaObj__FreeLightT3EF = hook_CHanaObj__FreeLightT3EF;
-  CHanaObj__FreeFrameArrayT3ED = hook_CHanaObj__FreeFrameArrayT3ED;
-  UnlinkHanaAnimFromFrame = hook_UnlinkHanaAnimFromFrame;
-  CHanaObj__FreeAnimT3F0 = hook_CHanaObj__FreeAnimT3F0;
-  FreeSoundStruct_422C72 = hook_FreeSoundStruct_422C72;
-  CHanaObj__FreeAnimSetT3F1 = hook_CHanaObj__FreeAnimSetT3F1;
-  CHanaObj__FreeTexCoordT3F2 = hook_CHanaObj__FreeTexCoordT3F2;
-  CHanaObj__FreeTexAnimT3F3 = hook_CHanaObj__FreeTexAnimT3F3;
-  CHanaObj__FreeTexAnimSetT3F4 = hook_CHanaObj__FreeTexAnimSetT3F4;
-  CHanaObj__FreeMeshT3F5 = hook_CHanaObj__FreeMeshT3F5;
-  CHanaObj__FreeSpriteT3F6 = hook_CHanaObj__FreeSpriteT3F6;
-  ApplyMaterial = hook_ApplyMaterial;
-  CHanaObj__FreeMateAnimT3F7 = hook_CHanaObj__FreeMateAnimT3F7;
-  CHanaObj__FreeMateAnimSetT3F8 = hook_CHanaObj__FreeMateAnimSetT3F8;
-  ApplyLightSettings = hook_ApplyLightSettings;
-  SetupLightFromD3D = hook_SetupLightFromD3D;
-  CHanaObj__FreeLightAnimT3F9 = hook_CHanaObj__FreeLightAnimT3F9;
-  CHanaObj__FreeLightAnimSetT3FA = hook_CHanaObj__FreeLightAnimSetT3FA;
-  CHanaObj__FreeMorpT457 = hook_CHanaObj__FreeMorpT457;
-  FreeSekHeader = hook_FreeSekHeader;
-  CSekBody__Release_4012FE = hook_CSekBody__Release_4012FE;
-  CHanaObj__FreeSceneT458 = hook_CHanaObj__FreeSceneT458;
-  CHanaObj__Free_40C1E4 = hook_CHanaObj__Free_40C1E4;
-  CHanaObj__GetRealPath_486D9A = hook_CHanaObj__GetRealPath_486D9A;
-  CHanaObj__AddRef_40BFC3 = hook_CHanaObj__AddRef_40BFC3;
+void register_CHanaObj__Free_40C1E4(int cfg) {
+  if (cfg == 1) {
+    CHanaObj__RemoveFromGlobalRef = hook_CHanaObj__RemoveFromGlobalRef;
+    CHanaObj__FreeVertT3EA = hook_CHanaObj__FreeVertT3EA;
+    CHanaObj__FreeTextureT3EB = hook_CHanaObj__FreeTextureT3EB;
+    Frame_FreeAttachedObject = hook_Frame_FreeAttachedObject;
+    Frame_FreeAttachedLight = hook_Frame_FreeAttachedLight;
+    RemoveChild_4058C3 = hook_RemoveChild_4058C3;
+    CHanaObj__FreeFrameT3EC = hook_CHanaObj__FreeFrameT3EC;
+    CHanaObj__FreeMateT3EE = hook_CHanaObj__FreeMateT3EE;
+    CHanaObj__FreeLightT3EF = hook_CHanaObj__FreeLightT3EF;
+    CHanaObj__FreeFrameArrayT3ED = hook_CHanaObj__FreeFrameArrayT3ED;
+    UnlinkHanaAnimFromFrame = hook_UnlinkHanaAnimFromFrame;
+    CHanaObj__FreeAnimT3F0 = hook_CHanaObj__FreeAnimT3F0;
+    FreeSoundStruct_422C72 = hook_FreeSoundStruct_422C72;
+    CHanaObj__FreeAnimSetT3F1 = hook_CHanaObj__FreeAnimSetT3F1;
+    CHanaObj__FreeTexCoordT3F2 = hook_CHanaObj__FreeTexCoordT3F2;
+    CHanaObj__FreeTexAnimT3F3 = hook_CHanaObj__FreeTexAnimT3F3;
+    CHanaObj__FreeTexAnimSetT3F4 = hook_CHanaObj__FreeTexAnimSetT3F4;
+    CHanaObj__FreeMeshT3F5 = hook_CHanaObj__FreeMeshT3F5;
+    CHanaObj__FreeSpriteT3F6 = hook_CHanaObj__FreeSpriteT3F6;
+    ApplyMaterial = hook_ApplyMaterial;
+    CHanaObj__FreeMateAnimT3F7 = hook_CHanaObj__FreeMateAnimT3F7;
+    CHanaObj__FreeMateAnimSetT3F8 = hook_CHanaObj__FreeMateAnimSetT3F8;
+    ApplyLightSettings = hook_ApplyLightSettings;
+    SetupLightFromD3D = hook_SetupLightFromD3D;
+    CHanaObj__FreeLightAnimT3F9 = hook_CHanaObj__FreeLightAnimT3F9;
+    CHanaObj__FreeLightAnimSetT3FA = hook_CHanaObj__FreeLightAnimSetT3FA;
+    CHanaObj__FreeMorpT457 = hook_CHanaObj__FreeMorpT457;
+    FreeSekHeader = hook_FreeSekHeader;
+    CSekBody__Release_4012FE = hook_CSekBody__Release_4012FE;
+    CHanaObj__FreeSceneT458 = hook_CHanaObj__FreeSceneT458;
+    CHanaObj__Free_40C1E4 = hook_CHanaObj__Free_40C1E4;
+    CHanaObj__GetRealPath_486D9A = hook_CHanaObj__GetRealPath_486D9A;
+    CHanaObj__AddRef_40BFC3 = hook_CHanaObj__AddRef_40BFC3;
+  }
 
   hnh_HookOff();
 

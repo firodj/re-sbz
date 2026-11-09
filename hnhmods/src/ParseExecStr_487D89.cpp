@@ -709,9 +709,10 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
   } // g 
 }
 
-void register_ParseExecStr_487D89() {
-  ParseExecStr_487D89 = hook_ParseExecStr_487D89;
-
+void register_ParseExecStr_487D89(int cfg) {
+  if (cfg == 1) {
+    ParseExecStr_487D89 = hook_ParseExecStr_487D89;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x487D89, hook_ParseExecStr_487D89, "ParseExecStr_487D89"); // [OK]

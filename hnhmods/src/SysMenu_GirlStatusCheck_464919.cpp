@@ -213,8 +213,10 @@ int __cdecl hook_SysMenu_GirlStatusCheck_464919(LPDIRECTDRAWSURFACE7 arrSurf[],
     return -1;                              // always stay in the menu
 }
 
-void register_SysMenu_GirlStatusCheck_464919() {
-  SysMenu_GirlStatusCheck_464919 = hook_SysMenu_GirlStatusCheck_464919;
+void register_SysMenu_GirlStatusCheck_464919(int cfg) {
+  if (cfg == 1) {
+    SysMenu_GirlStatusCheck_464919 = hook_SysMenu_GirlStatusCheck_464919;
+  }
   hnh_HookOff();
     hnh_Hook(0x464919, hook_SysMenu_GirlStatusCheck_464919, "SysMenu_GirlStatusCheck_464919");  // [OK]
   hnh_HookOn();

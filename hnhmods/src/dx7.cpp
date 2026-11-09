@@ -521,7 +521,7 @@ LPVOID hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName) {
   return orig;
 }
 
-void register_MatrixLookAtLH_40C64A() {
+void register_D3DXMatrixIdentity_40E450(int cfg) {
   hnh_HookOff();
   hnh_Hook(0x40C64A, hook_MatrixLookAtLH, "MatrixLookAtLH_40C64A"); // [OK] 
   hnh_Hook(0x48A1EC, hook_D3DXVec3Normalize, "D3DXVec3Normalize_48A1EC"); // [OK] 

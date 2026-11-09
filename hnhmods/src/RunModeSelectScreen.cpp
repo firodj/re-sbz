@@ -963,16 +963,18 @@ void __cdecl hook_CHanaSpriteT3F6__GetPos_414A7A(CHanaSpriteT3F6_S1FC *pSprite, 
   *pOutY = pSprite->destWHZ_138.y;
 }
 
-void register_RunModeSelectScreen() {
-  RunModeSelectScreen = hook_RunModeSelectScreen;
-  SetFrameVisibilityAndGetHIndex = hook_SetFrameVisibilityAndGetHIndex;
-  ApplyFrameEffectOption = hook_ApplyFrameEffectOption;
-  DrawSpritePulse_46D7A7 = hook_DrawSpritePulse_46D7A7;
-  RunSceneSelectScreen = hook_RunSceneSelectScreen;
-  Frame_ApplyFadeRecursive = hook_Frame_ApplyFadeRecursive;
-  FrameObject_SetAlpha = hook_FrameObject_SetAlpha;
-  CHanaSpriteT3F6__GetScale_414B1A = hook_CHanaSpriteT3F6__GetScale_414B1A;
-  CHanaSpriteT3F6__GetPos_414A7A = hook_CHanaSpriteT3F6__GetPos_414A7A;
+void register_RunModeSelectScreen(int cfg) {
+  if (cfg == 1) {
+    RunModeSelectScreen = hook_RunModeSelectScreen;
+    SetFrameVisibilityAndGetHIndex = hook_SetFrameVisibilityAndGetHIndex;
+    ApplyFrameEffectOption = hook_ApplyFrameEffectOption;
+    DrawSpritePulse_46D7A7 = hook_DrawSpritePulse_46D7A7;
+    RunSceneSelectScreen = hook_RunSceneSelectScreen;
+    Frame_ApplyFadeRecursive = hook_Frame_ApplyFadeRecursive;
+    FrameObject_SetAlpha = hook_FrameObject_SetAlpha;
+    CHanaSpriteT3F6__GetScale_414B1A = hook_CHanaSpriteT3F6__GetScale_414B1A;
+    CHanaSpriteT3F6__GetPos_414A7A = hook_CHanaSpriteT3F6__GetPos_414A7A;
+  }
 
   hnh_HookOff();
 

@@ -426,16 +426,17 @@ void __cdecl hook_MutexThreadWait_4815EC(bool bWait)
   }
 }
 
-void register_StopAndRestartThread_481AE4() {
-  StopAndRestartThread = hook_StopAndRestartThread;
-  GetInputState_481B37 = hook_GetInputState_481B37;
-  MutexThreadWait_4815EC = hook_MutexThreadWait_4815EC;
-  TerminateThreadGracefully = hook_TerminateThreadGracefully;
-  CreateNewThread = hook_CreateNewThread;
-  InputThread_Relative_481637 = hook_InputThread_Relative_481637;
-  InputThread_Absolute_4817B1 = hook_InputThread_Absolute_4817B1;
-  GetCursorPos_4811FA = hook_GetCursorPos_4811FA;
-
+void register_StopAndRestartThread_481AE4(int cfg) {
+  if (cfg == 1) {
+    StopAndRestartThread = hook_StopAndRestartThread;
+    GetInputState_481B37 = hook_GetInputState_481B37;
+    MutexThreadWait_4815EC = hook_MutexThreadWait_4815EC;
+    TerminateThreadGracefully = hook_TerminateThreadGracefully;
+    CreateNewThread = hook_CreateNewThread;
+    InputThread_Relative_481637 = hook_InputThread_Relative_481637;
+    InputThread_Absolute_4817B1 = hook_InputThread_Absolute_4817B1;
+    GetCursorPos_4811FA = hook_GetCursorPos_4811FA;
+  }
 
   hnh_HookOff();
 

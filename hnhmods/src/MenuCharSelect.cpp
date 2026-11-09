@@ -884,14 +884,16 @@ int __cdecl hook_MenuMusicSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3
   return nResult;
 }
 
-void register_MenuCharSelect_47A324() {
-  MenuCharSelect = hook_MenuCharSelect;
-  IsMenuKeyPressed_481170 = hook_IsMenuKeyPressed_481170;
-  Surface_SetColorKeyRGB = hook_Surface_SetColorKeyRGB;
-  CheckSpecialJpChar_43BFFA = hook_CheckSpecialJpChar_43BFFA;
-  DrawText_43BCAE = hook_DrawText_43BCAE;
-  MenuGallery = hook_MenuGallery;
-  MenuMusicSelect = hook_MenuMusicSelect;
+void register_MenuCharSelect_47A324(int cfg) {
+  if (cfg == 1) {
+    MenuCharSelect = hook_MenuCharSelect;
+    IsMenuKeyPressed_481170 = hook_IsMenuKeyPressed_481170;
+    Surface_SetColorKeyRGB = hook_Surface_SetColorKeyRGB;
+    CheckSpecialJpChar_43BFFA = hook_CheckSpecialJpChar_43BFFA;
+    DrawText_43BCAE = hook_DrawText_43BCAE;
+    MenuGallery = hook_MenuGallery;
+    MenuMusicSelect = hook_MenuMusicSelect;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x47A324, hook_MenuCharSelect, "MenuCharSelect_47A324"); // [OK]

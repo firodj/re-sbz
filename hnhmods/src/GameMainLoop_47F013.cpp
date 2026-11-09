@@ -531,18 +531,20 @@ void hook_ShowBackdropAndWait_4795CE()
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, dwAntialias);
 }
 
-void register_GameMainLoop_47F013() {
-  GameMainLoop_47F013 = hook_GameMainLoop_47F013;
+void register_GameMainLoop_47F013(int cfg) {
+  if (cfg == 1) {
+    GameMainLoop_47F013 = hook_GameMainLoop_47F013;
 
-  GetSurfaceFromBmp_419DE5=hook_GetSurfaceFromBmp_419DE5;
-  ConvertFrom640AsInt=hook_ConvertFrom640AsInt;
-  ConvertFrom640AsFloat=hook_ConvertFrom640AsFloat;
-  ConvertFrom1024AsInt=hook_ConvertFrom1024AsInt;
-  ConvertFrom1024AsFloat=hook_ConvertFrom1024AsFloat;
-  ShowBackdropAndWait_4795CE=hook_ShowBackdropAndWait_4795CE;
-  BMP_DitherRGB24ToRGB565=hook_BMP_DitherRGB24ToRGB565;
-  BMP_Convert24bitTo16bitWithDither=hook_BMP_Convert24bitTo16bitWithDither;
-  GetDC_4188B4=hook_GetDC_4188B4;
+    GetSurfaceFromBmp_419DE5 = hook_GetSurfaceFromBmp_419DE5;
+    ConvertFrom640AsInt = hook_ConvertFrom640AsInt;
+    ConvertFrom640AsFloat = hook_ConvertFrom640AsFloat;
+    ConvertFrom1024AsInt = hook_ConvertFrom1024AsInt;
+    ConvertFrom1024AsFloat = hook_ConvertFrom1024AsFloat;
+    ShowBackdropAndWait_4795CE = hook_ShowBackdropAndWait_4795CE;
+    BMP_DitherRGB24ToRGB565 = hook_BMP_DitherRGB24ToRGB565;
+    BMP_Convert24bitTo16bitWithDither = hook_BMP_Convert24bitTo16bitWithDither;
+    GetDC_4188B4 = hook_GetDC_4188B4;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x421BD5, hook_BMP_DitherRGB24ToRGB565, "BMP_DitherRGB24ToRGB565");

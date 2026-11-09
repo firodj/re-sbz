@@ -177,8 +177,10 @@ void __cdecl hook_SysMenu_SaveMenu_462135(CSceneState sceneStates[], CHAR *arrSc
     }
 }
 
-void register_SysMenu_SaveMenu_462135() {
-  SysMenu_SaveMenu_462135 = hook_SysMenu_SaveMenu_462135;
+void register_SysMenu_SaveMenu_462135(int cfg) {
+  if (cfg == 1) {
+    SysMenu_SaveMenu_462135 = hook_SysMenu_SaveMenu_462135;
+  }
   hnh_HookOff();
     hnh_Hook(0x462135, hook_SysMenu_SaveMenu_462135, "SysMenu_SaveMenu_462135");  // [OK]
   hnh_HookOn();

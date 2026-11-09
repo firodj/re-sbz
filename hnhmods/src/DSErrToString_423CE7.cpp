@@ -442,9 +442,11 @@ const char *__cdecl hook_DDErrToString_41898E(HRESULT hr)
   return result;
 }
 
-void register_DSErrToString_423CE7() {
-  DSErrToString_423CE7 = hook_DSErrToString_423CE7;
-  DDErrToString_41898E = hook_DDErrToString_41898E;
+void register_DSErrToString_423CE7(int cfg) {
+  if (cfg == 1) {
+    DSErrToString_423CE7 = hook_DSErrToString_423CE7;
+    DDErrToString_41898E = hook_DDErrToString_41898E;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x423CE7, hook_DSErrToString_423CE7, "DSErrToString_423CE7");

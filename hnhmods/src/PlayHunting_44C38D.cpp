@@ -3996,26 +3996,28 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
 }
 
 
-void register_PlayHunting_44C38D() {
-  PlayHunting_44C38D = hook_PlayHunting_44C38D;
-  UpdateFoeAI_446A38 = hook_UpdateFoeAI_446A38;
-  WanaAttack_Close_4535DE = hook_WanaAttack_Close_4535DE;
-  WanaAttack_Knockback_4536F6 = hook_WanaAttack_Knockback_4536F6;
-  WanaAttack_Charged_4539D1 = hook_WanaAttack_Charged_4539D1;
-  WanaAttack_Projectile_453B92 = hook_WanaAttack_Projectile_453B92;
-  IsFoeWithinHeroRange_448B78 = hook_IsFoeWithinHeroRange_448B78;
-  RenderDualBodyScene_456807 = hook_RenderDualBodyScene_456807;
-  StepFoeTurn_457EE0 = hook_StepFoeTurn_457EE0;
-  StepFoeSpin_45804C = hook_StepFoeSpin_45804C;
-  StepWanaProjectile_4581B0 = hook_StepWanaProjectile_4581B0;
-  DrawSprite3D = hook_DrawSprite3D;
+void register_PlayHunting_44C38D(int cfg) {
+  if (cfg == 1) {
+    PlayHunting_44C38D = hook_PlayHunting_44C38D;
+    UpdateFoeAI_446A38 = hook_UpdateFoeAI_446A38;
+    WanaAttack_Close_4535DE = hook_WanaAttack_Close_4535DE;
+    WanaAttack_Knockback_4536F6 = hook_WanaAttack_Knockback_4536F6;
+    WanaAttack_Charged_4539D1 = hook_WanaAttack_Charged_4539D1;
+    WanaAttack_Projectile_453B92 = hook_WanaAttack_Projectile_453B92;
+    IsFoeWithinHeroRange_448B78 = hook_IsFoeWithinHeroRange_448B78;
+    RenderDualBodyScene_456807 = hook_RenderDualBodyScene_456807;
+    StepFoeTurn_457EE0 = hook_StepFoeTurn_457EE0;
+    StepFoeSpin_45804C = hook_StepFoeSpin_45804C;
+    StepWanaProjectile_4581B0 = hook_StepWanaProjectile_4581B0;
+    DrawSprite3D = hook_DrawSprite3D;
 
-  PlayResultsCutscene_455BE2 = hook_PlayResultsCutscene_455BE2;
-  PlayVictoryCutscene_455183 = hook_PlayVictoryCutscene_455183;
-  DrawDuelHealthHud_44B23B = hook_DrawDuelHealthHud_44B23B;
-  DrawFadeOutSpark_45669F = hook_DrawFadeOutSpark_45669F;
-  BindSceneActors_448C72 = hook_BindSceneActors_448C72;
-  UpdateCameraFollowDuel_44C028 = hook_UpdateCameraFollowDuel_44C028;
+    PlayResultsCutscene_455BE2 = hook_PlayResultsCutscene_455BE2;
+    PlayVictoryCutscene_455183 = hook_PlayVictoryCutscene_455183;
+    DrawDuelHealthHud_44B23B = hook_DrawDuelHealthHud_44B23B;
+    DrawFadeOutSpark_45669F = hook_DrawFadeOutSpark_45669F;
+    BindSceneActors_448C72 = hook_BindSceneActors_448C72;
+    UpdateCameraFollowDuel_44C028 = hook_UpdateCameraFollowDuel_44C028;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x44C38D, hook_PlayHunting_44C38D, "PlayHunting_44C38D"); // [OK]

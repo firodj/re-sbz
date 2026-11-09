@@ -212,17 +212,21 @@ BOOL __cdecl hook_CDROM_VerifyDiscSignature(int chDriveLetter, const char* szExp
 #endif
 }
 
-void register_CDROM_VerifyDiscSignature_485C50() {
-  CDROM_VerifyDiscSignature=hook_CDROM_VerifyDiscSignature;
-
-  CDROM_DeviceIoControlVWIN32=hook_CDROM_DeviceIoControlVWIN32;
-  CDROM_IoctlReadSectorWin9x=hook_CDROM_IoctlReadSectorWin9x;
-  CDROM_GetDriveFileSystemType=hook_CDROM_GetDriveFileSystemType;
-  CDROM_VerifyNT=hook_CDROM_VerifyNT;
-  CDROM_VerifyWin9x=hook_CDROM_VerifyWin9x;
+void register_CDROM_VerifyDiscSignature_485C50(int cfg) {
+  if (cfg == 1) {
+    CDROM_VerifyDiscSignature = hook_CDROM_VerifyDiscSignature;
+    CDROM_DeviceIoControlVWIN32 = hook_CDROM_DeviceIoControlVWIN32;
+    CDROM_IoctlReadSectorWin9x = hook_CDROM_IoctlReadSectorWin9x;
+    CDROM_GetDriveFileSystemType = hook_CDROM_GetDriveFileSystemType;
+    CDROM_VerifyNT = hook_CDROM_VerifyNT;
+    CDROM_VerifyWin9x = hook_CDROM_VerifyWin9x;
+  }
+  else {
+    hnh_Hook(0x4858D0, hook_CDROM_VerifyNT, "CDROM_VerifyNT_4858D0"); // [OK]
+  }
 
   hnh_HookOff();
-  hnh_Hook(0x4858D0, hook_CDROM_VerifyNT, "CDROM_VerifyNT_4858D0"); // [OK]
+ 
 
   hnh_Hook(0x485C50, hook_CDROM_VerifyDiscSignature, "CDROM_VerifyDiscSignature_485C50");       // [OK] 
   hnh_Hook(0x485A2A, hook_CDROM_GetDriveFileSystemType, "CDROM_GetDriveFileSystemType_485A2A"); // [OK]

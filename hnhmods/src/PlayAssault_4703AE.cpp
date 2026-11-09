@@ -1221,13 +1221,15 @@ void __cdecl hook_Frame_SetPracticeAnimRootRecursive(CHanaFrameT3EC_S354 *pFrame
 }
 
 
-void register_PlayAssault_4703AE() {
-  ToggleWaitScreen = hook_ToggleWaitScreen;
-  Scene_FindMapFrame = hook_Scene_FindMapFrame;
-  InitializePracticeAnimations_4667A9 = hook_InitializePracticeAnimations_4667A9;
-  WaitScreenThreadProc = hook_WaitScreenThreadProc;
-  Frame_SetPracticeAnimRootRecursive = hook_Frame_SetPracticeAnimRootRecursive;
-  PlayAssault_4703AE = hook_PlayAssault_4703AE;
+void register_PlayAssault_4703AE(int cfg) {
+  if (cfg == 1) {
+    ToggleWaitScreen = hook_ToggleWaitScreen;
+    Scene_FindMapFrame = hook_Scene_FindMapFrame;
+    InitializePracticeAnimations_4667A9 = hook_InitializePracticeAnimations_4667A9;
+    WaitScreenThreadProc = hook_WaitScreenThreadProc;
+    Frame_SetPracticeAnimRootRecursive = hook_Frame_SetPracticeAnimRootRecursive;
+    PlayAssault_4703AE = hook_PlayAssault_4703AE;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x4703AE, hook_PlayAssault_4703AE, "PlayAssault_4703AE"); // [OK]

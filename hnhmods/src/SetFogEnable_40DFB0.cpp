@@ -438,22 +438,24 @@ void __cdecl hook_LoadDataFiles_461557(CSceneState *pDataBuffer, char *pszTimest
   }
 }
 
-void register_SetFogEnable_40DFB0() {
-  SetFogEnable_40DFB0 = hook_SetFogEnable_40DFB0;
-  SetFogMode_40E02D = hook_SetFogMode_40E02D;
-  SetFogColor_40E0B4 = hook_SetFogColor_40E0B4;
-  SetFogRange_40E0E2 = hook_SetFogRange_40E0E2;
+void register_SetFogEnable_40DFB0(int cfg) {
+  if (cfg == 1) {
+    SetFogEnable_40DFB0 = hook_SetFogEnable_40DFB0;
+    SetFogMode_40E02D = hook_SetFogMode_40E02D;
+    SetFogColor_40E0B4 = hook_SetFogColor_40E0B4;
+    SetFogRange_40E0E2 = hook_SetFogRange_40E0E2;
 
-  DrawTextOnSurfaceSpaced_419B05 = hook_DrawTextOnSurfaceSpaced_419B05;
-  DrawTextOnSurface = hook_DrawTextOnSurface;
-  IntPow_44AF15 = hook_IntPow_44AF15;
-  CHanaSpriteT3F6__SetScale_414B09 = hook_CHanaSpriteT3F6__SetScale_414B09;
-  CHanaSpriteT3F6__SetSrcRect_414B28 = hook_CHanaSpriteT3F6__SetSrcRect_414B28;
-  CHanaSpriteT3F6__GetAlpha_414AFB = hook_CHanaSpriteT3F6__GetAlpha_414AFB;
-  ShowFadeDialog_46164C = hook_ShowFadeDialog_46164C;
-  ZeroPadNumberToString_4612B0 = hook_ZeroPadNumberToString_4612B0;
-  FormatFileLastWriteTime_461397 = hook_FormatFileLastWriteTime_461397;
-  LoadDataFiles_461557 = hook_LoadDataFiles_461557;
+    DrawTextOnSurfaceSpaced_419B05 = hook_DrawTextOnSurfaceSpaced_419B05;
+    DrawTextOnSurface = hook_DrawTextOnSurface;
+    IntPow_44AF15 = hook_IntPow_44AF15;
+    CHanaSpriteT3F6__SetScale_414B09 = hook_CHanaSpriteT3F6__SetScale_414B09;
+    CHanaSpriteT3F6__SetSrcRect_414B28 = hook_CHanaSpriteT3F6__SetSrcRect_414B28;
+    CHanaSpriteT3F6__GetAlpha_414AFB = hook_CHanaSpriteT3F6__GetAlpha_414AFB;
+    ShowFadeDialog_46164C = hook_ShowFadeDialog_46164C;
+    ZeroPadNumberToString_4612B0 = hook_ZeroPadNumberToString_4612B0;
+    FormatFileLastWriteTime_461397 = hook_FormatFileLastWriteTime_461397;
+    LoadDataFiles_461557 = hook_LoadDataFiles_461557;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x4612B0, hook_ZeroPadNumberToString_4612B0, "ZeroPadNumberToString_4612B0");

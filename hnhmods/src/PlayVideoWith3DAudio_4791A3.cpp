@@ -266,19 +266,20 @@ void hook_AviWnd_Destroy()
   g_hwndAvi = 0;
 }
 
-void register_PlayVideoWith3DAudio_4791A3() {
-  PlayVideoWith3DAudio_4791A3 = hook_PlayVideoWith3DAudio_4791A3;
-  CreateAviWnd_43A95B = hook_CreateAviWnd_43A95B;
-  AviGetVolume_43A889 = hook_AviGetVolume_43A889;
-  AviWndSetVolume_43A863 = hook_AviWndSetVolume_43A863;
-  GetAviWnd = hook_GetAviWnd;
-  CheckIsVideoEndAndFlushMsg_43A6FA = hook_CheckIsVideoEndAndFlushMsg_43A6FA;
-  AviWnd_Pause = hook_AviWnd_Pause;
-  AviWnd_Destroy = hook_AviWnd_Destroy;
+void register_PlayVideoWith3DAudio_4791A3(int cfg) {
+  if (cfg == 1) {
+    PlayVideoWith3DAudio_4791A3 = hook_PlayVideoWith3DAudio_4791A3;
+    CreateAviWnd_43A95B = hook_CreateAviWnd_43A95B;
+    AviGetVolume_43A889 = hook_AviGetVolume_43A889;
+    AviWndSetVolume_43A863 = hook_AviWndSetVolume_43A863;
+    GetAviWnd = hook_GetAviWnd;
+    CheckIsVideoEndAndFlushMsg_43A6FA = hook_CheckIsVideoEndAndFlushMsg_43A6FA;
+    AviWnd_Pause = hook_AviWnd_Pause;
+    AviWnd_Destroy = hook_AviWnd_Destroy;
+  } 
 
   hnh_HookOff();
   orig_PlayVideoWith3DAudio_4791A3 = hnh_Hook(0x4791A3, hook_PlayVideoWith3DAudio_4791A3, "PlayVideoWith3DAudio_4791A3"); // [OK]
-
 
   hnh_Hook(0x43a95b, hook_CreateAviWnd_43A95B, "CreateAviWnd_43A95B"); // [OK]
   hnh_Hook(0x43a889, hook_AviGetVolume_43A889, "AviGetVolume_43A889"); // [OK]

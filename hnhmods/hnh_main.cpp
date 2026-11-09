@@ -88,47 +88,6 @@ bool CheckIsHNH() {
 	return false;
 }
 
-void register_WinMain_485CE0();
-void register_WndProcCheckSystem_485FC2();
-void register_CheckInstalledDirRoot_4869A7();
-void register_MemAlloc_40DEF7();
-void register_SetFogEnable_40DFB0();
-void register_DSErrToString_423CE7();
-void AssertHanaStructSize();
-void register_CHanaObj__Free_40C1E4();
-void register_MatrixLookAtLH_40C64A();
-void register_CheckRunGame_4863C8();
-void register_CDROM_VerifyDiscSignature_485C50();
-void register_ShowTitleMenu_427DA8();
-void register_CHanaObj__NewFrameT3EC_S354_404720();
-void register_WndProcTitleMenu_428C11();
-void register_GameMainLoop_47F013();
-void register_StopAndRestartThread_481AE4();
-void register_LoadSoundEffects_47EB7F();
-void register_InGameMenu_4799E2();
-void register_MenuCharSelect_47A324();
-void register_PlayScreenFade_4874DE();
-void register_ParseODFContent_441A5D();
-void register_ParseODS_483932();
-void register_ProcessFrame_40600C();
-void register_SystemMenu_4655AB();
-void register_SysMenu_SaveMenu_462135();
-void register_SysMenu_LoadMenu_462851();
-void register_SysMenu_GirlStatusCheck_464919();
-void register_SysMenu_Options_462FE9();
-void register_SysMenu_Graphics_46380D();
-void register_ShowYesNoDialog_461A9E();
-void register_PlayOdsDialogueScene_477F90();
-void register_ParseExecStr_487D89();
-void register_RunModeSelectScreen();
-void register_PlayExploring_45BCAE();
-void register_SetupHeroEntry_4593E0();
-void register_PlayHunting_44C38D();
-void register_PlayAssault_4703AE();
-void register_PlayCutInScene_46A76F();
-void register_PlayTugOfWar_45460A();
-void register_PlayVideoWith3DAudio_4791A3();
-
 HANDLE g_hStartEvent = NULL;
 
 void InitHNH() {
@@ -151,7 +110,7 @@ void InitHNH() {
 	AssertHanaStructSize();
 	
 	register_WinMain_485CE0();
-	register_MatrixLookAtLH_40C64A();
+	register_D3DXMatrixIdentity_40E450();
 	register_WndProcCheckSystem_485FC2();
 	register_CDROM_VerifyDiscSignature_485C50();
 	register_CheckInstalledDirRoot_4869A7();

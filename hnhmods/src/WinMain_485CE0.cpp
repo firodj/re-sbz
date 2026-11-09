@@ -215,9 +215,11 @@ BOOL __cdecl hook_DInputInit_43AD67(HINSTANCE hinst, HWND hWnd)
   return 1;
 }
 
-void register_WinMain_485CE0() {
-  DIMouseKeybInit_43AF33 = hook_DIMouseKeybInit_43AF33;
-  DInputInit_43AD67      = hook_DInputInit_43AD67;
+void register_WinMain_485CE0(int cfg) {
+  if (cfg == 1) {
+    DIMouseKeybInit_43AF33 = hook_DIMouseKeybInit_43AF33;
+    DInputInit_43AD67 = hook_DInputInit_43AD67;
+  }
 
   hnh_HookOff();
     hnh_Hook(0x485CE0, WinMain_485CE0, "WinMain_485CE0"); // [OK:CALLED FROM HNHMAIN]

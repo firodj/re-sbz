@@ -156,25 +156,27 @@ int __cdecl hook_MemFree_40DF64(void *pBuf)
   }
 }
 
-void register_MemAlloc_40DEF7() {
+void register_MemAlloc_40DEF7(int cfg) {
 
   g_nMinD3DPrintfLevel_534388 = -1;
 
-
-  D3DXDprintf = hook_D3DXDprintf;
-  MemFree_40DF64 = hook_MemFree_40DF64;
-  PrintDebugError = hook_PrintDebugError;
-  MemAlloc_40DEF7 = hook_MemAlloc_40DEF7;
-  AllocMem = hook_AllocMem;
-  SafeFree = hook_SafeFree;
-  HeapAllocRef = hook_HeapAllocRef;
-  HeapFreeRef = hook_HeapFreeRef;
+  if (cfg == 1) {
+    D3DXDprintf = hook_D3DXDprintf;
+    PrintDebugError = hook_PrintDebugError;
+    
+    MemFree_40DF64 = hook_MemFree_40DF64;
+    MemAlloc_40DEF7 = hook_MemAlloc_40DEF7;
+    AllocMem = hook_AllocMem;
+    SafeFree = hook_SafeFree;
+    HeapAllocRef = hook_HeapAllocRef;
+    HeapFreeRef = hook_HeapFreeRef;
+  }
+  else {
+    hnh_Hook(0x490AC6, hook_D3DXDprintf, "D3DXDprintf_490AC6");  // [OK] 
+    hnh_Hook(0x40A813, hook_PrintDebugError, "PrintDebugError_40A813"); 
+  }
 
   hnh_HookOff();
-  hnh_Hook(0x490AC6, hook_D3DXDprintf, "D3DXDprintf_490AC6");  // [OK] 
-  hnh_Hook(0x40A813, hook_PrintDebugError, "PrintDebugError_40A813"); 
-
-
   hnh_Hook(0x40DEF7, hook_MemAlloc_40DEF7, "MemAlloc_40DEF7"); // [OK] 
   hnh_Hook(0x40DF64, hook_MemFree_40DF64, "MemFree_40DF64"); // [OK] 
   hnh_Hook(0x4248A7, hook_AllocMem, "AllocMem_4248A7"); // [OK] 

@@ -2889,38 +2889,40 @@ void __cdecl hook_Scene_ApplyFadeToPracticeFrames(float fadeAlpha)
   }
 }
 
-void register_PlayCutInScene_46A76F() {
-  PlayCutInScene_46A76F = hook_PlayCutInScene_46A76F;
-  SetAnimSetTime = hook_SetAnimSetTime;
-  DrawFadeTransition_Scene = hook_DrawFadeTransition_Scene;
-  AnimSet_ResetAndTransferAnimations = hook_AnimSet_ResetAndTransferAnimations;
-  FindFrameByNameSubstringRecursive = hook_FindFrameByNameSubstringRecursive;
-  IsObjectValidRecursive_467DFD = hook_IsObjectValidRecursive_467DFD;
-  Cursor_ClampToCenterOrSprite = hook_Cursor_ClampToCenterOrSprite;
-  Frame_CheckCameraDistanceAndRecurse = hook_Frame_CheckCameraDistanceAndRecurse;
-  UpdateSekBodyAnimationMatrix = hook_UpdateSekBodyAnimationMatrix;
-  MoveCutInSceneFramesWithCameraConstraint = hook_MoveCutInSceneFramesWithCameraConstraint;
-  UpdateCutInSceneCameraFollow = hook_UpdateCutInSceneCameraFollow;
-  CameraFrame_TrackBetweenObjectsAndLookAt = hook_CameraFrame_TrackBetweenObjectsAndLookAt;
-  SoundAH_ManageEffectsAndAnimate = hook_SoundAH_ManageEffectsAndAnimate;
-  SoundSE_ManageEffectsAndPlay = hook_SoundSE_ManageEffectsAndPlay;
-  Character_UpdateAnimationState = hook_Character_UpdateAnimationState;
-  SyncObjectAnimationByName_467BBD = hook_SyncObjectAnimationByName_467BBD;
-  IsParentValid_467D62 = hook_IsParentValid_467D62;
-  HanaObj_CheckFrameCondition = hook_HanaObj_CheckFrameCondition;
-  HanaMorp_AnimateAndPropagate = hook_HanaMorp_AnimateAndPropagate;
-  HanaMatrix_ApplyTransform = hook_HanaMatrix_ApplyTransform;
-  HanaFrame_GetMatAfter = hook_HanaFrame_GetMatAfter;
-  UpdateFrameAnimationMatrix = hook_UpdateFrameAnimationMatrix;
-  TransferAnimSetFrameAnimations_4679B2 = hook_TransferAnimSetFrameAnimations_4679B2;
-  Scene_ApplyFadeToPracticeFrames = hook_Scene_ApplyFadeToPracticeFrames;
-  GetSekBodyCurrentAnimTime = hook_GetSekBodyCurrentAnimTime;
-  CameraFrame_ProjectFramePairOntoForwardRay = hook_CameraFrame_ProjectFramePairOntoForwardRay;
-  CameraController_UpdateCutscene = hook_CameraController_UpdateCutscene;
-  Scene_ProcessPracticeFrames = hook_Scene_ProcessPracticeFrames;
-  UpdateCutInSceneBoneTransforms = hook_UpdateCutInSceneBoneTransforms;
-  CutInScene_CyclePosAndApplyCameraOffset = hook_CutInScene_CyclePosAndApplyCameraOffset;
-  AnimSet_MatchAndSortKutiRTibusaLFrames = hook_AnimSet_MatchAndSortKutiRTibusaLFrames;
+void register_PlayCutInScene_46A76F(int cfg) {
+  if (cfg == 1) {
+    PlayCutInScene_46A76F = hook_PlayCutInScene_46A76F;
+    SetAnimSetTime = hook_SetAnimSetTime;
+    DrawFadeTransition_Scene = hook_DrawFadeTransition_Scene;
+    AnimSet_ResetAndTransferAnimations = hook_AnimSet_ResetAndTransferAnimations;
+    FindFrameByNameSubstringRecursive = hook_FindFrameByNameSubstringRecursive;
+    IsObjectValidRecursive_467DFD = hook_IsObjectValidRecursive_467DFD;
+    Cursor_ClampToCenterOrSprite = hook_Cursor_ClampToCenterOrSprite;
+    Frame_CheckCameraDistanceAndRecurse = hook_Frame_CheckCameraDistanceAndRecurse;
+    UpdateSekBodyAnimationMatrix = hook_UpdateSekBodyAnimationMatrix;
+    MoveCutInSceneFramesWithCameraConstraint = hook_MoveCutInSceneFramesWithCameraConstraint;
+    UpdateCutInSceneCameraFollow = hook_UpdateCutInSceneCameraFollow;
+    CameraFrame_TrackBetweenObjectsAndLookAt = hook_CameraFrame_TrackBetweenObjectsAndLookAt;
+    SoundAH_ManageEffectsAndAnimate = hook_SoundAH_ManageEffectsAndAnimate;
+    SoundSE_ManageEffectsAndPlay = hook_SoundSE_ManageEffectsAndPlay;
+    Character_UpdateAnimationState = hook_Character_UpdateAnimationState;
+    SyncObjectAnimationByName_467BBD = hook_SyncObjectAnimationByName_467BBD;
+    IsParentValid_467D62 = hook_IsParentValid_467D62;
+    HanaObj_CheckFrameCondition = hook_HanaObj_CheckFrameCondition;
+    HanaMorp_AnimateAndPropagate = hook_HanaMorp_AnimateAndPropagate;
+    HanaMatrix_ApplyTransform = hook_HanaMatrix_ApplyTransform;
+    HanaFrame_GetMatAfter = hook_HanaFrame_GetMatAfter;
+    UpdateFrameAnimationMatrix = hook_UpdateFrameAnimationMatrix;
+    TransferAnimSetFrameAnimations_4679B2 = hook_TransferAnimSetFrameAnimations_4679B2;
+    Scene_ApplyFadeToPracticeFrames = hook_Scene_ApplyFadeToPracticeFrames;
+    GetSekBodyCurrentAnimTime = hook_GetSekBodyCurrentAnimTime;
+    CameraFrame_ProjectFramePairOntoForwardRay = hook_CameraFrame_ProjectFramePairOntoForwardRay;
+    CameraController_UpdateCutscene = hook_CameraController_UpdateCutscene;
+    Scene_ProcessPracticeFrames = hook_Scene_ProcessPracticeFrames;
+    UpdateCutInSceneBoneTransforms = hook_UpdateCutInSceneBoneTransforms;
+    CutInScene_CyclePosAndApplyCameraOffset = hook_CutInScene_CyclePosAndApplyCameraOffset;
+    AnimSet_MatchAndSortKutiRTibusaLFrames = hook_AnimSet_MatchAndSortKutiRTibusaLFrames;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x46A76F, hook_PlayCutInScene_46A76F, "PlayCutInScene_46A76F"); // [OK]

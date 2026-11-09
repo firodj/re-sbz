@@ -1272,41 +1272,44 @@ D3DVERTEX *__cdecl hook_HanaVert_Transform(D3DVERTEX *pOutVtx, D3DXMATRIX *pM, D
   return pOutVtx;
 }
 
-void register_PlayScreenFade_4874DE() {
+void register_PlayScreenFade_4874DE(int cfg)
+{
 
-  PlayScreenFade = hook_PlayScreenFade;
-  RGBToSurfaceFormat = hook_RGBToSurfaceFormat;
-  CHanaObj__NewSpriteT3F6bySurf = hook_CHanaObj__NewSpriteT3F6bySurf;
-  CHanaObj__ReplaceTexture3F6 = hook_CHanaObj__ReplaceTexture3F6;
-  CHanaObj__SetAlpha3F6 = hook_CHanaObj__SetAlpha3F6;
-  DrawSpriteLTRB = hook_DrawSpriteLTRB;
-  BltFastWH = hook_BltFastWH;
-  RenderFlush_4874A5 = hook_RenderFlush_4874A5;
-  RenderClear_40BF4F = hook_RenderClear_40BF4F;
-  HanaFrame_Draw = hook_HanaFrame_Draw;
-  GetTimerScaleFactor = hook_GetTimerScaleFactor;
-  SetTimerScaleFactor = hook_SetTimerScaleFactor;
-  FrameTimer_BeginFrame = hook_FrameTimer_BeginFrame;
-  FrameTimer_EndFrame = hook_FrameTimer_EndFrame;
-  GetFrameTime = hook_GetFrameTime;
-  HanaFrame_GetRelPosition = hook_HanaFrame_GetRelPosition;
+  if (cfg == 1) {
+    PlayScreenFade = hook_PlayScreenFade;
+    RGBToSurfaceFormat = hook_RGBToSurfaceFormat;
+    CHanaObj__NewSpriteT3F6bySurf = hook_CHanaObj__NewSpriteT3F6bySurf;
+    CHanaObj__ReplaceTexture3F6 = hook_CHanaObj__ReplaceTexture3F6;
+    CHanaObj__SetAlpha3F6 = hook_CHanaObj__SetAlpha3F6;
+    DrawSpriteLTRB = hook_DrawSpriteLTRB;
+    BltFastWH = hook_BltFastWH;
+    RenderFlush_4874A5 = hook_RenderFlush_4874A5;
+    RenderClear_40BF4F = hook_RenderClear_40BF4F;
+    HanaFrame_Draw = hook_HanaFrame_Draw;
+    GetTimerScaleFactor = hook_GetTimerScaleFactor;
+    SetTimerScaleFactor = hook_SetTimerScaleFactor;
+    FrameTimer_BeginFrame = hook_FrameTimer_BeginFrame;
+    FrameTimer_EndFrame = hook_FrameTimer_EndFrame;
+    GetFrameTime = hook_GetFrameTime;
+    HanaFrame_GetRelPosition = hook_HanaFrame_GetRelPosition;
 
-  SelfBltDC = hook_SelfBltDC;
-  HanaFrame_BuildMatrixStack = hook_HanaFrame_BuildMatrixStack;
-  CHanaObj__LockVtxBufT3EA_418544 = hook_CHanaObj__LockVtxBufT3EA_418544;
-  CHanaObj__UnlockVrxBufT3EA_41858E = hook_CHanaObj__UnlockVrxBufT3EA_41858E;
-  CalculateVertexSize = hook_CalculateVertexSize;
-  HanaFrame_PushNode = hook_HanaFrame_PushNode;
-  HanaMorpT457_Animate = hook_HanaMorpT457_Animate;
-  CHanaObj__GetType_40BBF4 = hook_CHanaObj__GetType_40BBF4;
-  SetInversTransf_405BB4 = hook_SetInversTransf_405BB4;
-  HanaFrame_PreDraw = hook_HanaFrame_PreDraw;
-  HanaMorp_ApplyTree = hook_HanaMorp_ApplyTree;
-  HanaMorp_ApplySubTree = hook_HanaMorp_ApplySubTree;
-  HanaVert_Transform = hook_HanaVert_Transform;
-  HanaMorpT457_Interp = hook_HanaMorpT457_Interp;
-  HanaMorpT457_ApplySubs = hook_HanaMorpT457_ApplySubs;
-  HanaVert_BlendMorph = hook_HanaVert_BlendMorph;
+    SelfBltDC = hook_SelfBltDC;
+    HanaFrame_BuildMatrixStack = hook_HanaFrame_BuildMatrixStack;
+    CHanaObj__LockVtxBufT3EA_418544 = hook_CHanaObj__LockVtxBufT3EA_418544;
+    CHanaObj__UnlockVrxBufT3EA_41858E = hook_CHanaObj__UnlockVrxBufT3EA_41858E;
+    CalculateVertexSize = hook_CalculateVertexSize;
+    HanaFrame_PushNode = hook_HanaFrame_PushNode;
+    HanaMorpT457_Animate = hook_HanaMorpT457_Animate;
+    CHanaObj__GetType_40BBF4 = hook_CHanaObj__GetType_40BBF4;
+    SetInversTransf_405BB4 = hook_SetInversTransf_405BB4;
+    HanaFrame_PreDraw = hook_HanaFrame_PreDraw;
+    HanaMorp_ApplyTree = hook_HanaMorp_ApplyTree;
+    HanaMorp_ApplySubTree = hook_HanaMorp_ApplySubTree;
+    HanaVert_Transform = hook_HanaVert_Transform;
+    HanaMorpT457_Interp = hook_HanaMorpT457_Interp;
+    HanaMorpT457_ApplySubs = hook_HanaMorpT457_ApplySubs;
+    HanaVert_BlendMorph = hook_HanaVert_BlendMorph;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x4874DE, hook_PlayScreenFade, "PlayScreenFade_4874DE"); // [OK]

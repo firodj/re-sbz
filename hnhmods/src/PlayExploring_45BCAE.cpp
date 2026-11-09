@@ -3535,29 +3535,31 @@ int __cdecl hook_ShowMouseSelectDialog_4573CF(CHanaSpriteT3F6_S1FC **arrSprModes
   return nChoice;
 }
 
-void register_PlayExploring_45BCAE() {
-  PlayExploring_45BCAE = hook_PlayExploring_45BCAE;
-  CHanaAnimSetT3F1__RemoveAnimT3F0_404349 = hook_CHanaAnimSetT3F1__RemoveAnimT3F0_404349;
-  InitHudResources_4490A7 = hook_InitHudResources_4490A7;
-  UpdateCameraFollowChase_445525 = hook_UpdateCameraFollowChase_445525;
-  SetupItemBodies_459F81 = hook_SetupItemBodies_459F81;
-  UpdateHeroControl_45A513 = hook_UpdateHeroControl_45A513;
-  FindTargetInRange_45A1AD = hook_FindTargetInRange_45A1AD;
-  ApplyTargetEffect_45A2BA = hook_ApplyTargetEffect_45A2BA;
-  CheckSceneTransition_459768 = hook_CheckSceneTransition_459768;
-  GetSceneEventTime_459CA2 = hook_GetSceneEventTime_459CA2;
-  ShowMouseSelectDialog_4573CF = hook_ShowMouseSelectDialog_4573CF;
-  HanaMatrix_BuildLookAtAndTransform = hook_HanaMatrix_BuildLookAtAndTransform;
-  Frame_ComputeWorldAABB = hook_Frame_ComputeWorldAABB;
-  HanaTexture_CreateFromFile = hook_HanaTexture_CreateFromFile;
-  HanaSurface_CreateAndFade = hook_HanaSurface_CreateAndFade;
+void register_PlayExploring_45BCAE(int cfg) {
+  if (cfg == 1) {
+    PlayExploring_45BCAE = hook_PlayExploring_45BCAE;
+    CHanaAnimSetT3F1__RemoveAnimT3F0_404349 = hook_CHanaAnimSetT3F1__RemoveAnimT3F0_404349;
+    InitHudResources_4490A7 = hook_InitHudResources_4490A7;
+    UpdateCameraFollowChase_445525 = hook_UpdateCameraFollowChase_445525;
+    SetupItemBodies_459F81 = hook_SetupItemBodies_459F81;
+    UpdateHeroControl_45A513 = hook_UpdateHeroControl_45A513;
+    FindTargetInRange_45A1AD = hook_FindTargetInRange_45A1AD;
+    ApplyTargetEffect_45A2BA = hook_ApplyTargetEffect_45A2BA;
+    CheckSceneTransition_459768 = hook_CheckSceneTransition_459768;
+    GetSceneEventTime_459CA2 = hook_GetSceneEventTime_459CA2;
+    ShowMouseSelectDialog_4573CF = hook_ShowMouseSelectDialog_4573CF;
+    HanaMatrix_BuildLookAtAndTransform = hook_HanaMatrix_BuildLookAtAndTransform;
+    Frame_ComputeWorldAABB = hook_Frame_ComputeWorldAABB;
+    HanaTexture_CreateFromFile = hook_HanaTexture_CreateFromFile;
+    HanaSurface_CreateAndFade = hook_HanaSurface_CreateAndFade;
 
-  UpdateCameraLinkedObjects_44451F = hook_UpdateCameraLinkedObjects_44451F;
-  BuildMapSubFrames_443DD5 = hook_BuildMapSubFrames_443DD5;
-  UpdateLockonEvent_45953B = hook_UpdateLockonEvent_45953B;
-  UpdateHudGauge_44BC36 = hook_UpdateHudGauge_44BC36;
-  PrepareTargetSelect_45B5BD = hook_PrepareTargetSelect_45B5BD;
-  DrawSpriteListEcho_45B2FB = hook_DrawSpriteListEcho_45B2FB;
+    UpdateCameraLinkedObjects_44451F = hook_UpdateCameraLinkedObjects_44451F;
+    BuildMapSubFrames_443DD5 = hook_BuildMapSubFrames_443DD5;
+    UpdateLockonEvent_45953B = hook_UpdateLockonEvent_45953B;
+    UpdateHudGauge_44BC36 = hook_UpdateHudGauge_44BC36;
+    PrepareTargetSelect_45B5BD = hook_PrepareTargetSelect_45B5BD;
+    DrawSpriteListEcho_45B2FB = hook_DrawSpriteListEcho_45B2FB;
+  }
 
   hnh_HookOff();
   hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK]

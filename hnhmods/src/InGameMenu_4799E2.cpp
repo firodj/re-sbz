@@ -1370,27 +1370,28 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bDraw)
   }
 }
 
-void register_InGameMenu_4799E2() {
-  DSBufferPlay = hook_DSBufferPlay;
-  DoPeekMessages = hook_DoPeekMessages;
-  GetMouseBtn_45A41B = hook_GetMouseBtn_45A41B;
-  GetMouseXY_45A4D8 = hook_GetMouseXY_45A4D8;
-  LoadBmpScaled_4203B3 = hook_LoadBmpScaled_4203B3;
-  FlushD3DAndTouchSurface = hook_FlushD3DAndTouchSurface;
-  CHanaSpriteT3F6__SetPos_414A5D = hook_CHanaSpriteT3F6__SetPos_414A5D;
-  DrawSprite2D = hook_DrawSprite2D;
-  LoadBmpWithMask_413A5E = hook_LoadBmpWithMask_413A5E;
-  GetSurfaceWH = hook_GetSurfaceWH;
-  CreateTextureFromSurfaceWithAlphaMask = hook_CreateTextureFromSurfaceWithAlphaMask;
-  BltSurface = hook_BltSurface;
-  CreateSurfaceWH = hook_CreateSurfaceWH;
-  RecoverLostDevice = hook_RecoverLostDevice;
-  PresentFrame = hook_PresentFrame;
-  DrawSpriteAtRect = hook_DrawSpriteAtRect;
-  HanaVert_DrawBatch = hook_HanaVert_DrawBatch;
-  MainMenu_47DF0D = hook_MainMenu_47DF0D;
-  InGameMenu_4799E2 = hook_InGameMenu_4799E2; // somehow make stack corrupts
-
+void register_InGameMenu_4799E2(int cfg) {
+  if (cfg == 1) {
+    DSBufferPlay = hook_DSBufferPlay;
+    DoPeekMessages = hook_DoPeekMessages;
+    GetMouseBtn_45A41B = hook_GetMouseBtn_45A41B;
+    GetMouseXY_45A4D8 = hook_GetMouseXY_45A4D8;
+    LoadBmpScaled_4203B3 = hook_LoadBmpScaled_4203B3;
+    FlushD3DAndTouchSurface = hook_FlushD3DAndTouchSurface;
+    CHanaSpriteT3F6__SetPos_414A5D = hook_CHanaSpriteT3F6__SetPos_414A5D;
+    DrawSprite2D = hook_DrawSprite2D;
+    LoadBmpWithMask_413A5E = hook_LoadBmpWithMask_413A5E;
+    GetSurfaceWH = hook_GetSurfaceWH;
+    CreateTextureFromSurfaceWithAlphaMask = hook_CreateTextureFromSurfaceWithAlphaMask;
+    BltSurface = hook_BltSurface;
+    CreateSurfaceWH = hook_CreateSurfaceWH;
+    RecoverLostDevice = hook_RecoverLostDevice;
+    PresentFrame = hook_PresentFrame;
+    DrawSpriteAtRect = hook_DrawSpriteAtRect;
+    HanaVert_DrawBatch = hook_HanaVert_DrawBatch;
+    MainMenu_47DF0D = hook_MainMenu_47DF0D;
+    InGameMenu_4799E2 = hook_InGameMenu_4799E2; // somehow make stack corrupts
+  }
 
   hnh_HookOff();
   hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
