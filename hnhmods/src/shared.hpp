@@ -590,9 +590,8 @@ extern int& g_dwBattleMode;
 
 // === DEFINED PlayExploring.cpp ===
 
-extern CObjItemRef_S208* (__cdecl* UpdateCameraLinkedObjects_44451F)(CHanaFrameT3EC_S354* pCameraFrame);
-
-extern int (__cdecl*BuildMapSubFrames_443DD5)(CHanaFrameT3EC_S354 *pMapFrame);
+extern void (__cdecl* UpdateCameraLinkedObjects_44451F)(CHanaFrameT3EC_S354* pCameraFrame);
+extern void (__cdecl*BuildMapSubFrames_443DD5)(CHanaFrameT3EC_S354 *pMapFrame);
 
 extern CHanaSpriteT3F6_S1FC* (__cdecl* InitHudResources_4490A7)(CHanaSpriteT3F6_S1FC** arrSprNumbers,
   CHanaSpriteT3F6_S1FC** arrSprTimes, CHanaSpriteT3F6_S1FC** arrSprModes, int nMode);
@@ -602,15 +601,15 @@ extern char (__cdecl*UpdateHeroControl_45A513)(CSekBody *pHeroBody, CHanaFrameT3
   float fDeltaTime, float *pfHeroHp, float fHeroHpMax, int nMapIndex, float *pfCamFactor);
 extern int (__cdecl*CheckSceneTransition_459768)(CHanaSceneT458_S504 *pScene,
   CHanaFrameT3EC_S354 *pHeroFrame, int *pnMapIndex, int *pnSubIndex, int nStageIndex);
-extern HRESULT(__cdecl* UpdateHudGauge_44BC36)(CHanaSpriteT3F6_S1FC** pHudRes, int nCurHp, int nMaxHp);
+extern void(__cdecl* UpdateHudGauge_44BC36)(CHanaSpriteT3F6_S1FC** pHudRes, int nCurHp, int nMaxHp);
 
-extern int (__cdecl*PrepareTargetSelect_45B5BD)(CSekBody *pHeroBody, CSekBody **pItemBodies,
+extern void (__cdecl*PrepareTargetSelect_45B5BD)(CSekBody *pHeroBody, CSekBody **pItemBodies,
   CSekBody **pSpriteNames, CHanaFrameT3EC_S354 *pMapFrame, CHanaSpriteT3F6_S1FC **arrSprNumbers,
   CHanaSpriteT3F6_S1FC **arrSprTimes, float fHeroHp, float fHeroHpMax, int nTimeLimit,
   unsigned int nElapsed);
 extern int (__cdecl*ShowMouseSelectDialog_4573CF)(CHanaSpriteT3F6_S1FC **arrSprModes,
   LPDIRECTSOUNDBUFFER *pArrSndBuf);
-extern HRESULT (__cdecl*DrawSpriteListEcho_45B2FB)(CHanaSpriteT3F6_S1FC **arrSprites, int nTargetIdx,
+extern void (__cdecl*DrawSpriteListEcho_45B2FB)(CHanaSpriteT3F6_S1FC **arrSprites, int nTargetIdx,
   float fDeltaTime);
 extern void(__cdecl* HanaMatrix_BuildLookAtAndTransform)(CHanaFrameT3EC_S354* pFoeFrame, CHanaFrameT3EC_S354* pHeroFrame, CHanaFrameRootT3EC_S2D4* pSceneFrame, BOOL bSkip);
 extern void(__cdecl* UpdateCameraFollowChase_445525)(CHanaFrameT3EC_S354* pHeroFrame,

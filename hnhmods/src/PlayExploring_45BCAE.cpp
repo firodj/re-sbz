@@ -11,13 +11,11 @@ int (__cdecl*PlayExploring_45BCAE)(int nStageIndex) =
 void (__cdecl *CHanaAnimSetT3F1__RemoveAnimT3F0_404349)(CHanaAnimSetT3F1_S150 *pAnimSet, CHanaAnimT3F0_S240 *pAnim)
 = reinterpret_cast<void (__cdecl*)(CHanaAnimSetT3F1_S150 *pAnimSet, CHanaAnimT3F0_S240 *pAnim)>(0x404349);
 
-// --- not yet extracted; pinned here call-only ---
+void(__cdecl*UpdateCameraLinkedObjects_44451F)(CHanaFrameT3EC_S354 *pCameraFrame) =
+    reinterpret_cast<void(*)(CHanaFrameT3EC_S354 *)>(0x44451F);
 
-CObjItemRef_S208 *(__cdecl*UpdateCameraLinkedObjects_44451F)(CHanaFrameT3EC_S354 *pCameraFrame) =
-    reinterpret_cast<CObjItemRef_S208 *(*)(CHanaFrameT3EC_S354 *)>(0x44451F);
-
-int (__cdecl*BuildMapSubFrames_443DD5)(CHanaFrameT3EC_S354 *pMapFrame) =
-    reinterpret_cast<int(__cdecl*)(CHanaFrameT3EC_S354 *)>(0x443DD5);
+void (__cdecl*BuildMapSubFrames_443DD5)(CHanaFrameT3EC_S354 *pMapFrame) =
+    reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *)>(0x443DD5);
 
 CHanaSpriteT3F6_S1FC *(__cdecl*InitHudResources_4490A7)(CHanaSpriteT3F6_S1FC **arrSprNumbers,
     CHanaSpriteT3F6_S1FC **arrSprTimes, CHanaSpriteT3F6_S1FC **arrSprModes, int nMode) =
@@ -47,9 +45,9 @@ void (__cdecl*ApplyTargetEffect_45A2BA)(int nTargetSprite, float *pfHeroHp, floa
     int *pnTimeLimit, float *pfCamFactor, float *pfBlendTime) =
     reinterpret_cast<void(__cdecl*)(int, float *, float *, int *, float *, float *)>(0x45A2BA);
 
-char (__cdecl*UpdateLockonEvent_45953B)(CHanaSceneT458_S504 *pScene,
+void (__cdecl*UpdateLockonEvent_45953B)(CHanaSceneT458_S504 *pScene,
     CHanaFrameT3EC_S354 *pHeroFrame, CHanaFrameT3EC_S354 *pLockonFrame, int nMapIndex) =
-    reinterpret_cast<char(__cdecl*)(CHanaSceneT458_S504 *, CHanaFrameT3EC_S354 *,
+    reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, CHanaFrameT3EC_S354 *,
       CHanaFrameT3EC_S354 *, int)>(0x45953B);
 
 int (__cdecl*CheckSceneTransition_459768)(CHanaSceneT458_S504 *pScene,
@@ -62,25 +60,23 @@ double (__cdecl*GetSceneEventTime_459CA2)(CHanaSceneT458_S504 *pScene,
     reinterpret_cast<double(__cdecl*)(CHanaSceneT458_S504 *, CHanaFrameT3EC_S354 *, unsigned int *,
       int)>(0x459CA2);
 
-HRESULT (__cdecl*UpdateHudGauge_44BC36)(CHanaSpriteT3F6_S1FC **pHudRes, int nCurHp, int nMaxHp) =
-    reinterpret_cast<HRESULT(__cdecl*)(CHanaSpriteT3F6_S1FC **, int, int)>(0x44BC36);
+void (__cdecl*UpdateHudGauge_44BC36)(CHanaSpriteT3F6_S1FC **pHudRes, int nCurHp, int nMaxHp) =
+    reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC **, int, int)>(0x44BC36);
 
-
-int (__cdecl*PrepareTargetSelect_45B5BD)(CSekBody *pHeroBody, CSekBody **pItemBodies,
+void (__cdecl*PrepareTargetSelect_45B5BD)(CSekBody *pHeroBody, CSekBody **pItemBodies,
     CSekBody **pSpriteNames, CHanaFrameT3EC_S354 *pMapFrame, CHanaSpriteT3F6_S1FC **arrSprNumbers,
     CHanaSpriteT3F6_S1FC **arrSprTimes, float fHeroHp, float fHeroHpMax, int nTimeLimit,
     unsigned int nElapsed) =
-    reinterpret_cast<int(__cdecl*)(CSekBody *, CSekBody **, CSekBody **, CHanaFrameT3EC_S354 *,
+    reinterpret_cast<void(__cdecl*)(CSekBody *, CSekBody **, CSekBody **, CHanaFrameT3EC_S354 *,
       CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **, float, float, int, unsigned int)>(0x45B5BD);
 
 int (__cdecl*ShowMouseSelectDialog_4573CF)(CHanaSpriteT3F6_S1FC **arrSprModes,
     LPDIRECTSOUNDBUFFER *pArrSndBuf) =
     reinterpret_cast<int(__cdecl*)(CHanaSpriteT3F6_S1FC **, LPDIRECTSOUNDBUFFER *)>(0x4573CF);
 
-HRESULT (__cdecl*DrawSpriteListEcho_45B2FB)(CHanaSpriteT3F6_S1FC **arrSprites, int nTargetIdx,
+void (__cdecl*DrawSpriteListEcho_45B2FB)(CHanaSpriteT3F6_S1FC **arrSprites, int nTargetIdx,
     float fDeltaTime) =
-    reinterpret_cast<HRESULT(__cdecl*)(CHanaSpriteT3F6_S1FC **, int, float)>(0x45B2FB);
-
+    reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC **, int, float)>(0x45B2FB);
 
 void (__cdecl *HanaMatrix_BuildLookAtAndTransform)(CHanaFrameT3EC_S354 *pFoeFrame, CHanaFrameT3EC_S354 *pHeroFrame, CHanaFrameRootT3EC_S2D4 *pSceneFrame, BOOL bSkip)
 = reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFoeFrame, CHanaFrameT3EC_S354 *pHeroFrame, CHanaFrameRootT3EC_S2D4 *pSceneFrame, BOOL bSkip)>(0x407b73);
@@ -3540,12 +3536,34 @@ int __cdecl hook_ShowMouseSelectDialog_4573CF(CHanaSpriteT3F6_S1FC **arrSprModes
 }
 
 void register_PlayExploring_45BCAE() {
+  PlayExploring_45BCAE = hook_PlayExploring_45BCAE;
+  CHanaAnimSetT3F1__RemoveAnimT3F0_404349 = hook_CHanaAnimSetT3F1__RemoveAnimT3F0_404349;
+  InitHudResources_4490A7 = hook_InitHudResources_4490A7;
+  UpdateCameraFollowChase_445525 = hook_UpdateCameraFollowChase_445525;
+  SetupItemBodies_459F81 = hook_SetupItemBodies_459F81;
+  UpdateHeroControl_45A513 = hook_UpdateHeroControl_45A513;
+  FindTargetInRange_45A1AD = hook_FindTargetInRange_45A1AD;
+  ApplyTargetEffect_45A2BA = hook_ApplyTargetEffect_45A2BA;
+  CheckSceneTransition_459768 = hook_CheckSceneTransition_459768;
+  GetSceneEventTime_459CA2 = hook_GetSceneEventTime_459CA2;
+  ShowMouseSelectDialog_4573CF = hook_ShowMouseSelectDialog_4573CF;
+  HanaMatrix_BuildLookAtAndTransform = hook_HanaMatrix_BuildLookAtAndTransform;
+  Frame_ComputeWorldAABB = hook_Frame_ComputeWorldAABB;
+  HanaTexture_CreateFromFile = hook_HanaTexture_CreateFromFile;
+  HanaSurface_CreateAndFade = hook_HanaSurface_CreateAndFade;
 
+  UpdateCameraLinkedObjects_44451F = hook_UpdateCameraLinkedObjects_44451F;
+  BuildMapSubFrames_443DD5 = hook_BuildMapSubFrames_443DD5;
+  UpdateLockonEvent_45953B = hook_UpdateLockonEvent_45953B;
+  UpdateHudGauge_44BC36 = hook_UpdateHudGauge_44BC36;
+  PrepareTargetSelect_45B5BD = hook_PrepareTargetSelect_45B5BD;
+  DrawSpriteListEcho_45B2FB = hook_DrawSpriteListEcho_45B2FB;
+
+  hnh_HookOff();
   hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK]
 
   hnh_Hook(0x45b5bd, hook_PrepareTargetSelect_45B5BD, "PrepareTargetSelect_45B5BD");
 
-  hnh_HookOff();
   hnh_Hook(0x407b73, hook_HanaMatrix_BuildLookAtAndTransform, "HanaMatrix_BuildLookAtAndTransform_407B73"); // [OK]
   hnh_Hook(0x407e5b, hook_Frame_ComputeWorldAABB, "Frame_ComputeWorldAABB_407E5B");  // [OK]
   hnh_Hook(0x443dd5, hook_BuildMapSubFrames_443DD5, "BuildMapSubFrames_443DD5");  // [OK]
