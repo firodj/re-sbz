@@ -1222,8 +1222,7 @@ void register_CHanaObj__Free_40C1E4(int cfg) {
     CHanaObj__AddRef_40BFC3 = hook_CHanaObj__AddRef_40BFC3;
   }
 
-
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x40922E, hook_SetupLightFromD3D, "SetupLightFromD3D_40922E");
   hnh_Hook(0x401EDF, hook_UnlinkHanaAnimFromFrame, "UnlinkHanaAnimFromFrame_401EDF"); // [OK] 
   hnh_Hook(0x40F891, hook_ApplyMaterial, "ApplyMaterial_40F891"); // [OK] 

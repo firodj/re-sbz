@@ -1393,10 +1393,8 @@ void register_InGameMenu_4799E2(int cfg) {
     InGameMenu_4799E2 = hook_InGameMenu_4799E2; // somehow make stack corrupts
   }
 
-
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2"); // [OK] 
-
 
   hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
   hnh_Hook(0x414191, hook_DrawSprite2D, "DrawSprite2D_414191"); // [OK] 

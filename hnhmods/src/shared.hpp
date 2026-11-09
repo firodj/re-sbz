@@ -153,10 +153,10 @@ extern BOOL     &g_bDitherEnable;
 extern BOOL     &g_bLightEnable_4B3484;
 extern BOOL     &g_bShadowEnable_518CA8;
 extern int      &g_nResolutionMode_518C80;
-extern uint32_t &g_nZBufDepthMode_518C9C;
+extern int &g_nZBufDepthMode_518C9C;
 extern int      &g_nRenderHALMode_518CA0;
-extern uint32_t &g_nWidth2;
-extern uint32_t &g_nScreenScale_52F19C;
+extern int &g_nWidth2;
+extern int &g_nScreenScale_52F19C;
 
 extern float &g_fProjZFar;
 extern float &g_fProjZNear;
@@ -167,7 +167,7 @@ extern int (&g_arrZBufDepthCountPerDev_518C40)[16];
 extern int (&g_arrZBufDepthsPerDev_518828)[256];
 
 extern int      &g_nObjectTableCapacity_4B009C;
-extern uint32_t &g_nLightningState;
+extern int &g_nLightningState;
 
 extern BOOL      &g_bSpecularEnable;
 extern HWND      &g_hWnd;
@@ -206,8 +206,8 @@ extern CD3DInitParam &g_D3DDevParams;
 extern uint32_t &g_bNonShowMenu_4D6C70;
 extern uint32_t &g_pCurMatObj;
 extern CHanaTextureT3EB_S2CC* &g_pCurTexObj;
-extern uint32_t &g_bAlphaBlendEnabled_4D6CC0;
-extern uint32_t &g_nAlphaOpState_4D6CC4;
+extern int &g_bAlphaBlendEnabled_4D6CC0;
+extern int &g_nAlphaOpState_4D6CC4;
 extern uint32_t &g_bCreateFlags_4D6CD4;
 extern HWND &g_hWndDev_4D6C74;
 extern uint32_t &g_nObjCount;

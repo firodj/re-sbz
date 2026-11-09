@@ -44,12 +44,12 @@ D3DXVECTOR3 &g_vec3AxisZ_4CE908 = *(D3DXVECTOR3 *)0x4CE908; // WRITABLE
 D3DXVECTOR3 (&g_arrFwdByYaw360_4CD788)[360]   = *(D3DXVECTOR3 (*)[360])0x4CD788; // WRITABLE
 D3DXVECTOR3 (&g_arrUpByPitch360_4D47C0)[360]  = *(D3DXVECTOR3 (*)[360])0x4D47C0; // WRITABLE
 D3DXVECTOR3 (&g_arrFwdByPitch360_4D58A0)[360] = *(D3DXVECTOR3 (*)[360])0x4D58A0; // WRITABLE
-uint32_t &g_bAlphaBlendEnabled_4D6CC0    = *(uint32_t *)0x4D6CC0; // WRITABLE
-uint32_t &g_nAlphaOpState_4D6CC4         = *(uint32_t *)0x4D6CC4; // WRITABLE
+int &g_bAlphaBlendEnabled_4D6CC0    = *(int *)0x4D6CC0; // WRITABLE
+int &g_nAlphaOpState_4D6CC4         = *(int *)0x4D6CC4; // WRITABLE
 BOOL     &g_bSpecularEnable              = *(BOOL*)0x4B00A0; // WRITABLE
 BOOL     &g_bSpecularEnableMirror_4B00A4 = *(BOOL*)0x4B00A4; // WRITABLE
 int      &g_nObjectTableCapacity_4B009C  = *(int*)0x4B009C;
-uint32_t &g_nLightningState              = *(uint32_t *)0x4B00A8; // WRITABLE
+int &g_nLightningState              = *(int *)0x4B00A8; // WRITABLE
 
 int (&g_arrZBufDepthCountPerDev_518C40)[16] = *(int(*)[16])0x518C40;
 int (&g_arrZBufDepthsPerDev_518828)[256]    = *(int(*)[256])0x518828;
@@ -65,10 +65,10 @@ BOOL     &g_bDitherEnable          = *(BOOL *)0x4B3478; // WRITABLE
 BOOL     &g_bLightEnable_4B3484    = *(BOOL *)0x4B3484; // WRITABLE
 BOOL     &g_bShadowEnable_518CA8   = *(BOOL *)0x518CA8; // WRITABLE
 int      &g_nResolutionMode_518C80      = *(int *)0x518C80; // WRITABLE
-uint32_t &g_nZBufDepthMode_518C9C = *(uint32_t *)0x518C9C; // WRITABLE
+int &g_nZBufDepthMode_518C9C = *(int *)0x518C9C; // WRITABLE
 int      &g_nRenderHALMode_518CA0       = *(int *)0x518CA0; // WRITABLE
-uint32_t &g_nWidth2                = *(uint32_t *)0x518C28; // WRITABLE
-uint32_t &g_nScreenScale_52F19C    = *(uint32_t *)0x52F19C; // WRITABLE
+int &g_nWidth2                = *(int *)0x518C28; // WRITABLE
+int &g_nScreenScale_52F19C    = *(int *)0x52F19C; // WRITABLE
 
 // === GLOBAL FUNCTIONS ===
 

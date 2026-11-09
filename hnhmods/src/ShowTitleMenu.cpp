@@ -345,7 +345,7 @@ void register_ShowTitleMenu_427DA8(int cfg)
     AllocateDevicesDescArray = hook_AllocateDevicesDescArray;
   }
 
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x4276C0, hook_D3DSetRenderStates_4276C0, "D3DSetRenderStates_4276C0"); // [OK] 
   hnh_Hook(0x40A894, hook_D3DInit_40A894, "D3DInit_40A894"); // [OK] 
   hnh_Hook(0x427DA8, hook_ShowTitleMenu_427DA8, "ShowTitleMenu_427DA8"); // [OK] 

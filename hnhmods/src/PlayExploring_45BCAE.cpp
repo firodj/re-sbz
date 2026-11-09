@@ -3561,12 +3561,11 @@ void register_PlayExploring_45BCAE(int cfg) {
     DrawSpriteListEcho_45B2FB = hook_DrawSpriteListEcho_45B2FB;
   }
 
-
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK]
 
   hnh_Hook(0x45b5bd, hook_PrepareTargetSelect_45B5BD, "PrepareTargetSelect_45B5BD");
-  hnh_Hook(0x44bc36, hook_UpdateHudGauge_44BC36, "UpdateHudGauge_44BC36"); // [OK] !- missing frame
+  hnh_Hook(0x44bc36, hook_UpdateHudGauge_44BC36, "UpdateHudGauge_44BC36"); // [OK]
   hnh_Hook(0x4490a7, hook_InitHudResources_4490A7, "InitHudResources_4490A7");  // [OK]
 
   hnh_Hook(0x407b73, hook_HanaMatrix_BuildLookAtAndTransform, "HanaMatrix_BuildLookAtAndTransform_407B73"); // [OK]

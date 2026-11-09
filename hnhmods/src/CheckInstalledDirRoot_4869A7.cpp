@@ -648,10 +648,8 @@ void register_CheckInstalledDirRoot_4869A7(int cfg) {
     CHanaObj__NewFrameArrayT3ED = hook_CHanaObj__NewFrameArrayT3ED;
   }
 
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x47F460, hook_Scene_CreateFontTextureFromStringData, "Scene_CreateFontTextureFromStringData_47F460");
-
-
   hnh_Hook(0x4869A7, hook_CheckInstalledDirRoot_4869A7, "CheckInstalledDirRoot_4869A7"); // [OK] 
   hnh_Hook(0x486630, hook_SetupDirPath_486630, "SetupDirPath_486630"); // [OK] 
   hnh_Hook(0x47E8EE, hook_IsFileExists_47E8EE, "IsFileExists_47E8EE"); // [OK] 

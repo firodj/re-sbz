@@ -895,11 +895,10 @@ void register_MenuCharSelect_47A324(int cfg) {
     MenuMusicSelect = hook_MenuMusicSelect;
   }
 
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x47A324, hook_MenuCharSelect, "MenuCharSelect_47A324"); // [OK]
   hnh_Hook(0x47AD8D, hook_MenuGallery, "MenuGallery_47AD8D"); // [OK]
   hnh_Hook(0x47D163, hook_MenuMusicSelect, "MenuMusicSelect_47D163"); // [OK]
-
 
   hnh_Hook(0x43BFFA, hook_CheckSpecialJpChar_43BFFA, "CheckSpecialJpChar_43BFFA"); // [OK]
   hnh_Hook(0x4198E0, hook_Surface_SetColorKeyRGB, "Surface_SetColorKeyRGB_4198E0"); // [OK]

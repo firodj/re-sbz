@@ -398,7 +398,7 @@ void register_LoadSoundEffects_47EB7F(int cfg) {
     ReleaseSoundEffects = hook_ReleaseSoundEffects;
   }
 
-  hnh_HookOff();
+  if (cfg != 2)hnh_HookOff();
   hnh_Hook(0x47EB7F, hook_LoadSoundEffects_47EB7F, "LoadSoundEffects_47EB7F"); // [OK] 
   hnh_Hook(0x47EEEC, hook_ReleaseSoundEffects, "ReleaseSoundEffects_47EEEC"); // [OK] 
   hnh_Hook(0x422E7B, hook_LoadWav_422E7B, "LoadWav_422E7B"); // [OK] 

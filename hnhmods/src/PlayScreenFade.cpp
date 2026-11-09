@@ -1315,7 +1315,7 @@ void register_PlayScreenFade_4874DE(int cfg)
   }
 
 
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
 
   hnh_Hook(0x4874A5, hook_RenderFlush_4874A5,            "RenderFlush_4874A5");
   hnh_Hook(0x47E78F, hook_GetTimerScaleFactor,           "GetTimerScaleFactor_47E78F"); // [OK] 

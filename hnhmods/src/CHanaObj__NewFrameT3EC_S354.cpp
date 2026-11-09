@@ -346,9 +346,7 @@ void register_CHanaObj__NewFrameT3EC_S354_404720(int cfg) {
     CHanaObj__NewSprite3F6byWH = hook_CHanaObj__NewSprite3F6byWH;
   }
 
-
-
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x4074EF, hook_MtxStackStartMultLocal_4074EF, "MtxStackStartMultLocal_4074EF"); // [OK] 
   hnh_Hook(0x4075B0, hook_MtxStackRecursiveMulLocal_4075B0, "MtxStackRecursiveMulLocal_4075B0"); // [OK] 
 

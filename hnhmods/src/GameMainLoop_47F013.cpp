@@ -546,15 +546,15 @@ void register_GameMainLoop_47F013(int cfg) {
     GetDC_4188B4 = hook_GetDC_4188B4;
   }
 
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x421BD5, hook_BMP_DitherRGB24ToRGB565, "BMP_DitherRGB24ToRGB565");
   hnh_Hook(0x421FF4, hook_BMP_Convert24bitTo16bitWithDither, "BMP_Convert24bitTo16bitWithDither");
   hnh_Hook(0x4795ce, hook_ShowBackdropAndWait_4795CE, "ShowBackdropAndWait_4795CE");
   hnh_Hook(0x47F013, hook_GameMainLoop_47F013, "GameMainLoop_47F013"); // [OK] 
-
   hnh_Hook(0x419DE5, hook_GetSurfaceFromBmp_419DE5, "GetSurfaceFromBmp_419DE5"); // [OK] 
-  hnh_Hook(0x4188B4, hook_GetDC_4188B4, "GetDC_4188B4"); // [OK] 
-  hnh_Hook(0x47E6AF, hook_ConvertFrom640AsInt, "ConvertFrom640AsInt_47E6AF"); // [OK] 
+  hnh_Hook(0x4188B4, hook_GetDC_4188B4, "GetDC_4188B4"); // [OK]
+
+  hnh_Hook(0x47E6AF, hook_ConvertFrom640AsInt, "ConvertFrom640AsInt_47E6AF"); // [OK]  
   hnh_Hook(0x47E6C6, hook_ConvertFrom640AsFloat, "ConvertFrom640AsFloat_47E6C6"); // [OK] 
   hnh_Hook(0x47E680, hook_ConvertFrom1024AsInt, "ConvertFrom1024AsInt_47E680"); // [OK] 
   hnh_Hook(0x47E69B, hook_ConvertFrom1024AsFloat, "ConvertFrom1024AsFloat_47E69B"); // [OK] 

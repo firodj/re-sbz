@@ -577,7 +577,7 @@ void register_WndProcCheckSystem_485FC2(int cfg) {
     SetUiFont_419BCD = hook_SetUiFont_419BCD;
   }
 
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x40AC7C, hook_D3DDeinit, "D3DDeinit_40AC7C"); // [OK] 
   hnh_Hook(0x418620, hook_Renderer_InitializeTrigTablesAndPixelFormat, "Renderer_InitializeTrigTablesAndPixelFormat_418620"); // [OK] 
   hnh_Hook(0x423CCC, hook_HanaDS_SetErrStr, "HanaDS_SetErrStr_423CCC");

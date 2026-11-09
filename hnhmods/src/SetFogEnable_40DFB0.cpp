@@ -457,9 +457,7 @@ void register_SetFogEnable_40DFB0(int cfg) {
     LoadDataFiles_461557 = hook_LoadDataFiles_461557;
   }
 
-
-
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x4612B0, hook_ZeroPadNumberToString_4612B0, "ZeroPadNumberToString_4612B0");
 
   hnh_Hook(0x40DFB0, hook_SetFogEnable_40DFB0, "SetFogEnable_40DFB0"); // [OK] 

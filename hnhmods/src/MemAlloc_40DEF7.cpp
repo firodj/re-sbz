@@ -176,7 +176,7 @@ void register_MemAlloc_40DEF7(int cfg) {
     hnh_Hook(0x40A813, hook_PrintDebugError, "PrintDebugError_40A813"); 
   }
 
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x40DEF7, hook_MemAlloc_40DEF7, "MemAlloc_40DEF7"); // [OK] 
   hnh_Hook(0x40DF64, hook_MemFree_40DF64, "MemFree_40DF64"); // [OK] 
   hnh_Hook(0x4248A7, hook_AllocMem, "AllocMem_4248A7"); // [OK] 
