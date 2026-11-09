@@ -28,7 +28,7 @@ LPDIRECTDRAWSURFACE7 &g_lpDDSurface_519CF8 = *(LPDIRECTDRAWSURFACE7 *)0x519CF8; 
 char (&g_tempText_519D00)[50] = *(char (*)[50])0x519D00; // WRITABLE
 char (&g_arrGalleryUnlocked_5301A2)[150] = *(char(*)[150])0x5301A2;  // WRITABLE
 
-// String50 (&g_ascSndFileNames_4C78A0)[200] = *(String50(*)[200])0x4C78A0;  // READ-ONLY
+// String 50 (&g_ascSndFileNames_4C78A0)[200] = *(String 50(*)[200])0x4C78A0;  // READ-ONLY
 
 // === FUNCTIONS ===
 
@@ -648,7 +648,7 @@ int __cdecl hook_MenuGallery(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F6_S
 // frames), mub2.bmp indicator sheet (832x200 = 2x7 grid of 413x28 label
 // cells, one per sound).
 //
-// 14 sounds (g_ascSndFileNames_4C78A0[1..14], String50[200] table) in a 7x2
+// 14 sounds (g_ascSndFileNames_4C78A0[1..14], String 50[200] table) in a 7x2
 // grid: cell i hits at x = Conv1024((i-1)/7*468 + 72) (+413) and
 // y = Conv1024((i-1)%7*36 + 217) (+27); clicking selects it (nSoundIndex
 // starts at 4). Buttons: 0 stop (288..486 x 612..648), 1 play (522..720 x

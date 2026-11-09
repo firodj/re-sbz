@@ -6,7 +6,7 @@
 // g_ascSndFileNames_4C78A0 -- [011019][TEATIME] global wav-name lookup table
 //
 // Extracted verbatim from the game binary (.rdata @0x4C78A0, 0x2710 bytes).
-// Layout: 200 records x char[50], NUL-padded (String50 in hnhmods/src/struct.hpp).
+// Layout: 200 records x char[50], NUL-padded (String 50 in hnhmods/src/struct.hpp).
 // Consumed by MenuMusicSelect_47D163 ([1..14], 7x2 music grid) and by the
 // scene-script sound command in ParseExecStr_487D89 (idx -> WAV dir 1006 -> LoadWav).
 //
@@ -224,11 +224,11 @@ extern const char g_ascSndFileNames_4C78A0[200][50] = {
 // g_aG00Gp_4C9FB0 -- [011019][TEATIME] picture-name lookup table (GRP dir)
 //
 // Extracted verbatim from the game binary (.rdata @0x4C9FB0, 0x1388 bytes).
-// Layout: 100 records x char[50], NUL-padded (String50 in hnhmods/src/struct.hpp).
+// Layout: 100 records x char[50], NUL-padded (String 50 in hnhmods/src/struct.hpp).
 // [0..98] G%02d.GP event pictures; [99] is a literal '-' placeholder row.
 // Consumed by the scene-script picture command in ParseExecStr_487D89
 // (idx -> GRP dir -> LoadBmp). Sits directly after g_ascSndFileNames_4C78A0
-// (0x4C78A0+0x2710 == 0x4C9FB0): one contiguous String50-table rdata block.
+// (0x4C78A0+0x2710 == 0x4C9FB0): one contiguous String 50-table rdata block.
 
 extern const char g_aG00Gp_4C9FB0[100][50] = {
     "G00.GP",      // 0

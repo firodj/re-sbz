@@ -2823,16 +2823,21 @@ void __cdecl hook_DrawFadeTransition_Scene(
 void __cdecl hook_Scene_ApplyFadeToPracticeFrames(float fadeAlpha)
 {
   float alpha; // [esp+0h] [ebp-C0h]
-  float effectAlphaMultipliers[5]; // [esp+8h] [ebp-B8h]
+  //float effectAlphaMultipliers[5]; // [esp+8h] [ebp-B8h]
   CHanaFrameT3EC_S354 *pFoundFrame; // [esp+1Ch] [ebp-A4h]
   CHanaFrameT3EC_S354 *pD00Frame; // [esp+20h] [ebp-A0h]
   int i; // [esp+24h] [ebp-9Ch]
-  String50 szArrFrameNames[3]; // [esp+28h] [ebp-98h] BYREF
+  //String 50 szArrFrameNames[3]; // [esp+28h] [ebp-98h] BYREF
 
   ONCELOG("[HNH:SUB] Scene_ApplyFadeToPracticeFrames_468B99\n");
 
-  pFoundFrame = 0;
-  pD00Frame = 0;
+#if 1
+  char szArrFrameNames[3][50] = {
+    "_h00_",
+    "_p00_",
+    ""
+  };
+#else
   strcpy((char *)szArrFrameNames[0].str, "_h00_");// Prepare name templates for _h00_ frames (2 slots: indices 0 and 1)
   // Each slot is 25 chars: "_h00_" + padding
   memset((void *)&szArrFrameNames[0].str[6], 0, 0x2Cu);
@@ -2841,18 +2846,26 @@ void __cdecl hook_Scene_ApplyFadeToPracticeFrames(float fadeAlpha)
   szArrFrameNames[2].str[0] = 0;
   memset((void *)&szArrFrameNames[2].str[1], 0, 0x30u);
   szArrFrameNames[2].str[49] = 0;
-  effectAlphaMultipliers[0] = 0.0;              // Effect level alpha multipliers: [0]=0.0, [1]=0.8, [2]=0.5, [3]=0.2, [4]=0.0
-  effectAlphaMultipliers[1] = 0.80000001;
-  effectAlphaMultipliers[2] = 0.5;
-  effectAlphaMultipliers[3] = 0.2;
-  effectAlphaMultipliers[4] = 0.0;
+#endif
+
+  float effectAlphaMultipliers[5] = {     // Effect level alpha multipliers: [0]=0.0, [1]=0.8, [2]=0.5, [3]=0.2, [4]=0.0
+    0.0,
+    0.80000001,
+    0.5,
+    0.2,
+    0.0,
+  };
+
+  pFoundFrame = 0;
+  pD00Frame = 0;
+
   if ( fadeAlpha < 0.0 )                        // Clamp input alpha to valid range
     fadeAlpha = 0.0;
   if ( fadeAlpha > 1.0 )
     fadeAlpha = 1.0;
   for ( i = 0; i < 2; ++i )                     // Process TWO _h00_ frames: _h00_ (slot 0) and _h25_ (slot 1)
   {
-    pFoundFrame = FindFrameByName_47E999((CHanaFrameT3EC_S354 *)g_pSceneFrame, szArrFrameNames[i].str);
+    pFoundFrame = FindFrameByName_47E999((CHanaFrameT3EC_S354 *)g_pSceneFrame, szArrFrameNames[i]);
     if ( pFoundFrame )
     {
       if ( g_nEffectLevel_530265 )              // Effect level 1-4: force fully transparent, mark as "effect active"

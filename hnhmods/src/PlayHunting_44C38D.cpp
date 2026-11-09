@@ -2541,8 +2541,8 @@ void __cdecl hook_BindSceneActors_448C72(
   unsigned int j; // [esp+38h] [ebp-214h]
   unsigned int i; // [esp+3Ch] [ebp-210h]
   float fDirUpZ; // [esp+40h] [ebp-20Ch] BYREF
-  //String50 szActorNames[9]; // [esp+44h] [ebp-208h] BYREF
-  //String50 szWana8; // [esp+206h] [ebp-46h] BYREF
+  //String 50 szActorNames[9]; // [esp+44h] [ebp-208h] BYREF
+  //String 50 szWana8; // [esp+206h] [ebp-46h] BYREF
   float dirForwardZ; // [esp+238h] [ebp-14h] BYREF
   float fDirUpY; // [esp+23Ch] [ebp-10h] BYREF
   float fDirForwardY; // [esp+240h] [ebp-Ch] BYREF

@@ -1166,11 +1166,19 @@ CHanaFrameT3EC_S354 *__cdecl hook_Scene_FindMapFrame(CHanaSceneT458_S504 *pScene
 void __cdecl hook_InitializePracticeAnimations_4667A9(CHanaFrameT3EC_S354 *pRootFrame)
 {
   int i; // [esp+4h] [ebp-D0h]
-  String50 szAnimNames[4]; // [esp+8h] [ebp-CCh] BYREF
+  //String 50 szAnimNames[4]; // [esp+8h] [ebp-CCh] BYREF
   CHanaFrameT3EC_S354 *pFrame; // [esp+D0h] [ebp-4h]
 
   ONCELOG("[HNH:SUB] InitializePracticeAnimations_4667A9\n");
   
+#if 1
+  char szAnimNames[4][50] = {
+    "_h00_all",
+    "_p00_",
+    "_d00_all",
+    ""
+  };
+#else
   strcpy((char *)szAnimNames[0].str, "_h00_all");
   memset((void *)&szAnimNames[0].str[9], 0, 0x28u);
   szAnimNames[0].str[49] = 0;
@@ -1182,9 +1190,11 @@ void __cdecl hook_InitializePracticeAnimations_4667A9(CHanaFrameT3EC_S354 *pRoot
   szAnimNames[3].str[0] = 0;
   memset((void *)&szAnimNames[3].str[1], 0, 0x30u);
   szAnimNames[3].str[49] = 0;
+#endif
+
   for ( i = 0; i < 3; ++i )
   {
-    pFrame = FindFrameByName_47E999(pRootFrame, szAnimNames[i].str);
+    pFrame = FindFrameByName_47E999(pRootFrame, szAnimNames[i]);
     if ( pFrame )
       Frame_SetPracticeAnimRootRecursive(pFrame, pFrame);
   }

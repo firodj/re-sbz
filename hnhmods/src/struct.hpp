@@ -7,7 +7,7 @@
 
 #ifndef HNHMAIN
 
-struct String50 { char str[50]; };
+//struct String50 { char str[50]; };
 struct String20 { char str[20]; };
 struct String25 { char str[25]; };
 

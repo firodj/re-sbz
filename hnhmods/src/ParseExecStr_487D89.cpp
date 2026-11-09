@@ -34,7 +34,7 @@
 //                     pSurface_468, t, by_462). The /255*255 double math in
 //                     the original is an identity -- kept as plain values.
 //   G<NN>;            gallery background switch: load aG00Gp[NN] ("GNN.GP",
-//                     String50[100] @0x4C9FB0, GRP dir); pictures 30/92/71/
+//                     String 50[100] @0x4C9FB0, GRP dir); pictures 30/92/71/
 //                     51/11 also set bMaxSubStage=bCurrentSubStage=0..4
 //                     (the five girls); flt_480=0.1 restarts the crossfade;
 //                     pUnk_47C = old bg (released; NULL if NN > 95);
@@ -71,9 +71,9 @@ BOOL (__cdecl*ParseExecStr_487D89)(CHanaSceneT458_S504 *pScene, float *pfExecTim
     reinterpret_cast<BOOL(__cdecl*)(CHanaSceneT458_S504 *, float *)>(0x487D89);
 
 // === PINNED GLOBALS ===
-// "G00.GP" picture-name table, 50-char stride (same layout as String50)
+// "G00.GP" picture-name table, 50-char stride (same layout as String 50)
 
-// String50 (&g_aG00Gp)[100] =  *(String50 (*)[100])(0x4C9FB0);  // replaced by compiled-in g_aG00Gp_4C9FB0
+// String 50 (&g_aG00Gp)[100] =  *(String 50 (*)[100])(0x4C9FB0);  // replaced by compiled-in g_aG00Gp_4C9FB0
 
 void GotoLabel107(CHanaSceneT458_S504 *pScene) {
   int cchLabel; // [esp+2Ch] [ebp-244h]
