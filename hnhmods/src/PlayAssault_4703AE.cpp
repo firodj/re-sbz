@@ -35,8 +35,12 @@ reinterpret_cast<int(__cdecl*)(int, int)>(0x4703AE);
 // (none new - g_pDSBuf_52EFD0 is pinned in RunModeSelectScreen.cpp; every
 //  other global used here is already extern in shared.hpp)
 
-// === FUNCTIONS ===
 
+HANDLE &g_hWaitScreenThread = *(HANDLE *)0x52F0D0; // WRITABLE
+uint32_t &g_bWaitScreenOn = *(uint32_t *)0x52F0CC; // WRITABLE
+HWND &g_hwndWaitScreen = *(HWND *)0x52F0C8; // WRITABLE
+
+// === FUNCTIONS ===
 
 // PlayAssault_4703AE(iModeId, iMenuTab) -- GameMainLoop case-4 scene, the
 // kendo-"practice" session (also entered from MenuCharSelect with iModeId =
@@ -962,11 +966,6 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     return nResult;
 }
 
-
-HANDLE &g_hWaitScreenThread = *(HANDLE *)0x52F0D0; // WRITABLE
-uint32_t &g_bWaitScreenOn = *(uint32_t *)0x52F0CC; // WRITABLE
-HWND &g_hwndWaitScreen = *(HWND *)0x52F0C8; // WRITABLE
-
 // ToggleWaitScreen - Start or stop the blinking WAIT-screen thread
 // // Called only from Scene4_4703AE (push 1 = show, push 0 = hide)
 // // 
@@ -1223,9 +1222,16 @@ void __cdecl hook_Frame_SetPracticeAnimRootRecursive(CHanaFrameT3EC_S354 *pFrame
 
 
 void register_PlayAssault_4703AE() {
-  hnh_Hook(0x4703AE, hook_PlayAssault_4703AE, "PlayAssault_4703AE"); // [OK]
+  ToggleWaitScreen = hook_ToggleWaitScreen;
+  Scene_FindMapFrame = hook_Scene_FindMapFrame;
+  InitializePracticeAnimations_4667A9 = hook_InitializePracticeAnimations_4667A9;
+  WaitScreenThreadProc = hook_WaitScreenThreadProc;
+  Frame_SetPracticeAnimRootRecursive = hook_Frame_SetPracticeAnimRootRecursive;
+  PlayAssault_4703AE = hook_PlayAssault_4703AE;
 
   hnh_HookOff();
+  hnh_Hook(0x4703AE, hook_PlayAssault_4703AE, "PlayAssault_4703AE"); // [OK]
+
   hnh_Hook(0x466738, hook_Frame_SetPracticeAnimRootRecursive, "Frame_SetPracticeAnimRootRecursive_466738"); // [OK]
   hnh_Hook(0x4667a9, hook_InitializePracticeAnimations_4667A9, "InitializePracticeAnimations_4667A9"); // [OK]
   hnh_Hook(0x47e3e1, hook_ToggleWaitScreen, "ToggleWaitScreen_47E3E1"); // [OK]

@@ -964,10 +964,22 @@ void __cdecl hook_CHanaSpriteT3F6__GetPos_414A7A(CHanaSpriteT3F6_S1FC *pSprite, 
 }
 
 void register_RunModeSelectScreen() {
+  RunModeSelectScreen = hook_RunModeSelectScreen;
+  SetFrameVisibilityAndGetHIndex = hook_SetFrameVisibilityAndGetHIndex;
+  ApplyFrameEffectOption = hook_ApplyFrameEffectOption;
+  DrawSpritePulse_46D7A7 = hook_DrawSpritePulse_46D7A7;
+  RunSceneSelectScreen = hook_RunSceneSelectScreen;
+  Frame_ApplyFadeRecursive = hook_Frame_ApplyFadeRecursive;
+  FrameObject_SetAlpha = hook_FrameObject_SetAlpha;
+  CHanaSpriteT3F6__GetScale_414B1A = hook_CHanaSpriteT3F6__GetScale_414B1A;
+  CHanaSpriteT3F6__GetPos_414A7A = hook_CHanaSpriteT3F6__GetPos_414A7A;
+
+  hnh_HookOff();
+
   hnh_Hook(0x46D9AF, hook_RunSceneSelectScreen, "RunSceneSelectScreen_46D9AF"); // [OK}
   hnh_Hook(0x46F37E, hook_RunModeSelectScreen, "RunModeSelectScreen_46F37E");  // [OK}
 
-  hnh_HookOff();
+
   hnh_Hook(0x467af3, hook_SetFrameVisibilityAndGetHIndex, "SetFrameVisibilityAndGetHIndex_467AF3"); // [OK]
   hnh_Hook(0x467420, hook_ApplyFrameEffectOption, "ApplyFrameEffectOption_467420"); // [OK]
   hnh_Hook(0x46724e, hook_FrameObject_SetAlpha, "FrameObject_SetAlpha_46724E"); // [OK]
