@@ -50,7 +50,7 @@ BOOL hook_CDROM_DeviceIoControlVWIN32(DIOC_REGISTERS *regs)
     DWORD dwBytesReturned;
     HANDLE hVWIN32;
 
-    DebugLog("[HNH:SUB] CDROM_DeviceIoControlVWIN32_485B27\n");
+    ONCELOG("[HNH:SUB] CDROM_DeviceIoControlVWIN32_485B27\n");
 
     regs->reg_Flags = 0x8000;
     hVWIN32 = CreateFileA("\\\\.\\vwin32",   // g_szVWIN32Device @0x4C764C
@@ -75,7 +75,7 @@ BOOL hook_CDROM_IoctlReadSectorWin9x(void *pBuffer, int nDriveNumber)
 {
     DIOC_REGISTERS regs = { 0 };
 
-    DebugLog("[HNH:SUB] CDROM_IoctlReadSectorWin9x_485ADA\n");
+    ONCELOG("[HNH:SUB] CDROM_IoctlReadSectorWin9x_485ADA\n");
 
     regs.reg_EBX = (DWORD)nDriveNumber;
     regs.reg_EDX = (DWORD)pBuffer;
@@ -95,7 +95,7 @@ int hook_CDROM_GetDriveFileSystemType(CHAR chDriveLetter)
     CHAR szFileSystem[64];
     int i;
 
-    DebugLog("[HNH:SUB] CDROM_GetDriveFileSystemType_485A2A\n");
+    ONCELOG("[HNH:SUB] CDROM_GetDriveFileSystemType_485A2A\n");
 
     szRootPath[0] = chDriveLetter;
     if (!GetVolumeInformationA(szRootPath, NULL, NULL, NULL, NULL, NULL,
@@ -120,7 +120,7 @@ BOOL __cdecl hook_CDROM_VerifyNT(int nDriveIndex /* 0 = 'A' */, const char *szEx
     HANDLE hVolume;
     BOOL bResult;
 
-    DebugLog("[HNH:SUB] CDROM_VerifyNT_4858D0\n");
+    ONCELOG("[HNH:SUB] CDROM_VerifyNT_4858D0\n");
 
     if (CDROM_GetDriveFileSystemType((CHAR)(nDriveIndex + 'A')) != 4)  // CDFS only
         return TRUE;
@@ -165,7 +165,7 @@ BOOL __cdecl hook_CDROM_VerifyWin9x(int chDriveLetter, const char *szExpectedLab
     BOOL bWideMatch;
     size_t i;
 
-    DebugLog("[HNH:SUB] CDROM_VerifyWin9x_485BA8\n");
+    ONCELOG("[HNH:SUB] CDROM_VerifyWin9x_485BA8\n");
 
     memset(buf, 0, 25);            // original zeroes 25 of the 28 bytes
     if (!CDROM_IoctlReadSectorWin9x(buf, chDriveLetter - 'A' + 1))
@@ -187,7 +187,7 @@ BOOL __cdecl hook_CDROM_VerifyWin9x(int chDriveLetter, const char *szExpectedLab
 // drive letter, NT a 0-based drive index ('A' = 0). Unknown platform -> "verified".
 BOOL __cdecl hook_CDROM_VerifyDiscSignature(int chDriveLetter, const char* szExpectedLabel, size_t nLabelSize)
 {
-    DebugLog("[HNH:SUB] CDROM_VerifyDiscSignature_485C50\n");
+  ONCELOG("[HNH:SUB] CDROM_VerifyDiscSignature_485C50\n");
 #if 0
     OSVERSIONINFOA osvi;
     ZeroMemory(&osvi, sizeof(OSVERSIONINFO));

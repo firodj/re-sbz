@@ -67,7 +67,7 @@ int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F
     int xmouse, ymouse;
     WORD nMouseBtn = 0, nPrevMouseBtn;
 
-    DebugLog("[HNH:SUB] MenuCharSelect_47A324\n");
+    ONCELOG("[HNH:SUB] MenuCharSelect_47A324\n");
 
     nResult = 0;
     nHoverChar = 0;
@@ -403,7 +403,7 @@ int __cdecl hook_MenuGallery(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F6_S
   int xMouse, yMouse;                     // [ebp-828h] / [ebp-82Ch]
   WORD nMouseBtn = 0, nPrevMouseBtn;          // [ebp-4h] / [ebp-83Ch]
 
-  DebugLog("[HNH:SUB] MenuGallery_47AD8D\n");
+  ONCELOG("[HNH:SUB] MenuGallery_47AD8D\n");
 
   static const char *const arrPicNames[53] = {
     "G20.GP","G21.GP","G22.GP","G23.GP","G24.GP","G25.GP","G26.GP","G27.GP","G28.GP","G29.GP",
@@ -672,7 +672,7 @@ int __cdecl hook_MenuMusicSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3
   int xMouse, yMouse;                     // [ebp-8h] / [ebp-Ch]
   WORD nMouseBtn = 0, nPrevMouseBtn;          // [ebp-4h] / [ebp-18h]
 
-  DebugLog("[HNH:SUB] MenuMusicSelect_47D163\n");
+  ONCELOG("[HNH:SUB] MenuMusicSelect_47D163\n");
 
   nResult = 0;
   nSoundIndex = 4;

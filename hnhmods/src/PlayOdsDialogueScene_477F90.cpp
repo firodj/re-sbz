@@ -22,8 +22,8 @@ void (__cdecl*PauseSceneAudio_46A2A0)(CHanaSceneT458_S504 *pScene, int bPause) =
 void (__cdecl*SetProjectionFov_40DCA3)(float fFov) =
     reinterpret_cast<void(__cdecl*)(float)>(0x40DCA3);
 void (__cdecl*DrawDialogueWindow_480B2D)(CHanaSceneT458_S504 *pScene,
-    float frameTimeMultiplied, int xMouse, int yMouse, short btnMouse) =
-    reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, float, int, int, short)>(0x480B2D);
+    float frameTimeMultiplied, int xMouse, int yMouse, WORD btnMouse) =
+    reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, float, int, int, WORD)>(0x480B2D);
 // Surface_AlphaBlendRect lives in src/Surface_AlphaBlendRect.cpp (extern in shared.hpp)
 
 void (__cdecl *DrawAdvanceDialogueText_47FA84)(CHanaSceneT458_S504 *pScene, int, int, __int16)
@@ -114,7 +114,7 @@ int __cdecl hook_PlayOdsDialogueScene_477F90(int nOdsIndex)
     };
     // (the original zeroes a 60-byte scratch buffer v22 here -- never used)
 
-    DebugLog("[HNH:SUB] PlayOdsDialogueScene_477F90\n");
+    ONCELOG("[HNH:SUB] PlayOdsDialogueScene_477F90\n");
 
     nResult = 0;
     bSkipMode = 0;
@@ -1255,7 +1255,7 @@ void __cdecl hook_Surface_AlphaBlendRect(LPDIRECTDRAWSURFACE7 pDestSurface, int 
   int i, y;
   BOOL bSameSurface;
 
-  DebugLog("[HNH:SUB] Surface_AlphaBlendRect_41A039\n");
+  ONCELOG("[HNH:SUB] Surface_AlphaBlendRect_41A039\n");
 
   bSameSurface = 0;
   nInvBlendWeight = 100 - nBlendWeight;
@@ -1378,12 +1378,33 @@ LPVOID __cdecl hook_Surface_LockAndGetPointer(LPDIRECTDRAWSURFACE7 pSurface)
 }
 
 void register_PlayOdsDialogueScene_477F90() {
-  hnh_Hook(0x477F90, hook_PlayOdsDialogueScene_477F90, "PlayOdsDialogueScene_477F90"); // [OK]
-  hnh_Hook(0x4843cf, hook_LoadOds_4843CF, "LoadOds_4843CF"); // [OK]
-  hnh_Hook(0x47fa84, hook_DrawAdvanceDialogueText_47FA84, "DrawAdvanceDialogueText_47FA84");
-  hnh_Hook(0x4019e1, hook_CSekBody__UpdateAnim_4019E1, "CSekBody__UpdateAnim_4019E1"); // [OK]
+  PlayOdsDialogueScene_477F90 = hook_PlayOdsDialogueScene_477F90;
+  LoadOds_4843CF = hook_LoadOds_4843CF;
+  ResetSceneBodies_4857CA = hook_ResetSceneBodies_4857CA;
+  UpdateSceneAtTime_4825D5 = hook_UpdateSceneAtTime_4825D5;
+  UpdateSceneTimer_4827FE = hook_UpdateSceneTimer_4827FE;
+  PauseSceneAudio_46A2A0 = hook_PauseSceneAudio_46A2A0;
+  SetProjectionFov_40DCA3 = hook_SetProjectionFov_40DCA3;
+  DrawDialogueWindow_480B2D = hook_DrawDialogueWindow_480B2D;
+  DrawAdvanceDialogueText_47FA84 = hook_DrawAdvanceDialogueText_47FA84;
+  DrawDialogueText_4803B5 = hook_DrawDialogueText_4803B5;
+  CHanaObj__NewSceneT458_S504 = hook_CHanaObj__NewSceneT458_S504;
+  CSekBody__CutToAnim_4018E1 = hook_CSekBody__CutToAnim_4018E1;
+  CSekBody__UpdateAnim_4019E1 = hook_CSekBody__UpdateAnim_4019E1;
+  CHanaAnimSetT3F1__BeginBlend_43A371 = hook_CHanaAnimSetT3F1__BeginBlend_43A371;
+  CHanaAnimSetT3F1__BlendStep_43A643 = hook_CHanaAnimSetT3F1__BlendStep_43A643;
+  HanaAnim_UpdateBoneTransform = hook_HanaAnim_UpdateBoneTransform;
+  SekBody__UpdateTo2_401647 = hook_SekBody__UpdateTo2_401647;
+  Surface_AlphaBlendRect = hook_Surface_AlphaBlendRect;
+  Surface_LockAndGetPointer = hook_Surface_LockAndGetPointer;
+
   hnh_HookOff();
-    
+    hnh_Hook(0x477F90, hook_PlayOdsDialogueScene_477F90, "PlayOdsDialogueScene_477F90"); // [OK]
+    hnh_Hook(0x4843cf, hook_LoadOds_4843CF, "LoadOds_4843CF"); // [OK]
+    hnh_Hook(0x47fa84, hook_DrawAdvanceDialogueText_47FA84, "DrawAdvanceDialogueText_47FA84");
+    hnh_Hook(0x4019e1, hook_CSekBody__UpdateAnim_4019E1, "CSekBody__UpdateAnim_4019E1"); // [OK]
+
+
     hnh_Hook(0x4018e1, hook_CSekBody__CutToAnim_4018E1, "CSekBody__CutToAnim_4018E1"); // [OK]
    
     hnh_Hook(0x401647, hook_SekBody__UpdateTo2_401647, "SekBody__UpdateTo2_401647");  // [OK]

@@ -412,7 +412,7 @@ extern BOOL(__cdecl* LoadOds_4843CF)(LPCSTR lpFileName, CHanaSceneT458_S504** pp
 extern void(__cdecl* ResetSceneBodies_4857CA)(CHanaSceneT458_S504* pScene);
 extern void(__cdecl* SetProjectionFov_40DCA3)(float fFov);
 extern void(__cdecl* DrawDialogueWindow_480B2D)(CHanaSceneT458_S504* pScene,
-  float frameTimeMultiplied, int xMouse, int yMouse, short btnMouse);
+  float frameTimeMultiplied, int xMouse, int yMouse, WORD btnMouse);
 extern BOOL(__cdecl* CSekBody__UpdateAnim_4019E1)(CSekBody* pSekBody, float fDelta);
 extern void(__cdecl* CSekBody__CutToAnim_4018E1)(CSekBody* pSekBody, int nIndex);
 extern void(__cdecl* SekBody__UpdateTo2_401647)(CSekBody* pSekBody, int nIndex);
@@ -650,14 +650,3 @@ extern void(__cdecl* CHanaAnimSetT3F1__RemoveAnimT3F0_404349)(CHanaAnimSetT3F1_S
 extern CSekItem*& g_pSekItem_4CD760; // in: PlayOdsDialogueScene.cpp
 
 #endif
-
-// == MACROS
-
-#define ONCELOG(format, ...) \
-  { \
-    static bool _debugged = true; \
-    if (_debugged) { \
-      _debugged = false; \
-      DebugLog(format, __VA_ARGS__); \
-    } \
-  }

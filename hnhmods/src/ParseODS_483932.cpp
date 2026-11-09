@@ -112,7 +112,7 @@ int __cdecl hook_ParseODS_483932(LPBYTE pBuf, CHanaSceneT458_S504 *pScene)
     int nIndex, nCount;                     // [ebp-114h] / [ebp-8h]
     CHAR szFileName[256];                   // [esp+198h] [ebp-110h]
 
-    DebugLog("[HNH:SUB] ParseODS_483932\n");
+    ONCELOG("[HNH:SUB] ParseODS_483932\n");
 
     nIndex = 0;
     MtxStackStartMultLocal_4074EF();
@@ -324,7 +324,7 @@ void __cdecl hook_ReadStrFile_483567(CHanaSceneT458_S504 *pScene, const char *sz
   DWORD nNumberOfBytesToReadAlign50; // [esp+104h] [ebp-8h]
   DWORD NumberOfBytesRead; // [esp+108h] [ebp-4h] BYREF
 
-  DebugLog("[HNH:SUB] ReadStrFile_483567\n");
+  ONCELOG("[HNH:SUB] ReadStrFile_483567\n");
 
   wsprintfA(FileName, "%s", szFileName);
   hFile = CreateFileA(FileName, GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0);

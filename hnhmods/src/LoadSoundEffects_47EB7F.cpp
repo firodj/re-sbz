@@ -42,7 +42,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_LoadSoundEffects_47EB7F(void)
     CHAR szFileName[256];              // [esp+3ECh] [ebp-108h]
     int i;
 
-    DebugLog("[HNH:SUB] LoadSoundEffects_47EB7F\n");
+    ONCELOG("[HNH:SUB] LoadSoundEffects_47EB7F\n");
 
     // 5 UI-effect wavs -> plain 2D DirectSound buffers, quieted to -1000
     for (i = 0; i < 5; ++i)
@@ -77,7 +77,7 @@ void __cdecl hook_ReleaseSoundEffects(void)
 {
     int i;
 
-    DebugLog("[HNH:SUB] ReleaseSoundEffects_47EEEC\n");
+    ONCELOG("[HNH:SUB] ReleaseSoundEffects_47EEEC\n");
 
     // 1) UI-effect buffers: stop, release, clear
     for (i = 0; i < 5; ++i)
@@ -135,7 +135,7 @@ LPDIRECTSOUNDBUFFER __cdecl hook_LoadWav_422E7B(LPSTR pszFileName)
     LPDIRECTSOUNDBUFFER pDsBufferOut;  // [esp+6Ch] [ebp-4h]
     HRESULT hr;
 
-    DebugLog("[HNH:SUB] LoadWav_422E7B\n");
+    ONCELOG("[HNH:SUB] LoadWav_422E7B\n");
 
     if (!g_bDSInited_5185C4)
         return NULL;
@@ -255,7 +255,7 @@ CSoundStruct_8 *__cdecl hook_LoadWavToDS3DBuffer_42277E(LPSTR pszFileName)
     CSoundStruct_8 *pSnd;                 // [esp+84h] [ebp-Ch]
     HRESULT hr;
 
-    DebugLog("[HNH:SUB] LoadWavToDS3DBuffer_42277E\n");
+    ONCELOG("[HNH:SUB] LoadWavToDS3DBuffer_42277E\n");
 
     pSnd = NULL;
     if (!g_bDSInited_5185C4)

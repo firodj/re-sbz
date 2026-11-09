@@ -101,7 +101,7 @@ LRESULT (__stdcall * WndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM wPar
 //   and app shutdown (WndProcCheckSystem).
 void __cdecl hook_D3DDeinit()
 {
-  DebugLog("[HNH:SUB] D3DDeinit_40AC7C\n");
+  ONCELOG("[HNH:SUB] D3DDeinit_40AC7C\n");
 
   if ( g_bInited_4D6C6C )
   {
@@ -202,7 +202,7 @@ void hook_Renderer_InitializeTrigTablesAndPixelFormat()
   int k; // [esp+8h] [ebp-8h]
   int bitMask; // [esp+Ch] [ebp-4h]
 
-  DebugLog("[HNH:SUB] Renderer_InitializeTrigTablesAndPixelFormat_418620\n");
+  ONCELOG("[HNH:SUB] Renderer_InitializeTrigTablesAndPixelFormat_418620\n");
 
   float two_pi_a = 2.0f * static_cast<float>(M_PI);
 
@@ -254,7 +254,7 @@ void hook_Renderer_InitializeTrigTablesAndPixelFormat()
 // HanaDS_SetErrStr - convert a DirectSound error code (DSERR_*/HRESULT) to a human-readable message via DSErrToString_423CE7, cache the resulting message pointer in g_pDDErrStr, and return it. The message points into read-only data (the 'DirectSound ...' strings); DSErrToString_423CE7 returns 0 (NULL) for code 0 (no error). Called by HanaDS_Init on the failure path to record the last error.
 const char *__cdecl hook_HanaDS_SetErrStr(DWORD hr)
 {
-  DebugLog("[HNH:SUB] HanaDS_SetErrStr_423CCC\n");
+  ONCELOG("[HNH:SUB] HanaDS_SetErrStr_423CCC\n");
 
   g_pDDErrStr = (LPSTR)DSErrToString_423CE7(hr);
   return g_pDDErrStr;
@@ -263,7 +263,7 @@ const char *__cdecl hook_HanaDS_SetErrStr(DWORD hr)
 // HanaHeap_Create - lazily create the module's private Win32 heap on first use. If g_hHeap is already set, returns 0 (not re-created); otherwise g_hHeap = HeapCreate(HEAP_NO_SERIALIZE=1, dwInitialSize, 0) and returns g_hHeap != 0. dwInitialSize is the initial commit size in bytes.
 BOOL __cdecl hook_HanaHeap_Create(SIZE_T dwInitialSize)
 {
-  DebugLog("[HNH:SUB] HanaHeap_Create_427520\n");
+  ONCELOG("[HNH:SUB] HanaHeap_Create_427520\n");
   
   if ( g_hHeapHandle )
     return 0;
@@ -274,7 +274,7 @@ BOOL __cdecl hook_HanaHeap_Create(SIZE_T dwInitialSize)
 // HanaDS_InitHeap - initialize the DirectSound/audio subsystem heap to a fixed 40000-byte (0x9C40) initial size via HanaHeap_Create(40000). Returns 1 unconditionally (the heap-create result is not propagated to the caller).
 int hook_HanaDS_InitHeap()
 {
-  DebugLog("[HNH:SUB] HanaDS_InitHeap_424886\n");
+  ONCELOG("[HNH:SUB] HanaDS_InitHeap_424886\n");
   
   HanaHeap_Create(40000u);
   return 1;
@@ -288,7 +288,7 @@ int __cdecl hook_HanaDS_Init(HWND hwnd)
 {
   HRESULT hr; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] HanaDS_Init_422D50\n");
+  ONCELOG("[HNH:SUB] HanaDS_Init_422D50\n");
 
   if ( !HanaDS_InitHeap() )
     return 0;
@@ -312,7 +312,7 @@ int __cdecl hook_HanaDS_Init(HWND hwnd)
 // HanaHeap_Destroy - destroy the module's private heap (g_hHeap) via HeapDestroy and null g_hHeap. Refuses (returns 0) while g_nHeapRefCount > 0 (heap still has live references); otherwise destroys, clears g_nHeapRefCount and returns 1. Counterpart to HanaHeap_Create.
 int hook_HanaHeap_Destroy()
 {
-  DebugLog("[HNH:SUB] HanaHeap_Destroy_427551\n");
+  ONCELOG("[HNH:SUB] HanaHeap_Destroy_427551\n");
   
   if ( g_nHeapRefCount > 0 )
      return 0;
@@ -326,7 +326,7 @@ int hook_HanaHeap_Destroy()
 // HanaDS_DestroyHeap - audio-subsystem hook that tears down the private module heap by calling HanaHeap_Destroy(); returns its result. Called as the final step of HanaDS_Shutdown.
 int hook_HanaDS_DestroyHeap()
 {
-  DebugLog("[HNH:SUB] HanaDS_DestroyHeap_42489D\n");
+  ONCELOG("[HNH:SUB] HanaDS_DestroyHeap_42489D\n");
   
   return HanaHeap_Destroy();
 }
@@ -334,7 +334,7 @@ int hook_HanaDS_DestroyHeap()
 // HanaDS_Shutdown - tear down the DirectSound subsystem if initialized: release g_pdsBuffer and g_ppDS, null both, clear g_bDSInited_5185C4, then call sub_42489D() (further 3D/audio cleanup) and return its result. Returns 0 when not initialized.
 void hook_HanaDS_Shutdown()
 {
-  DebugLog("[HNH:SUB] HanaDS_Shutdown_422E14\n");
+  ONCELOG("[HNH:SUB] HanaDS_Shutdown_422E14\n");
 
   if ( g_bDSInited_5185C4 )
   {
@@ -356,7 +356,7 @@ IDirectSound3DListener *hook_HanaDS_Create3DListener()
   DWORD hr; // [esp+24h] [ebp-8h]
   IDirectSound3DListener *pListener; // [esp+28h] [ebp-4h] BYREF
 
-  DebugLog("[HNH:SUB] HanaDS_Create3DListener_422690\n");
+  ONCELOG("[HNH:SUB] HanaDS_Create3DListener_422690\n");
 
   if ( !g_bDSInited_5185C4 )
     return 0;
@@ -390,7 +390,7 @@ IDirectSound3DListener *hook_HanaDS_Create3DListener()
 
 int hook_Renderer_CleanupFont()
 {
-    DebugLog("[HNH:SUB] Renderer_CleanupFont_41888E\n");
+    ONCELOG("[HNH:SUB] Renderer_CleanupFont_41888E\n");
 
     if ( g_hFont )
     {
@@ -408,7 +408,7 @@ int hook_Renderer_CleanupFont()
 // g_hFont / g_dwCharWidth for all menu text.
 void __cdecl hook_SetUiFont_419BCD(int nCharW, int nFontH, LPCSTR szFaceName)
 {
-  DebugLog("[HNH:SUB] SetUiFont_419BCD\n");
+  ONCELOG("[HNH:SUB] SetUiFont_419BCD\n");
 
   if ( g_hFont )
   {
@@ -507,12 +507,8 @@ static LRESULT OnEngineInit(HWND hWnd)
 
 LRESULT __stdcall hook_WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-  static int log_WndProcCheckSystem_485FC2 = 1;
-  if (log_WndProcCheckSystem_485FC2) {
-    DebugLog("[HNH:SUB] WndProcCheckSystem_485FC2\n");
-    log_WndProcCheckSystem_485FC2 = 0;
-  }
-
+  ONCELOG("[HNH:SUB] WndProcCheckSystem_485FC2\n");
+ 
   g_hwndParent = hWnd;
   LCID lcid;
 

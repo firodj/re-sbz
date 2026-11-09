@@ -4,7 +4,6 @@
 #include <cmath>
 #include <corecrt_math_defines.h>
 
-// === GLOBAL VARIABLES ===
 
 // === GLOBAL FUNCTIONS ===
 HRESULT (*D3DXUninitialize)(void) = reinterpret_cast<HRESULT(*)(void)>(0x48B8F0);
@@ -202,19 +201,19 @@ D3DXMATRIX *__stdcall hook_D3DXMatrixRotationAxis(D3DXMATRIX *pOut, const D3DXVE
 
 double __cdecl hook_Vec3LengthSq(const D3DXVECTOR3 *pV)
 {
-  DebugLog("[HNH:SUB] Vec3LengthSq_40E3C0\n");
+  ONCELOG("[HNH:SUB] Vec3LengthSq_40E3C0\n");
   return pV->x * pV->x + pV->y * pV->y + pV->z * pV->z;
 }
 
 void __fastcall hook_Vec3Set(D3DXVECTOR3 *This, int unused_edx, float x, float y, float z)
 {
-  DebugLog("[HNH:SUB] hook_Vec3Set_40E420\n");
+  ONCELOG("[HNH:SUB] hook_Vec3Set_40E420\n");
   This->Vec3Set(x, y, z);
 }
 
 double __cdecl hook_Vec3Dot(const D3DXVECTOR3 *pV1, const D3DXVECTOR3 *pV2)
 {
-  DebugLog("[HNH:SUB] Vec3Dot_40E3F0\n");
+  ONCELOG("[HNH:SUB] Vec3Dot_40E3F0\n");
   return pV1->x * pV2->x + pV1->y * pV2->y + pV1->z * pV2->z;
 }
 
@@ -223,7 +222,7 @@ double __cdecl hook_DegreesToRadians(float deg)
   float sign = 1.0f;
   float accumulatedPi = 0.0f;
 
-  DebugLog("[HNH:SUB] %s\n", "DegreesToRadians_40DDF3");
+  ONCELOG("[HNH:SUB] %s\n", "DegreesToRadians_40DDF3");
 
   if (deg < 0.0f)
   {
@@ -249,7 +248,7 @@ HRESULT __cdecl hook_MatrixPerspectiveFovLH(D3DXMATRIX *pMat, float fovy, float 
   float v10; // [esp+34h] [ebp-8h]
   float v11; // [esp+38h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] %s\n", "MatrixPerspectiveFovLH_40CB94");
+  ONCELOG("[HNH:SUB] %s\n", "MatrixPerspectiveFovLH_40CB94");
 
   if ( fabs(zf - zn) < 0.009999999776482582 )
     return E_INVALIDARG;
@@ -274,12 +273,8 @@ D3DXMATRIX *__cdecl hook_D3DXMatrixIdentity(D3DXMATRIX *pOut)
 {
   D3DXMATRIX *result; // eax
 
-  static int log_D3DXMatrixIdentity = 1;
-  log_D3DXMatrixIdentity--;
-  if (!log_D3DXMatrixIdentity) {
-    DebugLog("[HNH:SUB] %s\n", "D3DXMatrixIdentity_40E450");
-    log_D3DXMatrixIdentity = 1000;
-  }
+  ONCELOG("[HNH:SUB] %s\n", "D3DXMatrixIdentity_40E450");
+ 
 
   result = pOut;
   pOut->m[3][2] = 0.0;
@@ -306,14 +301,8 @@ D3DXMATRIX *__stdcall hook_D3DXMatrixMultiply(D3DXMATRIX *pOut, const D3DXMATRIX
   if (!pOut || !pM1 || !pM2)
     return nullptr;
 
-  // logging
-  static int log_D3DXMatrixMultiply_48A4BC = 1;
-  log_D3DXMatrixMultiply_48A4BC--;
-  if (!log_D3DXMatrixMultiply_48A4BC) {
-    DebugLog("[HNH:SUB] %s\n", "D3DXMatrixMultiply_48A4BC");
-    log_D3DXMatrixMultiply_48A4BC = 10000;
-  }
-
+  ONCELOG("[HNH:SUB] %s\n", "D3DXMatrixMultiply_48A4BC");
+ 
   // Use a temporary local matrix to safely handle aliasing 
   // (if pOut points to the same memory as pM1 or pM2)
   D3DXMATRIX tempResult;
@@ -352,7 +341,7 @@ HRESULT __cdecl hook_MatrixLookAtLH(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, c
   D3DXVECTOR3 right;   // Formerly v61
   D3DXVECTOR3 tempVec;
 
-  DebugLog("[HNH:SUB] %s\n", "MatrixLookAtLH_40C64A");
+  ONCELOG("[HNH:SUB] %s\n", "MatrixLookAtLH_40C64A");
 
   // --- 1. Compute and normalize the forward vector (Z-axis) ---
   float dx = pAt->x - pEye->x;
@@ -434,12 +423,7 @@ D3DXMATRIX* WINAPI hook_D3DXMatrixInverse(D3DXMATRIX *pOut, float *pfDeterminant
   if (!pOut || !pM)
     return 0;
 
-  static int log_D3DXMatrixInverse_48A5BD = 1;
-  log_D3DXMatrixInverse_48A5BD--;
-  if (!log_D3DXMatrixInverse_48A5BD) {
-    DebugLog("[HNH:SUB] %s\n", "D3DXMatrixInverse_48A5BD");
-    log_D3DXMatrixInverse_48A5BD = 10000;
-  }
+  ONCELOG("[HNH:SUB] %s\n", "D3DXMatrixInverse_48A5BD");
 
   // 1. Cache source matrix elements
   float m11 = pM->_11, m12 = pM->_12, m13 = pM->_13, m14 = pM->_14;

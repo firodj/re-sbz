@@ -11,7 +11,7 @@ const char* (__cdecl* DDErrToString_41898E)(HRESULT hr) = reinterpret_cast<const
 
 const char *__cdecl hook_DSErrToString_423CE7(HRESULT hr)
 {
-    DebugLog("[HNH:SUB] DSErrToString_423CE7\n");
+    ONCELOG("[HNH:SUB] DSErrToString_423CE7\n");
 
     if ( hr > 0x88780046 )
     {
@@ -91,7 +91,7 @@ const char *__cdecl hook_DDErrToString_41898E(HRESULT hr)
   if ( !hr )
     return 0;
 
-  DebugLog("[HNH:SUB] DDErrToString_41898E\n");
+  ONCELOG("[HNH:SUB] DDErrToString_41898E\n");
 
   if ( hr > 0x887601A4 )
   {

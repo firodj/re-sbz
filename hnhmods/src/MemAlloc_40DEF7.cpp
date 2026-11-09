@@ -60,12 +60,8 @@ void __cdecl hook_PrintDebugError(int hr)
  */
 LPVOID __cdecl hook_MemAlloc_40DEF7(SIZE_T dwBytes)
 {
-  static int log_MemAlloc_40DEF7 = 1;
-  log_MemAlloc_40DEF7--;
-  if (!log_MemAlloc_40DEF7) {
-    DebugLog("[HNH:SUB] MemAlloc_40DEF7\n");
-    log_MemAlloc_40DEF7 = 1000;
-  }
+  ONCELOG("[HNH:SUB] MemAlloc_40DEF7\n");
+  
 
   LPVOID ptr; // Allocated memory pointer
 
@@ -90,13 +86,8 @@ LPVOID __cdecl hook_MemAlloc_40DEF7(SIZE_T dwBytes)
 LPVOID __cdecl hook_HeapAllocRef(SIZE_T size)
 {
   LPVOID pMem; // [esp+0h] [ebp-4h]
-
-  static int log_HeapAllocRef = 1;
-  log_HeapAllocRef--;
-  if (!log_HeapAllocRef) {
-    DebugLog("[HNH:SUB] HeapAllocRef_427591\n");
-    log_HeapAllocRef = 1000;
-  }
+  ONCELOG("[HNH:SUB] HeapAllocRef_427591\n");
+ 
 
   if ( !g_hHeapHandle )
     return 0;
@@ -109,12 +100,8 @@ LPVOID __cdecl hook_HeapAllocRef(SIZE_T size)
 
 BOOL __cdecl hook_HeapFreeRef(LPVOID lpMem)
 {
-  static int log_HeapFreeRef = 1;
-  log_HeapFreeRef--;
-  if (!log_HeapFreeRef) {
-    DebugLog("[HNH:SUB] HeapFreeRef_4275DF\n");
-    log_HeapFreeRef = 1000;
-  }
+  ONCELOG("[HNH:SUB] HeapFreeRef_4275DF\n");
+ 
 
   if ( !lpMem )
     return 0;
@@ -130,12 +117,8 @@ LPVOID __cdecl hook_AllocMem(SIZE_T size)
 {
   LPVOID pMem; // [esp+0h] [ebp-4h]
 
-  static int log_AllocMem = 1;
-  log_AllocMem--;
-  if (!log_AllocMem) {
-    DebugLog("[HNH:SUB] AllocMem_4248A7\n");
-    log_AllocMem = 1000;
-  }
+  ONCELOG("[HNH:SUB] AllocMem_4248A7\n");
+  
 
   pMem = HeapAllocRef(size);
   if ( pMem )
@@ -146,13 +129,8 @@ LPVOID __cdecl hook_AllocMem(SIZE_T size)
 
 BOOL __cdecl hook_SafeFree(LPVOID lpMem)
 {
-  static int log_SafeFree = 1;
-  log_SafeFree--;
-  if (!log_SafeFree) {
-    DebugLog("[HNH:SUB] SafeFree_4248D2\n");
-    log_SafeFree = 1000;
-  }
-
+  ONCELOG("[HNH:SUB] SafeFree_4248D2\n");
+ 
   if ( !lpMem )
     return 0;
   HeapFreeRef(lpMem);
@@ -161,12 +139,8 @@ BOOL __cdecl hook_SafeFree(LPVOID lpMem)
 
 int __cdecl hook_MemFree_40DF64(void *pBuf)
 {
-  static int log_MemFree_40DF64 = 1;
-  log_MemFree_40DF64--;
-  if (!log_MemFree_40DF64) {
-    DebugLog("[HNH:SUB] MemFree_40DF64\n");
-    log_MemFree_40DF64 = 1000;
-  }
+  ONCELOG("[HNH:SUB] MemFree_40DF64\n");
+ 
 
   if ( pBuf )
   {

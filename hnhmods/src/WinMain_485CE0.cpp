@@ -44,7 +44,7 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
     int soundInitResult; // Return value from sound initialization
     HWND desktopWnd; // Handle to desktop window
 
-    DebugLog("[HNH:SUB] WinMain_485CE0\n");
+    ONCELOG("[HNH:SUB] WinMain_485CE0\n");
 
     // Initialize return value
     exitCode = 0;
@@ -178,7 +178,7 @@ BOOL __cdecl hook_DIMouseKeybInit_43AF33(int bAcquire)
 {
   if ( !g_pdiMouse_5196D8 )
     return 0;
-  DebugLog("[HNH:SUB] DIMouseKeybInit_43AF33\n");
+  ONCELOG("[HNH:SUB] DIMouseKeybInit_43AF33\n");
   g_bdiAcquire_5196E0 = bAcquire;
   if ( bAcquire )
   {
@@ -195,7 +195,7 @@ BOOL __cdecl hook_DIMouseKeybInit_43AF33(int bAcquire)
 
 BOOL __cdecl hook_DInputInit_43AD67(HINSTANCE hinst, HWND hWnd)
 {
-  DebugLog("[HNH:SUB] DInputInit_43AD67\n");
+  ONCELOG("[HNH:SUB] DInputInit_43AD67\n");
 
   if ( DirectInputCreateA(hinst, 0x700u, &g_ppDI, 0) < 0 )
     return 0;

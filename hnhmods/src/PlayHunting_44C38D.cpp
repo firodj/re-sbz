@@ -235,7 +235,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   double updated;                      // UpdateFoeAI / wana-attack return
   double fActTimerNew;
   unsigned int nCount;
-  unsigned int dwElapsedMs;
+  DWORD dwElapsedMs;
   DWORD Time;
   int dwClockBase2;
   int nClockBase;

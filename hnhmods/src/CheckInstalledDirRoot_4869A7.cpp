@@ -48,7 +48,7 @@ void __cdecl hook_SetupDirPath_486630()
 {
     CHAR Src[256]; // [esp+0h] [ebp-100h] BYREF
 
-    DebugLog("[HNH:SUB] %s\n", "SetupDirPath_486630");
+    ONCELOG("[HNH:SUB] %s\n", "SetupDirPath_486630");
 
     wsprintfA(Src, "%s\\ODS", g_szHnhPath_530270);
     if ( IsFileExists_47E8EE(Src) )
@@ -180,7 +180,7 @@ bool __cdecl hook_CheckInstalledDirRoot_4869A7(HWND hWnd)
 {
     CHAR chInstall, chCdRom;
 
-    DebugLog("[HNH:SUB] CheckInstalledDirRoot_4869A7\n");
+    ONCELOG("[HNH:SUB] CheckInstalledDirRoot_4869A7\n");
 
     // 1) install drive: <X>:\HaNaHiMe\HDFILE
     g_szHnhPath_530270[0] = '\0'; // original zeroes [0..2]
@@ -222,7 +222,7 @@ bool __cdecl hook_CheckInstalledDirRoot_4869A7(HWND hWnd)
 */
 BOOL __cdecl hook_IsFileExists_47E8EE(CHAR *pszFilePath)
 {
-  DebugLog("[HNH:SUB] IsFileExists_47E8EE\n");
+  ONCELOG("[HNH:SUB] IsFileExists_47E8EE\n");
 
   WIN32_FIND_DATAA FindFileData; // [esp+0h] [ebp-248h] BYREF
   CHAR szPath[256]; // [esp+140h] [ebp-108h] BYREF

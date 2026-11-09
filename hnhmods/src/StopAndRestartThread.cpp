@@ -68,7 +68,7 @@ bool(__cdecl*GetCursorPos_4811FA)(int* pOutX, int* pOutY, __int16* pOutBtn)
 //   3. If bThreadType == 0: just sleep 10ms (wind-down)
 void __cdecl hook_StopAndRestartThread(DWORD nThreadType)
 {
-  DebugLog("[HNH:SUB] %s\n", "StopAndRestartThread_481AE4");
+  ONCELOG("[HNH:SUB] %s\n", "StopAndRestartThread_481AE4");
 
   g_hThread = TerminateThreadGracefully(g_hThread); // Store terminated handle (NULL) back to hThread
   if ( nThreadType != 0 )
@@ -83,7 +83,7 @@ HANDLE __cdecl hook_TerminateThreadGracefully(HANDLE hThread)
   int bTerminate; // [esp+4h] [ebp-8h]
   DWORD ExitCode; // [esp+8h] [ebp-4h] BYREF
 
-  DebugLog("[HNH:SUB] TerminateThreadGracefully_481A35\n");
+  ONCELOG("[HNH:SUB] TerminateThreadGracefully_481A35\n");
 
   bTerminate = 1;
   g_bRequestThreadStop = 1;
@@ -116,7 +116,7 @@ HANDLE __cdecl hook_CreateNewThread(HANDLE hPrevThread, DWORD nThreadType)
   DWORD ThreadId; // [esp+4h] [ebp-4h] BYREF
   HANDLE hThread; // [esp+10h] [ebp+8h]
 
-  DebugLog("[HNH:SUB] %s\n", "CreateNewThread_4818FD");
+  ONCELOG("[HNH:SUB] %s\n", "CreateNewThread_4818FD");
   DebugLog("\tcreate new thread 0x%x, %d\n", hPrevThread, nThreadType);
 
   for ( i = 0; i < 30; ++i )
@@ -163,7 +163,7 @@ __noreturn void __stdcall  hook_InputThread_Relative_481637(LPVOID lpThreadParam
   int nCenterY; // [esp+14h] [ebp-8h]
   int nCenterX; // [esp+18h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] %s\n", "InputThread_Relative_481637");
+  ONCELOG("[HNH:SUB] %s\n", "InputThread_Relative_481637");
 
   nCenterX = ConvertFrom640AsInt(320);
   nCenterY = ConvertFrom640AsInt(240);
@@ -227,7 +227,7 @@ __noreturn void __stdcall hook_InputThread_Absolute_4817B1(LPVOID lpThreadParame
   int nTmpX; // [esp+Ch] [ebp-8h] BYREF
   __int16 wTmpBtn; // [esp+10h] [ebp-4h] BYREF
 
-  DebugLog("[HNH:SUB] %s\n", "InputThread_Absolute_4817B1");
+  ONCELOG("[HNH:SUB] %s\n", "InputThread_Absolute_4817B1");
 
   g_pInputState2_52F3A8 = g_arrInputState1_52F1C0;
   g_pInputState1_52F3A4 = g_arrInputState2_52F2B0;
@@ -403,12 +403,8 @@ bool __cdecl hook_GetCursorPos_4811FA(int *pOutX, int *pOutY, __int16 *pOutBtn)
 */
 CInputState *hook_GetInputState_481B37()
 {
-  static int log_GetInputState_481B37 = 1;
-  log_GetInputState_481B37--;
-  if (!log_GetInputState_481B37) {
-    DebugLog("[HNH:SUB] %s\n", "GetInputState_481B37");
-    log_GetInputState_481B37 = 1000;
-  }
+  ONCELOG("[HNH:SUB] %s\n", "GetInputState_481B37");
+  
   return g_pInputState_4C7354;
 }
 
@@ -416,12 +412,7 @@ void __cdecl hook_MutexThreadWait_4815EC(bool bWait)
 {
   int i; // [esp+0h] [ebp-4h]
 
-  static int log_MutexThreadWait_4815EC = 1;
-  log_MutexThreadWait_4815EC--;
-  if (!log_MutexThreadWait_4815EC) {
-    DebugLog("[HNH:SUB] %s\n", "MutexThreadWait_4815EC");
-    log_MutexThreadWait_4815EC = 1000;
-  }
+  ONCELOG("[HNH:SUB] %s\n", "MutexThreadWait_4815EC");
 
   i = 0;
   g_bThreadWait_52F3AD = bWait;

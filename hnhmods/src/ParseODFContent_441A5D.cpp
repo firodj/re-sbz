@@ -135,7 +135,7 @@ BOOL __cdecl hook_ParseODFContent_441A5D(
   unsigned int nFramesCount; // [esp+34h] [ebp-8h]
   CHanaMorpT457_S40C *pMorpT457; // [esp+38h] [ebp-4h] BYREF
 
-  DebugLog("[HNH:SUB] ParseODFContent_441A5D\n");
+  ONCELOG("[HNH:SUB] ParseODFContent_441A5D\n");
 
   nMeshIndex = 0;
   nMorpIndex = 0;
@@ -835,11 +835,7 @@ void __cdecl hook_ConfigureLight(
   float dirY,
   float dirZ)
 {
-  static bool _debugged = true;
-  if (_debugged) {
-    _debugged = false;
-    DebugLog("[HNH:SUB] ConfigureLight_409510\n");
-  }
+  ONCELOG("[HNH:SUB] ConfigureLight_409510\n");
 
   switch ( pHanaLight->d3dLight_134.dltType )
   {
@@ -870,7 +866,7 @@ void __cdecl hook_ConfigureLight(
 void __cdecl hook_AssignLigthtToFrame_40539D(CHanaFrameT3EC_S354 *pHanaT3EC, CHanaLightT3EF_S1A0 *pHanaLight)
 {
   D3DXMATRIX mat_v3; // [esp+8h] [ebp-40h] BYREF
-  DebugLog("[HNH:SUB] AssignLigthtToFrame_40539D\n");
+  ONCELOG("[HNH:SUB] AssignLigthtToFrame_40539D\n");
   if ( pHanaLight )
   {
     pHanaT3EC->pHanaLight_210 = pHanaLight;
@@ -886,7 +882,9 @@ int __cdecl hook_CHanaObj__NewAnimT3F0(CHanaAnimT3F0_S240 **ppOut)
 {
   CHanaAnimT3F0_S240 *pOut; // edi
   CHanaAnimKeyT3F0_S78 *arrKeys_13C; // eax
-  DebugLog("[HNH:SUB] CHanaObj__NewAnimT3F0_401CD0\n");
+
+  ONCELOG("[HNH:SUB] CHanaObj__NewAnimT3F0_401CD0\n");
+
   pOut = (CHanaAnimT3F0_S240 *)MemAlloc_40DEF7(0x240u);
   memset(pOut, 0, sizeof(CHanaAnimT3F0_S240));
   pOut->dwType = 0x3F0;
@@ -923,7 +921,7 @@ int __cdecl hook_CHanaObj__NewAnimT3F0(CHanaAnimT3F0_S240 **ppOut)
 int __cdecl hook_HanaAnim_GetDuration(CHanaAnimT3F0_S240 *pHanaAnimT3F0)
 {
   int result; // eax
-  DebugLog("[HNH:SUB] HanaAnim_GetDuration_004039C9\n");
+  ONCELOG("[HNH:SUB] HanaAnim_GetDuration_004039C9\n");
   result = LODWORD(pHanaAnimT3F0->arrKeys_13C[pHanaAnimT3F0->nKeyCount_138 - 1].fTime);
   LODWORD(pHanaAnimT3F0->fDuration_134) = result;
   return result;
@@ -970,7 +968,9 @@ void __cdecl hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(CHanaAnimT3F0_S240 *pH
   float fPosY; // [esp+48h] [ebp-8h]
   float fScaleZ; // [esp+4Ch] [ebp-4h]
   float fPosZ; // [esp+4Ch] [ebp-4h]
-  DebugLog("[HNH:SUB] CHanaAnimT3F0__BakeKeyframesT3F0_402D0E\n");
+
+  ONCELOG("[HNH:SUB] CHanaAnimT3F0__BakeKeyframesT3F0_402D0E\n");
+
   arrKeys_13C = pHanaAnimT3F0->arrKeys_13C;
   pobjS78_v19 = arrKeys_13C;
   pobjS78_v4 = 0;
@@ -1140,11 +1140,8 @@ void __cdecl hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(CHanaAnimT3F0_S240 *pH
 
 void __cdecl hook_HanaFrame_GetFrameName(CHanaFrameT3EC_S354 *pFrame, char *pOutName)
 {
-  static bool _debugged = true;
-  if (_debugged) {
-    _debugged = false;
-    DebugLog("[HNH:SUB] HanaFrame_GetFrameName_40BA89\n");
-  }
+  ONCELOG("[HNH:SUB] HanaFrame_GetFrameName_40BA89\n");
+ 
 
   if ( pFrame )
   {
@@ -1155,11 +1152,8 @@ void __cdecl hook_HanaFrame_GetFrameName(CHanaFrameT3EC_S354 *pFrame, char *pOut
 
 void __cdecl hook_HanaAnim_LinkFrame(CHanaAnimT3F0_S240 *pAnim, CHanaFrameT3EC_S354 *pFrame)
 {
-  static bool _debugged = true;
-  if (_debugged) {
-    _debugged = false;
-    DebugLog("[HNH:SUB] HanaAnim_LinkFrame_401FBD\n");
-  }
+  ONCELOG("[HNH:SUB] HanaAnim_LinkFrame_401FBD\n");
+ 
 
   if ( pFrame )
   {
@@ -1182,12 +1176,8 @@ void __cdecl hook_ApplyQTS_4035B1(
   D3DXMATRIX pM2; // [esp+40h] [ebp-80h] BYREF
   D3DXMATRIX pM3; // [esp+80h] [ebp-40h] BYREF
 
-  static bool _debugged = true;
-  if (_debugged) {
-    _debugged = false;
-    DebugLog("[HNH:SUB] ApplyQTS_4035B1\n");
-  }
-
+  ONCELOG("[HNH:SUB] ApplyQTS_4035B1\n");
+ 
   D3DXMatrixRotationQuaternion(&pM2, pQ);
   D3DXMatrixTranslation(&pM3, x, y, z);
   D3DXMatrixScaling(&pM1, sx, sy, sz);
@@ -1199,7 +1189,7 @@ bool __cdecl hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15(CHanaAnimSetT3F1_S150 *pA
 {
   CHanaAnimT3F0_S240 **pOldAnimRefs; // [esp+14h] [ebp-8h]
   unsigned int i; // [esp+18h] [ebp-4h]
-  DebugLog("[HNH:SUB] CHanaAnimSetT3F1__AddAnimT3F0_403C15\n");
+  ONCELOG("[HNH:SUB] CHanaAnimSetT3F1__AddAnimT3F0_403C15\n");
   for ( i = 0; i < pAnimSet->nAnimCount_134; ++i )// 1. Duplicate check ? O(n) linear scan
   {
     if ( pAnimSet->refsAnimT3F0_138[i] == pAnim )
@@ -1237,11 +1227,8 @@ void __cdecl hook_HanaFrame_GetCenterPosition_408C3E(
   D3DXMATRIX pOut; // [esp+0h] [ebp-80h] BYREF
   D3DXMATRIX pM1; // [esp+40h] [ebp-40h] BYREF
 
-  static bool _debugged = true;
-  if (_debugged) {
-    _debugged = false;
-    DebugLog("[HNH:SUB] HanaFrame_GetCenterPosition_408C3E\n");
-  }
+  ONCELOG("[HNH:SUB] HanaFrame_GetCenterPosition_408C3E\n");
+
 
   if ( pFrame )
   {
@@ -1288,7 +1275,7 @@ BOOL __cdecl hook_GetSoundBufferAverageLevel(LPDIRECTSOUNDBUFFER pDSBuffer, floa
   int totalSampleLevels; // [esp+60h] [ebp-8h]
   DWORD sampleBlokSize; // [esp+64h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] GetSoundBufferAverageLevel_4248F2\n");
+  ONCELOG("[HNH:SUB] GetSoundBufferAverageLevel_4248F2\n");
 
   totalSampleLevels = 0;
   if ( !g_bDSInited_5185C4 )

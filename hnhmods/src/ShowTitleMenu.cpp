@@ -40,7 +40,7 @@ void hook_AllocateDevicesDescArray()
 {
   unsigned int i; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] %s\n", "AllocateDevicesDescArray_40AEFB");
+  ONCELOG("[HNH:SUB] %s\n", "AllocateDevicesDescArray_40AEFB");
 
   g_nDeviceCount = D3DXGetDeviceCount();
   g_pDevicesDesc = (D3DX_DEVICEDESC*)MemAlloc_40DEF7(sizeof(D3DX_DEVICEDESC) * g_nDeviceCount);
@@ -62,7 +62,7 @@ BOOL __cdecl hook_ShowTitleMenu_427DA8(HWND hWnd, BOOL bFullScreen)
     int bRunGame;
     CD3DInitParam d3dParams;
 
-    DebugLog("[HNH:SUB] %s\n", "ShowTitleMenu_427DA8");
+    ONCELOG("[HNH:SUB] %s\n", "ShowTitleMenu_427DA8");
 
     // Clear and initialize display configuration
     memset(&g_displayConfig_518C30, 0, sizeof(g_displayConfig_518C30));
@@ -145,7 +145,7 @@ BOOL __cdecl hook_ShowTitleMenu_427DA8(HWND hWnd, BOOL bFullScreen)
 
 void __cdecl hook_DisplayConfig_Destroy(CDisplayConfig *pDisplayConfig)
 {
-  DebugLog("[HNH:SUB] DisplayConfig_Destroy_427CC9\n");
+  ONCELOG("[HNH:SUB] DisplayConfig_Destroy_427CC9\n");
 
   if (!pDisplayConfig) return;
   
@@ -173,7 +173,7 @@ void hook_D3DSetRenderStates_4276C0()
 {
   D3DDEVICEDESC7 d3dDevCaps_v1; // [esp+0h] [ebp-ECh] BYREF
 
-  DebugLog("[HNH:SUB] D3DSetRenderStates_4276C0\n");
+  ONCELOG("[HNH:SUB] D3DSetRenderStates_4276C0\n");
 
   g_pD3DDevice_4D6C78->GetCaps(&d3dDevCaps_v1);
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
@@ -215,7 +215,7 @@ HRESULT __cdecl hook_D3DInit_40A894(CD3DInitParam *pDevParam)
   int is_r8g8b8; // [esp+2Ch] [ebp-8h]
   int is_r5g6b5; // [esp+30h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] D3DInit_40A894\n");
+  ONCELOG("[HNH:SUB] D3DInit_40A894\n");
 
   g_nMemCnt_4D6CF0 = 0;
 

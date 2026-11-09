@@ -38,7 +38,7 @@ BOOL __cdecl hook_FreeBmp_4211ED(CBMPFile *pBMPFile)
   if ( !pBMPFile )
     return 0;
 
-  DebugLog("[HNH:SUB] FreeBmp_4211ED\n");
+  ONCELOG("[HNH:SUB] FreeBmp_4211ED\n");
 
   if ( pBMPFile->pBMPColor )
     GlobalFree(pBMPFile->pBMPColor);
@@ -59,7 +59,7 @@ CBMPFile *__cdecl hook_LoadBmp_420DF0(LPCSTR lpFileName)
   int biClrUsed; // [esp+14h] [ebp-Ch]
   LPBYTE lpBuffer; // [esp+18h] [ebp-8h]
 
-  DebugLog("[HNH:SUB] LoadBmp_420DF0\n");
+  ONCELOG("[HNH:SUB] LoadBmp_420DF0\n");
 
   hFile = CreateFileA(lpFileName, 0x80000000, 1u, 0, 3u, 0x8000000u, 0);
   if ( !hFile || hFile == INVALID_HANDLE_VALUE )
@@ -735,7 +735,7 @@ LRESULT __stdcall hook_WndProcTitleMenu_428C11(HWND hWnd, unsigned int Msg, WPAR
   static int log_WndProcTitleMenu_428C11 = 1;
   log_WndProcTitleMenu_428C11--;
   if (!log_WndProcTitleMenu_428C11) {
-    DebugLog("[HNH:SUB] hook_WndProcTitleMenu_428C11\n");
+    ONCELOG("[HNH:SUB] WndProcTitleMenu_428C11\n");
     log_WndProcTitleMenu_428C11 = 1000;
   }
 

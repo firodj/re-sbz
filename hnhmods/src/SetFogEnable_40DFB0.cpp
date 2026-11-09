@@ -39,7 +39,7 @@ void (__cdecl * LoadDataFiles_461557)(CSceneState *pDataBuffer, char *pszTimesta
  */
 HRESULT __cdecl hook_SetFogEnable_40DFB0(BOOL bFogEnable, BOOL bFogRangeEnable)
 {
-  DebugLog("[HNH:SUB] SetFogEnable_40DFB0\n");
+  ONCELOG("[HNH:SUB] SetFogEnable_40DFB0\n");
 
   HRESULT hr; // [esp+0h] [ebp-4h]
 
@@ -67,7 +67,7 @@ HRESULT __cdecl hook_SetFogEnable_40DFB0(BOOL bFogEnable, BOOL bFogRangeEnable)
 */
 HRESULT __cdecl hook_SetFogMode_40E02D(int bFogTableEnable, DWORD dwFogMode)
 {
-  DebugLog("[HNH:SUB] SetFogMode_40E02D\n");
+  ONCELOG("[HNH:SUB] SetFogMode_40E02D\n");
 
   BOOL bTableFog; // [esp+0h] [ebp-8h]
 
@@ -82,7 +82,7 @@ HRESULT __cdecl hook_SetFogMode_40E02D(int bFogTableEnable, DWORD dwFogMode)
 
 HRESULT __cdecl hook_SetFogColor_40E0B4(DWORD dwFogColor)
 {
-  DebugLog("[HNH:SUB] SetFogColor_40E0B4\n");
+  ONCELOG("[HNH:SUB] SetFogColor_40E0B4\n");
 
   g_dwFogColor_4B00CC = dwFogColor;
   return g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_FOGCOLOR, dwFogColor);
@@ -92,7 +92,7 @@ HRESULT __cdecl hook_SetFogRange_40E0E2(DWORD dwFogStart, DWORD dwFogEnd)
 {
   HRESULT hr; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] SetFogRange_40E0E2\n");
+  ONCELOG("[HNH:SUB] SetFogRange_40E0E2\n");
 
   hr = 0;
   if ( g_dwFogMode_4B00C8 == 3 )
