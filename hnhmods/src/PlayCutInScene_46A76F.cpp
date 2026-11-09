@@ -18,10 +18,9 @@ int (__cdecl*PlayCutInScene_46A76F)(CHanaSceneT458_S504 *pScene,
     CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **,
     CSekBody *, CSekBody *, int, CSoundStruct_8 **, CSoundStruct_8 **,
     CSekBody **, int)>(0x46A76F);
-// --- not yet extracted; pinned here call-only ---
 
-float (__cdecl*GetSekBodyCurrentAnimTime)(CSekBody *pSekBody) =
-    reinterpret_cast<float(__cdecl*)(CSekBody *)>(0x401C67);
+double (__cdecl*GetSekBodyCurrentAnimTime)(CSekBody *pSekBody) =
+    reinterpret_cast<double(__cdecl*)(CSekBody *)>(0x401C67);
 
 void (__cdecl*SetAnimSetTime)(CHanaAnimSetT3F1_S150 *pAnimSet, float fTime) =
     reinterpret_cast<void(__cdecl*)(CHanaAnimSetT3F1_S150 *, float)>(0x404277);
@@ -53,12 +52,12 @@ void (__cdecl*CameraFrame_ProjectFramePairOntoForwardRay)(
       CHanaFrameT3EC_S354 *, CHanaFrameT3EC_S354 *)>(0x46A55D);
 
 void (__cdecl*CameraController_UpdateCutscene)(CHanaFrameT3EC_S354 *pTargetFrame,
-    CHanaFrameT3EC_S354 *pMapFrame, int nDX, int nDY, int iMode) =
+    CHanaFrameT3EC_S354 *pMapFrame, int nDX, int nDY, short iMode) =
     reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *,
-      CHanaFrameT3EC_S354 *, int, int, int)>(0x466BDA);
+      CHanaFrameT3EC_S354 *, int, int, short)>(0x466BDA);
 
-void (__cdecl*Scene_ProcessPracticeFrames)(CHanaSceneT458_S504 *pScene) =
-    reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *)>(0x4668AC);
+BOOL (__cdecl*Scene_ProcessPracticeFrames)(CHanaSceneT458_S504 *pScene) =
+    reinterpret_cast<BOOL (__cdecl*)(CHanaSceneT458_S504 *)>(0x4668AC);
 
 void (__cdecl*Cursor_ClampToCenterOrSprite)(int bClamp, int *pX, int *pY,
     int *pClampX, int *pClampY, CHanaSpriteT3F6_S1FC *pSprite) =
@@ -74,10 +73,10 @@ void (__cdecl*UpdateSekBodyAnimationMatrix)(CSekBody *pSekBody, float fPhase) =
 void (__cdecl*UpdateCutInSceneBoneTransforms)(CSekBody *pModeBody,
     CHanaAnimSetT3F1_S150 **arrAnimSetsL, CHanaFrameT3EC_S354 **arrFramesL,
     CHanaFrameT3EC_S354 **arrNakaFrames, CHanaAnimSetT3F1_S150 **arrAnimSetsR,
-    CHanaFrameT3EC_S354 **arrKutiRFrames, int k, float fFade) =
+    CHanaFrameT3EC_S354 **arrKutiRFrames, unsigned int k, float fFade) =
     reinterpret_cast<void(__cdecl*)(CSekBody *, CHanaAnimSetT3F1_S150 **,
       CHanaFrameT3EC_S354 **, CHanaFrameT3EC_S354 **, CHanaAnimSetT3F1_S150 **,
-      CHanaFrameT3EC_S354 **, int, float)>(0x4680B4);
+      CHanaFrameT3EC_S354 **, unsigned int, float)>(0x4680B4);
 
 int (__cdecl*MoveCutInSceneFramesWithCameraConstraint)(
     CHanaFrameT3EC_S354 *pFrame, CHanaFrameT3EC_S354 *pKutiRFrame,
@@ -1306,10 +1305,11 @@ void __cdecl hook_SoundSE_ManageEffectsAndPlay(
 // Matches "KutiR" frames to their closest "TibusaL" counterpart frames by
 // comparing 3D center positions, then swaps array entries to align matching pairs. Used in cutscene setup to pair
 // related animation frames.
+
 void __cdecl hook_AnimSet_MatchAndSortKutiRTibusaLFrames(
   CHanaAnimSetT3F1_S150 **arrSrcAnimSets,
   CHanaFrameT3EC_S354 **arrTargetFrames,
-  int *arrTargetFrameIdxes,
+  CHanaFrameT3EC_S354 **arrTargetFrameIdxes,
   CHanaAnimSetT3F1_S150 **arrDstAnimSets,
   CHanaFrameT3EC_S354 **arrKutiRFrames,
   CHanaFrameT3EC_S354 **arrTibusaLFrames,
@@ -1363,7 +1363,7 @@ void __cdecl hook_AnimSet_MatchAndSortKutiRTibusaLFrames(
               &py,
               &pz);
             HanaFrame_GetCenterPosition_408C3E( // Get Target frame center position (in scene space)
-              (CHanaFrameRootT3EC_S2D4 *)arrTargetFrameIdxes[pairIdx],
+              arrTargetFrameIdxes[pairIdx],
               g_pSceneFrame,
               &targetPosX2,
               &targetPosY,
@@ -1981,7 +1981,7 @@ void __cdecl hook_HanaMatrix_ApplyTransform(CHanaFrameT3EC_S354 *pFrame, const D
 
 void __cdecl hook_CutInScene_CyclePosAndApplyCameraOffset(
   CHanaSceneT458_S504 *pSceneObj,
-  _DWORD *pPosIndex,
+  DWORD *pPosIndex,
   CHanaFrameT3EC_S354 *pChild)
 {
   int iPosIndex; // [esp+0h] [ebp-4Ch]
@@ -2166,7 +2166,7 @@ void __cdecl hook_UpdateCutInSceneBoneTransforms(
   CSekBody *pSekBody,
   CHanaAnimSetT3F1_S150 *pAnimSetsMain[],
   CHanaFrameT3EC_S354 *pFramesMain[],
-  int *pFrameIndices,
+  CHanaFrameT3EC_S354 *arrKutiRFrames[],
   CHanaAnimSetT3F1_S150 *pAnimSetsKutiR[],
   CHanaFrameT3EC_S354 *pFramesKutiR[],
   unsigned int boneIndex,
@@ -2417,8 +2417,8 @@ BOOL __cdecl hook_Scene_ProcessPracticeFrames(CHanaSceneT458_S504 *pScene)
 // * 3 = Simple  Dolly -- move camera forward/back only
 // * Other = Default Follow -- just maintain look-at with distance clamping
 void __cdecl hook_CameraController_UpdateCutscene(
-  CHanaFrameRootT3EC_S2D4 *pTargetFrame,  // Frame to track/look at
-  CHanaFrameRootT3EC_S2D4 *pSceneFrameArg,// Scene root frame (unused, global g_pSceneFrame used instead)
+  CHanaFrameT3EC_S354 *pTargetFrame,  // Frame to track/look at
+  CHanaFrameT3EC_S354 *pSceneFrameArg,// Scene root frame (unused, global g_pSceneFrame used instead)
   int panSpeedX,                          // Horizontal pan speed multiplier
   int panSpeedY,                          // Vertical pan speed multiplier
   __int16 cameraMode)                     // Camera behavior mode (1, 2, or 3)
@@ -2550,7 +2550,7 @@ void __cdecl hook_CameraController_UpdateCutscene(
 // This is likely used for UI/camera effects where an object (target frame) should appear centered between two 3D objects
 // from the camera's perspective.
 void __cdecl hook_CameraFrame_ProjectFramePairOntoForwardRay(
-  CHanaFrameRootT3EC_S2D4 *pTargetFrame,  // [in/out] Target frame root to receive the computed matrix
+  CHanaFrameT3EC_S354 *pTargetFrame,  // [in/out] Target frame root to receive the computed matrix
   CHanaFrameT3EC_S354 *pFrameA,           // [in] First frame (defines line segment with pFrameB)
   CHanaFrameT3EC_S354 *pFrameB)           // [in] Second frame (defines line segment with pFrameA)
 {
@@ -2628,7 +2628,7 @@ void __cdecl hook_CameraFrame_ProjectFramePairOntoForwardRay(
       / ((frameB_posX - frameA_posX) * (camPosY_2 - camPosY_1) - (frameB_posY - frameA_posY) * (camPosX_2 - camPosX_1));
     avgY = (frameB_posY - frameA_posY) * t + frameA_posY;
   }
-  SetFramePosRel_4069DD((CHanaFrameT3EC_S354 *)pTargetFrame, g_pCameraFrame, intersectX, avgY, intersectZ);
+  SetFramePosRel_4069DD(pTargetFrame, g_pCameraFrame, intersectX, avgY, intersectZ);
 }
 
 CHanaFrameT3EC_S354 *__cdecl hook_FindFrameByNameSubstringRecursive(CHanaFrameT3EC_S354 *pFrame, LPCSTR pSearchStr)
@@ -2889,11 +2889,42 @@ void __cdecl hook_Scene_ApplyFadeToPracticeFrames(float fadeAlpha)
   }
 }
 
-
 void register_PlayCutInScene_46A76F() {
-  hnh_Hook(0x46A76F, hook_PlayCutInScene_46A76F, "PlayCutInScene_46A76F"); // [OK]
+  PlayCutInScene_46A76F = hook_PlayCutInScene_46A76F;
+  SetAnimSetTime = hook_SetAnimSetTime;
+  DrawFadeTransition_Scene = hook_DrawFadeTransition_Scene;
+  AnimSet_ResetAndTransferAnimations = hook_AnimSet_ResetAndTransferAnimations;
+  FindFrameByNameSubstringRecursive = hook_FindFrameByNameSubstringRecursive;
+  IsObjectValidRecursive_467DFD = hook_IsObjectValidRecursive_467DFD;
+  Cursor_ClampToCenterOrSprite = hook_Cursor_ClampToCenterOrSprite;
+  Frame_CheckCameraDistanceAndRecurse = hook_Frame_CheckCameraDistanceAndRecurse;
+  UpdateSekBodyAnimationMatrix = hook_UpdateSekBodyAnimationMatrix;
+  MoveCutInSceneFramesWithCameraConstraint = hook_MoveCutInSceneFramesWithCameraConstraint;
+  UpdateCutInSceneCameraFollow = hook_UpdateCutInSceneCameraFollow;
+  CameraFrame_TrackBetweenObjectsAndLookAt = hook_CameraFrame_TrackBetweenObjectsAndLookAt;
+  SoundAH_ManageEffectsAndAnimate = hook_SoundAH_ManageEffectsAndAnimate;
+  SoundSE_ManageEffectsAndPlay = hook_SoundSE_ManageEffectsAndPlay;
+  Character_UpdateAnimationState = hook_Character_UpdateAnimationState;
+  SyncObjectAnimationByName_467BBD = hook_SyncObjectAnimationByName_467BBD;
+  IsParentValid_467D62 = hook_IsParentValid_467D62;
+  HanaObj_CheckFrameCondition = hook_HanaObj_CheckFrameCondition;
+  HanaMorp_AnimateAndPropagate = hook_HanaMorp_AnimateAndPropagate;
+  HanaMatrix_ApplyTransform = hook_HanaMatrix_ApplyTransform;
+  HanaFrame_GetMatAfter = hook_HanaFrame_GetMatAfter;
+  UpdateFrameAnimationMatrix = hook_UpdateFrameAnimationMatrix;
+  TransferAnimSetFrameAnimations_4679B2 = hook_TransferAnimSetFrameAnimations_4679B2;
+  Scene_ApplyFadeToPracticeFrames = hook_Scene_ApplyFadeToPracticeFrames;
+  GetSekBodyCurrentAnimTime = hook_GetSekBodyCurrentAnimTime;
+  CameraFrame_ProjectFramePairOntoForwardRay = hook_CameraFrame_ProjectFramePairOntoForwardRay;
+  CameraController_UpdateCutscene = hook_CameraController_UpdateCutscene;
+  Scene_ProcessPracticeFrames = hook_Scene_ProcessPracticeFrames;
+  UpdateCutInSceneBoneTransforms = hook_UpdateCutInSceneBoneTransforms;
+  CutInScene_CyclePosAndApplyCameraOffset = hook_CutInScene_CyclePosAndApplyCameraOffset;
+  AnimSet_MatchAndSortKutiRTibusaLFrames = hook_AnimSet_MatchAndSortKutiRTibusaLFrames;
 
   hnh_HookOff();
+  hnh_Hook(0x46A76F, hook_PlayCutInScene_46A76F, "PlayCutInScene_46A76F"); // [OK]
+
   hnh_Hook(0x467bbd, hook_SyncObjectAnimationByName_467BBD, "SyncObjectAnimationByName_467BBD"); // [OK]
   hnh_Hook(0x467d62, hook_IsParentValid_467D62, "IsParentValid_467D62");  // [OK]
   hnh_Hook(0x467dfd, hook_IsObjectValidRecursive_467DFD, "IsObjectValidRecursive_467DFD"); // [OK]
