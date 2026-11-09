@@ -114,18 +114,18 @@ void hook_DisplayConfig_ProcessDriverDesc(CDisplayConfig *pConfig)
       strncpy(friendly, dev->driverDesc, prefixLen);   // text before '\\'
       const char *tail = &dev->driverDesc[prefixLen + 2]; // skip '\\' + 1 char
 
-      if (!strcmp(tail, "...Transform and Lighting...")) {
+      if (!strcmp(tail, "Microsoft Direct3D Hardware Transform and Lighting acceleration capable device")) {
         strcat(friendly, "/ Direct3D T&L HAL");
         if (g_bPreferTnLHal_4B33E8)                 // static flag = 1
           pConfig->nDeviceIdxHal = i;
       }
-      else if (!strcmp(tail, "...through Direct3D HAL")) {
+      else if (!strcmp(tail, "Microsoft Direct3D Hardware acceleration through Direct3D HAL")) {
         strcat(friendly, "/ Direct3D HAL");
         pConfig->nDeviceIdxHal = i;                 // HAL always wins so far
       }
-      else if (!strcmp(tail, "...RGB Software Emulation"))
+      else if (!strcmp(tail, "Microsoft Direct3D RGB Software Emulation"))
         strcat(friendly, "/ RGB Software Emulation");   // default idx untouched
-      else if (!strcmp(tail, "...Reference Rasterizer"))
+      else if (!strcmp(tail, "Microsoft Direct3D Reference Rasterizer"))
         strcat(friendly, "/ D3D Refence Rasterizer");   // default idx untouched
       // unknown tail Å® friendly keeps just the prefix, no tag
     }
@@ -900,17 +900,16 @@ void register_CheckRunGame_4863C8(int cfg) {
     CalculateLocalRotationMatrix = hook_CalculateLocalRotationMatrix;
   }
 
+  if (cfg != 2) hnh_HookOff();
 
-
-  hnh_HookOff();
   hnh_Hook(0x40DD71, hook_SetLightingState, "SetLightingState_40DD71"); // [OK] 
   hnh_Hook(0x40AF60, hook_D3DInitBuffers_40AF60, "D3DInitBuffers_40AF60"); // [OK] 
-
   hnh_Hook(0x4863C8, hook_CheckRunGame_4863C8, "CheckRunGame_4863C8"); // [OK] 
   hnh_Hook(0x47E858, hook_ReadFileToBuffer, "ReadFileToBuffer_47E858"); // [OK] 
   hnh_Hook(0x47E7F2, hook_WriteBufferToFile, "WriteBufferToFile_47E7F2"); // [OK] 
   hnh_Hook(0x4278FF, hook_DisplayConfig_Init, "DisplayConfig_Init_4278FF"); // [OK] 
-  hnh_Hook(0x427F8C, hook_DisplayConfig_ProcessDriverDesc, "DisplayConfig_ProcessDriverDesc_427F8C"); // [OK] 
+  hnh_Hook(0x427F8C, hook_DisplayConfig_ProcessDriverDesc, "DisplayConfig_ProcessDriverDesc_427F8C"); // [OK]
+
   hnh_Hook(0x427C51, hook_IsVideoModeSupported, "IsVideoModeSupported_427C51"); // [OK] 
   hnh_Hook(0x428927, hook_ShowTitleMenuWnd_428927, "ShowTitleMenuWnd_428927"); // [OK] 
   hnh_Hook(0x408F00, hook_CHanaObj__NewLightT3EF, "CHanaObj__NewLightT3EF"); // [OK] 

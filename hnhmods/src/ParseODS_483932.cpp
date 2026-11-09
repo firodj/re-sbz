@@ -1293,29 +1293,29 @@ void register_ParseODS_483932(int cfg) {
     HanaVert_LerpMorph = hook_HanaVert_LerpMorph;
   }
 
-  hnh_HookOff();
-    hnh_Hook(0x48564b, hook_LoadOdsEx_48564B, "LoadOdsEx_48564B");
-    hnh_Hook(0x484a38, hook_ParseOdsEx_484A38, "ParseOdsEx_484A38");
+  if (cfg != 2) hnh_HookOff();
+  hnh_Hook(0x48564b, hook_LoadOdsEx_48564B, "LoadOdsEx_48564B");
+  hnh_Hook(0x484a38, hook_ParseOdsEx_484A38, "ParseOdsEx_484A38");
 
-    hnh_Hook(0x483567, hook_ReadStrFile_483567, "ReadStrFile_483567"); // [OK]
-    hnh_Hook(0x47E999, hook_FindFrameByName_47E999, "FindFrameByName_47E999"); // [OK]
-    hnh_Hook(0x403A00, hook_CHanaObj__NewAnimSetT3F1_S150, "CHanaObj__NewAnimSetT3F1_S150_403A00"); // [OK]
-    hnh_Hook(0x40FCA0, hook_CHanaObj__NewMeshT3F5, "CHanaObj__NewMeshT3F5_40FCA0"); // [OK]
-    hnh_Hook(0x434FE0, hook_GetMeshT3F5FromObj_434FE0, "GetMeshT3F5FromObj_434FE0"); // [OK]
-    hnh_Hook(0x441E7E, hook_HanaFrame_PropagateFogToChildren, "HanaFrame_PropagateFogToChildren_441E7E"); // [OK]
-    hnh_Hook(0x4375B3, hook_HanaMorpT457_SetupFunsSubtree, "HanaMorpT457_SetupFunsSubtree_4375B3"); // [OK]
-    hnh_Hook(0x4372BA, hook_HanaMorpT457_SetupFuns, "HanaMorpT457_SetupFuns_4372BA"); // [OK]
-    hnh_Hook(0x4363A3, hook_HanaVert_CopyMorph, "HanaVert_CopyMorph_4363A3"); // [OK]
-    hnh_Hook(0x436300, hook_HanaVert_LerpMorph, "HanaVert_LerpMorph_436300"); // [OK]
-    hnh_Hook(0x441F19, hook_ParseODFFile_441F19, "ParseODFFile_441F19"); // [OK]
-    hnh_Hook(0x483932, hook_ParseODS_483932, "ParseODS_483932"); // [OK]
-    hnh_Hook(0x40d875, hook_SekHeader_CloneClean, "SekHeader_CloneClean_40D875"); // [OK]
-    hnh_Hook(0x40179d, hook_CSekBody__PlayAnim_40179D, "CSekBody__PlayAnim_40179D"); // [OK]
-    hnh_Hook(0x483650, hook_CHanaFrameT3EC__FindByName_483650, "CHanaFrameT3EC__FindByName_483650"); // [OK]
-    hnh_Hook(0x40fceb, hook_HanaMesh_AddVertexReference, "HanaMesh_AddVertexReference_40FCEB"); // [OK]
-    hnh_Hook(0x401039, hook_ParseSekFile_401039, "ParseSekFile_401039"); // [OK]
-    hnh_Hook(0x483704, hook_ParseOds3DON_483704, "ParseOds3DON_483704"); // [OK]
-    hnh_Hook(0x4445dd, hook_LoadSekAndOdf_4445DD, "LoadSekAndOdf_4445DD"); // [OK]
-    hnh_Hook(0x4014e4, hook_SekBody__UpdateTo_4014E4, "SekBody__UpdateTo_4014E4"); // [OK]
+  hnh_Hook(0x483567, hook_ReadStrFile_483567, "ReadStrFile_483567"); // [OK]
+  hnh_Hook(0x47E999, hook_FindFrameByName_47E999, "FindFrameByName_47E999"); // [OK]
+  hnh_Hook(0x403A00, hook_CHanaObj__NewAnimSetT3F1_S150, "CHanaObj__NewAnimSetT3F1_S150_403A00"); // [OK]
+  hnh_Hook(0x40FCA0, hook_CHanaObj__NewMeshT3F5, "CHanaObj__NewMeshT3F5_40FCA0"); // [OK]
+  hnh_Hook(0x434FE0, hook_GetMeshT3F5FromObj_434FE0, "GetMeshT3F5FromObj_434FE0"); // [OK]
+  hnh_Hook(0x441E7E, hook_HanaFrame_PropagateFogToChildren, "HanaFrame_PropagateFogToChildren_441E7E"); // [OK]
+  hnh_Hook(0x4375B3, hook_HanaMorpT457_SetupFunsSubtree, "HanaMorpT457_SetupFunsSubtree_4375B3"); // [OK]
+  hnh_Hook(0x4372BA, hook_HanaMorpT457_SetupFuns, "HanaMorpT457_SetupFuns_4372BA"); // [OK]
+  hnh_Hook(0x4363A3, hook_HanaVert_CopyMorph, "HanaVert_CopyMorph_4363A3"); // [OK]
+  hnh_Hook(0x436300, hook_HanaVert_LerpMorph, "HanaVert_LerpMorph_436300"); // [OK]
+  hnh_Hook(0x441F19, hook_ParseODFFile_441F19, "ParseODFFile_441F19"); // [OK]
+  hnh_Hook(0x483932, hook_ParseODS_483932, "ParseODS_483932"); // [OK]
+  hnh_Hook(0x40d875, hook_SekHeader_CloneClean, "SekHeader_CloneClean_40D875"); // [OK]
+  hnh_Hook(0x40179d, hook_CSekBody__PlayAnim_40179D, "CSekBody__PlayAnim_40179D"); // [OK]
+  hnh_Hook(0x483650, hook_CHanaFrameT3EC__FindByName_483650, "CHanaFrameT3EC__FindByName_483650"); // [OK]
+  hnh_Hook(0x40fceb, hook_HanaMesh_AddVertexReference, "HanaMesh_AddVertexReference_40FCEB"); // [OK]
+  hnh_Hook(0x401039, hook_ParseSekFile_401039, "ParseSekFile_401039"); // [OK]
+  hnh_Hook(0x483704, hook_ParseOds3DON_483704, "ParseOds3DON_483704"); // [OK]
+  hnh_Hook(0x4445dd, hook_LoadSekAndOdf_4445DD, "LoadSekAndOdf_4445DD"); // [OK]
+  hnh_Hook(0x4014e4, hook_SekBody__UpdateTo_4014E4, "SekBody__UpdateTo_4014E4"); // [OK]
   hnh_HookOn();
 }

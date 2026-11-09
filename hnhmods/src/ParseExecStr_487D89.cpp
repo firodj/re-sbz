@@ -714,7 +714,8 @@ void register_ParseExecStr_487D89(int cfg) {
     ParseExecStr_487D89 = hook_ParseExecStr_487D89;
   }
 
-  hnh_HookOff();
+  if (cfg != 2)
+    hnh_HookOff();
   hnh_Hook(0x487D89, hook_ParseExecStr_487D89, "ParseExecStr_487D89"); // [OK]
 
   hnh_HookOn();

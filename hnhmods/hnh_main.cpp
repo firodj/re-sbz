@@ -109,18 +109,22 @@ void InitHNH() {
 
 	AssertHanaStructSize();
 	
-	register_WinMain_485CE0();
-	register_D3DXMatrixIdentity_40E450();
-	register_WndProcCheckSystem_485FC2();
-	register_CDROM_VerifyDiscSignature_485C50();
-	register_CheckInstalledDirRoot_4869A7();
-	register_MemAlloc_40DEF7();
-	register_SetFogEnable_40DFB0();
-	register_DSErrToString_423CE7();
-	register_CHanaObj__Free_40C1E4();
-	register_CheckRunGame_4863C8();
-	register_ShowTitleMenu_427DA8();
-	register_CHanaObj__NewFrameT3EC_S354_404720();
+	register_WinMain_485CE0(0);
+	register_D3DXMatrixIdentity_40E450(0);
+	register_WndProcCheckSystem_485FC2(0);
+	register_CDROM_VerifyDiscSignature_485C50(0);
+	register_CheckInstalledDirRoot_4869A7(0);
+	register_MemAlloc_40DEF7(0);
+	register_SetFogEnable_40DFB0(0);
+	register_DSErrToString_423CE7(0);
+	register_CHanaObj__Free_40C1E4(0);
+
+	register_CheckRunGame_4863C8(2); //
+
+	register_ShowTitleMenu_427DA8(0); 
+	register_CHanaObj__NewFrameT3EC_S354_404720(0);
+
+
 	register_WndProcTitleMenu_428C11();
 	register_GameMainLoop_47F013();
 	register_StopAndRestartThread_481AE4();
@@ -130,10 +134,11 @@ void InitHNH() {
 	register_PlayScreenFade_4874DE();
 	register_ParseODFContent_441A5D();
 	register_ParseODS_483932();
+	register_ParseExecStr_487D89();
+
 	register_ProcessFrame_40600C();
 	register_SystemMenu_4655AB();
 	register_PlayOdsDialogueScene_477F90();
-	register_ParseExecStr_487D89();
 	register_RunModeSelectScreen();
 	register_PlayExploring_45BCAE();
 	register_SetupHeroEntry_4593E0();
