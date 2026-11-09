@@ -627,8 +627,8 @@ extern void(__cdecl* PlayTugOfWar_45460A)(CHanaSceneT458_S504* pOdsScene,
   float* pfHeroHp, float fFieldC4, float* pfAggro, float fAggroMax,
   int* pnClockBase, unsigned int* pdwElapsedMs, int dwClockBase2,
   CSoundStruct_8** arrVoiceBufs, CHanaSpriteT3F6_S1FC* pMaskBmp); // in: PlayTugOfWar.cpp
-extern void* (__cdecl* DrawDuelHealthHud_44B23B)(CHanaSpriteT3F6_S1FC** pSprites,
-  int nHeroHp, int nHeroHpMax, int nAggro, int nAggroMax); // in: PlayHunting.cpp
+extern void (__cdecl* DrawDuelHealthHud_44B23B)(CHanaSpriteT3F6_S1FC** pSprites,
+  int nHeroHpCur, int nHeroHpMax, int nFoeHpCur, int nFoeHpMax); // in: PlayHunting.cpp
 extern void(__cdecl* DrawClockHud_44AF5B)(CHanaSpriteT3F6_S1FC** arrSprNumbers, int nX, int nY,
   int nTimeLeft); // in: PlayTugOfWar.cpp
 

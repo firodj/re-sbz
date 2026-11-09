@@ -330,7 +330,7 @@ void hook_CHanaObj__NewSprite3F6byWH(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWOR
   pSprite->rect_15C.left = 0;
   pSprite->rect_15C.bottom = pSprite->dwHeight_1F4;
   pSprite->rect_15C.right = pSprite->dwWidth_1F0;
-  CHanaObj__AddRef_40BFC3((CHanaBase_S130*)&pSprite);
+  CHanaObj__AddRef_40BFC3((CHanaBase_S130*)pSprite);
   *ppOut = pSprite;
 }
 

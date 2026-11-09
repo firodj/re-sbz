@@ -71,7 +71,7 @@ void __cdecl hook_MainMenu_47DF0D(void)
     int nMenuState, xMouse, yMouse;        // [ebp-120h] / [ebp-8h] / [ebp-10h]
     WORD nMouseBtn;                        // [esp+11Ch] [ebp-4h]
 
-    DebugLog("[HNH:SUB] MainMenu_47DF0D\n");
+    ONCELOG("[HNH:SUB] MainMenu_47DF0D\n");
 
     nMenuState = -3;                       // entry state: character select
     pMouseSprite = NULL;
@@ -113,7 +113,7 @@ void __cdecl hook_MainMenu_47DF0D(void)
 
     if (pMouseSprite)
     {
-        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pMouseSprite);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)pMouseSprite);
         pMouseSprite = NULL;
     }
     if (pBgmBuffer)
@@ -170,7 +170,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
     int mouseX, mouseY;
     WORD nMouseBtn = 0, nPrevMouseBtn;
 
-    DebugLog("[HNH:SUB] InGameMenu_4799E2\n");
+    ONCELOG("[HNH:SUB] InGameMenu_4799E2\n");
 
     nMenuSelected = 0;
     pMouseSprite = NULL;
@@ -190,7 +190,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
     wsprintfA(szFileName, "TitleBt.bmp");                   // aTitlebtBmp @0x4C6CB0
     CHanaObj__GetRealPath_486D9A(szFileName, 1007);
     pButtonStrip = LoadBmpScaled_4203B3(szFileName, (int)ConvertFrom640AsFloat(200.0f), (int)ConvertFrom640AsFloat(105.0f));
-
+    DebugLog("[HNH:InGameMenu] loaded Title.bmp\n");
     // fresh game: splash the lower-right area of the title art
     if (!g_sceneProgressFlag_530269 && pTitleSurface)
         BltSurface(pTitleSurface, ConvertFrom1024AsInt(600), ConvertFrom1024AsInt(470),
@@ -198,11 +198,15 @@ int __cdecl hook_InGameMenu_4799E2(void)
 
     wsprintfA(szFileName, "mouse.bmp");                     // aMouseBmp_2 @0x4C6CBC
     CHanaObj__GetRealPath_486D9A(szFileName, 1003);         // 1003 = SPR dir
+    DebugLog("[HNH:InGameMenu] LoadBmpWithMask_413A5E %s\n", szFileName);
     LoadBmpWithMask_413A5E(&pMouseSprite, szFileName, szFileName);
+    DebugLog("[HNH:InGameMenu] loaded mouse.bmp\n");
 
     wsprintfA(szFileName, "s001.wav");                      // aS001Wav @0x4C6CC8
     CHanaObj__GetRealPath_486D9A(szFileName, 1006);         // 1006 = WAV dir
     pBgmBuffer = LoadWav_422E7B(szFileName);
+    DebugLog("[HNH:InGameMenu] loaded s001.wav\n");
+
     if (pBgmBuffer)
     {
         ApplyMenuBgmVolume(pBgmBuffer);
@@ -215,6 +219,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
     g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_ANTIALIAS, &dwAntiAliasSaved);
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 0);
 
+    DebugLog("[HNH:InGameMenu] start title menu loop\n");
     for (;;)                                 // title menu loop
     {
         DoPeekMessages();
@@ -334,7 +339,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
     }
     if (pMouseSprite)
     {
-        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pMouseSprite);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)pMouseSprite);
         pMouseSprite = NULL;
     }
     if (pBgmBuffer)
@@ -358,11 +363,7 @@ BOOL hook_DoPeekMessages()
 {
   MSG Msg; // [esp+0h] [ebp-1Ch] BYREF
 
-  static bool _debugged = true;
-  if (_debugged) {
-    DebugLog("[HNH:SUB] DoPeekMessages_481550\n");
-    _debugged = false;
-  }
+  ONCELOG("[HNH:SUB] DoPeekMessages_481550\n");
 
   PeekMessageA(&Msg, 0, WM_KEYDOWN, WM_YOMICHAR, PM_REMOVE);
   PeekMessageA(&Msg, 0, WM_MOUSEFIRST, WM_MBUTTONDBLCLK, PM_REMOVE);
@@ -377,11 +378,7 @@ void hook_DSBufferPlay(LPDIRECTSOUNDBUFFER pDSBuf, int dwPlayFlags)
 {
   int dwStatus; // [esp+0h] [ebp-4h] BYREF
 
-  static bool _debugged = true;
-  if (_debugged) {
-    DebugLog("[HNH:SUB] DSBufferPlay_00423BAF\n");
-    _debugged = false;
-  }
+  ONCELOG("[HNH:SUB] DSBufferPlay_00423BAF\n");
 
   if ( g_bDSInited_5185C4 )
   {
@@ -397,7 +394,7 @@ void __cdecl hook_GetSurfaceWH(LPDIRECTDRAWSURFACE7 pSurface, DWORD *pWidth, DWO
 {
   DDSURFACEDESC2 ddSurfacDesc; // [esp+0h] [ebp-7Ch] BYREF
 
-  DebugLog("[HNH:SUB] GetSurfaceWH_419A1A\n");
+  ONCELOG("[HNH:SUB] GetSurfaceWH_419A1A\n");
 
   ddSurfacDesc.dwSize = sizeof(DDSURFACEDESC2); // = 124
   pSurface->GetSurfaceDesc(&ddSurfacDesc);
@@ -407,7 +404,7 @@ void __cdecl hook_GetSurfaceWH(LPDIRECTDRAWSURFACE7 pSurface, DWORD *pWidth, DWO
 
 void __cdecl hook_LoadBmpWithMask_413A5E(CHanaSpriteT3F6_S1FC **ppOut, LPCSTR szBmpName, LPCSTR szMaskName)
 {
-  CHAR szSpriteName[256]; // [esp+10h] [ebp-194h] BYREF
+  char szSpriteName[256]; // [esp+10h] [ebp-194h] BYREF
   DWORD width; // [esp+110h] [ebp-94h] BYREF
   CHanaSpriteT3F6_S1FC *pSprite; // [esp+114h] [ebp-90h]
   DWORD height; // [esp+118h] [ebp-8Ch] BYREF
@@ -416,7 +413,7 @@ void __cdecl hook_LoadBmpWithMask_413A5E(CHanaSpriteT3F6_S1FC **ppOut, LPCSTR sz
   LPDIRECTDRAWSURFACE7 pSurfaceBmp; // [esp+124h] [ebp-80h]
   DDSURFACEDESC2 ddSurfaceDesc; // [esp+128h] [ebp-7Ch] BYREF
 
-  DebugLog("[HNH:SUB] LoadBmpWithMask_413A5E\n");
+  ONCELOG("[HNH:SUB] LoadBmpWithMask_413A5E\n");
 
   pSprite = 0;
   pTexture = 0;
@@ -451,8 +448,8 @@ void __cdecl hook_LoadBmpWithMask_413A5E(CHanaSpriteT3F6_S1FC **ppOut, LPCSTR sz
     pSprite->rect_15C.left = 0;
     pSprite->rect_15C.bottom = height;
     pSprite->rect_15C.right = width;
-    CHanaObj__AddRef_40BFC3((CHanaBase_S130*)&pSprite);
-    AttachHanaObj_40BAB8((CHanaBase_S130*)&pSprite, szSpriteName);
+    CHanaObj__AddRef_40BFC3((CHanaBase_S130*)pSprite);
+    AttachHanaObj_40BAB8((CHanaBase_S130*)pSprite, szSpriteName);
   }
   else
   {
@@ -502,7 +499,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_CreateTextureFromSurfaceWithAlphaMask(
   DWORD bDitherEnable; // [esp+150h] [ebp-8h] BYREF
   LPDIRECTDRAWSURFACE7 texture2; // [esp+154h] [ebp-4h] BYREF
 
-  DebugLog("[HNH:SUB] CreateTextureFromSurfaceWithAlphaMask_43EA05\n");
+  ONCELOG("[HNH:SUB] CreateTextureFromSurfaceWithAlphaMask_43EA05\n");
 
   surfaceFormat = D3DX_SF_A8R8G8B8;
   texture = 0;
@@ -679,11 +676,7 @@ void __cdecl hook_GetMouseBtn_45A41B(LPWORD pBtnMouse)
   CInputState *inputState; // [esp+Ch] [ebp-8h]
   int btn3on; // [esp+10h] [ebp-4h]
 
-  static bool _debugged = true;
-  if (_debugged) {
-    _debugged = false;
-    DebugLog("[HNH:SUB] GetMouseBtn_45A41B\n");
-  }
+  ONCELOG("[HNH:SUB] GetMouseBtn_45A41B\n");
 
   btn1on = 0;
   btn2on = 0;
@@ -709,11 +702,7 @@ void __cdecl hook_GetMouseXY_45A4D8(DWORD *pXmouse, DWORD *pYmouse)
 {
   CInputState *InputState_481B37; // eax
 
-  static bool _debugged = true;
-  if (_debugged) {
-    _debugged = false;
-    DebugLog("[HNH:SUB] GetMouseXY_45A4D8\n");
-  }
+  ONCELOG("[HNH:SUB] GetMouseXY_45A4D8\n");
 
   MutexThreadWait_4815EC(1);
   InputState_481B37 = GetInputState_481B37();
@@ -727,11 +716,7 @@ void __cdecl hook_BltSurface(LPDIRECTDRAWSURFACE7 pSurface, int left, int top, i
   DDBLTFX ddBltFx; // [esp+0h] [ebp-74h] BYREF
   RECT rect; // [esp+64h] [ebp-10h] BYREF
 
-  static bool _debugged = true;
-  if (_debugged) {
-    _debugged = false;
-    DebugLog("[HNH:SUB] BltSurface_419D89\n");
-  }
+  ONCELOG("[HNH:SUB] BltSurface_419D89\n");
 
   memset(&ddBltFx, 0, sizeof(ddBltFx));
   rect.left = left;
@@ -790,7 +775,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_LoadBmpScaled_4203B3(LPCSTR szBmpPath, DWORD n
   tagRECT rcRegion; // [esp+19Ch] [ebp-20h] BYREF
   struct tagRECT rcFull; // [esp+1ACh] [ebp-10h] BYREF
 
-  DebugLog("[HNH:SUB] LoadBmpScaled_4203B3\n");
+  ONCELOG("[HNH:SUB] LoadBmpScaled_4203B3\n");
 
   pBmpSurf = 0;
   pDestSurf = 0;
@@ -853,7 +838,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_LoadBmpScaled_4203B3(LPCSTR szBmpPath, DWORD n
         }
         if ( pSprite )
         {
-          CHanaObj__Free_40C1E4((CHanaBase_S130*)&pSprite);
+          CHanaObj__Free_40C1E4((CHanaBase_S130*)pSprite);
           pSprite = 0;
         }
       }
@@ -932,7 +917,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_LoadBmpScaled_4203B3(LPCSTR szBmpPath, DWORD n
       }
       if ( pSprite )
       {
-        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pSprite);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)pSprite);
         pSprite = 0;
       }
       return pDestSurf;
@@ -973,11 +958,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_LoadBmpScaled_4203B3(LPCSTR szBmpPath, DWORD n
 // Returns nPosY in eax. Callers pass ConvertFrom640AsInt/Float() virtual-unit coords.
 void __cdecl hook_CHanaSpriteT3F6__SetPos_414A5D(CHanaSpriteT3F6_S1FC *pSprite, float fPosX, float fPosY)
 {
-  static bool _debugged = true;
-  if (_debugged) {
-    _debugged = false;
-    DebugLog("[HNH:SUB] CHanaSpriteT3F6__SetPos_414A5D\n");
-  }
+  ONCELOG("[HNH:SUB] CHanaSpriteT3F6__SetPos_414A5D\n");
 
   pSprite->destWHZ_138.x = fPosX;
   pSprite->destWHZ_138.y = fPosY;
@@ -988,11 +969,7 @@ void __cdecl hook_FlushD3DAndTouchSurface(LPDIRECTDRAWSURFACE7 pSurface)
   HRESULT hr; // [esp+0h] [ebp-80h]
   DDSURFACEDESC2 ddSurfaceDesc; // [esp+4h] [ebp-7Ch] BYREF
 
-  static bool _debugged = true;
-  if (_debugged) {
-    _debugged = false;
-    DebugLog("[HNH:SUB] FlushD3DAndTouchSurface_43BF6F\n");
-  }
+  ONCELOG("[HNH:SUB] FlushD3DAndTouchSurface_43BF6F\n");
 
   hr = g_pD3DDevice_4D6C78->BeginScene();
   g_pD3DDevice_4D6C78->DrawPrimitive(D3DPT_TRIANGLEFAN, D3DFVF_TLVERTEX, 0, 0, 1);
@@ -1028,11 +1005,7 @@ void __cdecl hook_DrawSprite2D(CHanaSpriteT3F6_S1FC *pSprite)
   HRESULT hr; // [esp+4h] [ebp-10h]
   D3DXVECTOR3 vec3Dest; // [esp+8h] [ebp-Ch] BYREF
 
-  static bool _debugged = true;
-  if (_debugged) {
-    _debugged = false;
-    DebugLog("[HNH:SUB] DrawSprite2D_414191\n");
-  }
+  ONCELOG("[HNH:SUB] DrawSprite2D_414191\n");
 
   vec3Dest.x = pSprite->destWHZ_138.x;
   vec3Dest.y = pSprite->destWHZ_138.y;
@@ -1067,7 +1040,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_CreateSurfaceWH(DWORD width, DWORD height)
   int hr; // [esp+4h] [ebp-80h]
   DDSURFACEDESC2 ddSurfaceDesc; // [esp+8h] [ebp-7Ch] BYREF
 
-  DebugLog("[HNH:SUB] CreateSurfaceWH_418905\n");
+  ONCELOG("[HNH:SUB] CreateSurfaceWH_418905\n");
 
   memset(&ddSurfaceDesc, 0, sizeof(ddSurfaceDesc));
   ddSurfaceDesc.dwSize = 124;
@@ -1096,7 +1069,7 @@ void hook_RecoverLostDevice()
 {
   HRESULT hr; // [esp+0h] [ebp-4h]
   
-  DebugLog("[HNH:SUB] RecoverLostDevice_40BE03\n");
+  ONCELOG("[HNH:SUB] RecoverLostDevice_40BE03\n");
 
   hr = g_pDD_4D6C7C->TestCooperativeLevel();
 
@@ -1133,7 +1106,7 @@ void hook_PresentFrame()
 {
   HRESULT hr; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] PresentFrame_40BF01\n");
+  ONCELOG("[HNH:SUB] PresentFrame_40BF01\n");
 
   if ( g_nObjCount )
     HanaVert_DrawBatch(0);
@@ -1150,7 +1123,7 @@ void __cdecl hook_DrawSpriteAtRect(CHanaSpriteT3F6_S1FC *pSprite, D2D_RECT_F *rc
   HRESULT hr; // [esp+10h] [ebp-44h]
   D3DXVECTOR4 quad[4]; // [esp+14h] [ebp-40h] BYREF
 
-  DebugLog("[HNH:SUB] DrawSpriteAtRect_4147ED\n");
+  ONCELOG("[HNH:SUB] DrawSpriteAtRect_4147ED\n");
 
   quadNums = 4;
   for ( i = quad; --quadNums >= 0; ++i )
@@ -1213,6 +1186,7 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bDraw)
   DWORD dwAmbientSaved; // [esp+Ch] [ebp-Ch] BYREF
   int j; // [esp+10h] [ebp-8h]
   int i; // [esp+14h] [ebp-4h]
+
   ONCELOG("[HNH:SUB] HanaVert_DrawBatch_40CEEC\n");
 
   if ( bDraw )
@@ -1407,6 +1381,7 @@ void register_InGameMenu_4799E2() {
   DrawSprite2D = hook_DrawSprite2D;
   LoadBmpWithMask_413A5E = hook_LoadBmpWithMask_413A5E;
   GetSurfaceWH = hook_GetSurfaceWH;
+  CreateTextureFromSurfaceWithAlphaMask = hook_CreateTextureFromSurfaceWithAlphaMask;
   BltSurface = hook_BltSurface;
   CreateSurfaceWH = hook_CreateSurfaceWH;
   RecoverLostDevice = hook_RecoverLostDevice;
@@ -1414,16 +1389,14 @@ void register_InGameMenu_4799E2() {
   DrawSpriteAtRect = hook_DrawSpriteAtRect;
   HanaVert_DrawBatch = hook_HanaVert_DrawBatch;
   MainMenu_47DF0D = hook_MainMenu_47DF0D;
-  InGameMenu_4799E2 = hook_InGameMenu_4799E2;
+  InGameMenu_4799E2 = hook_InGameMenu_4799E2; // somehow make stack corrupts
 
 
   hnh_HookOff();
   hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
 
-
   hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D"); // [OK]
   hnh_Hook(0x40CEEC, hook_HanaVert_DrawBatch, "HanaVert_DrawBatch_40CEEC"); // [OK]
-
   hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2"); // [OK] 
   hnh_Hook(0x481550, hook_DoPeekMessages, "DoPeekMessages_481550"); // [OK] 
   hnh_Hook(0x423BAF, hook_DSBufferPlay, "DSBufferPlay_423BAF"); // [OK] 

@@ -297,7 +297,7 @@ int __cdecl hook_PlayOdsDialogueScene_477F90(int nOdsIndex)
     }
     if (pCursor)
     {
-        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pCursor);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)pCursor);
         pCursor = NULL;
     }
     return nResult;

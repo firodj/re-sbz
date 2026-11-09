@@ -43,41 +43,40 @@ void (__cdecl*RenderDualBodyScene_456807)(CHanaSceneT458_S504 *pScene,
   reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, CSekBody *,
     CSekBody *, CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **)>(0x456807);
 
-int (__cdecl*PlayResultsCutscene_455BE2)(CSekBody *pHeroBody, CSekBody *pFoeBody,
+void (__cdecl*PlayResultsCutscene_455BE2)(CSekBody *pHeroBody, CSekBody *pFoeBody,
   CSekBody **pWanaBodies, CHanaFrameT3EC_S354 *pMapFrame, CHanaSpriteT3F6_S1FC **pArrHudMeters,
   CHanaSpriteT3F6_S1FC **pArrSprites, float fHeroHpCur, float fHeroHpMax, float fFoeHpCur,
   float fFoeHpMax, int nClockBase, unsigned int dwElapsedMs) =
-  reinterpret_cast<int(__cdecl*)(CSekBody *, CSekBody *, CSekBody **,
+  reinterpret_cast<void(__cdecl*)(CSekBody *, CSekBody *, CSekBody **,
     CHanaFrameT3EC_S354 *, CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **, float, float, float, float, int,
     unsigned int)>(0x455BE2);
 
-int (__cdecl*PlayVictoryCutscene_455183)(CHanaSceneT458_S504 *pOdsScene,
+void (__cdecl*PlayVictoryCutscene_455183)(CHanaSceneT458_S504 *pOdsScene,
   CSekBody *pHeroBody, CSekBody *pFoeBody, CHanaFrameT3EC_S354 *pMapFrame,
   CHanaSpriteT3F6_S1FC **pArrHudMeters, CHanaSpriteT3F6_S1FC **pArrSprites, float fHeroHpCur, float fHeroHpMax,
   float fFoeHpCur, float fFoeHpMax, int nClockBase, unsigned int dwElapsedMs,
   CSoundStruct_8 **pArrVoiceBufs) =
-  reinterpret_cast<int(__cdecl*)(CHanaSceneT458_S504 *, CSekBody *,
+  reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *, CSekBody *,
     CSekBody *, CHanaFrameT3EC_S354 *, CHanaSpriteT3F6_S1FC **, CHanaSpriteT3F6_S1FC **, float, float, float,
     float, int, unsigned int, CSoundStruct_8 **)>(0x455183);
 
-void *(__cdecl*DrawDuelHealthHud_44B23B)(CHanaSpriteT3F6_S1FC **pSprites,
-  int nHeroHp, int nHeroHpMax, int nAggro, int nAggroMax) =
-  reinterpret_cast<void *(__cdecl*)(CHanaSpriteT3F6_S1FC **, int, int, int,
+void(__cdecl*DrawDuelHealthHud_44B23B)(CHanaSpriteT3F6_S1FC **pSprites,
+  int nHeroHpCur, int nHeroHpMax, int nFoeHp, int nFoeHpMax) =
+  reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC **, int, int, int,
     int)>(0x44B23B);
 
 void (__cdecl*DrawFadeOutSpark_45669F)(CHanaSpriteT3F6_S1FC **arrSparkSprites,
   float fDeltaTime) =
   reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC **, float)>(0x45669F);
 
-unsigned int (__cdecl*BindSceneActors_448C72)(CHanaSceneT458_S504 *pScene,
+void (__cdecl*BindSceneActors_448C72)(CHanaSceneT458_S504 *pScene,
   CHanaFrameT3EC_S354 **pActorFrames, unsigned int nCount) =
-  reinterpret_cast<unsigned int(__cdecl*)(CHanaSceneT458_S504 *,
+  reinterpret_cast<void(__cdecl*)(CHanaSceneT458_S504 *,
     CHanaFrameT3EC_S354 **, unsigned int)>(0x448C72);
 
-int (__cdecl*UpdateCameraFollowDuel_44C028)(CSekBody *pHeroBody, CSekBody *pFoeBody,
+void (__cdecl*UpdateCameraFollowDuel_44C028)(CSekBody *pHeroBody, CSekBody *pFoeBody,
   float fDeltaTime) =
-  reinterpret_cast<int(__cdecl*)(CSekBody *, CSekBody *, float)>(0x44C028);
-
+  reinterpret_cast<void(__cdecl*)(CSekBody *, CSekBody *, float)>(0x44C028);
 
 void (__cdecl *StepFoeTurn_457EE0)(CSekBody *pFoeBody, CSekBody *pHeroBody, CHanaFrameT3EC_S354 *pMapFrame, float fDelta, float fSpinRate, float fSpeed)
 = reinterpret_cast<void (__cdecl *)(CSekBody *, CSekBody *, CHanaFrameT3EC_S354 *, float, float, float)>(0x457EE0);
@@ -3435,18 +3434,12 @@ fKubiCamX/Y/Z, fKubiPullbackZ), FOV narrows to 0.2 (fFovZoomIn).
 */
 void __cdecl hook_PlayVictoryCutscene_455183(
   CHanaSceneT458_S504 *pOdsScene,
-  CSekBody *pHeroBody,
-  CSekBody *pFoeBody,
-  CHanaFrameT3EC_S354 *pMapFrame,
-  int *arrHudClock,
-  int *arrViewfinder,
-  float fHeroHp,
-  float fHeroHpMax,
-  float fFoeHpCur,
-  float fFoeHpMax,
-  int nClockBase,
-  unsigned int dwElapsedMs,
-  int *arrVoiceBufs)
+  CSekBody *pHeroBody, CSekBody *pFoeBody, CHanaFrameT3EC_S354 *pMapFrame,
+  CHanaSpriteT3F6_S1FC **pArrHudMeters, CHanaSpriteT3F6_S1FC **pArrSprites,
+  float fHeroHpCur, float fHeroHpMax,
+  float fFoeHpCur, float fFoeHpMax, int nClockBase, unsigned int dwElapsedMs,
+  CSoundStruct_8 **pArrVoiceBufs) //   CHanaSpriteT3F6_S1FC **pSounds) =
+
 {
   double v13; // st7
   int nRectLeft; // eax
@@ -3541,7 +3534,7 @@ void __cdecl hook_PlayVictoryCutscene_455183(
     CSekBody__UpdateAnim_4019E1(pHeroBody, fDelta);
     CSekBody__UpdateAnim_4019E1(pFoeBody, fDelta);
     fScriptTime = fScriptTime + fDelta;
-    UpdateVoicePlayback_458B3A(pFoeBody, pFoeKubiFrame, (CSoundStruct_8 **)arrVoiceBufs, fDelta);
+    UpdateVoicePlayback_458B3A(pFoeBody, pFoeKubiFrame, pArrVoiceBufs, fDelta);
     fHudFade = fDelta / 5.0 + fHudFade;
     if ( fScriptTime > 10.0 )
       break;
@@ -3627,23 +3620,23 @@ void __cdecl hook_PlayVictoryCutscene_455183(
       HanaVert_DrawBatch(1);
       g_pD3DDevice_4D6C78->EndScene();
     }
-    for ( i = 0; i < 20 && arrViewfinder[i]; ++i )
+    for ( i = 0; i < 20 && pArrSprites[i]; ++i )
     {
       fViewfinderAlpha = 1.0 - fHudFade;
-      CHanaObj__SetAlpha3F6((CHanaSpriteT3F6_S1FC *)arrViewfinder[i], fViewfinderAlpha);
+      CHanaObj__SetAlpha3F6(pArrSprites[i], fViewfinderAlpha);
     }
-    for ( i = 0; i < 15 && arrHudClock[i]; ++i )
+    for ( i = 0; i < 15 && pArrHudMeters[i]; ++i )
     {
       fHudAlpha = 1.0 - fHudFade;
-      CHanaObj__SetAlpha3F6((CHanaSpriteT3F6_S1FC *)arrHudClock[i], fHudAlpha);
+      CHanaObj__SetAlpha3F6(pArrHudMeters[i], fHudAlpha);
     }
     DrawDuelHealthHud_44B23B(
-      (CHanaSpriteT3F6_S1FC **)arrViewfinder,
-      (__int64)fHeroHp / 100,
+      (CHanaSpriteT3F6_S1FC **)pArrSprites,
+      (__int64)fHeroHpCur / 100,
       (__int64)fHeroHpMax / 100,
       (__int64)fFoeHpCur / 100,
       (__int64)fFoeHpMax / 100);
-    DrawClockHud_44AF5B((CHanaSpriteT3F6_S1FC **)arrHudClock, 320, 16, 100 * nClockBase - dwElapsedMs / 0xA);
+    DrawClockHud_44AF5B(pArrHudMeters, 320, 16, 100 * nClockBase - dwElapsedMs / 0xA);
 
     PresentFrame();
     HanaVert_DrawBatch(0);
@@ -3706,8 +3699,8 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
   CSekBody *pFoeBody,
   CSekBody **pWanaBodies,
   CHanaFrameT3EC_S354 *pMapFrame,
-  int *arrHudClock,
-  int *arrViewfinder,
+  CHanaSpriteT3F6_S1FC **pArrHudMeters, // arrHudClock
+  CHanaSpriteT3F6_S1FC **pArrSprites, // arrViewfinder
   float fHeroHp,
   float fHeroHpMax,
   float fFoeHpCur,
@@ -3987,12 +3980,12 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
       g_pD3DDevice_4D6C78->EndScene();
     }
     DrawDuelHealthHud_44B23B(
-      (CHanaSpriteT3F6_S1FC **)arrViewfinder,
+      (CHanaSpriteT3F6_S1FC **)pArrSprites,
       (__int64)fHeroHp / 100,
       (__int64)fHeroHpMax / 100,
       (__int64)fFoeHpCur / 100,
       (__int64)fFoeHpMax / 100);
-    DrawClockHud_44AF5B((CHanaSpriteT3F6_S1FC **)arrHudClock, 320, 16, 100 * nClockBase - dwElapsedMs / 0xA);
+    DrawClockHud_44AF5B((CHanaSpriteT3F6_S1FC **)pArrHudMeters, 320, 16, 100 * nClockBase - dwElapsedMs / 0xA);
 
     PresentFrame();
     HanaVert_DrawBatch(0);
@@ -4004,11 +3997,29 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
 
 
 void register_PlayHunting_44C38D() {
-  hnh_Hook(0x44C38D, hook_PlayHunting_44C38D, "PlayHunting_44C38D"); // [OK]
-  hnh_Hook(0x456807, hook_RenderDualBodyScene_456807, "RenderDualBodyScene_456807"); // [OK]
+  PlayHunting_44C38D = hook_PlayHunting_44C38D;
+  UpdateFoeAI_446A38 = hook_UpdateFoeAI_446A38;
+  WanaAttack_Close_4535DE = hook_WanaAttack_Close_4535DE;
+  WanaAttack_Knockback_4536F6 = hook_WanaAttack_Knockback_4536F6;
+  WanaAttack_Charged_4539D1 = hook_WanaAttack_Charged_4539D1;
+  WanaAttack_Projectile_453B92 = hook_WanaAttack_Projectile_453B92;
+  IsFoeWithinHeroRange_448B78 = hook_IsFoeWithinHeroRange_448B78;
+  RenderDualBodyScene_456807 = hook_RenderDualBodyScene_456807;
+  StepFoeTurn_457EE0 = hook_StepFoeTurn_457EE0;
+  StepFoeSpin_45804C = hook_StepFoeSpin_45804C;
+  StepWanaProjectile_4581B0 = hook_StepWanaProjectile_4581B0;
+  DrawSprite3D = hook_DrawSprite3D;
 
+  PlayResultsCutscene_455BE2 = hook_PlayResultsCutscene_455BE2;
+  PlayVictoryCutscene_455183 = hook_PlayVictoryCutscene_455183;
+  DrawDuelHealthHud_44B23B = hook_DrawDuelHealthHud_44B23B;
+  DrawFadeOutSpark_45669F = hook_DrawFadeOutSpark_45669F;
+  BindSceneActors_448C72 = hook_BindSceneActors_448C72;
+  UpdateCameraFollowDuel_44C028 = hook_UpdateCameraFollowDuel_44C028;
 
   hnh_HookOff();
+  hnh_Hook(0x44C38D, hook_PlayHunting_44C38D, "PlayHunting_44C38D"); // [OK]
+  hnh_Hook(0x456807, hook_RenderDualBodyScene_456807, "RenderDualBodyScene_456807"); // [OK]
 
   hnh_Hook(0x446a38, hook_UpdateFoeAI_446A38, "UpdateFoeAI_446A38"); // [OK]
   hnh_Hook(0x4535de, hook_WanaAttack_Close_4535DE, "WanaAttack_Close_4535DE"); // [OK]

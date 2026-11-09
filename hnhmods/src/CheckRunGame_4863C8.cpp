@@ -93,7 +93,7 @@ reinterpret_cast<void(__cdecl*)( CHanaFrameT3EC_S354 *pCameraFrame, CHanaFrameT3
 
 void hook_DisplayConfig_ProcessDriverDesc(CDisplayConfig *pConfig)
 {
-  DebugLog("[HNH:SUB] DisplayConfig_ProcessDriverDesc_427F8C\n");
+  ONCELOG("[HNH:SUB] DisplayConfig_ProcessDriverDesc_427F8C\n");
 
   pConfig->nDeviceIdxHal = 0;                          // default device index = 0
 
@@ -140,7 +140,7 @@ BOOL __cdecl hook_IsVideoModeSupported(D3DX_VIDMODEDESC *pVidModeDesc)
 {
   int index; // [esp+0h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] IsVideoModeSupported_427C51\n");
+  ONCELOG("[HNH:SUB] IsVideoModeSupported_427C51\n");
 
   index = 0;
   do
@@ -173,7 +173,7 @@ void __cdecl hook_DisplayConfig_Init(CDisplayConfig *pDisplayConfig)
   DWORD nZBufBitDepth; // [esp+30h] [ebp-8h]
   D3DX_VIDMODEDESC *pModeDesc; // [esp+34h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] DisplayConfig_Init_4278FF\n");
+  ONCELOG("[HNH:SUB] DisplayConfig_Init_4278FF\n");
 
   memset(g_arrZBufDepthCountPerDev_518C40, 0, sizeof(g_arrZBufDepthCountPerDev_518C40));
   memset(g_arrZBufDepthsPerDev_518828, 0, sizeof(g_arrZBufDepthsPerDev_518828));
@@ -257,7 +257,7 @@ DWORD __cdecl hook_ReadFileToBuffer(LPCSTR lpFileName, LPVOID lpBuffer, int nBuf
   int nNumberOfBytesToRead; // [esp+4h] [ebp-8h]
   DWORD NumberOfBytesRead; // [esp+8h] [ebp-4h] BYREF
 
-  DebugLog("[HNH:SUB] ReadFileToBuffer_47E858\n");
+  ONCELOG("[HNH:SUB] ReadFileToBuffer_47E858\n");
 
   hFile = CreateFileA(lpFileName, 0x80000000, 0, 0, 3u, 0, 0);
   if ( !hFile )
@@ -300,7 +300,7 @@ void __cdecl hook_WriteBufferToFile(LPCSTR lpFileName, LPCVOID lpBuffer, DWORD n
   HANDLE hFile; // [esp+0h] [ebp-8h]
   DWORD NumberOfBytesWritten; // [esp+4h] [ebp-4h] BYREF
 
-  DebugLog("[HNH:SUB] WriteBufferToFile_47E7F2\n");
+  ONCELOG("[HNH:SUB] WriteBufferToFile_47E7F2\n");
 
   hFile = CreateFileA(lpFileName, 0x40000000u, 0, 0, 2u, 0, 0);
   NumberOfBytesWritten = 0;
@@ -322,7 +322,7 @@ int __cdecl hook_ShowTitleMenuWnd_428927(HINSTANCE hInstance)
   WNDCLASSA WndClass; // [esp+20h] [ebp-38h] BYREF
   struct tagRECT Rect; // [esp+48h] [ebp-10h] BYREF
 
-  DebugLog("[HNH:SUB] ShowTitleMenuWnd_428927\n");
+  ONCELOG("[HNH:SUB] ShowTitleMenuWnd_428927\n");
 
   v4 = 0;
   DesktopWindow = GetDesktopWindow();
@@ -392,7 +392,7 @@ BOOL __cdecl hook_CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen)
   int bRunGame; // [esp+100h] [ebp-104h]
   _DWORD szTeaConfigData[64]; // [esp+104h] [ebp-100h] BYREF
 
-  DebugLog("[HNH:SUB] CheckRunGame_4863C8\n");
+  ONCELOG("[HNH:SUB] CheckRunGame_4863C8\n");
 
   memset(szTeaConfigData, 0, 0xFEu);
   szTeaConfigData[0] = 1;
@@ -442,7 +442,7 @@ BOOL __cdecl hook_CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen)
 
 HRESULT __cdecl hook_SetLightingState(DWORD dwEnable)
 {
-  DebugLog("[HNH:SUB] %s\n", "SetLightingState_40DD71");
+  ONCELOG("[HNH:SUB] %s\n", "SetLightingState_40DD71");
 
   g_nLightningState = dwEnable;
   g_nLightningEnabled = dwEnable;
@@ -465,7 +465,7 @@ HRESULT hook_D3DInitBuffers_40AF60()
   D3DXVECTOR3 pAt;
   D3DMATERIAL7 d3dDefaultMaterial;
 
-  DebugLog("[HNH:SUB] %s\n", "D3DInitBuffers_40AF60");
+  ONCELOG("[HNH:SUB] %s\n", "D3DInitBuffers_40AF60");
 
   // --- 1. Guard Clauses (Early Exits for Pointers & Init Flags) ---
   if (!g_bInited_4D6C6C) 
@@ -627,7 +627,7 @@ HRESULT hook_D3DInitBuffers_40AF60()
 
 void __cdecl hook_CHanaObj__NewLightT3EF(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dlight)
 {
-  DebugLog("[HNH:SUB] %s\n", "CHanaObj__NewLightT3EF_408F00");
+  ONCELOG("[HNH:SUB] %s\n", "CHanaObj__NewLightT3EF_408F00");
 
   // Allocate and initialize the light object container
   CHanaLightT3EF_S1A0 *newLight = (CHanaLightT3EF_S1A0 *)MemAlloc_40DEF7(0x1A0u);
@@ -713,27 +713,27 @@ void __cdecl hook_CHanaObj__NewLightT3EF(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *
 void __cdecl hook_CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130 *pObj)
 {
   CObjItemRef_S208 *pObjItemRef; // [esp+0h] [ebp-14h]
-  int v3; // [esp+4h] [ebp-10h]
+  int len; // [esp+4h] [ebp-10h]
   int j; // [esp+8h] [ebp-Ch]
   int k; // [esp+8h] [ebp-Ch]
   int i; // [esp+Ch] [ebp-8h]
   CObjItemRef_S208 *pStruct208; // [esp+10h] [ebp-4h]
   CObjItemRef_S208 *pDestItemRef; // [esp+10h] [ebp-4h]
 
-  DebugLog("[HNH:SUB] %s\n", "CHanaObj__AddObjItemRef_40B848");
+  ONCELOG("[HNH:SUB] %s\n", "CHanaObj__AddObjItemRef_40B848");
 
   if ( szName && *szName )
   {
-    v3 = lstrlenA(szName);
+    len = lstrlenA(szName);
     for ( i = 0; i < g_nObjectTableCount; ++i )
     {
       if ( !g_pObjectTable[i].szName_0[0] )
       {
         pStruct208 = &g_pObjectTable[i];
         strcpy(pStruct208->szName_0, szName);
-        for ( j = 0; j < v3; ++j )
+        for ( j = 0; j < len; ++j )
         {
-          if ( szName[j] == 32 )
+          if ( szName[j] == ' ')
             strcpy(pStruct208->szName_100, &szName[j + 1]);
         }
         pStruct208->pObj_200 = pObj;
@@ -744,9 +744,9 @@ void __cdecl hook_CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130 *
     }
     pDestItemRef = &g_pObjectTable[g_nObjectTableCount];
     strcpy(pDestItemRef->szName_0, szName);
-    for ( k = 0; k < v3; ++k )
+    for ( k = 0; k < len; ++k )
     {
-      if ( szName[k] == 32 )
+      if ( szName[k] == ' ')
         strcpy(pDestItemRef->szName_100, &szName[k + 1]);
     }
     pDestItemRef->pObj_200 = pObj;
@@ -766,24 +766,24 @@ void __cdecl hook_CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130 *
 
 void __cdecl hook_AttachHanaObj_40BAB8(CHanaBase_S130 *pParent, LPCSTR szName)
 {
-  int lenStr; // [esp+0h] [ebp-14h]
+  int len; // [esp+0h] [ebp-14h]
   int j; // [esp+4h] [ebp-10h]
   CObjItemRef_S208 *pStruct208; // [esp+8h] [ebp-Ch]
   int i; // [esp+Ch] [ebp-8h]
 
-  DebugLog("[HNH:SUB] AttachHanaObj_40BAB8\n");
+  ONCELOG("[HNH:SUB] AttachHanaObj_40BAB8\n");
 
   if ( pParent && szName && *szName )
   {
-    lenStr = lstrlenA(szName);
-    if ( lenStr > 63 )
-      lenStr = 63;
+    len = lstrlenA(szName);
+    if ( len > 63 )
+      len = 63;
     pStruct208 = g_pObjectTable;
     for ( i = 0; ; ++i )
     {
       if ( i >= g_nObjectTableCount )
       {
-        strcpy(pParent->szName_8, szName);
+        strcpy_s(pParent->szName_8, sizeof(pParent->szName_8), szName);
         CHanaObj__AddObjItemRef_40B848(szName, pParent);
         return;
       }
@@ -793,7 +793,7 @@ void __cdecl hook_AttachHanaObj_40BAB8(CHanaBase_S130 *pParent, LPCSTR szName)
     }
     strcpy(pStruct208->szName_0, szName);
     strcpy(pParent->szName_8, szName);
-    for ( j = 0; j < lenStr; ++j )
+    for ( j = 0; j < len; ++j )
     {
       if ( szName[j] == ' ' )
         strcpy(pStruct208->szName_100, &szName[j + 1]);
@@ -808,7 +808,7 @@ D3DXMATRIX *__cdecl hook_MatrixRotateCubeMapFace(CHanaFrameT3EC_S354 *pFrame, in
   D3DXMATRIX rotationMatrix;
   D3DXMATRIX strippedMatrix;
 
-  DebugLog("[HNH:SUB] %s\n", "MatrixRotateCubeMapFace_4070AB");
+  ONCELOG("[HNH:SUB] %s\n", "MatrixRotateCubeMapFace_4070AB");
 
   // Variables to preserve the translation components (m[3][0], m[3][1], m[3][2])
   __int64 savedTransXY;
@@ -870,12 +870,7 @@ void __cdecl hook_CalculateLocalRotationMatrix(
 {
   D3DXMATRIX pOut; // [esp+0h] [ebp-40h] BYREF
 
-  static int log_CalculateLocalRotationMatrix_407047 = 1;
-  log_CalculateLocalRotationMatrix_407047--;
-  if (!log_CalculateLocalRotationMatrix_407047) {
-    DebugLog("[HNH:SUB] %s\n", "CalculateLocalRotationMatrix_407047");
-    log_CalculateLocalRotationMatrix_407047 = 1000;
-  }
+  ONCELOG("[HNH:SUB] %s\n", "CalculateLocalRotationMatrix_407047");
 
   D3DXMatrixInverse(&pOut, 0, &pSceneFrame->matWorld_178);
   D3DXMatrixMultiply(&pOut, &pCameraFrame->matWorld_178, &pOut);

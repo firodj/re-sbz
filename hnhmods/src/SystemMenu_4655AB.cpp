@@ -330,17 +330,17 @@ int __cdecl hook_SystemMenu_4655AB(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int
     }
     if (pCursor)
     {
-        CHanaObj__Free_40C1E4((CHanaBase_S130*)& pCursor);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*) pCursor);
         pCursor = NULL;
     }
     if (pYesNo)
     {
-        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pYesNo);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)pYesNo);
         pYesNo = NULL;
     }
     if (pMenuStrip)
     {
-        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pMenuStrip);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)pMenuStrip);
         pMenuStrip = NULL;
     }
     SetUiFont_419BCD(26, 26, "‚l‚r –¾’©");  // restore ‚l‚r –¾’© 26x26

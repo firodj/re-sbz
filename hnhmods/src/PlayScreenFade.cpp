@@ -177,7 +177,7 @@ void __cdecl hook_CHanaObj__NewSpriteT3F6bySurf(CHanaSpriteT3F6_S1FC **ppOut, LP
   pSprite->rect_15C.left = 0;
   pSprite->rect_15C.bottom = pSprite->dwHeight_1F4;
   pSprite->rect_15C.right = pSprite->dwWidth_1F0;
-  CHanaObj__AddRef_40BFC3((CHanaBase_S130*)&pSprite);
+  CHanaObj__AddRef_40BFC3((CHanaBase_S130*)pSprite);
   *ppOut = pSprite;
 }
 
@@ -671,7 +671,7 @@ void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
     CHanaObj__NewSprite3F6byWH(&pDarkenSprite, 128, 128);
     if (!pDarkenSprite)
     {
-        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pColorSprite);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)pColorSprite);
         pColorSprite = NULL;
         pColorSurface->Release();
         return;
@@ -809,12 +809,12 @@ void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
     // teardown / restore
     if (pDarkenSprite)
     {
-        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pDarkenSprite);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)pDarkenSprite);
         pDarkenSprite = NULL;
     }
     if (pColorSprite)
     {
-        CHanaObj__Free_40C1E4((CHanaBase_S130*)&pColorSprite);
+        CHanaObj__Free_40C1E4((CHanaBase_S130*)pColorSprite);
         pColorSprite = NULL;
     }
     if (pCapturedBg)
