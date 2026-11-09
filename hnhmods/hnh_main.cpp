@@ -132,12 +132,6 @@ void InitHNH() {
 	register_ParseODS_483932();
 	register_ProcessFrame_40600C();
 	register_SystemMenu_4655AB();
-	register_SysMenu_SaveMenu_462135();
-	register_SysMenu_LoadMenu_462851();
-	register_SysMenu_GirlStatusCheck_464919();
-	register_SysMenu_Options_462FE9();
-	register_SysMenu_Graphics_46380D();
-	register_ShowYesNoDialog_461A9E();
 	register_PlayOdsDialogueScene_477F90();
 	register_ParseExecStr_487D89();
 	register_RunModeSelectScreen();
