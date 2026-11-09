@@ -924,8 +924,8 @@ void register_WndProcTitleMenu_428C11(int cfg) {
     UpdateRenderOptionsCheckboxes = hook_UpdateRenderOptionsCheckboxes;
     CreatePaletteFromBuffer = hook_CreatePaletteFromBuffer;
   }
+  else {
 
-  hnh_HookOff();
     hnh_Hook(0x428C11, hook_WndProcTitleMenu_428C11, "WndProcTitleMenu_428C11"); // [OK] 
     hnh_Hook(0x4211ED, hook_FreeBmp_4211ED, "FreeBmp_4211ED"); // [OK] 
     hnh_Hook(0x420DF0, hook_LoadBmp_420DF0, "LoadBmp_420DF0"); // [OK] 
@@ -934,5 +934,8 @@ void register_WndProcTitleMenu_428C11(int cfg) {
     hnh_Hook(0x42833C, hook_GetNthActiveVideoMode, "GetNthActiveVideoMode_42833C"); // [OK]
     hnh_Hook(0x428A7C, hook_GetNthValidDimensionString, "GetNthValidDimensionString_428A7C"); // [OK]
     hnh_Hook(0x428BC1, hook_DrawTextPairs, "DrawTextPairs_428BC1"); // [OK]
+  }
+
+  hnh_HookOff();
   hnh_HookOn();
 }

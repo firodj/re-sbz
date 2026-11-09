@@ -3561,15 +3561,17 @@ void register_PlayExploring_45BCAE(int cfg) {
     DrawSpriteListEcho_45B2FB = hook_DrawSpriteListEcho_45B2FB;
   }
 
+
   hnh_HookOff();
   hnh_Hook(0x45BCAE, hook_PlayExploring_45BCAE, "PlayExploring_45BCAE"); // [OK]
 
   hnh_Hook(0x45b5bd, hook_PrepareTargetSelect_45B5BD, "PrepareTargetSelect_45B5BD");
+  hnh_Hook(0x44bc36, hook_UpdateHudGauge_44BC36, "UpdateHudGauge_44BC36"); // [OK] !- missing frame
+  hnh_Hook(0x4490a7, hook_InitHudResources_4490A7, "InitHudResources_4490A7");  // [OK]
 
   hnh_Hook(0x407b73, hook_HanaMatrix_BuildLookAtAndTransform, "HanaMatrix_BuildLookAtAndTransform_407B73"); // [OK]
   hnh_Hook(0x407e5b, hook_Frame_ComputeWorldAABB, "Frame_ComputeWorldAABB_407E5B");  // [OK]
   hnh_Hook(0x443dd5, hook_BuildMapSubFrames_443DD5, "BuildMapSubFrames_443DD5");  // [OK]
-  hnh_Hook(0x4490a7, hook_InitHudResources_4490A7, "InitHudResources_4490A7");  // [OK]
   hnh_Hook(0x4135ed, hook_HanaTexture_CreateFromFile, "HanaTexture_CreateFromFile_4135ED"); // [OK]
   hnh_Hook(0x459f81, hook_SetupItemBodies_459F81, "SetupItemBodies_459F81");  // [OK]
   hnh_Hook(0x45a513, hook_UpdateHeroControl_45A513, "UpdateHeroControl_45A513");  // [OK]
@@ -3577,7 +3579,6 @@ void register_PlayExploring_45BCAE(int cfg) {
   hnh_Hook(0x45953b, hook_UpdateLockonEvent_45953B, "UpdateLockonEvent_45953B"); // [OK]
   hnh_Hook(0x459768, hook_CheckSceneTransition_459768, "CheckSceneTransition_459768");  // [OK]
   hnh_Hook(0x459ca2, hook_GetSceneEventTime_459CA2, "GetSceneEventTime_459CA2"); // [OK]
-  hnh_Hook(0x44bc36, hook_UpdateHudGauge_44BC36, "UpdateHudGauge_44BC36"); // [OK]
   hnh_Hook(0x45b2fb, hook_DrawSpriteListEcho_45B2FB, "DrawSpriteListEcho_45B2FB"); // [OK]
   hnh_Hook(0x445525, hook_UpdateCameraFollowChase_445525, "UpdateCameraFollowChase_445525"); // [OK]
   hnh_Hook(0x45a2ba, hook_ApplyTargetEffect_45A2BA, "ApplyTargetEffect_45A2BA"); // [OK]

@@ -457,6 +457,8 @@ void register_SetFogEnable_40DFB0(int cfg) {
     LoadDataFiles_461557 = hook_LoadDataFiles_461557;
   }
 
+
+
   hnh_HookOff();
   hnh_Hook(0x4612B0, hook_ZeroPadNumberToString_4612B0, "ZeroPadNumberToString_4612B0");
 
@@ -473,5 +475,6 @@ void register_SetFogEnable_40DFB0(int cfg) {
   hnh_Hook(0x461557, hook_LoadDataFiles_461557, "LoadDataFiles_461557"); // [OK]
   hnh_Hook(0x46164C, hook_ShowFadeDialog_46164C, "ShowFadeDialog_46164C"); // [OK]
   hnh_Hook(0x419B05, hook_DrawTextOnSurfaceSpaced_419B05, "DrawTextOnSurfaceSpaced_419B05");  // [OK]
+
   hnh_HookOn();
 }

@@ -346,9 +346,12 @@ void register_CHanaObj__NewFrameT3EC_S354_404720(int cfg) {
     CHanaObj__NewSprite3F6byWH = hook_CHanaObj__NewSprite3F6byWH;
   }
 
+
+
   hnh_HookOff();
   hnh_Hook(0x4074EF, hook_MtxStackStartMultLocal_4074EF, "MtxStackStartMultLocal_4074EF"); // [OK] 
   hnh_Hook(0x4075B0, hook_MtxStackRecursiveMulLocal_4075B0, "MtxStackRecursiveMulLocal_4075B0"); // [OK] 
+
   hnh_Hook(0x404720, hook_CHanaObj__NewFrameT3EC_S354, "CHanaObj__NewFrameT3EC_S354_404720"); // [OK] 
   hnh_Hook(0x4055FD, hook_AttachChild_4055FD, "AttachChild_4055FD"); // [OK] 
   hnh_Hook(0x404908, hook_CHanaObj__NewFrameRootT3EC_S2D4, "CHanaObj__NewFrameRootT3EC_S2D4_404908"); // [OK] 

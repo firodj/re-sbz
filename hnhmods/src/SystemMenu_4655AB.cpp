@@ -1485,14 +1485,15 @@ void register_SystemMenu_4655AB(int cfg) {
     ShowYesNoDialog_461A9E = hook_ShowYesNoDialog_461A9E;
 
   }
+
   hnh_HookOff();
-    hnh_Hook(0x4655AB, hook_SystemMenu_4655AB, "SystemMenu_4655AB"); // [OK]
-    hnh_Hook(0x464919, hook_SysMenu_GirlStatusCheck_464919, "SysMenu_GirlStatusCheck_464919");  // [OK]
-    hnh_Hook(0x46380D, hook_SysMenu_Graphics_46380D, "SysMenu_Graphics_46380D");  // [OK]
-    hnh_Hook(0x462FE9, hook_SysMenu_Options_462FE9, "SysMenu_Options_462FE9");  // [OK]
-    hnh_Hook(0x462135, hook_SysMenu_SaveMenu_462135, "SysMenu_SaveMenu_462135");  // [OK]
-    hnh_Hook(0x462851, hook_SysMenu_LoadMenu_462851, "SysMenu_LoadMenu_462851");  // [OK]
-    hnh_Hook(0x461A9E, hook_ShowYesNoDialog_461A9E, "ShowYesNoDialog_461A9E");  // [OK]
+  hnh_Hook(0x4655AB, hook_SystemMenu_4655AB, "SystemMenu_4655AB"); // [OK]
+  hnh_Hook(0x464919, hook_SysMenu_GirlStatusCheck_464919, "SysMenu_GirlStatusCheck_464919");  // [OK]
+  hnh_Hook(0x46380D, hook_SysMenu_Graphics_46380D, "SysMenu_Graphics_46380D");  // [OK]
+  hnh_Hook(0x462FE9, hook_SysMenu_Options_462FE9, "SysMenu_Options_462FE9");  // [OK]
+  hnh_Hook(0x462135, hook_SysMenu_SaveMenu_462135, "SysMenu_SaveMenu_462135");  // [OK]
+  hnh_Hook(0x462851, hook_SysMenu_LoadMenu_462851, "SysMenu_LoadMenu_462851");  // [OK]
+  hnh_Hook(0x461A9E, hook_ShowYesNoDialog_461A9E, "ShowYesNoDialog_461A9E");  // [OK]
 
   hnh_HookOn();
 }

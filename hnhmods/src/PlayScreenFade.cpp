@@ -1309,19 +1309,20 @@ void register_PlayScreenFade_4874DE(int cfg)
     HanaMorpT457_Interp = hook_HanaMorpT457_Interp;
     HanaMorpT457_ApplySubs = hook_HanaMorpT457_ApplySubs;
     HanaVert_BlendMorph = hook_HanaVert_BlendMorph;
+  } else {
+    hnh_Hook(0x4874DE, hook_PlayScreenFade, "PlayScreenFade_4874DE"); // [OK]
+
   }
 
+
   hnh_HookOff();
-  hnh_Hook(0x4874DE, hook_PlayScreenFade, "PlayScreenFade_4874DE"); // [OK]
+
   hnh_Hook(0x4874A5, hook_RenderFlush_4874A5,            "RenderFlush_4874A5");
-
-
   hnh_Hook(0x47E78F, hook_GetTimerScaleFactor,           "GetTimerScaleFactor_47E78F"); // [OK] 
   hnh_Hook(0x47E782, hook_SetTimerScaleFactor,           "SetTimerScaleFactor_47E782"); // [OK] 
   hnh_Hook(0x41973F, hook_RGBToSurfaceFormat,            "RGBToSurfaceFormat_41973F"); // [OK] 
   hnh_Hook(0x4137D1, hook_CHanaObj__NewSpriteT3F6bySurf, "CHanaObj__NewSpriteT3F6bySurf_4137D1"); // [OK] 
   hnh_Hook(0x413D78, hook_CHanaObj__ReplaceTexture3F6,   "CHanaObj__ReplaceTexture3F6_413D78"); // [OK] 
-  hnh_Hook(0x414589, hook_DrawSpriteLTRB,                "DrawSpriteLTRB_414589"); // [OK] 
   hnh_Hook(0x414ABA, hook_CHanaObj__SetAlpha3F6,         "CHanaObj__SetAlpha3F6_414ABA"); // [OK] 
   hnh_Hook(0x419D16, hook_BltFastWH,                     "BltFastWH_419D16"); // [OK] 
   hnh_Hook(0x40BF4F, hook_RenderClear_40BF4F,            "RenderClear_40BF4F"); // [OK] 
@@ -1346,5 +1347,7 @@ void register_PlayScreenFade_4874DE(int cfg)
   hnh_Hook(0x4365B9, hook_HanaMorpT457_ApplySubs, "HanaMorpT457_ApplySubs_4365B9"); // [OK] 
   hnh_Hook(0x4363EE, hook_HanaVert_Transform,     "HanaVert_Transform_4363EE"); // [OK]
   hnh_Hook(0x43F3F7, hook_SelfBltDC,    "SelfBltDC_43F3F7"); // [OK]
+  hnh_Hook(0x414589, hook_DrawSpriteLTRB,                "DrawSpriteLTRB_414589"); // [OK] 
+
   hnh_HookOn();
 }

@@ -437,19 +437,18 @@ void register_StopAndRestartThread_481AE4(int cfg) {
     InputThread_Absolute_4817B1 = hook_InputThread_Absolute_4817B1;
     GetCursorPos_4811FA = hook_GetCursorPos_4811FA;
   }
+  else {
+    hnh_Hook(0x481637, hook_InputThread_Relative_481637, "InputThread_Relative_481637"); // [OK] 
+    hnh_Hook(0x4817B1, hook_InputThread_Absolute_4817B1, "InputThread_Absolute_4817B1"); // [OK] 
+    hnh_Hook(0x4811FA, hook_GetCursorPos_4811FA, "GetCursorPos_4811FA"); // [OK] 
+
+  }
 
   hnh_HookOff();
-
-  hnh_Hook(0x4811FA, hook_GetCursorPos_4811FA, "GetCursorPos_4811FA"); // [OK] 
-  hnh_Hook(0x481637, hook_InputThread_Relative_481637, "InputThread_Relative_481637"); // [OK] 
-  hnh_Hook(0x4817B1, hook_InputThread_Absolute_4817B1, "InputThread_Absolute_4817B1"); // [OK] 
-
 
   hnh_Hook(0x481AE4, hook_StopAndRestartThread, "StopAndRestartThread_481AE4"); // [OK] 
   hnh_Hook(0x481A35, hook_TerminateThreadGracefully, "TerminateThreadGracefully_481A35"); // [OK] 
   hnh_Hook(0x4818FD, hook_CreateNewThread, "CreateNewThread_4818FD"); // [OK] 
-
-
   hnh_Hook(0x4815EC, hook_MutexThreadWait_4815EC, "MutexThreadWait_4815EC"); // [OK] 
   hnh_HookOn();
 }

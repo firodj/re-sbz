@@ -578,11 +578,10 @@ void register_WndProcCheckSystem_485FC2(int cfg) {
   }
 
   hnh_HookOff();
-  hnh_Hook(0x423CCC, hook_HanaDS_SetErrStr, "HanaDS_SetErrStr_423CCC");
-
-  hnh_Hook(0x485FC2, hook_WndProcCheckSystem_485FC2, "WndProcCheckSystem_485FC2"); // [OK] 
   hnh_Hook(0x40AC7C, hook_D3DDeinit, "D3DDeinit_40AC7C"); // [OK] 
   hnh_Hook(0x418620, hook_Renderer_InitializeTrigTablesAndPixelFormat, "Renderer_InitializeTrigTablesAndPixelFormat_418620"); // [OK] 
+  hnh_Hook(0x423CCC, hook_HanaDS_SetErrStr, "HanaDS_SetErrStr_423CCC");
+  hnh_Hook(0x485FC2, hook_WndProcCheckSystem_485FC2, "WndProcCheckSystem_485FC2"); // [OK] 
   hnh_Hook(0x427520, hook_HanaHeap_Create, "HanaHeap_Create_427520"); // [OK] 
   hnh_Hook(0x424886, hook_HanaDS_InitHeap, "HanaDS_InitHeap_424886"); // [OK] 
   hnh_Hook(0x422D50, hook_HanaDS_Init, "HanaDS_Init_422D50"); // [OK] 
@@ -591,6 +590,7 @@ void register_WndProcCheckSystem_485FC2(int cfg) {
   hnh_Hook(0x422E14, hook_HanaDS_Shutdown, "HanaDS_Shutdown_422E14"); // [OK] 
   hnh_Hook(0x422690, hook_HanaDS_Create3DListener, "HanaDS_Create3DListener_422690"); // [OK] 
   hnh_Hook(0x419BCD, hook_SetUiFont_419BCD, "SetUiFont_419BCD"); // [OK] 
-  hnh_Hook(0x41888E, hook_Renderer_CleanupFont, "Renderer_CleanupFont_41888E"); // [OK] 
+  hnh_Hook(0x41888E, hook_Renderer_CleanupFont, "Renderer_CleanupFont_41888E"); // [OK]
+
   hnh_HookOn();
 }

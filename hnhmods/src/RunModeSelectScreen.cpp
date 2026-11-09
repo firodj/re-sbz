@@ -980,8 +980,6 @@ void register_RunModeSelectScreen(int cfg) {
 
   hnh_Hook(0x46D9AF, hook_RunSceneSelectScreen, "RunSceneSelectScreen_46D9AF"); // [OK}
   hnh_Hook(0x46F37E, hook_RunModeSelectScreen, "RunModeSelectScreen_46F37E");  // [OK}
-
-
   hnh_Hook(0x467af3, hook_SetFrameVisibilityAndGetHIndex, "SetFrameVisibilityAndGetHIndex_467AF3"); // [OK]
   hnh_Hook(0x467420, hook_ApplyFrameEffectOption, "ApplyFrameEffectOption_467420"); // [OK]
   hnh_Hook(0x46724e, hook_FrameObject_SetAlpha, "FrameObject_SetAlpha_46724E"); // [OK]
