@@ -59,7 +59,7 @@ def get_c_type(ea):
         elif size == 2:
             type_str = "uint16_t"
         elif size == 4:
-            type_str = "uint32_t"
+            type_str = "int"
         elif size == 8:
             type_str = "uint64_t"
         else:
