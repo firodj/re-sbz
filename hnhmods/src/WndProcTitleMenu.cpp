@@ -912,7 +912,18 @@ void __cdecl hook_GetNthActiveVideoMode(
 }
 
 // Register hook if needed
-void register_WndProcTitleMenu_428C11() {  
+void register_WndProcTitleMenu_428C11() {
+  WndProcTitleMenu_428C11 = hook_WndProcTitleMenu_428C11;
+
+  FreeBmp_4211ED=hook_FreeBmp_4211ED;
+  GetNthActiveVideoMode=hook_GetNthActiveVideoMode;
+  GetNthValidDimensionString=hook_GetNthValidDimensionString;
+  DrawTextPairs=hook_DrawTextPairs;
+  LoadBmp_420DF0=hook_LoadBmp_420DF0;
+  UpdateRenderOptionsCheckboxes=hook_UpdateRenderOptionsCheckboxes;
+  CreatePaletteFromBuffer=hook_CreatePaletteFromBuffer;
+
+
   hnh_HookOff();
     hnh_Hook(0x428C11, hook_WndProcTitleMenu_428C11, "WndProcTitleMenu_428C11"); // [OK] 
     hnh_Hook(0x4211ED, hook_FreeBmp_4211ED, "FreeBmp_4211ED"); // [OK] 

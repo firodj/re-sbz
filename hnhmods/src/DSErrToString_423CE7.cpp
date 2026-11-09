@@ -84,7 +84,7 @@ const char *__cdecl hook_DSErrToString_423CE7(HRESULT hr)
     return "DirectSound: ïsñæÇ»ÉGÉâÅ[";
 }
 
-const char *__cdecl hook_DDErrToString_41898E(int hr)
+const char *__cdecl hook_DDErrToString_41898E(HRESULT hr)
 {
   const char *result; // eax
 
@@ -443,6 +443,11 @@ const char *__cdecl hook_DDErrToString_41898E(int hr)
 }
 
 void register_DSErrToString_423CE7() {
+  DSErrToString_423CE7 = hook_DSErrToString_423CE7;
+  DDErrToString_41898E = hook_DDErrToString_41898E;
+
+  hnh_HookOff();
   hnh_Hook(0x423CE7, hook_DSErrToString_423CE7, "DSErrToString_423CE7");
   hnh_Hook(0x41898E, hook_DDErrToString_41898E, "DDErrToString_41898E");
+  hnh_HookOn();
 }

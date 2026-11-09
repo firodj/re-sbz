@@ -72,13 +72,13 @@ uint32_t &g_nScreenScale_52F19C    = *(uint32_t *)0x52F19C; // WRITABLE
 
 // === GLOBAL FUNCTIONS ===
 
+BOOL (__cdecl * CheckRunGame_4863C8)(HWND hWnd, BOOL bFullScreen) = reinterpret_cast<BOOL(__cdecl*)(HWND hWnd, BOOL bFullScreen)>(0x4863C8);
 void (* DisplayConfig_ProcessDriverDesc)(CDisplayConfig *pConfig) = reinterpret_cast<void(*)(CDisplayConfig *pConfig)>(0x427F8C);
 BOOL (__cdecl * IsVideoModeSupported)(D3DX_VIDMODEDESC *pVidModeDesc) = reinterpret_cast<BOOL(__cdecl*)(D3DX_VIDMODEDESC *pVidModeDesc)>(0x427C51);
 void (__cdecl * DisplayConfig_Init)(CDisplayConfig *pDisplayConfig) = reinterpret_cast<void(__cdecl*)(CDisplayConfig *pDisplayConfig)>(0x4278FF);
 DWORD (__cdecl * ReadFileToBuffer)(LPCSTR lpFileName, LPVOID lpBuffer, int nBufSize) = reinterpret_cast<DWORD(__cdecl*)(LPCSTR lpFileName, LPVOID lpBuffer, int nBufSize)>(0x47E858);
 void (__cdecl * WriteBufferToFile)(LPCSTR lpFileName, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite) = reinterpret_cast<void(__cdecl*)(LPCSTR lpFileName, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite)>(0x47E7F2);
 int (__cdecl * ShowTitleMenuWnd_428927)(HINSTANCE hInstance) = reinterpret_cast<int(__cdecl*)(HINSTANCE hInstance)>(0x428927);
-BOOL (__cdecl * CheckRunGame_4863C8)(HWND hWnd, BOOL bFullScreen) = reinterpret_cast<BOOL(__cdecl*)(HWND hWnd, BOOL bFullScreen)>(0x4863C8);
 HRESULT (__cdecl * SetLightingState)(DWORD dwEnable) = reinterpret_cast<HRESULT(__cdecl*)(DWORD dwEnable)>(0x40DD71);
 HRESULT (* D3DInitBuffers_40AF60)() = reinterpret_cast<HRESULT(*)()>(0x40AF60);
 void (__cdecl * CHanaObj__NewLightT3EF)(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dlight) = reinterpret_cast<void(__cdecl*)(CHanaLightT3EF_S1A0 **pOut, D3DLIGHT7 *pD3Dlight)>(0x408F00);
@@ -888,6 +888,21 @@ void __cdecl hook_CalculateLocalRotationMatrix(
 }
 
 void register_CheckRunGame_4863C8() {
+  CheckRunGame_4863C8=hook_CheckRunGame_4863C8;
+  DisplayConfig_ProcessDriverDesc =hook_DisplayConfig_ProcessDriverDesc;
+  IsVideoModeSupported =hook_IsVideoModeSupported;
+  DisplayConfig_Init =hook_DisplayConfig_Init;
+  ReadFileToBuffer =hook_ReadFileToBuffer;
+  WriteBufferToFile =hook_WriteBufferToFile;
+  ShowTitleMenuWnd_428927 =hook_ShowTitleMenuWnd_428927;
+  SetLightingState =hook_SetLightingState;
+  D3DInitBuffers_40AF60 =hook_D3DInitBuffers_40AF60;
+  CHanaObj__NewLightT3EF =hook_CHanaObj__NewLightT3EF;
+  CHanaObj__AddObjItemRef_40B848 =hook_CHanaObj__AddObjItemRef_40B848;
+  AttachHanaObj_40BAB8 =hook_AttachHanaObj_40BAB8;
+  MatrixRotateCubeMapFace =hook_MatrixRotateCubeMapFace;
+  CalculateLocalRotationMatrix =hook_CalculateLocalRotationMatrix;
+
   hnh_HookOff();
   hnh_Hook(0x4863C8, hook_CheckRunGame_4863C8, "CheckRunGame_4863C8"); // [OK] 
   hnh_Hook(0x47E858, hook_ReadFileToBuffer, "ReadFileToBuffer_47E858"); // [OK] 

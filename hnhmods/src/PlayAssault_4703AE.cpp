@@ -28,6 +28,8 @@ void (WINAPI *WaitScreenThreadProc)(LPVOID lpThreadParameter)
 = reinterpret_cast<void (WINAPI*)(LPVOID lpThreadParameter)>(0x47e1a2);
 void (__cdecl *Frame_SetPracticeAnimRootRecursive)(CHanaFrameT3EC_S354 *pFrame, CHanaFrameT3EC_S354 *pRootAnimFrame)
 = reinterpret_cast<void (__cdecl*)(CHanaFrameT3EC_S354 *pFrame, CHanaFrameT3EC_S354 *pRootAnimFrame)>(0x466738);
+int  (__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab) =
+reinterpret_cast<int(__cdecl*)(int, int)>(0x4703AE);
 
 // === PINNED GLOBALS ===
 // (none new - g_pDSBuf_52EFD0 is pinned in RunModeSelectScreen.cpp; every

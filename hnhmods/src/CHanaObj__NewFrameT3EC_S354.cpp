@@ -336,6 +336,14 @@ void hook_CHanaObj__NewSprite3F6byWH(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWOR
 
 // Register hook if needed
 void register_CHanaObj__NewFrameT3EC_S354_404720() {
+  CHanaObj__NewFrameT3EC_S354 = hook_CHanaObj__NewFrameT3EC_S354;
+  AttachChild_4055FD = hook_AttachChild_4055FD;
+  MtxStackStartMultLocal_4074EF = hook_MtxStackStartMultLocal_4074EF;
+  MtxStackRecursiveMulLocal_4075B0 = hook_MtxStackRecursiveMulLocal_4075B0;
+  CHanaObj__NewFrameRootT3EC_S2D4 = hook_CHanaObj__NewFrameRootT3EC_S2D4;
+  CHanaObj__NewMateT3EE_S184 = hook_CHanaObj__NewMateT3EE_S184;
+  CHanaObj__NewSprite3F6byWH = hook_CHanaObj__NewSprite3F6byWH;
+
   hnh_HookOff();
   hnh_Hook(0x4074EF, hook_MtxStackStartMultLocal_4074EF, "MtxStackStartMultLocal_4074EF"); // [OK] 
   hnh_Hook(0x4075B0, hook_MtxStackRecursiveMulLocal_4075B0, "MtxStackRecursiveMulLocal_4075B0"); // [OK] 

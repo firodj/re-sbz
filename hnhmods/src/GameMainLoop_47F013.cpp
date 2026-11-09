@@ -36,10 +36,11 @@ double(__cdecl* ConvertFrom1024AsFloat)(float fNum) = reinterpret_cast<double(__
 // PlayHunting_44C38D lives in src/PlayHunting_44C38D.cpp 
 // PlayAssault_4703AE lives in src/MenuCharSelect.cpp (extern in shared.hpp)
 void (__cdecl*ShowBackdropAndWait_4795CE)(void) = reinterpret_cast<void(__cdecl*)()>(0x4795CE);
-void (__cdecl*GameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)()>(0x47F013);
 int(__cdecl* BMP_DitherRGB24ToRGB565)(char, char, char, int, int) = reinterpret_cast<int(__cdecl*)(char, char, char, int, int)>(0x421BD5);
 void(__cdecl* BMP_Convert24bitTo16bitWithDither)(CBMPFile* pBMPFile) = reinterpret_cast<void(__cdecl*)(CBMPFile* pBMPFile)>(0x421FF4);
 HRESULT(__cdecl* GetDC_4188B4)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC) = reinterpret_cast<HRESULT(__cdecl*)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC)>(0x4188B4);
+
+void (__cdecl*GameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)()>(0x47F013);
 
 // === PINNED GLOBALS ===
 LPDIRECTSOUNDBUFFER (&g_arrUIEffectDSBuffer_52F168)[5] = *(LPDIRECTSOUNDBUFFER(*)[5])0x52F168; // WRITABLE
@@ -553,13 +554,26 @@ void hook_ShowBackdropAndWait_4795CE()
 }
 
 void register_GameMainLoop_47F013() {
-  hnh_Hook(0x47F013, hook_GameMainLoop_47F013, "GameMainLoop_47F013"); // [OK] 
+  GameMainLoop_47F013 = hook_GameMainLoop_47F013;
 
+  GetSurfaceFromBmp_419DE5=hook_GetSurfaceFromBmp_419DE5;
+  ConvertFrom640AsInt=hook_ConvertFrom640AsInt;
+  ConvertFrom640AsFloat=hook_ConvertFrom640AsFloat;
+  ConvertFrom1024AsInt=hook_ConvertFrom1024AsInt;
+  ConvertFrom1024AsFloat=hook_ConvertFrom1024AsFloat;
+  ShowBackdropAndWait_4795CE=hook_ShowBackdropAndWait_4795CE;
+  BMP_DitherRGB24ToRGB565=hook_BMP_DitherRGB24ToRGB565;
+  BMP_Convert24bitTo16bitWithDither=hook_BMP_Convert24bitTo16bitWithDither;
+  GetDC_4188B4=hook_GetDC_4188B4;
+
+  hnh_HookOff();
   hnh_Hook(0x421BD5, hook_BMP_DitherRGB24ToRGB565, "BMP_DitherRGB24ToRGB565");
   hnh_Hook(0x421FF4, hook_BMP_Convert24bitTo16bitWithDither, "BMP_Convert24bitTo16bitWithDither");
   hnh_Hook(0x4795ce, hook_ShowBackdropAndWait_4795CE, "ShowBackdropAndWait_4795CE");
 
-  hnh_HookOff();
+
+  hnh_Hook(0x47F013, hook_GameMainLoop_47F013, "GameMainLoop_47F013"); // [OK] 
+
   hnh_Hook(0x419DE5, hook_GetSurfaceFromBmp_419DE5, "GetSurfaceFromBmp_419DE5"); // [OK] 
   hnh_Hook(0x4188B4, hook_GetDC_4188B4, "GetDC_4188B4"); // [OK] 
   hnh_Hook(0x47E6AF, hook_ConvertFrom640AsInt, "ConvertFrom640AsInt_47E6AF"); // [OK] 

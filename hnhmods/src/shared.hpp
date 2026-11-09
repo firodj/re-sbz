@@ -292,8 +292,8 @@ extern void(__cdecl*DSBufferPlay)(LPDIRECTSOUNDBUFFER pDSBuf, int dwPlayFlags);
 extern BOOL(__cdecl*DoPeekMessages)(void);
 extern void(__cdecl*GetMouseBtn_45A41B)(LPWORD pBtnMouse);
 extern void(__cdecl*GetMouseXY_45A4D8)(DWORD *pXmouse, DWORD *pYmouse);
-extern LPDIRECTDRAWSURFACE7(__cdecl*LoadBmpScaled_4203B3)(LPCSTR lpFileName, int xRight, int yBottom);
-extern int(__cdecl*FlushD3DAndTouchSurface)(LPDIRECTDRAWSURFACE7 pSurface);
+extern LPDIRECTDRAWSURFACE7(__cdecl*LoadBmpScaled_4203B3)(LPCSTR lpFileName, DWORD xRight, DWORD yBottom);
+extern void(__cdecl*FlushD3DAndTouchSurface)(LPDIRECTDRAWSURFACE7 pSurface);
 extern void(__cdecl*CHanaSpriteT3F6__SetPos_414A5D)(CHanaSpriteT3F6_S1FC *pSprite, float fX, float fY);
 extern void(__cdecl*DrawSprite2D)(CHanaSpriteT3F6_S1FC *pSprite);
 extern void(__cdecl* LoadBmpWithMask_413A5E)(CHanaSpriteT3F6_S1FC** ppOut, LPCSTR szBmpName, LPCSTR szMaskName);
@@ -310,7 +310,7 @@ extern void(__cdecl* DrawSpriteAtRect)(CHanaSpriteT3F6_S1FC* pSprite, D2D_RECT_F
 extern void (__cdecl*MainMenu_47DF0D)(void);
 extern int (__cdecl*InGameMenu_4799E2)(void);
 extern const float g_fVolumeDbTable[10];  // compiled-in copy of .rdata @0x4C6F4C (-10000/-2000/-1000/-500/0 dB ladder + 5 unused)
-extern HRESULT(__cdecl*HanaVert_DrawBatch)(int nParam);
+extern void(__cdecl*HanaVert_DrawBatch)(BOOL bDraw);
 extern DWORD& g_dwDSStatus_5185C8;
 
 // === DEFINED SystemMenu_4655AB.cpp ===
@@ -448,7 +448,7 @@ extern int(__cdecl* PlayExploring_45BCAE)(int nStageIndex);
 extern int(__cdecl* PlayHunting_44C38D)(int nDuelIndex);
 
 // === DEFINED PlayAssault_4703AE.cpp ===
-
+extern int(__cdecl* PlayAssault_4703AE)(int iModeId, int iMenuTab);
 extern CHanaFrameT3EC_S354 *(__cdecl* Scene_FindMapFrame)(CHanaSceneT458_S504 *pScene);
 extern int(__cdecl* PlayCutInScene_46A76F)(CHanaSceneT458_S504 *pScene,
   CHanaSpriteT3F6_S1FC **arrMouseSprites, CHanaSpriteT3F6_S1FC **arrGOTypeSprites,
@@ -459,7 +459,7 @@ extern int(__cdecl* PlayCutInScene_46A76F)(CHanaSceneT458_S504 *pScene,
 // === DEFINED MenuCharSelect.cpp (continued) ===
 
 extern int(__cdecl* PlayAssault_4703AE)(int iModeId, int iMenuTab);
-extern HRESULT(__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF color);
+extern void(__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF color);
 extern int(__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab);
 extern void(__cdecl* DrawText_43BCAE)(LPDIRECTDRAWSURFACE7 pSurface, char* szText, int left, int top, int right, int bottom);
 extern int(__cdecl* MenuMusicSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite);

@@ -12,10 +12,10 @@ void (__cdecl*GetMouseBtn_45A41B)(LPWORD pBtnMouse) =
   reinterpret_cast<void(__cdecl*)(LPWORD)>(0x45A41B);
 void (__cdecl*GetMouseXY_45A4D8)(DWORD *pXmouse, DWORD *pYmouse) =
   reinterpret_cast<void(__cdecl*)(DWORD *, DWORD *)>(0x45A4D8);
-LPDIRECTDRAWSURFACE7(__cdecl*LoadBmpScaled_4203B3)(LPCSTR lpFileName, int xRight, int yBottom) =
-  reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(LPCSTR, int, int)>(0x4203B3);
-int  (__cdecl*FlushD3DAndTouchSurface)(LPDIRECTDRAWSURFACE7 pSurface) =
-  reinterpret_cast<int(__cdecl*)(LPDIRECTDRAWSURFACE7)>(0x43BF6F);
+LPDIRECTDRAWSURFACE7(__cdecl*LoadBmpScaled_4203B3)(LPCSTR lpFileName, DWORD xRight, DWORD yBottom) =
+  reinterpret_cast<LPDIRECTDRAWSURFACE7(__cdecl*)(LPCSTR, DWORD, DWORD)>(0x4203B3);
+void (__cdecl*FlushD3DAndTouchSurface)(LPDIRECTDRAWSURFACE7 pSurface) =
+  reinterpret_cast<void(__cdecl*)(LPDIRECTDRAWSURFACE7)>(0x43BF6F);
 void(__cdecl*CHanaSpriteT3F6__SetPos_414A5D)(CHanaSpriteT3F6_S1FC *pSprite, float fX, float fY) =
   reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *, float, float)>(0x414A5D);
 void (__cdecl*DrawSprite2D)(CHanaSpriteT3F6_S1FC *pSprite) =
@@ -39,8 +39,8 @@ void (__cdecl*PresentFrame)(void) = reinterpret_cast<void(__cdecl*)()>(0x40BF01)
 void(__cdecl*DrawSpriteAtRect)(CHanaSpriteT3F6_S1FC* pSprite, D2D_RECT_F* rc) =
   reinterpret_cast<void(__cdecl*)(CHanaSpriteT3F6_S1FC *pSprite, D2D_RECT_F *rc)>(0x4147ED);
 
-HRESULT(__cdecl*HanaVert_DrawBatch)(BOOL bDraw)
-= reinterpret_cast<HRESULT(__cdecl*)(int)>(0x40CEEC);
+void(__cdecl*HanaVert_DrawBatch)(BOOL bDraw)
+= reinterpret_cast<void(__cdecl*)(int)>(0x40CEEC);
 void (__cdecl*MainMenu_47DF0D)(void)
 = reinterpret_cast<void(__cdecl*)()>(0x47DF0D);
 int  (__cdecl*InGameMenu_4799E2)(void)
@@ -393,7 +393,7 @@ void hook_DSBufferPlay(LPDIRECTSOUNDBUFFER pDSBuf, int dwPlayFlags)
   }
 }
 
-void __cdecl hook_GetSurfaceWH(LPDIRECTDRAWSURFACE7 pSurface, _DWORD *pWidth, _DWORD *pHeight)
+void __cdecl hook_GetSurfaceWH(LPDIRECTDRAWSURFACE7 pSurface, DWORD *pWidth, DWORD *pHeight)
 {
   DDSURFACEDESC2 ddSurfacDesc; // [esp+0h] [ebp-7Ch] BYREF
 
@@ -1397,11 +1397,33 @@ void __cdecl hook_HanaVert_DrawBatch(BOOL bDraw)
 }
 
 void register_InGameMenu_4799E2() {
-  hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D"); // [OK]
-  hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
-  hnh_Hook(0x40CEEC, hook_HanaVert_DrawBatch, "HanaVert_DrawBatch_40CEEC"); // [OK]
+  DSBufferPlay = hook_DSBufferPlay;
+  DoPeekMessages = hook_DoPeekMessages;
+  GetMouseBtn_45A41B = hook_GetMouseBtn_45A41B;
+  GetMouseXY_45A4D8 = hook_GetMouseXY_45A4D8;
+  LoadBmpScaled_4203B3 = hook_LoadBmpScaled_4203B3;
+  FlushD3DAndTouchSurface = hook_FlushD3DAndTouchSurface;
+  CHanaSpriteT3F6__SetPos_414A5D = hook_CHanaSpriteT3F6__SetPos_414A5D;
+  DrawSprite2D = hook_DrawSprite2D;
+  LoadBmpWithMask_413A5E = hook_LoadBmpWithMask_413A5E;
+  GetSurfaceWH = hook_GetSurfaceWH;
+  BltSurface = hook_BltSurface;
+  CreateSurfaceWH = hook_CreateSurfaceWH;
+  RecoverLostDevice = hook_RecoverLostDevice;
+  PresentFrame = hook_PresentFrame;
+  DrawSpriteAtRect = hook_DrawSpriteAtRect;
+  HanaVert_DrawBatch = hook_HanaVert_DrawBatch;
+  MainMenu_47DF0D = hook_MainMenu_47DF0D;
+  InGameMenu_4799E2 = hook_InGameMenu_4799E2;
+
 
   hnh_HookOff();
+  hnh_Hook(0x40BE03, hook_RecoverLostDevice, "RecoverLostDevice_40BE03");
+
+
+  hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D"); // [OK]
+  hnh_Hook(0x40CEEC, hook_HanaVert_DrawBatch, "HanaVert_DrawBatch_40CEEC"); // [OK]
+
   hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2"); // [OK] 
   hnh_Hook(0x481550, hook_DoPeekMessages, "DoPeekMessages_481550"); // [OK] 
   hnh_Hook(0x423BAF, hook_DSBufferPlay, "DSBufferPlay_423BAF"); // [OK] 

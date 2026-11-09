@@ -9,10 +9,8 @@
 int  (__cdecl*MenuCharSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite) =
     reinterpret_cast<int(__cdecl*)(LPDIRECTSOUNDBUFFER *, CHanaSpriteT3F6_S1FC *)>(0x47A324);
 bool (__cdecl*IsMenuKeyPressed_481170)(void) = reinterpret_cast<bool(__cdecl*)()>(0x481170);
-HRESULT (__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF color) =
-    reinterpret_cast<HRESULT(__cdecl*)(LPDIRECTDRAWSURFACE7, COLORREF)>(0x4198E0);
-int  (__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab) =
-    reinterpret_cast<int(__cdecl*)(int, int)>(0x4703AE);
+void (__cdecl*Surface_SetColorKeyRGB)(LPDIRECTDRAWSURFACE7 surface, COLORREF color) =
+    reinterpret_cast<void(__cdecl*)(LPDIRECTDRAWSURFACE7, COLORREF)>(0x4198E0);
 BOOL (__cdecl * CheckSpecialJpChar_43BFFA)(const char *szText) = reinterpret_cast<BOOL(__cdecl*)(const char *szText)>(0x43BFFA);
 void (__cdecl * DrawText_43BCAE)(LPDIRECTDRAWSURFACE7 pSurface, char *szText, int left, int top, int right, int bottom) = reinterpret_cast<void(__cdecl*)(LPDIRECTDRAWSURFACE7 pSurface, char *szText, int left, int top, int right, int bottom)>(0x43BCAE);
 
@@ -887,11 +885,20 @@ int __cdecl hook_MenuMusicSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3
 }
 
 void register_MenuCharSelect_47A324() {
+  MenuCharSelect = hook_MenuCharSelect;
+  IsMenuKeyPressed_481170 = hook_IsMenuKeyPressed_481170;
+  Surface_SetColorKeyRGB = hook_Surface_SetColorKeyRGB;
+  CheckSpecialJpChar_43BFFA = hook_CheckSpecialJpChar_43BFFA;
+  DrawText_43BCAE = hook_DrawText_43BCAE;
+  MenuGallery = hook_MenuGallery;
+  MenuMusicSelect = hook_MenuMusicSelect;
+
+  hnh_HookOff();
   hnh_Hook(0x47A324, hook_MenuCharSelect, "MenuCharSelect_47A324"); // [OK]
   hnh_Hook(0x47AD8D, hook_MenuGallery, "MenuGallery_47AD8D"); // [OK]
   hnh_Hook(0x47D163, hook_MenuMusicSelect, "MenuMusicSelect_47D163"); // [OK]
 
-  hnh_HookOff();
+
   hnh_Hook(0x43BFFA, hook_CheckSpecialJpChar_43BFFA, "CheckSpecialJpChar_43BFFA"); // [OK]
   hnh_Hook(0x4198E0, hook_Surface_SetColorKeyRGB, "Surface_SetColorKeyRGB_4198E0"); // [OK]
   hnh_Hook(0x43BCAE, hook_DrawText_43BCAE, "DrawText_43BCAE");  // [OK]

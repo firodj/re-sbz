@@ -460,7 +460,7 @@ int __cdecl hook_FindCharUntil_487D46(char *pBuf, int charToFind, int charToFind
 }
 
 // CreateObject (sets type 0x3ED, AddRef)  
-int __cdecl hook_CHanaObj__NewFrameArrayT3ED(CHanaFrameArrayT3ED_S138 **ppFrameArray)
+void __cdecl hook_CHanaObj__NewFrameArrayT3ED(CHanaFrameArrayT3ED_S138 **ppFrameArray)
 {
   CHanaFrameArrayT3ED_S138 *pFrameArray; // [esp+0h] [ebp-4h]
   ONCELOG("[HNH:SUB] CHanaObj__NewFrameArrayT3ED_408DD0\n");
@@ -470,7 +470,6 @@ int __cdecl hook_CHanaObj__NewFrameArrayT3ED(CHanaFrameArrayT3ED_S138 **ppFrameA
   pFrameArray->dwType = 0x3ED;
   CHanaObj__AddRef_40BFC3(pFrameArray);
   *ppFrameArray = pFrameArray;
-  return 0;
 }
 
 // Idiomatic with IDirect3DRMFrame::GetChildren() - walks pFirstChildNode linked list,
@@ -633,11 +632,23 @@ CHanaFrameT3EC_S354 *__cdecl hook_HanaFrame_FindByName(LPCSTR pName, CHanaFrameT
 }
 
 void register_CheckInstalledDirRoot_4869A7() {
- 
-  hnh_Hook(0x47F460, hook_Scene_CreateFontTextureFromStringData, "Scene_CreateFontTextureFromStringData_47F460");
- 
+  IsFileExists_47E8EE = hook_IsFileExists_47E8EE;
+  SetupDirPath_486630 = hook_SetupDirPath_486630;
+  CheckInstalledDirRoot_4869A7 = hook_CheckInstalledDirRoot_4869A7;
+  ParseStrChunkText_47FF01 = hook_ParseStrChunkText_47FF01;
+  Scene_CreateFontTextureFromStringData = hook_Scene_CreateFontTextureFromStringData;
+  FindCharUntil_487D46 = hook_FindCharUntil_487D46;
+  HanaFrame_FindByName = hook_HanaFrame_FindByName;
+  CHanaObj__NewFrameArrayT3EDFromChildT3EC = hook_CHanaObj__NewFrameArrayT3EDFromChildT3EC;
+  CHanaObj__GetFramesCountT3ED_408E75 = hook_CHanaObj__GetFramesCountT3ED_408E75;
+  CHanaObj__GetFrameAtIndexT3ED = hook_CHanaObj__GetFrameAtIndexT3ED;
+  Character_ApplyAnimationParamsToChildren = hook_Character_ApplyAnimationParamsToChildren;
+  CHanaObj__NewFrameArrayT3ED = hook_CHanaObj__NewFrameArrayT3ED;
 
   hnh_HookOff();
+  hnh_Hook(0x47F460, hook_Scene_CreateFontTextureFromStringData, "Scene_CreateFontTextureFromStringData_47F460");
+
+
   hnh_Hook(0x4869A7, hook_CheckInstalledDirRoot_4869A7, "CheckInstalledDirRoot_4869A7"); // [OK] 
   hnh_Hook(0x486630, hook_SetupDirPath_486630, "SetupDirPath_486630"); // [OK] 
   hnh_Hook(0x47E8EE, hook_IsFileExists_47E8EE, "IsFileExists_47E8EE"); // [OK] 

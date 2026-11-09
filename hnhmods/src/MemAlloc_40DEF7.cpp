@@ -13,7 +13,6 @@ HANDLE              &g_hHeapHandle   = *(HANDLE*)0x5187F0;
 int                 &g_nHeapRefCount = *(int*)0x5187F4;
 
 // === GLOBAL FUNCTIONS ===
-void(__stdcall *D3DXGetErrorString)(int hr, size_t strLength, char* str) = reinterpret_cast<void (__stdcall*)(int hr, size_t strLength, char* str)>(0x48c80e);
 void(__cdecl* D3DXDprintf)(int nLevel, LPCSTR szMsg) = reinterpret_cast<void(__cdecl*)(int nLevel, LPCSTR szMsg)>(0x490AC6);
 int (__cdecl * MemFree_40DF64)(void *pBuf) = reinterpret_cast<int(__cdecl*)(void *pBuf)>(0x40DF64);
 void(__cdecl* PrintDebugError)(int hr) = reinterpret_cast<void(__cdecl*)(int)>(0x40A813);
@@ -184,13 +183,24 @@ int __cdecl hook_MemFree_40DF64(void *pBuf)
 }
 
 void register_MemAlloc_40DEF7() {
-  hnh_Hook(0x40A813, hook_PrintDebugError, "PrintDebugError_40A813");
 
   g_nMinD3DPrintfLevel_534388 = -1;
 
-  hnh_Hook(0x490AC6, hook_D3DXDprintf, "D3DXDprintf_490AC6");
+
+  D3DXDprintf = hook_D3DXDprintf;
+  MemFree_40DF64 = hook_MemFree_40DF64;
+  PrintDebugError = hook_PrintDebugError;
+  MemAlloc_40DEF7 = hook_MemAlloc_40DEF7;
+  AllocMem = hook_AllocMem;
+  SafeFree = hook_SafeFree;
+  HeapAllocRef = hook_HeapAllocRef;
+  HeapFreeRef = hook_HeapFreeRef;
 
   hnh_HookOff();
+  hnh_Hook(0x490AC6, hook_D3DXDprintf, "D3DXDprintf_490AC6");  // [OK] 
+  hnh_Hook(0x40A813, hook_PrintDebugError, "PrintDebugError_40A813"); 
+
+
   hnh_Hook(0x40DEF7, hook_MemAlloc_40DEF7, "MemAlloc_40DEF7"); // [OK] 
   hnh_Hook(0x40DF64, hook_MemFree_40DF64, "MemFree_40DF64"); // [OK] 
   hnh_Hook(0x4248A7, hook_AllocMem, "AllocMem_4248A7"); // [OK] 
