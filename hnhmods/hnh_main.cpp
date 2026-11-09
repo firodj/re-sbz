@@ -109,43 +109,42 @@ void InitHNH() {
 
 	AssertHanaStructSize();
 	
-	register_WinMain_485CE0(0);
-	register_D3DXMatrixIdentity_40E450(0);
+	register_WinMain_485CE0();
+	register_D3DXMatrixIdentity_40E450();
+	register_CDROM_VerifyDiscSignature_485C50();
+	register_DSErrToString_423CE7();
+	register_StopAndRestartThread_481AE4();
+
+	register_ParseODFContent_441A5D(0);
+	register_ParseODS_483932(0);
+	register_ParseExecStr_487D89(0);
+
 	register_WndProcCheckSystem_485FC2(0);
-	register_CDROM_VerifyDiscSignature_485C50(0);
 	register_CheckInstalledDirRoot_4869A7(0);
 	register_MemAlloc_40DEF7(0);
 	register_SetFogEnable_40DFB0(0);
-	register_DSErrToString_423CE7(0);
 	register_CHanaObj__Free_40C1E4(0);
-
-	register_CheckRunGame_4863C8(2); //
-
+	register_CheckRunGame_4863C8(0);
+	register_InGameMenu_4799E2(0);
+	register_MenuCharSelect_47A324(0);
+	register_PlayScreenFade_4874DE(0);
 	register_ShowTitleMenu_427DA8(0); 
 	register_CHanaObj__NewFrameT3EC_S354_404720(0);
-
-
-	register_WndProcTitleMenu_428C11();
-	register_GameMainLoop_47F013();
-	register_StopAndRestartThread_481AE4();
-	register_LoadSoundEffects_47EB7F();
-	register_InGameMenu_4799E2();
-	register_MenuCharSelect_47A324();
-	register_PlayScreenFade_4874DE();
-	register_ParseODFContent_441A5D();
-	register_ParseODS_483932();
-	register_ParseExecStr_487D89();
+	register_WndProcTitleMenu_428C11(0);
+	register_LoadSoundEffects_47EB7F(0);
+	
+	register_GameMainLoop_47F013(2);
+	register_PlayExploring_45BCAE(2);
 
 	register_ProcessFrame_40600C();
 	register_SystemMenu_4655AB();
 	register_PlayOdsDialogueScene_477F90();
 	register_RunModeSelectScreen();
-	register_PlayExploring_45BCAE();
 	register_SetupHeroEntry_4593E0();
-	register_PlayHunting_44C38D();
+	register_PlayHunting_44C38D(2);
 	register_PlayAssault_4703AE();
 	register_PlayCutInScene_46A76F();
-	register_PlayTugOfWar_45460A();
+	register_PlayTugOfWar_45460A(2);
 	register_PlayVideoWith3DAudio_4791A3();
 
 	DebugLog("[HNH] All hooking done !\n");

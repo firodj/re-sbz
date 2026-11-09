@@ -4019,7 +4019,7 @@ void register_PlayHunting_44C38D(int cfg) {
     UpdateCameraFollowDuel_44C028 = hook_UpdateCameraFollowDuel_44C028;
   }
 
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x44C38D, hook_PlayHunting_44C38D, "PlayHunting_44C38D"); // [OK]
   hnh_Hook(0x456807, hook_RenderDualBodyScene_456807, "RenderDualBodyScene_456807"); // [OK]
   hnh_Hook(0x414344, hook_DrawSprite3D, "DrawSprite3D_414344"); // [OK]

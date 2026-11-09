@@ -669,7 +669,7 @@ void register_PlayTugOfWar_45460A(int cfg) {
     DrawHudSpriteNumber_44B97B = hook_DrawHudSpriteNumber_44B97B;
   }
 
-  hnh_HookOff();
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x45460a, hook_PlayTugOfWar_45460A, "PlayTugOfWar_45460A"); // [OK]
   hnh_Hook(0x4532d0, hook_DrawCountdownFlash_4532D0, "DrawCountdownFlash_4532D0"); // [OK]
   hnh_Hook(0x4542e0, hook_UpdateBodiesInput_4542E0, "UpdateBodiesInput_4542E0"); // [OK]
