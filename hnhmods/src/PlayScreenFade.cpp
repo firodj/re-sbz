@@ -62,10 +62,9 @@ void (__cdecl * HanaVert_BlendMorph)( D3DVERTEX **pVertexBufs, int nBufs, unsign
 
 // === GLOBAL VARIABLES ===
 
-static LPD3DXMATRIXSTACK s_pMatrixStack_4CD77C = nullptr;
-static BOOL              s_bCurFrameIsScene = FALSE;
-static CHanaFrameT3EC_S354 * s_pCurFrame = FALSE;
-
+LPD3DXMATRIXSTACK s_pMatrixStack_4CD77C = nullptr;
+BOOL              s_bCurFrameIsScene = FALSE;
+CHanaFrameT3EC_S354* s_pCurFrame = FALSE;
 
 #ifdef _USRDLL
 float &TIMER_SCALE_FACTOR = *(float*)0x4C6F74;
@@ -83,8 +82,8 @@ BOOL &g_bCurFrameIsScene = s_bCurFrameIsScene;
 CHanaFrameT3EC_S354 * &g_pCurFrame = s_pCurFrame;
 
 float  TIMER_SCALE_FACTOR = 20.0f;
-DWORD& g_timerStart;
-DWORD& g_timerLast;
+DWORD  g_timerStart;
+DWORD  g_timerLast;
 #endif
 
 // === FUNCTIONS ===

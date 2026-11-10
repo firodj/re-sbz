@@ -6,28 +6,59 @@
 
 // === GLOBAL VARIABLES ===
 
-uint32_t &g_nRefLightAnimSetT3FA = *(uint32_t *)0x4D6D4C; // WRITABLE
-uint32_t &g_nRefLightAnimT3F9 = *(uint32_t *)0x4D6D48; // WRITABLE
-uint32_t &g_nRefMateAnimSetT3F8 = *(uint32_t *)0x4D6D44; // WRITABLE
-uint32_t &g_nRefMateAnimT3F7 = *(uint32_t *)0x4D6D40; // WRITABLE
-uint32_t &g_nRefSpriteT3F6 = *(uint32_t *)0x4D6D3C; // WRITABLE
-uint32_t &g_nRefMeshT3F5 = *(uint32_t *)0x4D6D14; // WRITABLE
-uint32_t &g_nRefTexCoordT3F2 = *(uint32_t *)0x4D6D38; // WRITABLE
-uint32_t &g_nRefTextureT3EB = *(uint32_t *)0x4D6D30; // WRITABLE
-uint32_t &g_nRefVertT3EA = *(uint32_t *)0x4D6D2C; // WRITABLE
-uint32_t &g_nRefFrameT3EC = *(uint32_t *)0x4D6D24; // WRITABLE
-uint32_t &g_nRefFrameArrayT3ED = *(uint32_t *)0x4D6D34; // WRITABLE
-uint32_t &g_nRefMateT3EE = *(uint32_t *)0x4D6D28; // WRITABLE
-uint32_t &g_nRefLightT3EF = *(uint32_t *)0x4D6D18; // WRITABLE
-uint32_t &g_nRefAnimT3F0 = *(uint32_t *)0x4D6D1C; // WRITABLE
-uint32_t &g_nRefAnimSetT3F1 = *(uint32_t *)0x4D6D20; // WRITABLE
-uint32_t &g_nRefMorpT457 = *(uint32_t *)0x4D6D50; // WRITABLE
+int s_nRefLightAnimSetT3FA;
+int s_nRefLightAnimT3F9 ;
+int s_nRefMateAnimSetT3F8;
+int s_nRefMateAnimT3F7;
+int s_nRefSpriteT3F6;
+int s_nRefMeshT3F5;
+int s_nRefTexCoordT3F2;
+int s_nRefTextureT3EB;
+int s_nRefVertT3EA;
+int s_nRefFrameT3EC;
+int s_nRefFrameArrayT3ED;
+int s_nRefMateT3EE;
+int s_nRefLightT3EF;
+int s_nRefAnimT3F0;
+int s_nRefAnimSetT3F1;
+int s_nRefMorpT457;
 
-uint32_t &g_bForceDirectionalLights = *(uint32_t *)0x4D6D04; // WRITABLE
+#ifdef _USRDLL
+int &g_nRefLightAnimSetT3FA = *(int*)0x4D6D4C; // WRITABLE
+int &g_nRefLightAnimT3F9  = *(int*)0x4D6D48; // WRITABLE
+int &g_nRefMateAnimSetT3F8 = *(int*)0x4D6D44; // WRITABLE
+int &g_nRefMateAnimT3F7 = *(int*)0x4D6D40; // WRITABLE
+int &g_nRefSpriteT3F6 = *(int*)0x4D6D3C; // WRITABLE
+int &g_nRefMeshT3F5 = *(int*)0x4D6D14; // WRITABLE
+int &g_nRefTexCoordT3F2 = *(int*)0x4D6D38; // WRITABLE
+int &g_nRefTextureT3EB = *(int*)0x4D6D30; // WRITABLE
+int &g_nRefVertT3EA = *(int*)0x4D6D2C; // WRITABLE
+int &g_nRefFrameT3EC = *(int*)0x4D6D24; // WRITABLE
+int &g_nRefFrameArrayT3ED = *(int*)0x4D6D34; // WRITABLE
+int &g_nRefMateT3EE = *(int*)0x4D6D28; // WRITABLE
+int &g_nRefLightT3EF = *(int*)0x4D6D18; // WRITABLE
+int &g_nRefAnimT3F0 = *(int*)0x4D6D1C; // WRITABLE
+int &g_nRefAnimSetT3F1 = *(int*)0x4D6D20; // WRITABLE
+int &g_nRefMorpT457 = *(int*)0x4D6D50; // WRITABLE
+#else
 
-CHanaTextureT3EB_S2CC* &g_pCurTexObj = *(CHanaTextureT3EB_S2CC**)0x4D6CA0;
-
-__int64 &g_bitsLightIndexes_4D6CB8 = *(__int64*)0x4D6CB8;
+int &g_nRefLightAnimSetT3FA = s_nRefLightAnimSetT3FA;
+int &g_nRefLightAnimT3F9  = s_nRefLightAnimT3F9 ;
+int &g_nRefMateAnimSetT3F8 = s_nRefMateAnimSetT3F8;
+int &g_nRefMateAnimT3F7 = s_nRefMateAnimT3F7;
+int &g_nRefSpriteT3F6 = s_nRefSpriteT3F6;
+int &g_nRefMeshT3F5 = s_nRefMeshT3F5;
+int &g_nRefTexCoordT3F2 = s_nRefTexCoordT3F2;
+int &g_nRefTextureT3EB = s_nRefTextureT3EB;
+int &g_nRefVertT3EA = s_nRefVertT3EA;
+int &g_nRefFrameT3EC = s_nRefFrameT3EC;
+int &g_nRefFrameArrayT3ED = s_nRefFrameArrayT3ED;
+int &g_nRefMateT3EE = s_nRefMateT3EE;
+int &g_nRefLightT3EF = s_nRefLightT3EF;
+int &g_nRefAnimT3F0 = s_nRefAnimT3F0;
+int &g_nRefAnimSetT3F1 = s_nRefAnimSetT3F1;
+int &g_nRefMorpT457 = s_nRefMorpT457;
+#endif
 
 // === GLOBAL FUNCTIONS ===
 

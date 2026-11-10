@@ -6,6 +6,20 @@
 
 // === GLOBAL VARIABLES ===
 
+CHAR s_szHnhPath_530270[256];
+CHAR s_szODSPath[256];
+CHAR s_szDriveLetr_52FC70[256];
+CHAR s_szSPRPath[256];
+CHAR s_szStrPath[256];
+CHAR s_szODFPath[256];
+CHAR s_szWAVPath[256];
+CHAR s_szGRPPath[256];
+CHAR s_szGRP800Path[256];
+CHAR s_szSEPath[256];
+CHAR s_szDATAPath[256];
+DWORD s_dwFontRenderFlag;
+
+#ifdef _USRDLL
 CHAR (&g_szHnhPath_530270)[256] = *(CHAR (*)[256])0x530270; // WRITABLE
 CHAR (&g_szODSPath)[256]        = *(CHAR (*)[256])0x52F6E0; // WRITABLE
 CHAR (&g_szDriveLetr_52FC70)[256] = *(CHAR (*)[256])0x52FC70; // WRITABLE
@@ -18,6 +32,23 @@ CHAR (&g_szGRP800Path)[256]     = *(CHAR (*)[256])0x52FA70; // WRITABLE
 CHAR (&g_szSEPath)[256]         = *(CHAR (*)[256])0x52FD70; // WRITABLE
 CHAR (&g_szDATAPath)[256]       = *(CHAR (*)[256])0x52FE70; // WRITABLE
 DWORD &g_dwFontRenderFlag       = *(DWORD *)0x52F1B0; // WRITABLE
+
+#else
+
+CHAR (&g_szHnhPath_530270)[256] = s_szHnhPath_530270;
+CHAR (&g_szODSPath)[256]        = s_szODSPath;
+CHAR (&g_szDriveLetr_52FC70)[256] = s_szDriveLetr_52FC70;
+CHAR (&g_szSPRPath)[256]        = s_szSPRPath;
+CHAR (&g_szStrPath)[256]        = s_szStrPath;
+CHAR (&g_szODFPath)[256]        = s_szODFPath;
+CHAR (&g_szWAVPath)[256]        = s_szWAVPath;
+CHAR (&g_szGRPPath)[256]        = s_szGRPPath;
+CHAR (&g_szGRP800Path)[256]     = s_szGRP800Path;
+CHAR (&g_szSEPath)[256]         = s_szSEPath;
+CHAR (&g_szDATAPath)[256]       = s_szDATAPath;
+DWORD &g_dwFontRenderFlag       = s_dwFontRenderFlag;
+
+#endif
 
 // === GLOBAL FUNCTIONS ===
 

@@ -10,6 +10,8 @@ BOOL           s_dwShadowOff = TRUE;
 D3DXMATRIX     s_pM2;
 CD3DInitParam  s_D3DDevParams;
 CHanaMateT3EE_S184* s_pCurMatObj;
+CHanaTextureT3EB_S2CC* s_pCurTexObj;
+
 int            s_nObjCount;
 int            s_nCapObjects_4CD780 = 0;
 D3DX_SURFACEFORMAT s_dwSurfaceFormat_4B00B4 = D3DX_SF_A4R4G4B4;
@@ -18,13 +20,16 @@ int            s_nZBufDepthSelValue_518C98;
 int            s_nModeSetIndex;
 DWORD          s_nWidth;
 DWORD          s_nHeight;
+BOOL           s_bForceDirectionalLights;
+__int64        s_bitsLightIndexes_4D6CB8;
 
 #ifdef _USRDLL
 CDisplayConfig &g_displayConfig_518C30 = *(CDisplayConfig *)0x518C30; // WRITABLE
 BOOL           &g_dwShadowOff = *(BOOL *)0x4B00B0; // WRITABLE
 D3DXMATRIX     &g_pM2 = *(D3DXMATRIX*)0x4CE918;
 CD3DInitParam  &g_D3DDevParams = *(CD3DInitParam*)0x4CE8B0;
-CHanaMateT3EE_S184* &g_pCurMatObj = *(CHanaMateT3EE_S184* *)0x4D6CA4; // WRITABLE
+CHanaMateT3EE_S184* &g_pCurMatObj = *(CHanaMateT3EE_S184**)0x4D6CA4; // WRITABLE
+CHanaTextureT3EB_S2CC* &g_pCurTexObj = *(CHanaTextureT3EB_S2CC**)0x4D6CA0;
 int            &g_nObjCount = *(int *)0x4CE868; // WRITABLE
 int            &g_nCapObjects_4CD780 = *(int *)0x4CD780; // WRITABLE
 D3DX_SURFACEFORMAT &g_dwSurfaceFormat_4B00B4 = *(D3DX_SURFACEFORMAT *)0x4B00B4; // WRITABLE
@@ -40,6 +45,9 @@ unsigned int   &g_nColorBits_518C2C = *(unsigned int *)0x518C2C; // WRITABLE
 BOOL           &g_bCreateFlags_4D6CD4 = *(BOOL *)0x4D6CD4; // WRITABLE
 HWND           &g_hWndDev_4D6C74 = *(HWND *)0x4D6C74; // WRITABLE
 
+BOOL &g_bForceDirectionalLights = *(BOOL *)0x4D6D04; // WRITABLE
+__int64 &g_bitsLightIndexes_4D6CB8 = *(__int64*)0x4D6CB8;
+
 
 #else
 CDisplayConfig& g_displayConfig_518C30 = s_displayConfig_518C30;
@@ -47,6 +55,7 @@ BOOL           &g_dwShadowOff = s_dwShadowOff;
 D3DXMATRIX     &g_pM2 = s_pM2;
 CD3DInitParam  &g_D3DDevParams = s_D3DDevParams;
 CHanaMateT3EE_S184* &g_pCurMatObj = s_pCurMatObj;
+CHanaTextureT3EB_S2CC* &g_pCurTexObj = s_pCurTexObj;
 int            &g_nObjCount = s_nObjCount;
 int            &g_nCapObjects_4CD780 = s_nCapObjects_4CD780;
 D3DX_SURFACEFORMAT &g_dwSurfaceFormat_4B00B4 = s_dwSurfaceFormat_4B00B4;
@@ -55,6 +64,9 @@ int            &g_nZBufDepthSelValue_518C98 = s_nZBufDepthSelValue_518C98;
 int            &g_nModeSetIndex = s_nModeSetIndex;
 DWORD          &g_nWidth  = s_nWidth ;
 DWORD          &g_nHeight = s_nHeight;
+
+BOOL &g_bForceDirectionalLights    = s_bForceDirectionalLights;
+__int64 &g_bitsLightIndexes_4D6CB8 = s_bitsLightIndexes_4D6CB8;
 
 BOOL           g_bNonShowMenu_4D6C70;
 int            g_nHeight2;

@@ -199,7 +199,7 @@ extern HRESULT(__cdecl* D3DInitBuffers_40AF60)(void);
 // === DEFINED ShowTitleMenu.cpp ===
 
 extern BOOL &g_dwShadowOff;
-extern uint32_t &g_bForceDirectionalLights;
+extern BOOL &g_bForceDirectionalLights;
 extern CDisplayConfig &g_displayConfig_518C30;
 extern D3DXMATRIX &g_pM2;
 extern CD3DInitParam &g_D3DDevParams;
