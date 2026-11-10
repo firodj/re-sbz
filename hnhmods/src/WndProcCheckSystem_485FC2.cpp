@@ -578,7 +578,8 @@ static LRESULT OnCheckSystem(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
     }
   }
 
-  if (!CheckRunGame_4863C8(hWnd, 1))               // title menu + D3D init
+  BOOL bFullscreen = 0;
+  if (!CheckRunGame_4863C8(hWnd, bFullscreen))               // title menu + D3D init
   {
     DestroyWindow(hWnd);
     return 0;

@@ -5,7 +5,6 @@
 
 #include "hnh_intern.hpp"
 
-
 void DirectHookHNH() {
 	AssertHanaStructSize();
 
@@ -41,10 +40,10 @@ void DirectHookHNH() {
 	register_PlayOdsDialogueScene_477F90(1);
 	register_RunModeSelectScreen(1);
 	register_SetupHeroEntry_4593E0(1);
-	register_PlayHunting_44C38D(2);
+	register_PlayHunting_44C38D(1);
 	register_PlayAssault_4703AE(1);
 	register_PlayCutInScene_46A76F(1);
-	register_PlayTugOfWar_45460A(2);
+	register_PlayTugOfWar_45460A(1);
 	register_PlayVideoWith3DAudio_4791A3(1);
 
 	DebugLog("[HNH] All hooking done !\n");

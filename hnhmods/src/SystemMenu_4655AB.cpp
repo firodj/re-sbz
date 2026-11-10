@@ -39,12 +39,12 @@ int (__cdecl*ShowYesNoDialog_461A9E)(CHanaSpriteT3F6_S1FC *pCursor,
   reinterpret_cast<int(__cdecl*)(CHanaSpriteT3F6_S1FC *, CHanaSpriteT3F6_S1FC *, LPCSTR)>(0x461A9E);
 
 // === GLOBAL VARIABLES ===
-static BYTE s_nHSceneBackground_530264;
-static BYTE s_nHSceneMale_530265;
-static BYTE s_nFirstPersonCam_530268;
-static DWORD s_dwUnlockedSaveSlots_530260;             
-static BYTE s_nVolumeLevel_530266;
-static BYTE s_nTextSpeed_530267;
+BYTE s_nHSceneBackground_530264;
+BYTE s_nHSceneMale_530265;
+BYTE s_nFirstPersonCam_530268;
+DWORD s_dwUnlockedSaveSlots_530260;             
+BYTE s_nVolumeLevel_530266;
+BYTE s_nTextSpeed_530267;
 
 #ifdef _USRDLL
 BYTE &g_nHSceneBackground_530264    = *(BYTE *)0x530264;  // WRITABLE

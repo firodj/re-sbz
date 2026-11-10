@@ -24,6 +24,7 @@
 
 #include "minhook/include/MinHook.h"
 
+
 //-------------------------------------------------------------------------
 // ID3DXContext interface: 
 //
@@ -343,6 +344,11 @@ typedef enum _D3DX_FILTERTYPE {
   D3DX_FT_DEFAULT  = D3DX_DEFAULT
 } D3DX_FILTERTYPE;
 
+#define D3DX_UPDATE_NOVSYNC (1<<0)
+
+#define D3DX_CONTEXT_FULLSCREEN  0x00000001
+#define D3DX_CONTEXT_OFFSCREEN   0x00000002
+
 struct D2D_RECT_F
 {
   FLOAT left;
@@ -350,8 +356,6 @@ struct D2D_RECT_F
   FLOAT right;
   FLOAT bottom;
 };
-
-#define D3DX_UPDATE_NOVSYNC (1<<0)
 
 #ifdef _USRDLL
 
@@ -399,5 +403,55 @@ extern HRESULT(__stdcall* D3DXCreateTextureFromFile)(LPDIRECT3DDEVICE7 pd3dDevic
 extern D3DXQUATERNION* (__stdcall* D3DXQuaternionRotationMatrix)(D3DXQUATERNION* pOut,
   const D3DXMATRIX* pM);
 
+#else
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+HRESULT WINAPI D3DXUninitialize(void);
+HRESULT WINAPI D3DXInitialize(void); 
+DWORD  WINAPI D3DXGetDeviceCount(void);
+DWORD WINAPI D3DXGetMaxNumVideoModes(DWORD deviceIndex, DWORD flags);
+HRESULT WINAPI D3DXGetDeviceDescription(DWORD deviceIndex, D3DX_DEVICEDESC* pd3dxDeviceDesc); 
+HRESULT WINAPI D3DXGetVideoMode(DWORD deviceIndex, DWORD flags, DWORD modeIndex, D3DX_VIDMODEDESC* pModeList);
+HRESULT WINAPI D3DXGetDeviceCaps(DWORD deviceIndex, D3DX_VIDMODEDESC* pVidMode, D3DDEVICEDESC7* pD3DCaps, DDCAPS* pDDHALCaps, DDCAPS* pDDHELCaps); 
+void  WINAPI  D3DXGetErrorString(int hr, size_t strLength, char* str);
+
+D3DXVECTOR3*  WINAPI D3DXVec3Normalize(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV);
+D3DXMATRIX*  WINAPI D3DXMatrixRotationAxis(D3DXMATRIX* pOut, const D3DXVECTOR3* pV, float angle);
+
+D3DXMATRIX*  WINAPI D3DXMatrixMultiply(D3DXMATRIX* pOut, const D3DXMATRIX* pM1, const D3DXMATRIX* pM2);
+D3DXMATRIX*  WINAPI D3DXMatrixInverse(D3DXMATRIX* pOut, float* pfDeterminant, const D3DXMATRIX* pM);
+HRESULT WINAPI  D3DXCreateContextEx(unsigned int devIndex, unsigned int flags, HWND hwnd, HWND focusWnd, int nNumColorBits, int nNumAlphaBits, int nNumDepthBits, int nNumStencilBits, int nNumBackBuffers, int nWidth, int nHeight, int nRefreshRate, LPD3DXCONTEXT* ppCtx);
+HRESULT WINAPI  D3DXCreateContext(unsigned int devIndex, unsigned int flags, HWND hWnd, int width, int height, LPD3DXCONTEXT* ppCtx);
+HRESULT WINAPI  D3DXGetSurfaceFormat(int devIndex, D3DX_VIDMODEDESC* pVidMode, unsigned int surfClassFlags, unsigned int which, D3DX_SURFACEFORMAT* pFormat);
+DWORD WINAPI  D3DXGetMaxSurfaceFormats(int devIndex, _DWORD* pVidMode, int surfClassFlags);
+HRESULT WINAPI  D3DXCreateMatrixStack(DWORD flags, LPD3DXMATRIXSTACK* ppStack);
+HRESULT WINAPI  D3DXCreateTexture(LPDIRECT3DDEVICE7 pd3dDevice, LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight, _D3DX_SURFACEFORMAT* pPixelFormat, LPDIRECTDRAWPALETTE pDDPal, LPDIRECTDRAWSURFACE7* ppDDSurf, LPDWORD pNumMipMaps);
+HRESULT WINAPI  D3DXCheckTextureRequirements(LPDIRECT3DDEVICE7 pd3dDevice, LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight, _D3DX_SURFACEFORMAT* pPixelFormat);
+HRESULT WINAPI  D3DXLoadTextureFromSurface(LPDIRECT3DDEVICE7 pd3dDevice, LPDIRECTDRAWSURFACE7 pTexture, DWORD mipMapLevel, LPDIRECTDRAWSURFACE7 pSurfaceSrc, LPRECT pSrcRect, LPRECT pDestRect, _D3DX_FILTERTYPE filterType);
+HRESULT WINAPI  D3DXDrawSpriteSimple(LPDIRECTDRAWSURFACE7 pd3dTexture,
+  LPDIRECT3DDEVICE7 pd3dDevice, const D3DXVECTOR3* ppointDest,
+  float alpha, float scale, float angleRad,
+  const D3DXVECTOR2* pOffset, const RECT* pSourceRect);
+HRESULT WINAPI  D3DXDrawSprite3D(LPDIRECTDRAWSURFACE7 pd3dTexture,
+  LPDIRECT3DDEVICE7 pd3dDevice, const D3DXVECTOR4 quad[4], float alpha,
+  const RECT* pSourceRect);
+D3DXQUATERNION*  WINAPI D3DXQuaternionSlerp(D3DXQUATERNION* pOut,
+  const D3DXQUATERNION* pQ1, const D3DXQUATERNION* pQ2, float t);
+D3DXMATRIX*  WINAPI D3DXMatrixRotationQuaternion(D3DXMATRIX* pOut, const D3DXQUATERNION* pQ);
+D3DXMATRIX*  WINAPI D3DXMatrixTranslation(D3DXMATRIX* pOut,  float x,  float y, float z);
+D3DXMATRIX*  WINAPI D3DXMatrixScaling(D3DXMATRIX* pOut,  float sx,  float sy, float sz);
+D3DXVECTOR3*  WINAPI D3DXVec3TransformCoord(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV, const D3DXMATRIX* pM);
+D3DXVECTOR3*  WINAPI  D3DXVec3TransformNormal(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV, const D3DXMATRIX* pM);
+HRESULT WINAPI  D3DXCreateTextureFromFile(LPDIRECT3DDEVICE7 pd3dDevice,
+  LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight,
+  D3DX_SURFACEFORMAT* pPixelFormat, LPDIRECTDRAWPALETTE pDDPal,
+  LPDIRECTDRAWSURFACE7* ppDDSurf, LPDWORD pNumMipMaps, LPSTR pSrcName,
+  D3DX_FILTERTYPE filterType);
+D3DXQUATERNION*  WINAPI  D3DXQuaternionRotationMatrix(D3DXQUATERNION* pOut,
+  const D3DXMATRIX* pM);
+#ifdef __cplusplus
+}
+#endif //__cplusplus    
 #endif

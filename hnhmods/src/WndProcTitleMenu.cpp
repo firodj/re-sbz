@@ -16,6 +16,8 @@ int &g_nTitleMenuHotId_4B348C = *(int *)0x4B348C; // WRITABLE
 BOOL &g_bLMouseClick = *(BOOL *)0x518CC8; // WRITABLE
 BOOL &g_bTitleMenuConfigScreen_518CC4 = *(BOOL *)0x518CC4; // WRITABLE
 int &g_nTitleMenuHotToggleRow_4B3490 = *(int *)0x4B3490; // WRITABLE
+int      &g_nBMPCounts_518388 = *(int*)0x518388;
+
 #else
 
 CBMPFile *g_pbmpDd;
@@ -27,6 +29,7 @@ int      g_nTitleMenuHotId_4B348C = 0xFFFFFFFF;
 BOOL     g_bLMouseClick;
 BOOL     g_bTitleMenuConfigScreen_518CC4;
 int      g_nTitleMenuHotToggleRow_4B3490;
+int      g_nBMPCounts_518388;
 
 #endif
 
@@ -45,8 +48,6 @@ void (__cdecl*UpdateRenderOptionsCheckboxes)(HWND hDlg) = reinterpret_cast<void 
 CBMPColor* (__cdecl*CreatePaletteFromBuffer)(BYTE* lpBuffer, int count) = reinterpret_cast<CBMPColor*(__cdecl*)(BYTE *lpBuffer, int count)>(0x421095);
 
 // === FUNCTION IMPLEMENTATIONS ===
-
-int &g_nBMPCounts_518388 = *(int*)0x518388;
 
 BOOL __cdecl hook_FreeBmp_4211ED(CBMPFile *pBMPFile)
 {

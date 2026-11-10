@@ -43,7 +43,7 @@ DWORD          &g_nHeight = *(DWORD *)0x518C8C; // WRITABLE
 BOOL           &g_bNonShowMenu_4D6C70 = *(BOOL *)0x4D6C70; // WRITABLE
 int            &g_nHeight2 = *(int *)0x518C84; // WRITABLE
 unsigned int   &g_nColorBits_518C2C = *(unsigned int *)0x518C2C; // WRITABLE
-BOOL           &g_bCreateFlags_4D6CD4 = *(BOOL *)0x4D6CD4; // WRITABLE
+BOOL           &g_bFullscreen_4D6CD4 = *(BOOL *)0x4D6CD4; // WRITABLE
 HWND           &g_hWndDev_4D6C74 = *(HWND *)0x4D6C74; // WRITABLE
 
 BOOL &g_bForceDirectionalLights = *(BOOL *)0x4D6D04; // WRITABLE
@@ -72,7 +72,7 @@ __int64 &g_bitsLightIndexes_4D6CB8 = s_bitsLightIndexes_4D6CB8;
 BOOL           g_bNonShowMenu_4D6C70;
 int            g_nHeight2;
 unsigned int   g_nColorBits_518C2C;
-BOOL           g_bCreateFlags_4D6CD4;
+BOOL           g_bFullscreen_4D6CD4;
 HWND           g_hWndDev_4D6C74;
 
 #endif
@@ -113,6 +113,9 @@ BOOL __cdecl hook_ShowTitleMenu_427DA8(HWND hWnd, BOOL bFullScreen)
     // Resize window to full desktop
     hDesktopWindow = GetDesktopWindow();
     GetWindowRect(hDesktopWindow, &rect);
+    rect.right = 1280;
+    rect.bottom = 960;
+
     MoveWindow(hWnd, 0, 0, rect.right - rect.left, rect.bottom - rect.top, TRUE);
     UpdateWindow(hWnd);
 
@@ -139,7 +142,7 @@ BOOL __cdecl hook_ShowTitleMenu_427DA8(HWND hWnd, BOOL bFullScreen)
     {
         // Windowed mode
         d3dParams.dwCreationFlags = 0;
-        d3dParams.hWndFocus = (HWND)0x2;         // HWND_MESSAGE | 0x2
+        d3dParams.hWndFocus = (HWND)D3DX_DEFAULT;
         d3dParams.nNumColorBits = -1;            // Use desktop color depth
         d3dParams.nNumDepthBits = -1;            // Use desktop depth buffer
     }
@@ -284,7 +287,7 @@ HRESULT __cdecl hook_D3DInit_40A894(CD3DInitParam *pDevParam)
   g_pCurMatObj = 0;
   g_bAlphaBlendEnabled_4D6CC0 = 0;
   g_nAlphaOpState_4D6CC4 = 0;
-  g_bCreateFlags_4D6CD4 = pDevParam->dwCreationFlags == 1;
+  g_bFullscreen_4D6CD4 = pDevParam->dwCreationFlags == D3DX_CONTEXT_FULLSCREEN;
   g_hWndDev_4D6C74 = pDevParam->hWnd;
   memset(&g_d3dDevDesc_4D6980, 0, sizeof(g_d3dDevDesc_4D6980));
   hr = D3DXInitialize();

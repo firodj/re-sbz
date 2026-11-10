@@ -140,13 +140,14 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)\SB3ImGuiHook\imgui;$(SolutionDir)\SB3ImGuiHook;$(PYTHON_INCLUDES);$(ProjectDir);$(SolutionDir)\libs\dx7sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>%VULKAN_SDK%\Lib;$(PYTHON_LIBS);$(SolutionDir)\SB3ImGuiHook;$(SolutionDir)\libs\dx7sdk</AdditionalLibraryDirectories>
-      <AdditionalDependencies>python311.lib;dsound.lib;dxguid.lib;winmm.lib;dinput.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>python311.lib;dsound.lib;dxguid.lib;winmm.lib;dinput.lib;vfw32.lib;ddraw.lib;d3dxd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -269,6 +270,7 @@
     </ClCompile>
     <ClCompile Include="src\hnh_hook.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\MemAlloc_40DEF7.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

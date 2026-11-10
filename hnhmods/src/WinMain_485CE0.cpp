@@ -118,7 +118,9 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
             desktopRect.right = 1;
             desktopRect.bottom = 1;
             GetWindowRect(desktopWnd, &desktopRect);
-            
+            desktopRect.right = 1280;
+            desktopRect.bottom = 960;
+
             // Create main application window
             g_hwndParent = CreateWindowExA(
                              0,

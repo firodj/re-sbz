@@ -2,9 +2,9 @@
 #include "console.hpp"
 #include "hnh_hook.hpp"
 
-
 // === GLOBAL FUNCTIONS ===
 
+#ifdef _USRDLL
 HRESULT (*D3DXUninitialize)(void) = reinterpret_cast<HRESULT(*)(void)>(0x48B8F0);
 HRESULT (*D3DXInitialize)(void) = (HRESULT(*)(void))0x48B80B; 
 DWORD (*D3DXGetDeviceCount)(void) = (DWORD(*)(void))0x48B9DD;
@@ -84,6 +84,7 @@ HRESULT(__stdcall* D3DXCreateTextureFromFile)(LPDIRECT3DDEVICE7 pd3dDevice,
 D3DXQUATERNION* (__stdcall* D3DXQuaternionRotationMatrix)(D3DXQUATERNION* pOut,
   const D3DXMATRIX* pM) = reinterpret_cast<D3DXQUATERNION* (__stdcall*)(D3DXQUATERNION* pOut,
     const D3DXMATRIX* pM)>(0x48AEAD);
+#endif
 
 // === FUNCTION IMPLEMENATIONS ===
 

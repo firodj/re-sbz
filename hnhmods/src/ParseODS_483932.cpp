@@ -54,8 +54,20 @@ void (__cdecl *SekBody__UpdateTo_4014E4)(CSekBody *pSekBody, int nItem)
 FnHanaMorp HanaVert_CopyMorph = reinterpret_cast<FnHanaMorp>(0x4363A3);
 FnHanaMorp HanaVert_LerpMorph = reinterpret_cast<FnHanaMorp>(0x436300);
 
-// === FUNCTIONS ===
+// === GLOBAL VARIABLSE ===
 
+#ifdef _USRDLL
+const CHAR (&g_szUnkTxtRootFrame_519D3C)[4] = *(const CHAR (*)[4])0x519D3C; // WRITABLE
+const CHAR (&g_szUnkTxtAnimSet_519D40)[8] = *(const CHAR (*)[8])0x519D40; // WRITABLE
+
+#else
+
+const CHAR g_szUnkTxtRootFrame_519D3C[4] = "";
+const CHAR g_szUnkTxtAnimSet_519D40[8] = "";
+
+#endif
+
+// === FUNCTIONS ===
 
 // ParseODS_483932 -- the ODS dialogue-scene parser; only xref is
 // LoadOds_4843CF (which reads the file image into memory first). Four
@@ -418,9 +430,6 @@ void __cdecl hook_HanaFrame_PropagateFogToChildren(CHanaFrameT3EC_S354 *pFrame)
     }
   }
 }
-
-const CHAR (&g_szUnkTxtRootFrame_519D3C)[4] = *(const CHAR (*)[4])0x519D3C; // WRITABLE
-const CHAR (&g_szUnkTxtAnimSet_519D40)[8] = *(const CHAR (*)[8])0x519D40; // WRITABLE
 
 BOOL __cdecl hook_ParseODFFile_441F19(
   LPCSTR lpFileName,

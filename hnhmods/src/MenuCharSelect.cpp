@@ -30,11 +30,14 @@ char (&g_arrGalleryUnlocked_5301A2)[150] = *(char(*)[150])0x5301A2;  // WRITABLE
 
 LPDIRECTDRAWSURFACE7 &g_lpDDSurface_519CF8 = *(LPDIRECTDRAWSURFACE7 *)0x519CF8; // WRITABLE
 char (&g_tempText_519D00)[50] = *(char (*)[50])0x519D00; // WRITABLE
+BOOL &g_keyC = *(BOOL *)0x4C7350; // WRITABLE
+
 #else
 char(&g_arrGalleryUnlocked_5301A2)[150] = s_arrGalleryUnlocked_5301A2;
 
 LPDIRECTDRAWSURFACE7 g_lpDDSurface_519CF8;
 char g_tempText_519D00[50];
+BOOL g_keyC;
 
 #endif
 
@@ -345,9 +348,6 @@ void __cdecl hook_DrawText_43BCAE(LPDIRECTDRAWSURFACE7 pSurface, char *szText, i
   }
 }
 
-uint32_t &g_keyC = *(uint32_t *)0x4C7350; // WRITABLE
-uint8_t &g_btoggleC = *(uint8_t *)0x530268; // WRITABLE
-
 // Keyboard poll for the scene/menu layer. Returns true when ESC (0x1B) is down 
 // (bEsc, via GetAsyncKeyState after Sleep(0)). 
 // Also tracks the 'C' key (0x43): first press latches dword_4C7350=1 and 
@@ -363,7 +363,7 @@ bool hook_IsMenuKeyPressed_481170()
   {
     if ( !g_keyC )
     {
-      g_btoggleC = g_btoggleC == 0;
+      g_nFirstPersonCam_530268 = g_nFirstPersonCam_530268 == 0;
       g_keyC = 1;
     }
   }
@@ -373,7 +373,6 @@ bool hook_IsMenuKeyPressed_481170()
   }
   return bEsc;
 }
-
 
 // MenuGallery_47AD8D -- MainMenu state -2: the CG gallery over gl01/gl02/
 // gl03.bmp tab backgrounds (one per tab, full screen). Per tab a 6x4 cell

@@ -88,6 +88,28 @@ void (__cdecl *HanaTexture_CreateFromFile)(CHanaSpriteT3F6_S1FC **ppOutSprite, C
 void (__cdecl *HanaSurface_CreateAndFade)()
 = reinterpret_cast<void (__cdecl*)()>(0x455b0e);
 
+// === GLOBAL VARIABLES ====
+
+#ifdef _USRDLL
+float &g_fHeroAnimSpeed = *(float *)0x52EF70; // WRITABLE
+bool &g_bSpinActive = *(bool *)0x52EF76; // WRITABLE
+float &g_fSpinTimer = *(float *)0x52EF6C; // WRITABLE
+float &g_fIdleTimer = *(float *)0x52EF7C; // WRITABLE
+bool &g_bAttackHeld = *(bool *)0x52EF74; // WRITABLE
+bool &g_bSkillActive = *(bool *)0x52EF75; // WRITABLE
+float &g_fSkillTimer = *(float *)0x52EF78; // WRITABLE
+
+#else
+
+float g_fHeroAnimSpeed;
+bool  g_bSpinActive   ;
+float g_fSpinTimer    ;
+float g_fIdleTimer    ;
+bool  g_bAttackHeld   ;
+bool  g_bSkillActive  ;
+float g_fSkillTimer   ;
+
+#endif
 
 // === FUNCTIONS ===
 
@@ -2069,15 +2091,6 @@ void __cdecl hook_SetupItemBodies_459F81(
     }
   }
 }
-
-uint32_t &g_fHeroAnimSpeed = *(uint32_t *)0x52EF70; // WRITABLE
-uint8_t &g_bSpinActive = *(uint8_t *)0x52EF76; // WRITABLE
-float &g_fSpinTimer = *(float *)0x52EF6C; // WRITABLE
-float &g_fIdleTimer = *(float *)0x52EF7C; // WRITABLE
-uint8_t &g_bAttackHeld = *(uint8_t *)0x52EF74; // WRITABLE
-uint8_t &g_bSkillActive = *(uint8_t *)0x52EF75; // WRITABLE
-
-float &g_fSkillTimer = *(float *)0x52EF78; // WRITABLE
 
 // Hero control / AI / input + movement step for one frame. (1) Input: under MutexThreadWait, GetInputState; sums mouse delta across 30 devices into
 // nMouseDX/nMouseDY (x10 sensitivity when the device is 'ok'), centered on ConvertFrom640AsInt(320/240); tracks left/middle button press/release into

@@ -405,17 +405,20 @@ void __cdecl hook_WriteBufferToFile(LPCSTR lpFileName, LPCVOID lpBuffer, DWORD n
 
 int __cdecl hook_ShowTitleMenuWnd_428927(HINSTANCE hInstance)
 {
-  HWND DesktopWindow; // eax
-  tagMSG Msg; // [esp+0h] [ebp-58h] BYREF
+  HWND hDesktopWnd; // eax
+  MSG Msg; // [esp+0h] [ebp-58h] BYREF
   int v4; // [esp+1Ch] [ebp-3Ch]
   WNDCLASSA WndClass; // [esp+20h] [ebp-38h] BYREF
-  struct tagRECT Rect; // [esp+48h] [ebp-10h] BYREF
+  RECT Rect; // [esp+48h] [ebp-10h] BYREF
 
   ONCELOG("[HNH:SUB] ShowTitleMenuWnd_428927\n");
 
   v4 = 0;
-  DesktopWindow = GetDesktopWindow();
-  GetWindowRect(DesktopWindow, &Rect);
+  hDesktopWnd = GetDesktopWindow();
+  GetWindowRect(hDesktopWnd, &Rect);
+  Rect.right = 1280;
+  Rect.bottom = 960;
+
   g_hInstance_518CB0 = hInstance;
   WndClass.style = 0;
   WndClass.lpfnWndProc = WndProcTitleMenu_428C11;

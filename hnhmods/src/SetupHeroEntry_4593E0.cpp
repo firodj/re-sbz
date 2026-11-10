@@ -60,6 +60,7 @@ __int16 (&g_arrFloodPathCnt_52E500)[1024] = *(__int16 (*)[1024])0x52E500; // WRI
 int &g_nCurVoiceIdx_52EF64 = *(int *)0x52EF64; // WRITABLE
 int &g_nVoiceRotate_52EF68 = *(int *)0x52EF68; // WRITABLE
 
+float &g_fHitY_4C6F48 = *(float *)0x4C6F48; // WRITABLE default: 16.200001
 #else
 
 int& g_dwBattleMode = s_dwBattleMode;
@@ -81,6 +82,7 @@ __int16 g_arrFloodPathCnt_52E500[1024];
 int g_nCurVoiceIdx_52EF64;
 int g_nVoiceRotate_52EF68;
 
+float g_fHitY_4C6F48 = 16.200001;
 #endif
 
 // === FUNCTIONS ===
@@ -585,10 +587,6 @@ int __cdecl hook_CheckFrameCollision_443CC5(CHanaFrameT3EC_S354 *pBodyFrame, CHa
   }
   return nHitMode;
 }
-
-float &g_fHitY_4C6F48 = *(float *)0x4C6F48; // WRITABLE
-
-
 
 // Overhead / thin-surface clearance collision base (CheckFrameCollision bTestType=1). Same mesh (type 1013) + XZ-bounds guard.
 // For meshes whose name begins with 'DSurface' it computes the plane height -1.0 and snaps Y when within (fPosY-5, fPosY+10);

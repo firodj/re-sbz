@@ -53,6 +53,23 @@ void (__cdecl*Surface_AlphaBlendRect)(LPDIRECTDRAWSURFACE7 pDestSurface, int nDe
 LPVOID (__cdecl*Surface_LockAndGetPointer)(LPDIRECTDRAWSURFACE7 pSurface) =
 reinterpret_cast<LPVOID(__cdecl*)(LPDIRECTDRAWSURFACE7)>(0x4196FD);
 
+// === GLOBAL VARIABLES ===
+
+CSekItem* s_pSekItem_4CD760 = nullptr;
+
+#ifdef _USRDLL
+
+CSekItem * &g_pSekItem_4CD760 = *(CSekItem * *)0x4CD760; // WRITABLE
+int &g_nSekStep_4CD764 = *(int *)0x4CD764; // WRITABLE
+float &g_fFrameTime_52F1B4 = *(float *)0x52F1B4; // WRITABLE
+
+#else
+
+CSekItem*& g_pSekItem_4CD760 = s_pSekItem_4CD760;
+int   g_nSekStep_4CD764 = 0;
+float g_fFrameTime_52F1B4;
+
+#endif
 
 // === FUNCTIONS ===
 
@@ -464,9 +481,6 @@ void __cdecl hook_CSekBody__CutToAnim_4018E1(CSekBody *pSekBody, int nItemIndex)
   pSekBody->float_224 = 0.0;
 }
 
-CSekItem * &g_pSekItem_4CD760 = *(CSekItem * *)0x4CD760; // WRITABLE
-uint32_t &g_nSekStep_4CD764 = *(uint32_t *)0x4CD764; // WRITABLE
-
 // CSekBody::UpdateAnim(pSekBody, fDelta) - per-frame animation state machine (returns 1 when the
 // current item reaches its end this frame, else 0). No-op if pSekBody/field_24C absent, or the header's
 // anim set (pAnimSetT3F1) is missing. Selects the active item g_pSekItem = &items_250[field_200] and
@@ -795,8 +809,6 @@ void __cdecl hook_SetProjectionFov_40DCA3(float fFov)
     (LPD3DMATRIX)&g_mat4x4Projection_4CE870);
   BuildViewportMatrix();
 }
-
-uint32_t &g_fFrameTime_52F1B4 = *(uint32_t *)0x52F1B4; // WRITABLE
 
 // DrawDialogueWindow(pScene, fFrameTime, xMouse, yMouse, wBtnMouse)
 // Dialogue-window renderer. pScene=CHanaSceneT458_S504*. Scales fFrameTime by the speed index

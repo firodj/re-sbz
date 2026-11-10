@@ -145,6 +145,7 @@ void InitHNH() {
 	register_PlayAssault_4703AE();
 	register_PlayCutInScene_46A76F();
 	register_PlayTugOfWar_45460A(2);
+	register_PlayHunting_44C38D();
 	register_PlayVideoWith3DAudio_4791A3();
 
 	DebugLog("[HNH] All hooking done !\n");

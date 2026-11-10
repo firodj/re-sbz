@@ -22,6 +22,8 @@ DWORD &g_dwFogMode_4B00C8        = *(DWORD *)0x4B00C8;
 DWORD &g_dwFogTableEnable_4D6CF8 = *(DWORD *)0x4D6CF8;
 DWORD &g_dwFogColor_4B00CC       = *(DWORD*)0x4B00CC;
 BOOL &g_bFogIsActive_4B3480      = *(BOOL*)0x4B3480;
+CHAR (&g_szPaddedNum_52EFBC)[20] = *(CHAR (*)[20])0x52EFBC; // WRITABLE
+
 #else
 DWORD &g_dwFogEnable_4D6CF4      = s_dwFogEnable_4D6CF4;
 DWORD &g_dwFogRangeEnable_4D6CFC = s_dwFogRangeEnable_4D6CFC;
@@ -29,6 +31,8 @@ DWORD &g_dwFogMode_4B00C8        = s_dwFogMode_4B00C8;
 DWORD &g_dwFogTableEnable_4D6CF8 = s_dwFogTableEnable_4D6CF8;
 DWORD &g_dwFogColor_4B00CC       = s_dwFogColor_4B00CC;
 BOOL &g_bFogIsActive_4B3480      = s_bFogIsActive_4B3480;
+
+CHAR g_szPaddedNum_52EFBC[20];
 #endif
 
 // === GLOBAL FUNCTIONS ===
@@ -352,8 +356,6 @@ void __cdecl hook_ShowFadeDialog_46164C(CHanaSpriteT3F6_S1FC *pSprite, CHanaSpri
   font2W = ConvertFrom640AsInt(15);
   SetUiFont_419BCD(font2W, font2H, "‚l‚r –¾’©");
 }
-
-CHAR (&g_szPaddedNum_52EFBC)[20] = *(CHAR (*)[20])0x52EFBC; // WRITABLE
 
 CHAR *__cdecl hook_ZeroPadNumberToString_4612B0(int nValue, int nDigits)
 {
