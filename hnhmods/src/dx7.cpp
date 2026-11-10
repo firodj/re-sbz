@@ -93,14 +93,8 @@ D3DXVECTOR3 *__stdcall hook_D3DXVec3Normalize(D3DXVECTOR3 *pOut, const D3DXVECTO
   if (!pOut || !pV)
     return NULL;
 
-  // Logging
-  static int log_D3DXVec3Normalize_48A1EC = 1;
-  log_D3DXVec3Normalize_48A1EC--;
-  if (!log_D3DXVec3Normalize_48A1EC) {
-    DebugLog("[HNH:SUB] %s\n", "D3DXVec3Normalize_48A1EC");
-    log_D3DXVec3Normalize_48A1EC = 10000;
-  }
-
+  ONCELOG("[HNH:SUB] %s\n", "D3DXVec3Normalize_48A1EC");
+    
   // Calculate squared length of the vector
   float lengthSq = (pV->x * pV->x) + (pV->y * pV->y) + (pV->z * pV->z);
 
@@ -139,10 +133,10 @@ D3DXVECTOR3 *__stdcall hook_D3DXVec3Normalize(D3DXVECTOR3 *pOut, const D3DXVECTO
 
 D3DXMATRIX *__stdcall hook_D3DXMatrixRotationAxis(D3DXMATRIX *pOut, const D3DXVECTOR3 *pV, float angle)
 {
-  DebugLog("[HNH:SUB] %s\n", "D3DXMatrixRotationAxis_48ABB3");
-
   if (!pOut || !pV)
     return NULL;
+
+  ONCELOG("[HNH:SUB] %s\n", "D3DXMatrixRotationAxis_48ABB3");
 
   // Normalize the rotation axis vector
   D3DXVECTOR3 axis = *pV;
@@ -194,10 +188,10 @@ D3DXMATRIX *__stdcall hook_D3DXMatrixRotationAxis(D3DXMATRIX *pOut, const D3DXVE
 
 D3DXMATRIX *__stdcall hook_D3DXMatrixMultiply(D3DXMATRIX *pOut, const D3DXMATRIX *pM1, const D3DXMATRIX *pM2)
 {
+  ONCELOG("[HNH:SUB] %s\n", "D3DXMatrixMultiply_48A4BC");
+
   if (!pOut || !pM1 || !pM2)
     return nullptr;
-
-  ONCELOG("[HNH:SUB] %s\n", "D3DXMatrixMultiply_48A4BC");
  
   // Use a temporary local matrix to safely handle aliasing 
   // (if pOut points to the same memory as pM1 or pM2)
@@ -226,7 +220,6 @@ D3DXMATRIX *__stdcall hook_D3DXMatrixMultiply(D3DXMATRIX *pOut, const D3DXMATRIX
 
   return pOut;
 }
-
 
 D3DXMATRIX* WINAPI hook_D3DXMatrixInverse(D3DXMATRIX *pOut, float *pfDeterminant, const D3DXMATRIX *pM)
 {

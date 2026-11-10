@@ -110,7 +110,7 @@ void InitHNH() {
 	AssertHanaStructSize();
 	
 	register_WinMain_485CE0();
-	register_D3DXMatrixIdentity_40E450();
+	register_D3DXMatrixIdentity_40E450(2);
 	register_CDROM_VerifyDiscSignature_485C50();
 	register_DSErrToString_423CE7();
 	register_RestartInputThread_481AE4();
@@ -124,7 +124,7 @@ void InitHNH() {
 	register_MemAlloc_40DEF7(0);
 	register_SetFogEnable_40DFB0(0);
 	register_CHanaObj__Free_40C1E4(0);
-	register_CheckRunGame_4863C8(0);
+	register_CheckRunGame_4863C8(2);
 	register_InGameMenu_4799E2(0);
 	register_MenuCharSelect_47A324(0);
 	register_PlayScreenFade_4874DE(0);

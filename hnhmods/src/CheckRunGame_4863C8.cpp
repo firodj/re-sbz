@@ -167,7 +167,14 @@ HRESULT (__cdecl * MatrixPerspectiveFovLH)(D3DXMATRIX *pMat, float fovy, float a
 HRESULT (__cdecl * MatrixLookAtLH)(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, const D3DXVECTOR3 *pAt, const D3DXVECTOR3 *pUp) = reinterpret_cast<HRESULT(__cdecl*)(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, const D3DXVECTOR3 *pAt, const D3DXVECTOR3 *pUp)>(0x40C64A);
 D3DXMATRIX * (__cdecl * MatIdentity)(D3DXMATRIX *pOut) = reinterpret_cast<D3DXMATRIX *(__cdecl*)(D3DXMATRIX *pOut)>(0x40E450);
 double (__cdecl * Vec3LengthSq)(const D3DXVECTOR3 *pV) = reinterpret_cast<double(__cdecl*)(const D3DXVECTOR3 *pV)>(0x40E3C0);
-void (__thiscall * Vec3Set)(D3DXVECTOR3 *This, float x, float y, float z) = reinterpret_cast<void(__thiscall*)(D3DXVECTOR3 *This, float x, float y, float z)>(0x40E420);
+
+union {
+  void(__thiscall * member)(D3DXVECTOR3* This, float x, float y, float z);
+  void(__fastcall* fast)(D3DXVECTOR3* This, int unused_edx, float x, float y, float z);
+} Vec3Set = { .member = reinterpret_cast<void(__thiscall *)(D3DXVECTOR3 *This, float x, float y, float z)>(0x40E420) };
+
+// void (__thiscall * Vec3Set)(D3DXVECTOR3 *This, float x, float y, float z) = reinterpret_cast<void(__thiscall*)(D3DXVECTOR3 *This, float x, float y, float z)>(0x40E420);
+
 double (__cdecl * Vec3Dot)(const D3DXVECTOR3 *pV1, const D3DXVECTOR3 *pV2) = reinterpret_cast<double(__cdecl*)(const D3DXVECTOR3 *pV1, const D3DXVECTOR3 *pV2)>(0x40E3F0);
 
 
@@ -1033,7 +1040,7 @@ HRESULT __cdecl hook_MatrixLookAtLH(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, c
   float dy = pAt->y - pEye->y;
   float dz = pAt->z - pEye->z;
 
-  Vec3Set(&tempVec, dx, dy, dz);
+  Vec3Set.member(&tempVec, dx, dy, dz);
   forward = tempVec;
 
   lenSq = Vec3LengthSq(&forward);
@@ -1048,9 +1055,9 @@ HRESULT __cdecl hook_MatrixLookAtLH(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, c
 
   // --- 2. Orthogonalize the up vector (Y-axis) with fallbacks ---
   dotProduct = forward.z * pUp->z + forward.y * pUp->y + forward.x * pUp->x;
-  Vec3Set(&tempVec, dotProduct * forward.x, dotProduct * forward.y, dotProduct * forward.z);
+  Vec3Set.member(&tempVec, dotProduct * forward.x, dotProduct * forward.y, dotProduct * forward.z);
 
-  Vec3Set(&up, pUp->x - tempVec.x, pUp->y - tempVec.y, pUp->z - tempVec.z);
+  Vec3Set.member(&up, pUp->x - tempVec.x, pUp->y - tempVec.y, pUp->z - tempVec.z);
   lenSq = Vec3LengthSq(&up);
   invLen = sqrt(lenSq);
 
@@ -1058,8 +1065,8 @@ HRESULT __cdecl hook_MatrixLookAtLH(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, c
   {
     // Fallback 1: Try alignment using Y world axis
     float cy = forward.y;
-    Vec3Set(&tempVec, forward.x * cy, forward.y * cy, forward.z * cy);
-    Vec3Set(&up, 0.0f - tempVec.x, 1.0f - tempVec.y, 0.0f - tempVec.z);
+    Vec3Set.member(&tempVec, forward.x * cy, forward.y * cy, forward.z * cy);
+    Vec3Set.member(&up, 0.0f - tempVec.x, 1.0f - tempVec.y, 0.0f - tempVec.z);
     lenSq = Vec3LengthSq(&up);
     invLen = sqrt(lenSq);
 
@@ -1067,8 +1074,8 @@ HRESULT __cdecl hook_MatrixLookAtLH(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, c
     {
       // Fallback 2: Try alignment using Z world axis
       float cz = forward.z;
-      Vec3Set(&tempVec, forward.x * cz, forward.y * cz, forward.z * cz);
-      Vec3Set(&up, 0.0f - tempVec.x, 0.0f - tempVec.y, 1.0f - tempVec.z);
+      Vec3Set.member(&tempVec, forward.x * cz, forward.y * cz, forward.z * cz);
+      Vec3Set.member(&up, 0.0f - tempVec.x, 0.0f - tempVec.y, 1.0f - tempVec.z);
       lenSq = Vec3LengthSq(&up);
       invLen = sqrt(lenSq);
 
@@ -1173,7 +1180,7 @@ void register_CheckRunGame_4863C8(int cfg) {
     MatIdentity = hook_MatIdentity;
 
     Vec3LengthSq = hook_Vec3LengthSq;
-    //Vec3Set = hook_Vec3Set; // TODO:
+    Vec3Set.fast = hook_Vec3Set;
     Vec3Dot = hook_Vec3Dot;
   }
 
@@ -1195,16 +1202,13 @@ void register_CheckRunGame_4863C8(int cfg) {
   hnh_Hook(0x4070AB, hook_MatrixRotateCubeMapFace, "MatrixRotateCubeMapFace"); // [OK] 
   hnh_Hook(0x407047, hook_CalculateLocalRotationMatrix, "CalculateLocalRotationMatrix"); // [OK] 
 
-
   hnh_Hook(0x40C64A, hook_MatrixLookAtLH, "MatrixLookAtLH_40C64A"); // [OK] 
   hnh_Hook(0x40DDF3, hook_DegreesToRadians, "DegreesToRadians_40DDF3"); // [OK} 
   hnh_Hook(0x40CB94, hook_MatrixPerspectiveFovLH, "MatrixPerspectiveFovLH_40CB94"); // [OK] 
   hnh_Hook(0x40E450, hook_MatIdentity, "MatIdentity_40E450"); // [OK] 
   hnh_Hook(0x40E3C0, hook_Vec3LengthSq, "Vec3LengthSq_40E3C0"); // [OK] 
-  hnh_Hook(0x40E420, hook_Vec3Set, "hook_Vec3Set_40E420"); // [OK] 
+  hnh_Hook(0x40E420, hook_Vec3Set, "Vec3Set_40E420"); // [OK] 
   hnh_Hook(0x40E3F0, hook_Vec3Dot, "Vec3Dot_40E3F0"); // [OK] 
-
-
 
   hnh_HookOn();
 } 
