@@ -57,7 +57,7 @@ static const char* s_szLastDDError_51836C;
 LPDIRECTSOUNDBUFFER(&g_arrUIEffectDSBuffer_52F168)[5] = *(LPDIRECTSOUNDBUFFER(*)[5])0x52F168; // WRITABLE
 CSoundStruct_8* (&g_arrFootstepSound_52F17C)[4] = *(CSoundStruct_8 * (*)[4])0x52F17C; // WRITABLE
 CSoundStruct_8* (&g_arrFootstepSound_52F18C)[4] = *(CSoundStruct_8 * (*)[4])0x52F18C; // WRITABLE
-BYTE(&g_byData0Dat_530170)[256] = *(BYTE(*)[256])0x530170; // WRITABLE
+BYTE(&g_sysDataSave_530170)[256] = *(BYTE(*)[256])0x530170; // WRITABLE
 BYTE& g_sceneProgressFlag_530269 = *(BYTE*)0x530269; // WRITABLE
 CSceneState& g_sceneState_52F7E0 = *(CSceneState*)0x52F7E0; // WRITABLE
 const char*& g_szLastDDError_51836C = *(const char**)0x51836C; // WRITABLE
@@ -76,7 +76,7 @@ CHAR(&g_pszSaveNameFmt_52F1AC)[4] = *(CHAR(*)[4])0x52F1AC; // WRITABLE (never wr
 LPDIRECTSOUNDBUFFER(&g_arrUIEffectDSBuffer_52F168)[5] = s_arrUIEffectDSBuffer_52F168;
 CSoundStruct_8* (&g_arrFootstepSound_52F17C)[4] = s_arrFootstepSound_52F17C;
 CSoundStruct_8* (&g_arrFootstepSound_52F18C)[4] = s_arrFootstepSound_52F18C;
-BYTE(&g_byData0Dat_530170)[256] = s_byData0Dat_530170;
+BYTE(&g_sysDataSave_530170)[256] = s_byData0Dat_530170;
 BYTE& g_sceneProgressFlag_530269 = s_sceneProgressFlag_530269;
 CSceneState& g_sceneState_52F7E0 = s_sceneState_52F7E0;
 const char*& g_szLastDDError_51836C = s_szLastDDError_51836C;
@@ -87,147 +87,147 @@ CHAR g_pszSaveNameFmt_52F1AC[4];
 // === FUNCTION ===
 void __cdecl hook_GameMainLoop_47F013(void)
 {
-    CHAR szPathBuf[152];               // [esp+4h] [ebp-B4h]
-    LPDIRECTDRAWSURFACE7 pWarSurface;  // [esp+9Ch] [ebp-1Ch]
-    int nMenuResult;                   // [esp+A4h] [ebp-14h]
-    RECT rc;                           // [esp+A8h] [ebp-10h] BYREF
+  CHAR szPathBuf[152];               // [esp+4h] [ebp-B4h]
+  LPDIRECTDRAWSURFACE7 pWarSurface;  // [esp+9Ch] [ebp-1Ch]
+  int nMenuResult;                   // [esp+A4h] [ebp-14h]
+  RECT rc;                           // [esp+A8h] [ebp-10h] BYREF
 
-    ONCELOG("[HNH:SUB] GameMainLoop_47F013\n");
+  ONCELOG("[HNH:SUB] GameMainLoop_47F013\n");
 
-    nMenuResult = 0;
+  nMenuResult = 0;
 
-    // --- one-time intro ----------------------------------------------------
-    // war.bmp splash stretched over the primary surface (640x480 design
-    // resolution, scaled to the current mode).
-    wsprintfA(szPathBuf, "war.bmp");                  // aWarBmp @0x4C72F8
-    CHanaObj__GetRealPath_486D9A(szPathBuf, 1007);    // 1007 = GRP dir
-    pWarSurface = GetSurfaceFromBmp_419DE5(szPathBuf);
-    if (pWarSurface)
-    {
-        SetRect(&rc, 0, 0, ConvertFrom640AsInt(640), ConvertFrom640AsInt(480));
-        g_pPrimaryBuffer_4D6C88->Blt(&rc, pWarSurface, NULL, DDBLT_WAIT, NULL);
-        pWarSurface->Release();
-    }
+  // --- one-time intro ----------------------------------------------------
+  // war.bmp splash stretched over the primary surface (640x480 design
+  // resolution, scaled to the current mode).
+  wsprintfA(szPathBuf, "war.bmp");                  // aWarBmp @0x4C72F8
+  CHanaObj__GetRealPath_486D9A(szPathBuf, 1007);    // 1007 = GRP dir
+  pWarSurface = GetSurfaceFromBmp_419DE5(szPathBuf);
+  if (pWarSurface)
+  {
+    SetRect(&rc, 0, 0, ConvertFrom640AsInt(640), ConvertFrom640AsInt(480));
+    g_pPrimaryBuffer_4D6C88->Blt(&rc, pWarSurface, NULL, DDBLT_WAIT, NULL);
+    pWarSurface->Release();
+  }
 
-    // reset the UI-effect DirectSound buffers and both footstep-sound tables
-    memset(g_arrUIEffectDSBuffer_52F168, 0, 0x14);
-    memset(g_arrFootstepSound_52F18C, 0, sizeof(g_arrFootstepSound_52F18C));
-    memset(g_arrFootstepSound_52F17C, 0, sizeof(g_arrFootstepSound_52F17C));
+  // reset the UI-effect DirectSound buffers and both footstep-sound tables
+  memset(g_arrUIEffectDSBuffer_52F168, 0, 0x14);
+  memset(g_arrFootstepSound_52F18C, 0, sizeof(g_arrFootstepSound_52F18C));
+  memset(g_arrFootstepSound_52F17C, 0, sizeof(g_arrFootstepSound_52F17C));
 
-    // reset the data0.dat save image, default AVI volume (2), byte_530267 := 1
-    memset(g_byData0Dat_530170, 0, 0x100);
-    g_nVolumeLevel_530266 = 2;
-    g_nTextSpeed_530267 = 1;
+  // reset the data0.dat save image, default AVI volume (2), byte_530267 := 1
+  memset(g_sysDataSave_530170, 0, sizeof(g_sysDataSave_530170));
+  g_nVolumeLevel_530266 = 2;
+  g_nTextSpeed_530267 = 1;
 
-    // load the previous save if present: <DATA>\data0.dat
-    wsprintfA(szPathBuf, "data0.dat");                // aData0Dat @0x4C7300
-    CHanaObj__GetRealPath_486D9A(szPathBuf, 1010);    // 1010 = DATA dir
-    if (IsFileExists_47E8EE(szPathBuf))
-        ReadFileToBuffer(szPathBuf, g_byData0Dat_530170, 256);
+  // load the previous save if present: <DATA>\data0.dat
+  wsprintfA(szPathBuf, "data0.dat");                // aData0Dat @0x4C7300
+  CHanaObj__GetRealPath_486D9A(szPathBuf, 1010);    // 1010 = DATA dir
+  if (IsFileExists_47E8EE(szPathBuf))
+    ReadFileToBuffer(szPathBuf, g_sysDataSave_530170, sizeof(g_sysDataSave_530170));
 
-    RestartInputThread(0);                          // twice, as in the original
-    RestartInputThread(0);
-    ReleaseSoundEffects();
-    PlayVideoWith3DAudio_4791A3("op.avi", 0);         // aOpAvi @0x4C730C
-    LoadSoundEffects_47EB7F();
+  RestartInputThread(0);                          // twice, as in the original
+  RestartInputThread(0);
+  ReleaseSoundEffects();
+  PlayVideoWith3DAudio_4791A3("op.avi", 0);         // aOpAvi @0x4C730C
+  LoadSoundEffects_47EB7F();
 
-    // --- HACK
-    g_sceneProgressFlag_530269 = 1;
+  // --- HACK
+  g_sceneProgressFlag_530269 = 1;
 
-    // --- outer loop: menu <-> scene chapter <-> autosave ---------------------
+  // --- outer loop: menu <-> scene chapter <-> autosave ---------------------
+  for (;;)
+  {
+    memset(&g_sceneState_52F7E0, 0, sizeof(g_sceneState_52F7E0));
+    g_sceneState_52F7E0.protMaximumHP_C4 = 66600.0f;
+    g_sceneState_52F7E0.protCurrentHP_C0 = 66600.0f;
+
+    // In-game menu. 999 -> title menu (then replay the opening); the replay
+    // loops back through the menu until it answers with neither -1 nor 999.
     for (;;)
     {
-        memset(&g_sceneState_52F7E0, 0, sizeof(g_sceneState_52F7E0));
-        g_sceneState_52F7E0.protMaximumHP_C4 = 66600.0f;
-        g_sceneState_52F7E0.protCurrentHP_C0 = 66600.0f;
+      nMenuResult = InGameMenu_4799E2();
+      if (nMenuResult == 999)
+      {
+        MainMenu_47DF0D();
+        nMenuResult = -1;
+      }
+      if (nMenuResult != -1)
+        break;
+      ReleaseSoundEffects();
+      PlayVideoWith3DAudio_4791A3("op.avi", 0); // aOpAvi_0 @0x4C7314
+      LoadSoundEffects_47EB7F();
+    }
 
-        // In-game menu. 999 -> title menu (then replay the opening); the replay
-        // loops back through the menu until it answers with neither -1 nor 999.
-        for (;;)
+    if (nMenuResult != 1)                         // 1 = quit, no chapter run
+    {
+      for (;;)                                  // walk the chapter table
+      {
+        D3DSetRenderStates_4276C0();
+        int nStep = g_sceneState_52F7E0.bActiveSceneStep;
+
+        switch (g_arrSceneNo_4C6F78[nStep].nSceneType)
         {
-            nMenuResult = InGameMenu_4799E2();
-            if (nMenuResult == 999)
-            {
-                MainMenu_47DF0D();
-                nMenuResult = -1;
-            }
-            if (nMenuResult != -1)
-                break;
-            ReleaseSoundEffects();
-            PlayVideoWith3DAudio_4791A3("op.avi", 0); // aOpAvi_0 @0x4C7314
-            LoadSoundEffects_47EB7F();
+        case 1:
+          nMenuResult = PlayOdsDialogueScene_477F90(g_arrSceneNo_4C6F78[nStep].nStrIndex);
+          DebugLog("[HNH] GameMainLoop :: PlayOdsDialogueScene_477F90 result = %d\n", nMenuResult);
+          break;
+        case 2:
+          nMenuResult = PlayExploring_45BCAE(g_arrSceneNo_4C6F78[nStep].nStrIndex);
+          DebugLog("[HNH] GameMainLoop :: PlayExploring_45BCAE result = %d\n", nMenuResult);
+          break;
+        case 3:
+          nMenuResult = PlayHunting_44C38D(g_arrSceneNo_4C6F78[nStep].nStrIndex);
+          DebugLog("[HNH] GameMainLoop :: PlayHunting_44C38D result = %d\n", nMenuResult);
+          break;
+        case 4:
+          nMenuResult = PlayAssault_4703AE(g_arrSceneNo_4C6F78[nStep].nStrIndex, 0);
+          DebugLog("[HNH] GameMainLoop :: PlayAssault_4703AE result = %d\n", nMenuResult);
+          break;
+        case 5:                               // ending
+          nMenuResult = 1;
+          ReleaseSoundEffects();
+          PlayVideoWith3DAudio_4791A3("ED.avi", 0);  // aEdAvi @0x4C731C
+          LoadSoundEffects_47EB7F();
+          g_sceneState_52F7E0.bActiveSceneStep = 0;
+          g_sceneProgressFlag_530269 = 2;    // ending seen
+          break;
+        case 6:                               // backdrop
+          nMenuResult = 1;
+          ShowBackdropAndWait_4795CE();
+          g_sceneState_52F7E0.bActiveSceneStep = 0;
+          if (!g_sceneProgressFlag_530269)
+            g_sceneProgressFlag_530269 = 1; // backdrop seen
+          break;
+        default:
+          break;
         }
 
-        if (nMenuResult != 1)                         // 1 = quit, no chapter run
+        if (nMenuResult == 1)                 // chapter finished
         {
-            for (;;)                                  // walk the chapter table
-            {
-                D3DSetRenderStates_4276C0();
-                int nStep = g_sceneState_52F7E0.bActiveSceneStep;
-
-                switch (g_arrSceneNo_4C6F78[nStep].nSceneType)
-                {
-                case 1:
-                    nMenuResult = PlayOdsDialogueScene_477F90(g_arrSceneNo_4C6F78[nStep].nStrIndex);
-                    DebugLog("[HNH] GameMainLoop :: PlayOdsDialogueScene_477F90 result = %d\n", nMenuResult);
-                    break;
-                case 2:
-                    nMenuResult = PlayExploring_45BCAE(g_arrSceneNo_4C6F78[nStep].nStrIndex);
-                    DebugLog("[HNH] GameMainLoop :: PlayExploring_45BCAE result = %d\n", nMenuResult);
-                    break;
-                case 3:
-                    nMenuResult = PlayHunting_44C38D(g_arrSceneNo_4C6F78[nStep].nStrIndex);
-                    DebugLog("[HNH] GameMainLoop :: PlayHunting_44C38D result = %d\n", nMenuResult);
-                    break;
-                case 4:
-                    nMenuResult = PlayAssault_4703AE(g_arrSceneNo_4C6F78[nStep].nStrIndex, 0);
-                    DebugLog("[HNH] GameMainLoop :: PlayAssault_4703AE result = %d\n", nMenuResult);
-                    break;
-                case 5:                               // ending
-                    nMenuResult = 1;
-                    ReleaseSoundEffects();
-                    PlayVideoWith3DAudio_4791A3("ED.avi", 0);  // aEdAvi @0x4C731C
-                    LoadSoundEffects_47EB7F();
-                    g_sceneState_52F7E0.bActiveSceneStep = 0;
-                    g_sceneProgressFlag_530269 = 2;    // ending seen
-                    break;
-                case 6:                               // backdrop
-                    nMenuResult = 1;
-                    ShowBackdropAndWait_4795CE();
-                    g_sceneState_52F7E0.bActiveSceneStep = 0;
-                    if (!g_sceneProgressFlag_530269)
-                        g_sceneProgressFlag_530269 = 1; // backdrop seen
-                    break;
-                default:
-                    break;
-                }
-
-                if (nMenuResult == 1)                 // chapter finished
-                {
-                    nMenuResult = 0;
-                    break;
-                }
-                if (nMenuResult < 2)                  // advance to the next step
-                {
-                    ++g_sceneState_52F7E0.bActiveSceneStep;
-                    if (!g_arrSceneNo_4C6F78[g_sceneState_52F7E0.bActiveSceneStep].nSceneType)
-                        break;                        // fell off the chapter table
-                }
-                // nMenuResult >= 2: replay the (scene-selected) current step
-            }
-            nMenuResult = 0;
+          nMenuResult = 0;
+          break;
         }
-
-        // autosave: <DATA>\data0.dat -- the format buffer is always "" (see
-        // g_pszSaveNameFmt_52F1AC above), so the guard tests the DATA
-        // directory itself and the save always writes.
-        wsprintfA(szPathBuf, g_pszSaveNameFmt_52F1AC);
-        CHanaObj__GetRealPath_486D9A(szPathBuf, 1010);
-        if (IsFileExists_47E8EE(szPathBuf))
+        if (nMenuResult < 2)                  // advance to the next step
         {
-            wsprintfA(szPathBuf, "data0.dat");
-            CHanaObj__GetRealPath_486D9A(szPathBuf, 1010);
-            WriteBufferToFile(szPathBuf, g_byData0Dat_530170, 0x100);
+          ++g_sceneState_52F7E0.bActiveSceneStep;
+          if (!g_arrSceneNo_4C6F78[g_sceneState_52F7E0.bActiveSceneStep].nSceneType)
+            break;                        // fell off the chapter table
+        }
+        // nMenuResult >= 2: replay the (scene-selected) current step
+      }
+      nMenuResult = 0;
+    }
+
+    // autosave: <DATA>\data0.dat -- the format buffer is always "" (see
+    // g_pszSaveNameFmt_52F1AC above), so the guard tests the DATA
+    // directory itself and the save always writes.
+    wsprintfA(szPathBuf, g_pszSaveNameFmt_52F1AC);
+    CHanaObj__GetRealPath_486D9A(szPathBuf, 1010);
+    if (IsFileExists_47E8EE(szPathBuf))
+    {
+      wsprintfA(szPathBuf, "data0.dat");
+      CHanaObj__GetRealPath_486D9A(szPathBuf, 1010);
+      WriteBufferToFile(szPathBuf, g_sysDataSave_530170, sizeof(g_sysDataSave_530170));
         }
 
         if (nMenuResult == 1)                         // menu said quit

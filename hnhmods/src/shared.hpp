@@ -77,6 +77,11 @@ extern const char g_BayerDitherMatrix8x8[8][8][9];
 
 extern const CVideoModeWhiteItem g_arrModeWhitelist_4B33F0[7];
 
+extern const int g_arrSceneStepThresholds_4B5970[40];  // compiled-in copy of .rdata @0x4B5970 (27 thresholds + 99 stopper + zero pad)
+extern const char g_szSceneInfoText_4B5A10[40][20][80];  // compiled-in copy of .rdata @0x4B5A10 (src/struct.cpp)
+extern const CSceneSlot g_arrSceneNo_4C6F78[100];  // compiled-in copy of .data @0x4C6F78 ([1..82] steps, 83=terminator)
+
+
 // === DEFINED MemAlloc.cpp ===
 
 extern int  &g_nMemCnt_4D6CF0;
@@ -265,8 +270,7 @@ extern int(__cdecl* ConvertFrom640AsInt)(int nNum);
 extern double(__cdecl*ConvertFrom640AsFloat)(float fNum);
 extern int(__cdecl* ConvertFrom1024AsInt)(int nNum);
 extern double(__cdecl* ConvertFrom1024AsFloat)(float fNum);
-extern const CSceneSlot g_arrSceneNo_4C6F78[100];  // compiled-in copy of .data @0x4C6F78 ([1..82] steps, 83=terminator)
-extern BYTE(&g_byData0Dat_530170)[256];
+extern BYTE(&g_sysDataSave_530170)[256];
 
 #endif
 
@@ -339,7 +343,6 @@ extern void(__cdecl* Surface_AlphaBlendRect)(LPDIRECTDRAWSURFACE7 pDestSurface, 
 
 extern BOOL(__cdecl* ParseExecStr_487D89)(CHanaSceneT458_S504* pScene, float* pfExecTime);
 
-
 // === DEFINED SysMenu_SaveMenu_462135.cpp ===
 
 extern void(__cdecl* SysMenu_SaveMenu_462135)(CSceneState* sceneStates, CHAR* arrSceneName,
@@ -351,8 +354,6 @@ extern void(__cdecl* ShowFadeDialog_46164C)(CHanaSpriteT3F6_S1FC* pSprite,
   CHanaSpriteT3F6_S1FC* pPanelSprite, LPCSTR szText);
 
 extern DWORD& g_dwUnlockedSaveSlots_530260;
-extern const int g_arrSceneStepThresholds_4B5970[40];  // compiled-in copy of .rdata @0x4B5970 (27 thresholds + 99 stopper + zero pad)
-extern const char g_szSceneInfoText_4B5A10[40][20][80];  // compiled-in copy of .rdata @0x4B5A10 (src/struct.cpp)
 
 // === DEFINED SysMenu_LoadMenu_462851.cpp ===
 

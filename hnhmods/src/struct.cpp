@@ -848,6 +848,8 @@ void AssertHanaStructSize() {
   static_assert(sizeof(CSceneState) == 0x190, "CSceneState");
   static_assert(sizeof(CInputState) == 0x8, "CInputState");
 
+  static_assert(sizeof(CSystemDataSave) == 0x100, "CSystemDataSave");
+
   static_assert(sizeof(g_ascSndFileNames_4C78A0) == 0x2710, "g_ascSndFileNames_4C78A0");
   static_assert(sizeof(g_aG00Gp_4C9FB0) == 0x1388, "g_aG00Gp_4C9FB0");
   static_assert(sizeof(g_arrSceneNo_4C6F78) == 0x320, "g_arrSceneNo_4C6F78");
@@ -855,6 +857,7 @@ void AssertHanaStructSize() {
   static_assert(sizeof(g_texCoordSizeLUT_4A8368) == 16, "g_texCoordSizeLUT_4A8368");
   static_assert(sizeof(g_fVolumeDbTable) == 0x28, "g_fVolumeDbTable");
   static_assert(sizeof(g_szSceneInfoText_4B5A10) == 0xFA00, "g_szSceneInfoText_4B5A10");
+
 
   DebugLog("[%s] %s\n", "INFO", "finished AssertHanaStructSize");
 }

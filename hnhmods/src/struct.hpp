@@ -599,6 +599,21 @@ struct CSceneSlot  // sizeof=0x8
 
 #endif
 
+struct CSystemDataSave
+{
+  char g_byData0Dat_530170[50]; // g_arrVariables_530170
+  char g_arrGalleryUnlocked_5301A2[150];
+  int g_sceneItemBits[10];
+  int g_dwUnlockedSaveSlots_530260;
+  char g_nHSceneBackground_530264;
+  char g_nHSceneMale_530265;
+  char g_nVolumeLevel_530266;
+  char g_nTextSpeed_530267;
+  char g_nFirstPersonCam_530268;
+  char g_sceneProgressFlag_530269;
+  BYTE gapFA[6];
+};
+
 // No more CSceneMenuState_9C / CSceneMenuState_98 (who made this!?)
 // Whole per-playthrough scene state @0x52F7E0 (g_sceneState_52F7E0).
 struct CSceneState

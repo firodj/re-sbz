@@ -288,7 +288,7 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
     if ( !memcmp(&pScene->ptrStrData_260[pScene->dwPtrCurrent_448], "GETBOOK", 7u) ) {
       pScene->dwPtrCurrent_448 += 7;// chunk == 'GETBOOK'
       nBookIdx = atoi(&pScene->ptrStrData_260[pScene->dwPtrCurrent_448]);
-      g_byData0Dat_530170[nBookIdx] = 1;
+      g_sysDataSave_530170[nBookIdx] = 1;
       g_dwUnlockedSaveSlots_530260 |= (__int16)(1 << nBookIdx);
       pScene->dwPtrCurrent_448 += 2;
       continue;
@@ -644,7 +644,7 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
         ++pScene->dwPtrCurrent_448;
       }
 
-      CompareByte(pScene, g_byData0Dat_530170[nOFlgIdx], &bOfCond);
+      CompareByte(pScene, g_sysDataSave_530170[nOFlgIdx], &bOfCond);
       
       for ( i = 0; i < 20 && pScene->ptrStrData_260[pScene->dwPtrCurrent_448 - 1] != ')'; ++i )
         ++pScene->dwPtrCurrent_448;
