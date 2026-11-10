@@ -511,10 +511,10 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
     if (pBgmBuffer)
     {
         // clamp table[aviVolume] - 1000 dB to [-10000, 0]
-        if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) >= -10000)
+        if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] - 1000.0) >= -10000)
         {
-            if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) <= 0)
-                pBgmBuffer->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0));
+            if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] - 1000.0) <= 0)
+                pBgmBuffer->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] - 1000.0));
             else
                 pBgmBuffer->SetVolume(0);
         }

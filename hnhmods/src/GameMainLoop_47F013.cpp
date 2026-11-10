@@ -116,7 +116,7 @@ void __cdecl hook_GameMainLoop_47F013(void)
 
   // reset the data0.dat save image, default AVI volume (2), byte_530267 := 1
   memset(&g_sysDataSave_530170, 0, sizeof(g_sysDataSave_530170));
-  g_nVolumeLevel_530266 = 2;
+  g_sysDataSave_530170.g_nVolumeLevel_530266 = 2;
   g_nTextSpeed_530267 = 1;
 
   // load the previous save if present: <DATA>\data0.dat
@@ -486,10 +486,10 @@ void hook_ShowBackdropAndWait_4795CE()
   PlayScreenFade(0, 0xFF2626FF, 0, 25.0, 0);
   if ( pSndBuf )
   {
-    if ( (int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] >= -10000 )
+    if ( (int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] >= -10000 )
     {
-      if ( (int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] <= 0 )
-        pSndBuf->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]);
+      if ( (int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] <= 0 )
+        pSndBuf->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266]);
       else
         pSndBuf->SetVolume(0);
     }

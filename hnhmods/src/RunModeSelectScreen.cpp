@@ -785,7 +785,7 @@ void __cdecl hook_ApplyFrameEffectOption(CHanaSceneT458_S504 *pScene)
         pFrame = FindFrameByName_47E999(pRootFrame, String[i]);
         if ( pFrame )
         {
-          if ( g_nHSceneMale_530265 )
+          if ( g_sysDataSave_530170.g_nHSceneMale_530265 )
           {
             pFrame->bAlphaDeferred_130 = 1;
             Frame_ApplyFadeRecursive(pFrame, 0.0);
@@ -805,8 +805,8 @@ void __cdecl hook_ApplyFrameEffectOption(CHanaSceneT458_S504 *pScene)
       FrameByName_47E999 = FindFrameByName_47E999(pRootFrame, "_d00_all");
       if ( FrameByName_47E999 )
       {
-        FrameByName_47E999->bAlphaDeferred_130 = !g_nHSceneMale_530265 || g_nHSceneMale_530265 == 4;
-        Frame_ApplyFadeRecursive(FrameByName_47E999, alpha[(unsigned __int8)g_nHSceneMale_530265]);
+        FrameByName_47E999->bAlphaDeferred_130 = !g_sysDataSave_530170.g_nHSceneMale_530265 || g_sysDataSave_530170.g_nHSceneMale_530265 == 4;
+        Frame_ApplyFadeRecursive(FrameByName_47E999, alpha[(unsigned __int8)g_sysDataSave_530170.g_nHSceneMale_530265]);
         if ( FrameByName_47E999->bAlphaDeferred_130 )
         {
           FrameByName_47E999->iAlpha1000_124 = 0;
@@ -815,7 +815,7 @@ void __cdecl hook_ApplyFrameEffectOption(CHanaSceneT458_S504 *pScene)
         else
         {
           v4 = FrameByName_47E999;
-          FrameByName_47E999->iAlpha1000_124 = (__int64)(alpha[(unsigned __int8)g_nHSceneMale_530265] * 1000.0);
+          FrameByName_47E999->iAlpha1000_124 = (__int64)(alpha[(unsigned __int8)g_sysDataSave_530170.g_nHSceneMale_530265] * 1000.0);
           FrameByName_47E999->iAlpha1000_120 = FrameByName_47E999->iAlpha1000_124;
         }
       }

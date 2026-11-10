@@ -572,10 +572,10 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     if (g_pDSBufAssault_52EFD0)
     {
         // clamp table[aviVolume] - 1000 dB to [-10000, 0]
-        if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) >= -10000)
+        if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] - 1000.0) >= -10000)
         {
-            if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) <= 0)
-                g_pDSBufAssault_52EFD0->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0));
+            if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] - 1000.0) <= 0)
+                g_pDSBufAssault_52EFD0->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] - 1000.0));
             else
                 g_pDSBufAssault_52EFD0->SetVolume(0);
         }
@@ -1171,7 +1171,7 @@ CHanaFrameT3EC_S354 *__cdecl hook_Scene_FindMapFrame(CHanaSceneT458_S504 *pScene
   {
     if ( !_memicmp(pScene->refsFrames_134[i]->szName_8, "Map\\", 4u) )
     {
-      pScene->refsFrames_134[i]->bAlphaDeferred_130 = g_nHSceneBackground_530264 & 1;
+      pScene->refsFrames_134[i]->bAlphaDeferred_130 = g_sysDataSave_530170.g_nHSceneBackground_530264 & 1;
       return pScene->refsFrames_134[i];
     }
   }

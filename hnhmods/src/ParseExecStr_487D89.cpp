@@ -278,10 +278,10 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
       g_sceneState_52F7E0.sceneItemBits_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
       g_sceneState_52F7E0.sceneItemBits_98[2 * bMaxSubStage + 1] = v2;
       v4 = ((unsigned __int64)nItemBit >> 32)
-        | g_sceneItemBits[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage + 1];
+        | g_sysDataSave_530170.g_sceneItemBits[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage + 1];
       v5 = (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage;
-      g_sceneItemBits[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
-      g_sceneItemBits[2 * v5 + 1] = v4;
+      g_sysDataSave_530170.g_sceneItemBits[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
+      g_sysDataSave_530170.g_sceneItemBits[2 * v5 + 1] = v4;
       pScene->dwPtrCurrent_448 += 2;
       continue;
     }
@@ -289,7 +289,7 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
       pScene->dwPtrCurrent_448 += 7;// chunk == 'GETBOOK'
       nBookIdx = atoi(&pScene->ptrStrData_260[pScene->dwPtrCurrent_448]);
       g_sysDataSave_530170.g_byData0Dat_530170[nBookIdx] = 1;
-      g_dwUnlockedSaveSlots_530260 |= (__int16)(1 << nBookIdx);
+      g_sysDataSave_530170.g_dwUnlockedSaveSlots_530260 |= (__int16)(1 << nBookIdx);
       pScene->dwPtrCurrent_448 += 2;
       continue;
     }
@@ -475,7 +475,7 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
         pScene->pUnk_47C = (IUnknown*)pScene->pSurface_468;
       else
         pScene->pUnk_47C = 0;
-      g_arrGalleryUnlocked_5301A2[nGpIndex] = 1;
+      g_sysDataSave_530170.g_arrGalleryUnlocked_5301A2[nGpIndex] = 1;
       nBgLoadH = ConvertFrom640AsInt(480);
       nBgLoadW = ConvertFrom640AsInt(640);
       pScene->pSurface_468 = LoadBmpScaled_4203B3(szFileName, nBgLoadW, nBgLoadH);
@@ -511,11 +511,11 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
         pScene->field_470 = sndVolIndex_v35 / 2;
         if (pScene->pSndBuf_46C)
         {
-          if ((int)(pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]) >= -10000)
+          if ((int)(pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266]) >= -10000)
           {
-            if ((int)(pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]) <= 0)
+            if ((int)(pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266]) <= 0)
               pScene->pSndBuf_46C->SetVolume(
-                pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]);
+                pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266]);
             else
               pScene->pSndBuf_46C->SetVolume(0);
           }

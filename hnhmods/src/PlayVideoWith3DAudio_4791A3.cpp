@@ -125,7 +125,7 @@ void __cdecl hook_PlayVideoWith3DAudio_4791A3(const char* szMoviePath, int bLoop
   if ( CreateAviWnd_43A95B(g_hInstance, g_hwndParent, (LPARAM)szRealPath, 0, 80, nAviW, nAviH, nZoom) == 1 )
   {
     dwOrigVolume = AviGetVolume_43A889();
-    AviWndSetVolume_43A863(dwOrigVolume * arrVolSteps[(unsigned __int8)g_nVolumeLevel_530266] / 1000u);
+    AviWndSetVolume_43A863(dwOrigVolume * arrVolSteps[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] / 1000u);
     while ( 1 )
     {
       g_pDD_4D6C7C->FlipToGDISurface();

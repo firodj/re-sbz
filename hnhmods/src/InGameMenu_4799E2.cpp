@@ -49,16 +49,13 @@ int  (__cdecl*InGameMenu_4799E2)(void)
 
 // === GLOBALS VARIABLES ===
 
-static int   s_sceneItemBits[10];
 static DWORD s_dwDSStatus_5185C8;
 
 #ifdef _USRDLL
 // persistent scene-flags copy @0x530238 (IDA g_sceneFlag CSceneFlag_28;
 // written by ParseExecStr HITEMGET, memcpy'd into sceneState by MainMenu)
-int   (&g_sceneItemBits)[10]            = *(int(*)[10])0x530238;     // WRITABLE
 DWORD &g_dwDSStatus_5185C8    = *(DWORD*)0x5185C8;         // WRITABLE
 #else
-int(&g_sceneItemBits)[10]  = s_sceneItemBits;
 DWORD& g_dwDSStatus_5185C8 = s_dwDSStatus_5185C8;
 
 #endif
@@ -66,7 +63,7 @@ DWORD& g_dwDSStatus_5185C8 = s_dwDSStatus_5185C8;
 // clamp g_fVolumeDbTable[g_nVolumeLevel_530266] - 1000 to [-10000, 0] dB
 static void ApplyMenuBgmVolume(LPDIRECTSOUNDBUFFER pBgmBuffer)
 {
-    int nVol = (int)(g_fVolumeDbTable[g_nVolumeLevel_530266] - 1000.0f);
+    int nVol = (int)(g_fVolumeDbTable[g_sysDataSave_530170.g_nVolumeLevel_530266] - 1000.0f);
     if (nVol < -10000)
         nVol = -10000;
     else if (nVol > 0)
@@ -103,7 +100,7 @@ void __cdecl hook_MainMenu_47DF0D(void)
     }
 
     // carry the persistent scene flags into the scene state block
-    memcpy(g_sceneState_52F7E0.sceneItemBits_98, g_sceneItemBits, 0x28);
+    memcpy(g_sceneState_52F7E0.sceneItemBits_98, g_sysDataSave_530170.g_sceneItemBits, 0x28);
 
     // dispatch until a sub-menu answers with a non-negative state; the mouse
     // is pumped each round (the previous-button read in the original is dead)

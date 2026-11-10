@@ -599,7 +599,7 @@ struct CSceneSlot  // sizeof=0x8
 
 #endif
 
-struct CSystemDataSave
+struct CSystemDataSave // <- g_sysDataSave_530170
 {
   char g_byData0Dat_530170[50]; // g_arrVariables_530170
   char g_arrGalleryUnlocked_5301A2[150];

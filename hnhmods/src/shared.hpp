@@ -310,7 +310,6 @@ extern void (__cdecl*MainMenu_47DF0D)(void);
 extern int (__cdecl*InGameMenu_4799E2)(void);
 extern void(__cdecl*HanaVert_DrawBatch)(BOOL bDraw);
 
-extern int (&g_sceneItemBits)[10];
 extern DWORD& g_dwDSStatus_5185C8;
 
 // === DEFINED SystemMenu_4655AB.cpp ===
@@ -353,8 +352,6 @@ extern void(__cdecl* DrawTextOnSurface)(LPDIRECTDRAWSURFACE7 pSurface, int x, in
 extern void(__cdecl* ShowFadeDialog_46164C)(CHanaSpriteT3F6_S1FC* pSprite,
   CHanaSpriteT3F6_S1FC* pPanelSprite, LPCSTR szText);
 
-extern DWORD& g_dwUnlockedSaveSlots_530260;
-
 // === DEFINED SysMenu_LoadMenu_462851.cpp ===
 
 extern int(__cdecl* SysMenu_LoadMenu_462851)(CSceneState* arrScene, CHAR* arrSceneName,
@@ -374,9 +371,7 @@ extern void(__cdecl* SysMenu_Options_462FE9)(CSceneState* sceneStates,
   int nMouseX, int nMouseY, int bPressed);
 
 extern BYTE& g_nHSceneBackground_530264;
-extern BYTE& g_nHSceneMale_530265;
 extern BYTE& g_nFirstPersonCam_530268;
-extern BYTE& g_nVolumeLevel_530266; // in: SystemMenu.cpp
 extern BYTE& g_nTextSpeed_530267; // in: SystemMenu.cpp
 
 // === DEFINED SysMenu_Graphics_46380D.cpp ===
@@ -466,8 +461,6 @@ extern int(__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab);
 extern void(__cdecl* DrawText_43BCAE)(LPDIRECTDRAWSURFACE7 pSurface, char* szText, int left, int top, int right, int bottom);
 extern int(__cdecl* MenuMusicSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite);
 extern int(__cdecl* MenuGallery)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1FC *pMouseSprite);
-
-extern char(&g_arrGalleryUnlocked_5301A2)[150];
 
 // === DEFINED PlayScreenFade.cpp ===
 

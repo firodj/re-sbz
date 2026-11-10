@@ -23,17 +23,13 @@ int (__cdecl*MenuMusicSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1
 
 // === GLOBAL VARIABLES ===
 
-static char s_arrGalleryUnlocked_5301A2[150];
-
 #ifdef _USRDLL
-char (&g_arrGalleryUnlocked_5301A2)[150] = *(char(*)[150])0x5301A2;  // WRITABLE
 
 LPDIRECTDRAWSURFACE7 &g_lpDDSurface_519CF8 = *(LPDIRECTDRAWSURFACE7 *)0x519CF8; // WRITABLE
 char (&g_tempText_519D00)[50] = *(char (*)[50])0x519D00; // WRITABLE
 BOOL &g_keyC = *(BOOL *)0x4C7350; // WRITABLE
 
 #else
-char(&g_arrGalleryUnlocked_5301A2)[150] = s_arrGalleryUnlocked_5301A2;
 
 LPDIRECTDRAWSURFACE7 g_lpDDSurface_519CF8;
 char g_tempText_519D00[50];
@@ -483,7 +479,7 @@ int __cdecl hook_MenuGallery(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F6_S
     {
       for (i = 0; i < 6; ++i)
       {
-        if (g_arrGalleryUnlocked_5301A2[atoi(&gpNameTable[24 * nTab + 6 * j + i][1])]
+        if (g_sysDataSave_530170.g_arrGalleryUnlocked_5301A2[atoi(&gpNameTable[24 * nTab + 6 * j + i][1])]
           && (int)ConvertFrom640AsFloat((float)(122 * j + 97) * 0.625f) < yMouse
           && yMouse < (int)ConvertFrom640AsFloat((float)(122 * j + 210) * 0.625f)
           && (int)ConvertFrom640AsFloat((float)(160 * i + 37) * 0.625f) < xMouse
@@ -600,7 +596,7 @@ int __cdecl hook_MenuGallery(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F6_S
       for (i = 0; i < 24; ++i)
       {
         if (gpNameTable[24 * nTab + i][0]
-          && !g_arrGalleryUnlocked_5301A2[atoi(&gpNameTable[24 * nTab + i][1])])
+          && !g_sysDataSave_530170.g_arrGalleryUnlocked_5301A2[atoi(&gpNameTable[24 * nTab + i][1])])
           g_pBackBuffer_4D6C90->BltFast(
             (int)ConvertFrom640AsFloat((float)(160 * (i % 6) + 37) * 0.625f),
             (int)ConvertFrom640AsFloat((float)(122 * (i / 6) + 97) * 0.625f),
@@ -765,7 +761,7 @@ int __cdecl hook_MenuMusicSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3
         *ppBgmBuffer = LoadWav_422E7B(szFileName);
         if (*ppBgmBuffer)
         {
-          int nVol = (int)(g_fVolumeDbTable[g_nVolumeLevel_530266] - 1000.0f);
+          int nVol = (int)(g_fVolumeDbTable[g_sysDataSave_530170.g_nVolumeLevel_530266] - 1000.0f);
           if (nVol < -10000)
             nVol = -10000;
           else if (nVol > 0)

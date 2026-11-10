@@ -423,7 +423,7 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
             arrFrames[k]->bAlphaDeferred_130 = 1;
             AnimSet_ResetAndTransferAnimations(pModeBody->pSekHeader_220->pAnimSetT3F1,
                                                arrAnimSets1[k], arrFrames[k]);
-            Frame_ApplyFadeRecursive(arrFrames[k], effectAlphaMuls[g_nHSceneMale_530265]);
+            Frame_ApplyFadeRecursive(arrFrames[k], effectAlphaMuls[g_sysDataSave_530170.g_nHSceneMale_530265]);
             arrNakaFrames[k] = FindFrameByNameSubstringRecursive(arrFrames[k],
                                                                  arrNakaSearchNames[k].str);
         }
@@ -515,7 +515,7 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
             for ( k = 0; k < 10; ++k )
             {
                 if ( arrFrames[k] )
-                    Frame_ApplyFadeRecursive(arrFrames[k], effectAlphaMuls[g_nHSceneMale_530265]);
+                    Frame_ApplyFadeRecursive(arrFrames[k], effectAlphaMuls[g_sysDataSave_530170.g_nHSceneMale_530265]);
             }
             pMapFrame = Scene_FindMapFrame(pScene);
             PauseSceneAudio_46A2A0(pScene, 0);
@@ -753,7 +753,7 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
                             arrFadeProg[k] = 1.0f;
                         if ( arrFadeProg[k] < 0.0f )
                             arrFadeProg[k] = 0.0f;
-                        sceneScratch.fPosY_18C = effectAlphaMuls[g_nHSceneMale_530265]
+                        sceneScratch.fPosY_18C = effectAlphaMuls[g_sysDataSave_530170.g_nHSceneMale_530265]
                                                * arrFadeProg[k];
                         Frame_ApplyFadeRecursive(arrFrames[k], sceneScratch.fPosY_18C);
                         arrFrames[k]->bAlphaDeferred_130 = 0;
@@ -764,7 +764,7 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
                 {
                     if ( arrFadeProg[k] < 0.0f )
                         arrFadeProg[k] = 0.0f;
-                    sceneScratch.fPosY_18C = effectAlphaMuls[g_nHSceneMale_530265]
+                    sceneScratch.fPosY_18C = effectAlphaMuls[g_sysDataSave_530170.g_nHSceneMale_530265]
                                            * arrFadeProg[k];
                     Frame_ApplyFadeRecursive(arrFrames[k], sceneScratch.fPosY_18C);
                     if ( arrFadeProg[k] <= 0.0f )
@@ -2869,7 +2869,7 @@ void __cdecl hook_Scene_ApplyFadeToPracticeFrames(float fadeAlpha)
     pFoundFrame = FindFrameByName_47E999((CHanaFrameT3EC_S354 *)g_pSceneFrame, szArrFrameNames[i]);
     if ( pFoundFrame )
     {
-      if ( g_nHSceneMale_530265 )              // Effect level 1-4: force fully transparent, mark as "effect active"
+      if ( g_sysDataSave_530170.g_nHSceneMale_530265 )              // Effect level 1-4: force fully transparent, mark as "effect active"
       {
         Frame_ApplyFadeRecursive(pFoundFrame, 0.0);
         pFoundFrame->bAlphaDeferred_130 = 1;    // Flag: under effect control
@@ -2884,8 +2884,8 @@ void __cdecl hook_Scene_ApplyFadeToPracticeFrames(float fadeAlpha)
   pD00Frame = FindFrameByName_47E999((CHanaFrameT3EC_S354 *)g_pSceneFrame, "_d00_");
   if ( pD00Frame )
   {
-    pD00Frame->bAlphaDeferred_130 = !g_nHSceneMale_530265 || g_nHSceneMale_530265 == 4;// 1 for effect levels 1-3, 0 for level 0 or 4
-    alpha = fadeAlpha * effectAlphaMultipliers[(unsigned __int8)g_nHSceneMale_530265];// Compute final alpha: fadeAlpha * multiplier[effectLevel]
+    pD00Frame->bAlphaDeferred_130 = !g_sysDataSave_530170.g_nHSceneMale_530265 || g_sysDataSave_530170.g_nHSceneMale_530265 == 4;// 1 for effect levels 1-3, 0 for level 0 or 4
+    alpha = fadeAlpha * effectAlphaMultipliers[(unsigned __int8)g_sysDataSave_530170.g_nHSceneMale_530265];// Compute final alpha: fadeAlpha * multiplier[effectLevel]
     Frame_ApplyFadeRecursive(pD00Frame, alpha); // Apply fade recursively to _d00_ frame and children
   }
 }

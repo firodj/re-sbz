@@ -765,10 +765,10 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   if (pBgmBuf)
   {
     // clamp table[aviVolume] - 1000 dB to [-10000, 0]
-    if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) >= -10000)
+    if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] - 1000.0) >= -10000)
     {
-      if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) <= 0)
-        pBgmBuf->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0));
+      if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] - 1000.0) <= 0)
+        pBgmBuf->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] - 1000.0));
       else
         pBgmBuf->SetVolume(0);
     }
@@ -866,10 +866,10 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   if (g_pArrSndBuf_5244AC[0])
   {
     // clamp table[aviVolume] dB to [-10000, 0]
-    if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] >= -10000)
+    if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] >= -10000)
     {
-      if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] <= 0)
-        g_pArrSndBuf_5244AC[0]->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]);
+      if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] <= 0)
+        g_pArrSndBuf_5244AC[0]->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266]);
       else
         g_pArrSndBuf_5244AC[0]->SetVolume(0);
     }
@@ -888,10 +888,10 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   if (g_pArrSndBuf_5244AC[2])
   {
     // clamp table[aviVolume] dB to [-10000, 0]
-    if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] >= -10000)
+    if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] >= -10000)
     {
-      if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] <= 0)
-        g_pArrSndBuf_5244AC[2]->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]);
+      if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266] <= 0)
+        g_pArrSndBuf_5244AC[2]->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_sysDataSave_530170.g_nVolumeLevel_530266]);
       else
         g_pArrSndBuf_5244AC[2]->SetVolume(0);
     }
