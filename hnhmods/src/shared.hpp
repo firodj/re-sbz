@@ -270,7 +270,7 @@ extern int(__cdecl* ConvertFrom640AsInt)(int nNum);
 extern double(__cdecl*ConvertFrom640AsFloat)(float fNum);
 extern int(__cdecl* ConvertFrom1024AsInt)(int nNum);
 extern double(__cdecl* ConvertFrom1024AsFloat)(float fNum);
-extern BYTE(&g_sysDataSave_530170)[256];
+extern CSystemDataSave &g_sysDataSave_530170;
 
 #endif
 

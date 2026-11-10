@@ -48,7 +48,7 @@ void (__cdecl*GameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)()>(0x
 static LPDIRECTSOUNDBUFFER s_arrUIEffectDSBuffer_52F168[5];
 static CSoundStruct_8* s_arrFootstepSound_52F17C[4];
 static CSoundStruct_8* s_arrFootstepSound_52F18C[4];
-static BYTE s_byData0Dat_530170[256];
+static CSystemDataSave s_sysDataSave_530170;
 static BYTE s_sceneProgressFlag_530269;
 static CSceneState s_sceneState_52F7E0;
 static const char* s_szLastDDError_51836C;
@@ -57,7 +57,7 @@ static const char* s_szLastDDError_51836C;
 LPDIRECTSOUNDBUFFER(&g_arrUIEffectDSBuffer_52F168)[5] = *(LPDIRECTSOUNDBUFFER(*)[5])0x52F168; // WRITABLE
 CSoundStruct_8* (&g_arrFootstepSound_52F17C)[4] = *(CSoundStruct_8 * (*)[4])0x52F17C; // WRITABLE
 CSoundStruct_8* (&g_arrFootstepSound_52F18C)[4] = *(CSoundStruct_8 * (*)[4])0x52F18C; // WRITABLE
-BYTE(&g_sysDataSave_530170)[256] = *(BYTE(*)[256])0x530170; // WRITABLE
+CSystemDataSave& g_sysDataSave_530170 = *(CSystemDataSave*)0x530170; // WRITABLE
 BYTE& g_sceneProgressFlag_530269 = *(BYTE*)0x530269; // WRITABLE
 CSceneState& g_sceneState_52F7E0 = *(CSceneState*)0x52F7E0; // WRITABLE
 const char*& g_szLastDDError_51836C = *(const char**)0x51836C; // WRITABLE
@@ -76,7 +76,7 @@ CHAR(&g_pszSaveNameFmt_52F1AC)[4] = *(CHAR(*)[4])0x52F1AC; // WRITABLE (never wr
 LPDIRECTSOUNDBUFFER(&g_arrUIEffectDSBuffer_52F168)[5] = s_arrUIEffectDSBuffer_52F168;
 CSoundStruct_8* (&g_arrFootstepSound_52F17C)[4] = s_arrFootstepSound_52F17C;
 CSoundStruct_8* (&g_arrFootstepSound_52F18C)[4] = s_arrFootstepSound_52F18C;
-BYTE(&g_sysDataSave_530170)[256] = s_byData0Dat_530170;
+CSystemDataSave &g_sysDataSave_530170 = s_sysDataSave_530170;
 BYTE& g_sceneProgressFlag_530269 = s_sceneProgressFlag_530269;
 CSceneState& g_sceneState_52F7E0 = s_sceneState_52F7E0;
 const char*& g_szLastDDError_51836C = s_szLastDDError_51836C;
@@ -115,7 +115,7 @@ void __cdecl hook_GameMainLoop_47F013(void)
   memset(g_arrFootstepSound_52F17C, 0, sizeof(g_arrFootstepSound_52F17C));
 
   // reset the data0.dat save image, default AVI volume (2), byte_530267 := 1
-  memset(g_sysDataSave_530170, 0, sizeof(g_sysDataSave_530170));
+  memset(&g_sysDataSave_530170, 0, sizeof(g_sysDataSave_530170));
   g_nVolumeLevel_530266 = 2;
   g_nTextSpeed_530267 = 1;
 
@@ -123,7 +123,7 @@ void __cdecl hook_GameMainLoop_47F013(void)
   wsprintfA(szPathBuf, "data0.dat");                // aData0Dat @0x4C7300
   CHanaObj__GetRealPath_486D9A(szPathBuf, 1010);    // 1010 = DATA dir
   if (IsFileExists_47E8EE(szPathBuf))
-    ReadFileToBuffer(szPathBuf, g_sysDataSave_530170, sizeof(g_sysDataSave_530170));
+    ReadFileToBuffer(szPathBuf, &g_sysDataSave_530170, sizeof(g_sysDataSave_530170));
 
   RestartInputThread(0);                          // twice, as in the original
   RestartInputThread(0);
@@ -227,7 +227,7 @@ void __cdecl hook_GameMainLoop_47F013(void)
     {
       wsprintfA(szPathBuf, "data0.dat");
       CHanaObj__GetRealPath_486D9A(szPathBuf, 1010);
-      WriteBufferToFile(szPathBuf, g_sysDataSave_530170, sizeof(g_sysDataSave_530170));
+      WriteBufferToFile(szPathBuf, &g_sysDataSave_530170, sizeof(g_sysDataSave_530170));
         }
 
         if (nMenuResult == 1)                         // menu said quit
