@@ -160,13 +160,13 @@ int __cdecl hook_RunModeSelectScreen(CHanaSceneT458_S504 *pScene,
         if (IsMenuKeyPressed_481170())
         {
             PauseSceneAudio_46A2A0(pScene, 1);
-            StopAndRestartThread(0);
+            RestartInputThread(0);
             memcpy(&sceneSnapshot, &g_sceneState_52F7E0, sizeof(sceneSnapshot));
             nResult = SystemMenu_4655AB(g_pDSBuf_52EFD0, -1000, iMenuTab ? 2 : 0,
                                         g_sceneState_52F7E0.protCurrentHP_C0,
                                         g_sceneState_52F7E0.protMaximumHP_C4,
                                         sceneSnapshot);
-            StopAndRestartThread(2);
+            RestartInputThread(2);
             ApplyFrameEffectOption(pScene);
             PauseSceneAudio_46A2A0(pScene, 0);
             if (nResult >= 1)
@@ -489,13 +489,13 @@ int __cdecl hook_RunSceneSelectScreen(CHanaSceneT458_S504 *pScene,
     if (IsMenuKeyPressed_481170())
     {
       PauseSceneAudio_46A2A0(pScene, 1);
-      StopAndRestartThread(0);
+      RestartInputThread(0);
       memcpy(&sceneSnapshot, &g_sceneState_52F7E0, sizeof(sceneSnapshot));
       nResult = SystemMenu_4655AB(g_pDSBuf_52EFD0, -1000, iMenuTab ? 2 : 0,
         g_sceneState_52F7E0.protCurrentHP_C0,
         g_sceneState_52F7E0.protMaximumHP_C4,
         sceneSnapshot);
-      StopAndRestartThread(2);
+      RestartInputThread(2);
       ApplyFrameEffectOption(pScene);
       PauseSceneAudio_46A2A0(pScene, 0);
       if (nResult >= 1)
@@ -745,7 +745,7 @@ int __cdecl hook_SetFrameVisibilityAndGetHIndex(CHanaSceneT458_S504 *pScene, int
 }
 
 // ApplyFrameEffectOption(pScene)
-// Re-applies the user's 5-level effect option (g_nEffectLevel_530265, 0-4, set on the System menu options page - SysMenu_Options_462FE9) to the scene's overlay frames. Returns the last frame left visible (flag_130==0), NULL otherwise; all 6 callers (sub_46D9AF, sub_46F37E, Scene4_4703AE x4) discard it.
+// Re-applies the user's 5-level effect option (g_nHSceneMale_530265, 0-4, set on the System menu options page - SysMenu_Options_462FE9) to the scene's overlay frames. Returns the last frame left visible (flag_130==0), NULL otherwise; all 6 callers (sub_46D9AF, sub_46F37E, Scene4_4703AE x4) discard it.
 // pScene: CHanaSceneT458_S504 (NULL -> returns NULL).
 // 1. Root frame: first pScene->refsFrames_134[i] whose szName_8 starts with "h\h" (aHhFramePrefix, 3-char _strnicmp). No root -> NULL.
 // 2. Frames "_h00_all" and "_p00_" (szFrameNames table):
@@ -789,7 +789,7 @@ void __cdecl hook_ApplyFrameEffectOption(CHanaSceneT458_S504 *pScene)
         pFrame = FindFrameByName_47E999(pRootFrame, String[i]);
         if ( pFrame )
         {
-          if ( g_nEffectLevel_530265 )
+          if ( g_nHSceneMale_530265 )
           {
             pFrame->bAlphaDeferred_130 = 1;
             Frame_ApplyFadeRecursive(pFrame, 0.0);
@@ -809,8 +809,8 @@ void __cdecl hook_ApplyFrameEffectOption(CHanaSceneT458_S504 *pScene)
       FrameByName_47E999 = FindFrameByName_47E999(pRootFrame, "_d00_all");
       if ( FrameByName_47E999 )
       {
-        FrameByName_47E999->bAlphaDeferred_130 = !g_nEffectLevel_530265 || g_nEffectLevel_530265 == 4;
-        Frame_ApplyFadeRecursive(FrameByName_47E999, alpha[(unsigned __int8)g_nEffectLevel_530265]);
+        FrameByName_47E999->bAlphaDeferred_130 = !g_nHSceneMale_530265 || g_nHSceneMale_530265 == 4;
+        Frame_ApplyFadeRecursive(FrameByName_47E999, alpha[(unsigned __int8)g_nHSceneMale_530265]);
         if ( FrameByName_47E999->bAlphaDeferred_130 )
         {
           FrameByName_47E999->iAlpha1000_124 = 0;
@@ -819,7 +819,7 @@ void __cdecl hook_ApplyFrameEffectOption(CHanaSceneT458_S504 *pScene)
         else
         {
           v4 = FrameByName_47E999;
-          FrameByName_47E999->iAlpha1000_124 = (__int64)(alpha[(unsigned __int8)g_nEffectLevel_530265] * 1000.0);
+          FrameByName_47E999->iAlpha1000_124 = (__int64)(alpha[(unsigned __int8)g_nHSceneMale_530265] * 1000.0);
           FrameByName_47E999->iAlpha1000_120 = FrameByName_47E999->iAlpha1000_124;
         }
       }

@@ -92,7 +92,7 @@ int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F
     pBackgroundSurface = LoadBmpScaled_4203B3(szFileName, ConvertFrom640AsInt(640), ConvertFrom640AsInt(480));
 
     g_sceneState_52F7E0.bActiveSceneStep = 0;
-    StopAndRestartThread(2);
+    RestartInputThread(2);
 
     for (;;)
     {
@@ -101,11 +101,11 @@ int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F
         // menu key -> SystemMenu (mode 2)
         if (IsMenuKeyPressed_481170())
         {
-            StopAndRestartThread(0);
+            RestartInputThread(0);
             memcpy(&sceneScratch, &g_sceneState_52F7E0, sizeof(sceneScratch));
             nResult = SystemMenu_4655AB(*ppBgmBuffer, -1000, 2, 666.0f, 666.0f,
                                          sceneScratch);
-            StopAndRestartThread(2);
+            RestartInputThread(2);
             if (nResult >= 1)
                 break;
         }
@@ -134,7 +134,7 @@ int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F
         if (nHoverChar != -1 && nMouseBtn != nPrevMouseBtn && nMouseBtn == 1)
         {
             nChosenChar = nHoverChar;
-            StopAndRestartThread(0);
+            RestartInputThread(0);
             if (g_arrUIEffectDSBuffer_52F168[2])              // "On" click (0x52F170)
                 DSBufferPlay(g_arrUIEffectDSBuffer_52F168[2], 0);
             if (*ppBgmBuffer)
@@ -152,7 +152,7 @@ int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F
             // neither assault exited the game: resume BGM
             if (*ppBgmBuffer)
                 DSBufferPlay(*ppBgmBuffer, 0);
-            StopAndRestartThread(2);
+            RestartInputThread(2);
         }
 
         // top-bar hot columns (any click; column 3 right-click only)
@@ -231,7 +231,7 @@ int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F
             arrCharSurfaces[i] = NULL;
         }
     }
-    StopAndRestartThread(0);
+    RestartInputThread(0);
     return nResult;
 }
 
@@ -444,7 +444,7 @@ int __cdecl hook_MenuGallery(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F6_S
   }
 
   g_sceneState_52F7E0.bActiveSceneStep = 0;
-  StopAndRestartThread(2);
+  RestartInputThread(2);
 
   for (;;)
   {
@@ -453,11 +453,11 @@ int __cdecl hook_MenuGallery(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F6_S
     // menu key -> SystemMenu (mode 2)
     if (IsMenuKeyPressed_481170())
     {
-      StopAndRestartThread(0);
+      RestartInputThread(0);
       memcpy(&sceneScratch, &g_sceneState_52F7E0, sizeof(sceneScratch));
       nResult = SystemMenu_4655AB(*ppBgmBuffer, -1000, 2, 666.0f, 666.0f,
         sceneScratch);
-      StopAndRestartThread(2);
+      RestartInputThread(2);
       if (nResult >= 1)
         break;
     }
@@ -635,7 +635,7 @@ int __cdecl hook_MenuGallery(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F6_S
       thumbSurfaces[i] = NULL;
     }
   }
-  StopAndRestartThread(0);
+  RestartInputThread(0);
   return nResult;
 }
 
@@ -691,7 +691,7 @@ int __cdecl hook_MenuMusicSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3
     (int)ConvertFrom1024AsFloat(832.0f), (int)ConvertFrom1024AsFloat(200.0f));
 
   g_sceneState_52F7E0.bActiveSceneStep = 0;
-  StopAndRestartThread(2);
+  RestartInputThread(2);
 
   for (;;)
   {
@@ -700,11 +700,11 @@ int __cdecl hook_MenuMusicSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3
     // menu key -> SystemMenu (mode 2)
     if (IsMenuKeyPressed_481170())
     {
-      StopAndRestartThread(0);
+      RestartInputThread(0);
       memcpy(&sceneScratch, &g_sceneState_52F7E0, sizeof(sceneScratch));
       nResult = SystemMenu_4655AB(*ppBgmBuffer, -1000, 2, 666.0f, 666.0f,
         sceneScratch);
-      StopAndRestartThread(2);
+      RestartInputThread(2);
       if (nResult >= 1)
         break;
     }
@@ -754,7 +754,7 @@ int __cdecl hook_MenuMusicSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3
         *ppBgmBuffer = LoadWav_422E7B(szFileName);
         if (*ppBgmBuffer)
         {
-          int nVol = (int)(g_fVolumeDbTable[g_nAviVolumeIndex_530266] - 1000.0f);
+          int nVol = (int)(g_fVolumeDbTable[g_nVolumeLevel_530266] - 1000.0f);
           if (nVol < -10000)
             nVol = -10000;
           else if (nVol > 0)
@@ -880,7 +880,7 @@ int __cdecl hook_MenuMusicSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3
     pBmpIndicator->Release();
     pBmpIndicator = NULL;
   }
-  StopAndRestartThread(0);
+  RestartInputThread(0);
   return nResult;
 }
 

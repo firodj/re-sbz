@@ -765,10 +765,10 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   if (pBgmBuf)
   {
     // clamp table[aviVolume] - 1000 dB to [-10000, 0]
-    if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] - 1000.0) >= -10000)
+    if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) >= -10000)
     {
-      if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] - 1000.0) <= 0)
-        pBgmBuf->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] - 1000.0));
+      if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) <= 0)
+        pBgmBuf->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0));
       else
         pBgmBuf->SetVolume(0);
     }
@@ -866,10 +866,10 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   if (g_pArrSndBuf_5244AC[0])
   {
     // clamp table[aviVolume] dB to [-10000, 0]
-    if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] >= -10000)
+    if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] >= -10000)
     {
-      if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] <= 0)
-        g_pArrSndBuf_5244AC[0]->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266]);
+      if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] <= 0)
+        g_pArrSndBuf_5244AC[0]->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]);
       else
         g_pArrSndBuf_5244AC[0]->SetVolume(0);
     }
@@ -888,10 +888,10 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   if (g_pArrSndBuf_5244AC[2])
   {
     // clamp table[aviVolume] dB to [-10000, 0]
-    if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] >= -10000)
+    if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] >= -10000)
     {
-      if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] <= 0)
-        g_pArrSndBuf_5244AC[2]->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266]);
+      if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] <= 0)
+        g_pArrSndBuf_5244AC[2]->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]);
       else
         g_pArrSndBuf_5244AC[2]->SetVolume(0);
     }
@@ -921,7 +921,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   LABEL_68:
     if (pBgmBuf)
       DSBufferPlay(pBgmBuf, 1);
-    StopAndRestartThread(1);
+    RestartInputThread(1);
     Sleep(0);
     SetFramePosRel_4069DD(pHeroBody->pSekHeader_220->pFrameT3EC,
       (CHanaFrameT3EC_S354 *)g_pSceneFrame, fHeroX, fHeroY, fHeroZ);
@@ -983,11 +983,11 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
           if (arrVoiceBufs[i] && arrVoiceBufs[i]->pDSBuffer_0)
             arrVoiceBufs[i]->pDSBuffer_0->Stop();
         }
-        StopAndRestartThread(0);
+        RestartInputThread(0);
         sceneMenuCopy = sceneStateLive;
         nSysMenuResult = SystemMenu_4655AB(pBgmBuf, -1000, 0, fHeroHpCur,
           fHeroHpMax, sceneMenuCopy);
-        StopAndRestartThread(1);
+        RestartInputThread(1);
         bFirstFrameDone = 0;
         if (nSysMenuResult >= 1)
           break;
@@ -1033,7 +1033,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
             &fHeroHpCur, fHeroHpMax);
           fActTimer = 0.0f;
         }
-        if (pHeroBody->field_200 <= 6 && g_btoggleC_530268)
+        if (pHeroBody->field_200 <= 6 && g_nFirstPersonCam_530268)
         {
           UpdateCameraFollowDuel_44C028(pHeroBody, pFoeBody, fDelta);
         }
@@ -1113,7 +1113,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
       || pHeroBody->field_200 == 11 || pHeroBody->field_200 == 13);
 
     // --- round ended: menu exit / defeat-timeout / victory / next wana
-    StopAndRestartThread(0);
+    RestartInputThread(0);
     if (pBgmBuf)
       pBgmBuf->Stop();
     for (i = 0; i < 20; ++i)
@@ -1176,7 +1176,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   }
 
   // --- cleanup
-  StopAndRestartThread(0);
+  RestartInputThread(0);
   for (i = 0; i < 10; ++i)
   {
     if (g_pArrSndBuf_5244AC[i])
@@ -2653,7 +2653,7 @@ void __cdecl hook_BindSceneActors_448C72(
   }
 }
 
-// Duel overhead camera (hunting mode, hero anim <= 6 + g_btoggleC_530268). Moves g_pCameraFrame to 16 units above
+// Duel overhead camera (hunting mode, hero anim <= 6 + g_nFirstPersonCam_530268). Moves g_pCameraFrame to 16 units above
 // the hero (hero-local Y up), aims it at the FOE (foe frame temporarily repositioned to 2x hero-foe horizontal
 // distance along hero-local Z and re-posed to anim time 0 for a stable look-at target, both restored at the end),
 // flags the hero frame bAlphaDeferred_130=1 (deferred/ghosted so it does not block the overhead view),

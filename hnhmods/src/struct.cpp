@@ -480,7 +480,7 @@ extern const int g_texCoordSizeLUT_4A8368[4] = { 2 ,3 ,4, 1 };
 // g_fVolumeDbTable -- [011019][TEATIME] AVI volume index -> DirectSound dB attenuation
 //
 // Extracted verbatim from the game binary (.rdata @0x4C6F4C, 0x28 bytes).
-// Indexed by g_nAviVolumeIndex_530266 (BYTE; default 2). Consumers clamp the
+// Indexed by g_nVolumeLevel_530266 (BYTE; default 2). Consumers clamp the
 // result (often - 1000 dB for BGM) to DirectSound's [-10000, 0] before
 // IDirectSoundBuffer::SetVolume: GameMainLoop AVI audio, InGameMenu/MenuCharSelect
 // menu BGM, SystemMenu, ParseExecStr script sound, PlayExploring/PlayHunting/

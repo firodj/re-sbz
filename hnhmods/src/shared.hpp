@@ -258,8 +258,6 @@ extern double(__cdecl*ConvertFrom640AsFloat)(float fNum);
 extern int(__cdecl* ConvertFrom1024AsInt)(int nNum);
 extern double(__cdecl* ConvertFrom1024AsFloat)(float fNum);
 extern const CSceneSlot g_arrSceneNo_4C6F78[100];  // compiled-in copy of .data @0x4C6F78 ([1..82] steps, 83=terminator)
-extern BYTE &g_nAviVolumeIndex_530266;
-extern BYTE& g_nAviFrameMultipler_530267;
 extern BYTE(&g_byData0Dat_530170)[256];
 
 #endif
@@ -361,15 +359,17 @@ extern int(__cdecl* SysMenu_GirlStatusCheck_464919)(LPDIRECTDRAWSURFACE7* arrSur
   CHanaSpriteT3F6_S1FC* pCursor, CHanaSpriteT3F6_S1FC* pYesNo, int nMouseX, int nMouseY,
   int bPressed, int* pnSceneStep, float fCurHP, float fMaxHP, QWORD* pSceneFlags);
 
-// === DEFINED SysMenu_Options_462FE9.cpp ===
+// === DEFINED SystemMenu.cpp ===
 
 extern void(__cdecl* SysMenu_Options_462FE9)(CSceneState* sceneStates,
   LPDIRECTDRAWSURFACE7* arrSurf, CHanaSpriteT3F6_S1FC* pCursor, CHanaSpriteT3F6_S1FC* pYesNo,
   int nMouseX, int nMouseY, int bPressed);
 
-extern BYTE& g_mapFrameFlag_530264;
-extern BYTE& g_nEffectLevel_530265;
-extern BYTE& g_btoggleC_530268;
+extern BYTE& g_nHSceneBackground_530264;
+extern BYTE& g_nHSceneMale_530265;
+extern BYTE& g_nFirstPersonCam_530268;
+extern BYTE& g_nVolumeLevel_530266; // in: SystemMenu.cpp
+extern BYTE& g_nTextSpeed_530267; // in: SystemMenu.cpp
 
 // === DEFINED SysMenu_Graphics_46380D.cpp ===
 
@@ -536,12 +536,12 @@ extern WNDPROC WndProcTitleMenu_428C11;
 extern BOOL(__cdecl* FreeBmp_4211ED)(CBMPFile* pBMPFile);
 extern CBMPFile* (__cdecl* LoadBmp_420DF0)(LPCSTR lpFileName);
 
-// === DEFINED StopAndRestartThread.cpp ===
+// === DEFINED RestartInputThread.cpp ===
 
 extern CInputState* (*GetInputState_481B37)(void);
 extern bool(__cdecl* GetCursorPos_4811FA)(int* pOutX, int* pOutY, __int16* pOutBtn);
 extern void(__cdecl* MutexThreadWait_4815EC)(bool bWait);
-extern void(__cdecl* StopAndRestartThread)(DWORD nThreadType);
+extern void(__cdecl* RestartInputThread)(DWORD nThreadType);
 
 // === DEFINED ProcessFrame.cpp ===
 

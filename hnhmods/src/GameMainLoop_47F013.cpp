@@ -47,8 +47,6 @@ LPDIRECTSOUNDBUFFER (&g_arrUIEffectDSBuffer_52F168)[5] = *(LPDIRECTSOUNDBUFFER(*
 CSoundStruct_8 *(&g_arrFootstepSound_52F17C)[4] = *(CSoundStruct_8 *(*)[4])0x52F17C; // WRITABLE
 CSoundStruct_8 *(&g_arrFootstepSound_52F18C)[4] = *(CSoundStruct_8 *(*)[4])0x52F18C; // WRITABLE
 BYTE (&g_byData0Dat_530170)[256]     = *(BYTE(*)[256])0x530170; // WRITABLE
-BYTE &g_nAviVolumeIndex_530266       = *(BYTE*)0x530266; // WRITABLE
-BYTE &g_nAviFrameMultipler_530267    = *(BYTE*)0x530267; // WRITABLE
 BYTE &g_sceneProgressFlag_530269     = *(BYTE*)0x530269; // WRITABLE
 CSceneState &g_sceneState_52F7E0     = *(CSceneState*)0x52F7E0; // WRITABLE
 // CSceneSlot (&g_arrSceneNo_4C6F78)[10] = *(CSceneSlot(*)[10])0x4C6F78; // READ-ONLY  // replaced by compiled-in [100] copy
@@ -95,8 +93,8 @@ void __cdecl hook_GameMainLoop_47F013(void)
 
     // reset the data0.dat save image, default AVI volume (2), byte_530267 := 1
     memset(g_byData0Dat_530170, 0, 0x100);
-    g_nAviVolumeIndex_530266 = 2;
-    g_nAviFrameMultipler_530267 = 1;
+    g_nVolumeLevel_530266 = 2;
+    g_nTextSpeed_530267 = 1;
 
     // load the previous save if present: <DATA>\data0.dat
     wsprintfA(szPathBuf, "data0.dat");                // aData0Dat @0x4C7300
@@ -104,8 +102,8 @@ void __cdecl hook_GameMainLoop_47F013(void)
     if (IsFileExists_47E8EE(szPathBuf))
         ReadFileToBuffer(szPathBuf, g_byData0Dat_530170, 256);
 
-    StopAndRestartThread(0);                          // twice, as in the original
-    StopAndRestartThread(0);
+    RestartInputThread(0);                          // twice, as in the original
+    RestartInputThread(0);
     ReleaseSoundEffects();
     PlayVideoWith3DAudio_4791A3("op.avi", 0);         // aOpAvi @0x4C730C
     LoadSoundEffects_47EB7F();
@@ -415,16 +413,16 @@ void __cdecl hook_BMP_Convert24bitTo16bitWithDither(CBMPFile *pBMPFile)
 //   1. Loads the full-screen background "gov.gp" via GetRealPath(1007) and scales it to the
 //      640x480->real resolution with LoadBmpScaled_4203B3(pszBmp, w, h).
 //   2. Loads the paired "s014.wav" via GetRealPath(1006) + LoadWav_422E7B; volume is taken
-//      from g_fVolumeDbTable[g_nAviVolumeIndex_530266] (clamped to [-10000, 0]).
+//      from g_fVolumeDbTable[g_nVolumeLevel_530266] (clamped to [-10000, 0]).
 //   3. Fades the screen in (PlayScreenFade) over a 0xFF2626FF maroon while the WAV plays
 //      (DSBufferPlay).
-//   4. Pump loop (StopAndRestartThread(2) around it): DoPeekMessages + poll mouse button/XY;
+//   4. Pump loop (RestartInputThread(2) around it): DoPeekMessages + poll mouse button/XY;
 //      each frame blits the backdrop into the back buffer (DDBLT_WAIT 0x1000000) and
 //      PresentFrame + HanaVert_DrawBatch. Breaks when a mouse button is pressed, when the
 //      WAV has stopped (GetStatus & DSB_PLAYING cleared), or after a 500-frame cap when no
 //      sound. Sleep(10ms) per frame.
 //   5. Fades out (PlayScreenFade, 0xFFFFFFFF), releases the surface + sound buffer,
-//      StopAndRestartThread(0), and restores the saved D3DRS_ANTIALIAS state.
+//      RestartInputThread(0), and restores the saved D3DRS_ANTIALIAS state.
 void hook_ShowBackdropAndWait_4795CE()
 {
   DWORD nW; // eax
@@ -465,10 +463,10 @@ void hook_ShowBackdropAndWait_4795CE()
   PlayScreenFade(0, 0xFF2626FF, 0, 25.0, 0);
   if ( pSndBuf )
   {
-    if ( (int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] >= -10000 )
+    if ( (int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] >= -10000 )
     {
-      if ( (int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] <= 0 )
-        pSndBuf->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266]);
+      if ( (int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] <= 0 )
+        pSndBuf->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]);
       else
         pSndBuf->SetVolume(0);
     }
@@ -479,7 +477,7 @@ void hook_ShowBackdropAndWait_4795CE()
     DSBufferPlay(pSndBuf, 0);
   }
   PlayScreenFade(1, 0xFF2626FF, pDdSurface, 1.0, 0);
-  StopAndRestartThread(2u);
+  RestartInputThread(2u);
   while ( 1 )
   {
     DoPeekMessages();
@@ -527,7 +525,7 @@ void hook_ShowBackdropAndWait_4795CE()
       pSndBuf = 0;
     }
   }
-  StopAndRestartThread(0);
+  RestartInputThread(0);
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, dwAntialias);
 }
 

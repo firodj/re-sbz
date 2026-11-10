@@ -213,12 +213,12 @@ BOOL WINAPI hookPeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wM
 		if (wm_input && translate) {
 			TranslateMessage(lpMsg);
 		}
-		if (wm_input && ImGui::GetCurrentContext() != nullptr) {
+		if (wm_input) {
 			ImGui_ImplWin32_WndProcHandler(lpMsg->hwnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
-			// ImGuiIO& io = ImGui::GetIO();
+			
 		}
 
-		if (logging && false) {
+		if (logging) {
 			DebugLog("[user32] PeekMessage req.hWnd=0x%x hWnd=0x%x message=0x%x(%s) wParam=0x%x lParam=0x%x time=%d pt=(%d,%d)\n",
 				hWnd, lpMsg->hwnd,
 				lpMsg->message, msgName, lpMsg->wParam, lpMsg->lParam,

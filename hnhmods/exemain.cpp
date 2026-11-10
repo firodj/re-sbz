@@ -9,7 +9,7 @@ void DirectHookHNH() {
 	register_D3DXMatrixIdentity_40E450(1);
 	register_CDROM_VerifyDiscSignature_485C50(1);
 	register_DSErrToString_423CE7(1);
-	register_StopAndRestartThread_481AE4(1);
+	register_RestartInputThread_481AE4(1);
 
 	register_ParseODFContent_441A5D(1);
 	register_ParseODS_483932(1);

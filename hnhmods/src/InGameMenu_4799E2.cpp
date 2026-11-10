@@ -62,10 +62,10 @@ DWORD& g_dwDSStatus_5185C8 = s_dwDSStatus_5185C8;
 
 #endif
 
-// clamp g_fVolumeDbTable[g_nAviVolumeIndex_530266] - 1000 to [-10000, 0] dB
+// clamp g_fVolumeDbTable[g_nVolumeLevel_530266] - 1000 to [-10000, 0] dB
 static void ApplyMenuBgmVolume(LPDIRECTSOUNDBUFFER pBgmBuffer)
 {
-    int nVol = (int)(g_fVolumeDbTable[g_nAviVolumeIndex_530266] - 1000.0f);
+    int nVol = (int)(g_fVolumeDbTable[g_nVolumeLevel_530266] - 1000.0f);
     if (nVol < -10000)
         nVol = -10000;
     else if (nVol > 0)
@@ -162,7 +162,7 @@ void __cdecl hook_MainMenu_47DF0D(void)
 // s004.wav BGM): -3 character select -> -2 gallery -> -1 music/sound options;
 // any state >= 0 exits back to InGameMenu.
 //
-// Menu BGM volume = g_fVolumeDbTable[g_nAviVolumeIndex_530266] - 1000, clamped
+// Menu BGM volume = g_fVolumeDbTable[g_nVolumeLevel_530266] - 1000, clamped
 // to [-10000, 0] dB (note: unlike the UI effects, these buffers CAN be
 // volume-controlled -- LoadWav_422E7B creates them without DSBCAPS_CTRLVOLUME,
 // so the clamp silently fails too; kept faithful).
@@ -226,7 +226,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
 
     g_sceneState_52F7E0.bActiveSceneStep = 0;
     PlayScreenFade(1, 0xFF000000, pTitleSurface, 50.0f, 0); // fade in
-    StopAndRestartThread(2);
+    RestartInputThread(2);
     g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_ANTIALIAS, &dwAntiAliasSaved);
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 0);
 
@@ -269,14 +269,14 @@ int __cdecl hook_InGameMenu_4799E2(void)
             }
             if (nMenuSelected == 1)                         // Continue (load/config)
             {
-                StopAndRestartThread(0);
+                RestartInputThread(0);
                 memcpy(&sceneScratch, &g_sceneState_52F7E0, sizeof(sceneScratch));
                 nMenuSelected = SystemMenu_4655AB(pBgmBuffer, -1000, 1,
                                                   g_sceneState_52F7E0.protCurrentHP_C0,
                                                   g_sceneState_52F7E0.protMaximumHP_C4,
                                                   sceneScratch);
                 g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 0);
-                StopAndRestartThread(2);
+                RestartInputThread(2);
                 if (nMenuSelected == -1 || nMenuSelected == 2)
                 {
                     nMenuSelected = 0;
@@ -364,7 +364,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
         }
     }
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, dwAntiAliasSaved);
-    StopAndRestartThread(0);
+    RestartInputThread(0);
     return nMenuSelected;
 }
 

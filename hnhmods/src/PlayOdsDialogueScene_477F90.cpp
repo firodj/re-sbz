@@ -134,7 +134,7 @@ int __cdecl hook_PlayOdsDialogueScene_477F90(int nOdsIndex)
     wsprintfA(szFileName, "mouse.bmp");                       // aMouseBmp_1 @0x4C6C7C
     CHanaObj__GetRealPath_486D9A(szFileName, 1003);           // 1003 = SPR dir
     LoadBmpWithMask_413A5E(&pCursor, szFileName, szFileName);
-    StopAndRestartThread(2);
+    RestartInputThread(2);
 
     fSavedScale = (float)GetFrameTime();
     SetTimerScaleFactor(15.0f);
@@ -169,14 +169,14 @@ int __cdecl hook_PlayOdsDialogueScene_477F90(int nOdsIndex)
         if (IsMenuKeyPressed_481170())
         {
             PauseSceneAudio_46A2A0(pHanaScene, 1);
-            StopAndRestartThread(0);
+            RestartInputThread(0);
             memcpy(&stcScene, &g_sceneState_52F7E0, sizeof(stcScene));
             nResult = SystemMenu_4655AB(pHanaScene->pSndBuf_46C,
                                         pHanaScene->field_470, 0,
                                         g_sceneState_52F7E0.protCurrentHP_C0,
                                         g_sceneState_52F7E0.protMaximumHP_C4,
                                         stcScene);
-            StopAndRestartThread(2);
+            RestartInputThread(2);
             PauseSceneAudio_46A2A0(pHanaScene, 0);
             if (nResult >= 1)
                 break;
@@ -289,7 +289,7 @@ int __cdecl hook_PlayOdsDialogueScene_477F90(int nOdsIndex)
     }
 
     SetTimerScaleFactor(fSavedScale);
-    StopAndRestartThread(0);
+    RestartInputThread(0);
     if (pHanaScene)
     {
         CHanaObj__Free_40C1E4(pHanaScene);
@@ -839,7 +839,7 @@ void __cdecl hook_DrawDialogueWindow_480B2D(
   fFrameTime = fDeltaTime;
   if ( pScene )
   {
-    fFrameTime = fFrameTime * arrTextSpeedMult[(unsigned __int8)g_nAviFrameMultipler_530267];
+    fFrameTime = fFrameTime * arrTextSpeedMult[(unsigned __int8)g_nTextSpeed_530267];
     g_fFrameTime_52F1B4 = g_fFrameTime_52F1B4 + fFrameTime;
     if ( btnMouse == 3 && pScene->by_460 )
       fFrameTime = 1000.0 * fDeltaTime;

@@ -34,7 +34,7 @@ bool& g_bThreadInWaiting_52F3AE = *(bool*)0x52F3AE;
 
 // === GLOBAL FUNCTIONS ===
 
-void (__cdecl*StopAndRestartThread)(DWORD nThreadType)
+void (__cdecl*RestartInputThread)(DWORD nThreadType)
 = reinterpret_cast<void(__cdecl*)(DWORD)>(0x481AE4);
 CInputState*(*GetInputState_481B37)(void)
 = reinterpret_cast<CInputState * (*)(void)>(0x481B37);
@@ -54,7 +54,7 @@ bool(__cdecl*GetCursorPos_4811FA)(int* pOutX, int* pOutY, __int16* pOutBtn)
 
 // === FUNCTION HOOKS ===
 
-// StopAndRestartThread - Stop current game thread, optionally start a new one
+// RestartInputThread - Stop current game thread, optionally start a new one
 // Called from all game scenes to manage the worker thread
 // 
 // Arguments:
@@ -66,9 +66,9 @@ bool(__cdecl*GetCursorPos_4811FA)(int* pOutX, int* pOutY, __int16* pOutBtn)
 //   1. Always: gracefully terminate current hThread
 //   2. If bThreadType != 0: create new thread of given type
 //   3. If bThreadType == 0: just sleep 10ms (wind-down)
-void __cdecl hook_StopAndRestartThread(DWORD nThreadType)
+void __cdecl hook_RestartInputThread(DWORD nThreadType)
 {
-  ONCELOG("[HNH:SUB] %s\n", "StopAndRestartThread_481AE4");
+  ONCELOG("[HNH:SUB] %s\n", "RestartInputThread_481AE4");
 
   g_hThread = TerminateThreadGracefully(g_hThread); // Store terminated handle (NULL) back to hThread
   if ( nThreadType != 0 )
@@ -363,7 +363,7 @@ bool __cdecl hook_GetCursorPos_4811FA(int *pOutX, int *pOutY, __int16 *pOutBtn)
   The producers
 
   Two thread bodies (only one alive at a time, swapped via the g_bRequestThreadStop handshake you've seen in
-  StopAndRestartThread.cpp):
+  RestartInputThread.cpp):
 
   - InputThread_Relative_481637 -- gameplay mouse-look mode; re-pins the OS cursor to center each tick so relative motion
   is unbounded
@@ -426,9 +426,9 @@ void __cdecl hook_MutexThreadWait_4815EC(bool bWait)
   }
 }
 
-void register_StopAndRestartThread_481AE4(int cfg) {
+void register_RestartInputThread_481AE4(int cfg) {
   if (cfg == 1) {
-    StopAndRestartThread = hook_StopAndRestartThread;
+    RestartInputThread = hook_RestartInputThread;
     GetInputState_481B37 = hook_GetInputState_481B37;
     MutexThreadWait_4815EC = hook_MutexThreadWait_4815EC;
     TerminateThreadGracefully = hook_TerminateThreadGracefully;
@@ -446,7 +446,7 @@ void register_StopAndRestartThread_481AE4(int cfg) {
   hnh_Hook(0x4811FA, hook_GetCursorPos_4811FA, "GetCursorPos_4811FA"); // [OK] 
 
 
-  hnh_Hook(0x481AE4, hook_StopAndRestartThread, "StopAndRestartThread_481AE4"); // [OK] 
+  hnh_Hook(0x481AE4, hook_RestartInputThread, "RestartInputThread_481AE4"); // [OK] 
   hnh_Hook(0x481A35, hook_TerminateThreadGracefully, "TerminateThreadGracefully_481A35"); // [OK] 
   hnh_Hook(0x4818FD, hook_CreateNewThread, "CreateNewThread_4818FD"); // [OK] 
   hnh_Hook(0x4815EC, hook_MutexThreadWait_4815EC, "MutexThreadWait_4815EC"); // [OK] 

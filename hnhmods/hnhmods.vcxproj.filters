@@ -51,7 +51,7 @@
     <ClCompile Include="src\GameMainLoop_47F013.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\StopAndRestartThread.cpp">
+    <ClCompile Include="src\RestartInputThread.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\LoadSoundEffects_47EB7F.cpp">

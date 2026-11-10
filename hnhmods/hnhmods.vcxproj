@@ -227,7 +227,9 @@
     <ClCompile Include="dllmain.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="exemain.cpp" />
+    <ClCompile Include="exemain.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">Create</PrecompiledHeader>
@@ -298,7 +300,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\StopAndRestartThread.cpp">
+    <ClCompile Include="src\RestartInputThread.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>

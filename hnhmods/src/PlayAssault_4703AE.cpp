@@ -102,7 +102,7 @@ HWND &g_hwndWaitScreen = *(HWND *)0x52F0C8; // WRITABLE
 // voice already <= -1000 is stopped, sic unguarded). (Two dead stores -
 // xMouse into the modo table's dead row 20 and yMouseStash - are kept.)
 //
-// Exit: StopAndRestartThread(0); on a non-menu end PlayScreenFade(0,0,0,
+// Exit: RestartInputThread(0); on a non-menu end PlayScreenFade(0,0,0,
 // 10,0); release the Tears bodies (re-attached to g_pSceneFrame first),
 // lock-on and mode bodies; stop/free the BGM; free every Go/modo/nune/
 // mouse sprite, scene and sound struct; qwSelMask_C8 = 0. Returns -1 on a
@@ -558,10 +558,10 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     if (g_pDSBuf_52EFD0)
     {
         // clamp table[aviVolume] - 1000 dB to [-10000, 0]
-        if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] - 1000.0) >= -10000)
+        if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) >= -10000)
         {
-            if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] - 1000.0) <= 0)
-                g_pDSBuf_52EFD0->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] - 1000.0));
+            if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) <= 0)
+                g_pDSBuf_52EFD0->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0));
             else
                 g_pDSBuf_52EFD0->SetVolume(0);
         }
@@ -592,7 +592,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
 
     while (1)  // outer: one selection pass + one sub-scene playback
     {
-        StopAndRestartThread(2);
+        RestartInputThread(2);
         pfExecTime = 5.0f;
         FrameTimer_BeginFrame();
         FrameTimer_EndFrame();
@@ -715,12 +715,12 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
             if (IsMenuKeyPressed_481170())
             {
                 PauseSceneAudio_46A2A0(arrScenes[piSelected], 1);
-                StopAndRestartThread(0);
+                RestartInputThread(0);
                 sceneMenuCopy = g_sceneState_52F7E0;
                 nResult = SystemMenu_4655AB(g_pDSBuf_52EFD0, -1000,
                         iMenuTab ? 2 : 0, g_sceneState_52F7E0.protCurrentHP_C0,
                         g_sceneState_52F7E0.protMaximumHP_C4, sceneMenuCopy);
-                StopAndRestartThread(2);
+                RestartInputThread(2);
                 ApplyFrameEffectOption(arrScenes[piSelected]);
                 PauseSceneAudio_46A2A0(arrScenes[piSelected], 0);
                 for (i = 0; i < 20; ++i)
@@ -897,13 +897,13 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
             *(DWORD *)arrModoNamesOdd[20].str = xMouse;  // (sic) dead stores
             yMouseStash = yMouse;
         }
-        StopAndRestartThread(0);
+        RestartInputThread(0);
         if (nResult >= 1)
             break;
     }
 
     // --- cleanup
-    StopAndRestartThread(0);
+    RestartInputThread(0);
     if (nResult <= 0)
         PlayScreenFade(0, 0, 0, 10.0f, 0);
     for (i = 0; i < 5; ++i)
@@ -1157,7 +1157,7 @@ CHanaFrameT3EC_S354 *__cdecl hook_Scene_FindMapFrame(CHanaSceneT458_S504 *pScene
   {
     if ( !_memicmp(pScene->refsFrames_134[i]->szName_8, "Map\\", 4u) )
     {
-      pScene->refsFrames_134[i]->bAlphaDeferred_130 = g_mapFrameFlag_530264 & 1;
+      pScene->refsFrames_134[i]->bAlphaDeferred_130 = g_nHSceneBackground_530264 & 1;
       return pScene->refsFrames_134[i];
     }
   }

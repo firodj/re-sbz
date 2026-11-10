@@ -510,11 +510,11 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
         pScene->field_470 = sndVolIndex_v35 / 2;
         if (pScene->pSndBuf_46C)
         {
-          if ((int)(pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266]) >= -10000)
+          if ((int)(pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]) >= -10000)
           {
-            if ((int)(pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266]) <= 0)
+            if ((int)(pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]) <= 0)
               pScene->pSndBuf_46C->SetVolume(
-                pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266]);
+                pScene->field_470 + (__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]);
             else
               pScene->pSndBuf_46C->SetVolume(0);
           }

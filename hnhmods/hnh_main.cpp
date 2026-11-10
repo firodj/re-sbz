@@ -113,7 +113,7 @@ void InitHNH() {
 	register_D3DXMatrixIdentity_40E450();
 	register_CDROM_VerifyDiscSignature_485C50();
 	register_DSErrToString_423CE7();
-	register_StopAndRestartThread_481AE4();
+	register_RestartInputThread_481AE4();
 
 	register_ParseODFContent_441A5D(0);
 	register_ParseODS_483932(0);

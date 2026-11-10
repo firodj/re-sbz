@@ -488,10 +488,10 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
     if (pBgmBuffer)
     {
         // clamp table[aviVolume] - 1000 dB to [-10000, 0]
-        if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] - 1000.0) >= -10000)
+        if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) >= -10000)
         {
-            if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] - 1000.0) <= 0)
-                pBgmBuffer->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_nAviVolumeIndex_530266] - 1000.0));
+            if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) <= 0)
+                pBgmBuffer->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0));
             else
                 pBgmBuffer->SetVolume(0);
         }
@@ -602,7 +602,7 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
         SetupHeroEntry_4593E0(pScene, pHeroBody->pSekHeader_220->pFrameT3EC, pnSubIndex);
         SetupItemBodies_459F81(pScene, pItemBodies,
                                arrItemPlaceData[subStageTable[nStageIndex]][pnMapIndex], pnMapIndex);
-        StopAndRestartThread(1);
+        RestartInputThread(1);
         bFirstFrameDone = 0;
         SetFramePosRel_4069DD(g_pCameraFrame, pHeroBody->pSekHeader_220->pFrameT3EC,
                        0.0f, 25.0f, -1.0f);
@@ -641,11 +641,11 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
                 memcpy(&g_sceneState_52F7E0, &Src, sizeof(g_sceneState_52F7E0)); // entry state...
                 memcpy(g_sceneState_52F7E0.sceneItemBits_98, sceneStateLive.sceneItemBits_98,
                        sizeof(g_sceneState_52F7E0.sceneItemBits_98));               // ...live flags
-                StopAndRestartThread(0);
+                RestartInputThread(0);
                 sceneMenuCopy = sceneStateLive;
                 nMenuResult = SystemMenu_4655AB(pBgmBuffer, -1000, 0, fHeroHp, fHeroHpMax,
                                                 sceneMenuCopy);
-                StopAndRestartThread(1);
+                RestartInputThread(1);
                 bFirstFrameDone = 0;
                 if (nMenuResult >= 1)
                     goto LABEL_125;
@@ -906,7 +906,7 @@ LABEL_84:
 
 LABEL_125:
         bDialogueMode = 0;
-        StopAndRestartThread(0);
+        RestartInputThread(0);
         if (nMenuResult < 0)
         {
             if (fHeroHp <= 0.0f || 100 * nTimeLimit - (int)nElapsed / 10 <= 0)
@@ -977,7 +977,7 @@ LABEL_125:
     }
 
 LABEL_149:
-    StopAndRestartThread(0);
+    RestartInputThread(0);
     for (i = 0; i < 10; ++i)
     {
         if (pDSBuf[i])
@@ -3342,8 +3342,8 @@ int __cdecl hook_ShowMouseSelectDialog_4573CF(CHanaSpriteT3F6_S1FC **arrSprModes
   pWaveSpr = 0;
   pBackdropSpr = 0;
   g_sceneState_52F7E0.byte_32 = 127;
-  StopAndRestartThread(0);
-  StopAndRestartThread(2u);
+  RestartInputThread(0);
+  RestartInputThread(2u);
   wsprintfA(szBmpPath, "mouse.bmp");
   CHanaObj__GetRealPath_486D9A(szBmpPath, 1003);
   LoadBmpWithMask_413A5E(&pCursorSpr, szBmpPath, szBmpPath);
@@ -3531,7 +3531,7 @@ int __cdecl hook_ShowMouseSelectDialog_4573CF(CHanaSpriteT3F6_S1FC **arrSprModes
     CHanaObj__Free_40C1E4(pBackdropSpr);
     pBackdropSpr = 0;
   }
-  StopAndRestartThread(0);
+  RestartInputThread(0);
   return nChoice;
 }
 
