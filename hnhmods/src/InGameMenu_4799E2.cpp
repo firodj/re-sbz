@@ -3,7 +3,7 @@
 #include "console.hpp"
 #include "shared.hpp"
 
-// === PINNED GAME FUNCTIONS ===
+// === FUNCTIONS ===
 
 void (__cdecl*DSBufferPlay)(LPDIRECTSOUNDBUFFER pDSBuf, int dwPlayFlags) =
   reinterpret_cast<void(__cdecl*)(LPDIRECTSOUNDBUFFER, int)>(0x423BAF);
@@ -46,12 +46,21 @@ void (__cdecl*MainMenu_47DF0D)(void)
 int  (__cdecl*InGameMenu_4799E2)(void)
 = reinterpret_cast<int(__cdecl*)()>(0x4799E2);
 
-// === PINNED GLOBALS ===
+// === GLOBALS VARIABLES ===
 
+static int   s_sceneItemBits[10];
+static DWORD s_dwDSStatus_5185C8;
+
+#ifdef _USRDLL
 // persistent scene-flags copy @0x530238 (IDA g_sceneFlag CSceneFlag_28;
 // written by ParseExecStr HITEMGET, memcpy'd into sceneState by MainMenu)
 int   (&g_sceneItemBits)[10]            = *(int(*)[10])0x530238;     // WRITABLE
 DWORD &g_dwDSStatus_5185C8    = *(DWORD*)0x5185C8;         // WRITABLE
+#else
+int(&g_sceneItemBits)[10]  = s_sceneItemBits;
+DWORD& g_dwDSStatus_5185C8 = s_dwDSStatus_5185C8;
+
+#endif
 
 // clamp g_fVolumeDbTable[g_nAviVolumeIndex_530266] - 1000 to [-10000, 0] dB
 static void ApplyMenuBgmVolume(LPDIRECTSOUNDBUFFER pBgmBuffer)

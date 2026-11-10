@@ -11,16 +11,6 @@
 extern HINSTANCE &g_hInstance;
 extern HWND      &g_hwndParent;
 
-extern BOOL                 &g_bdiAcquire_5196E0;
-extern LPDIRECTINPUTA       &g_ppDI;
-extern LPDIRECTINPUTDEVICEA &g_pdiMouse_5196D8;
-extern DIDATAFORMAT         &g_diMouseFormat_4ACD20;
-extern LPDIRECTINPUTDEVICEA &g_pdiKeyboard;
-extern DIDATAFORMAT         &g_diKeyboardFormat_4ACD08;
-
-extern BOOL (__cdecl*DIMouseKeybInit_43AF33)(int bAcquire);
-extern BOOL (__cdecl*DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd);
-
 // === DEFINED WndProcCheckSystem.cpp ===
 
 extern BOOL &g_bD3Dinited_4D6C6C;
@@ -43,8 +33,6 @@ extern DDPIXELFORMAT& g_ddPixFormat;
 extern CObjItemRef_S208* &g_pObjectTable;
 extern int &g_nObjectTableCount;
 extern CObjPoolMgr_S58* &g_pObjPool;
-
-extern int (&g_sceneItemBits)[10];  // in:  InGameMenu.cpp
 
 extern DWORD &g_dwBytesPerPixel;
 extern DWORD &g_dwGBitMask;
@@ -69,6 +57,7 @@ extern void (__cdecl*D3DDeinit)(void);
 extern LRESULT (__stdcall*WndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 extern void (*HanaDS_Shutdown)();
 extern int(__cdecl* HanaDS_Init)(HWND hwnd);
+extern void (*AllocateDevicesDescArray)(void);
 
 // === DEFINED struct.cpp ===
  
@@ -222,10 +211,7 @@ extern uint32_t &g_nZBufDepthSelValue_518C98;
 extern int &g_nModeSetIndex;
 extern DWORD &g_nWidth;
 extern DWORD &g_nHeight;
-extern uint32_t &g_nHeight2;
 extern unsigned int& g_nBitness;
-extern uint32_t& g_nDeviceCount;
-extern D3DX_DEVICEDESC*& g_pDevicesDesc;
 
 extern BOOL(__cdecl* ShowTitleMenu_427DA8)(HWND hWnd, BOOL bFullScreen);
 extern void(__cdecl* D3DSetRenderStates_4276C0)(void);
@@ -314,6 +300,8 @@ extern void (__cdecl*MainMenu_47DF0D)(void);
 extern int (__cdecl*InGameMenu_4799E2)(void);
 extern const float g_fVolumeDbTable[10];  // compiled-in copy of .rdata @0x4C6F4C (-10000/-2000/-1000/-500/0 dB ladder + 5 unused)
 extern void(__cdecl*HanaVert_DrawBatch)(BOOL bDraw);
+
+extern int (&g_sceneItemBits)[10];
 extern DWORD& g_dwDSStatus_5185C8;
 
 // === DEFINED SystemMenu_4655AB.cpp ===

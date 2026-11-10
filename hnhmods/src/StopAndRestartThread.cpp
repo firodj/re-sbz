@@ -438,13 +438,13 @@ void register_StopAndRestartThread_481AE4(int cfg) {
     GetCursorPos_4811FA = hook_GetCursorPos_4811FA;
   }
   else {
-    hnh_Hook(0x481637, hook_InputThread_Relative_481637, "InputThread_Relative_481637"); // [OK] 
-    hnh_Hook(0x4817B1, hook_InputThread_Absolute_4817B1, "InputThread_Absolute_4817B1"); // [OK] 
-    hnh_Hook(0x4811FA, hook_GetCursorPos_4811FA, "GetCursorPos_4811FA"); // [OK] 
-
   }
 
   hnh_HookOff();
+  hnh_Hook(0x481637, hook_InputThread_Relative_481637, "InputThread_Relative_481637"); // [OK] 
+  hnh_Hook(0x4817B1, hook_InputThread_Absolute_4817B1, "InputThread_Absolute_4817B1"); // [OK] 
+  hnh_Hook(0x4811FA, hook_GetCursorPos_4811FA, "GetCursorPos_4811FA"); // [OK] 
+
 
   hnh_Hook(0x481AE4, hook_StopAndRestartThread, "StopAndRestartThread_481AE4"); // [OK] 
   hnh_Hook(0x481A35, hook_TerminateThreadGracefully, "TerminateThreadGracefully_481A35"); // [OK] 

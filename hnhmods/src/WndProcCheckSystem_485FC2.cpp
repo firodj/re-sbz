@@ -38,6 +38,7 @@ static BOOL                    s_bDSInited_5185C4;
 
 static CObjItemRef_S208* s_pObjectTable;
 static int               s_nObjectTableCount;
+static CObjPoolMgr_S58*  s_pObjPool;
 
 static HGDIOBJ s_hFont;
 static int     s_dwCharWidth;
@@ -75,6 +76,7 @@ BOOL                 &g_bDSInited_5185C4 = *(BOOL*)0x5185C4;
 
 CObjItemRef_S208 * &g_pObjectTable       = *(CObjItemRef_S208 * *)0x4D6C98; // WRITABLE
 int&                g_nObjectTableCount                 = *(int*)0x4D6C9C;
+CObjPoolMgr_S58 *  &g_pObjPool           = *(CObjPoolMgr_S58 * *)0x4D6CD0; // WRITABLE
 
 HGDIOBJ             &g_hFont         = *(HGDIOBJ*)0x518378;
 int                 &g_dwCharWidth   = *(int*)0x4B01B4;
@@ -95,11 +97,6 @@ float (&g_SineTable)[360]   = *(float (*)[360])0x5177B4; // WRITABLE
 DDBLTFX &g_ddBltFx          = *(DDBLTFX *)0x518308; // WRITABLE
 DWORD &g_dwBBitMask      = *(DWORD *)0x517D60; // WRITABLE
 
-uint32_t &dword_51779C      = *(uint32_t *)0x51779C; // WRITABLE
-uint32_t &dword_5177A0      = *(uint32_t *)0x5177A0; // WRITABLE
-uint32_t &dword_5177A4      = *(uint32_t *)0x5177A4; // WRITABLE
-uint32_t &dword_5177A8      = *(uint32_t *)0x5177A8; // WRITABLE
-
 uint32_t &g_nBBitCount      = *(uint32_t *)0x4B01C4; // WRITABLE
 uint32_t &g_nRBitCount      = *(uint32_t *)0x4B01C0; // WRITABLE
 uint32_t &g_nRGBBitCount    = *(uint32_t *)0x4B01BC; // WRITABLE
@@ -109,9 +106,70 @@ DWORD &g_dwLowestRGBBit  = *(DWORD *)0x51837C; // WRITABLE
 CHAR &g_szFontFaceName      = *(CHAR *)0x4B01C8; // WRITABLE
 LPSTR &g_pDDErrStr = *(LPSTR*)0x5185CC;
 
-HGLOBAL &g_pSekHeader                   = *(HGLOBAL *)0x4D6CCC; // WRITABLE
-CObjPoolMgr_S58 * &g_pObjPool           = *(CObjPoolMgr_S58 * *)0x4D6CD0; // WRITABLE
+D3DX_DEVICEDESC * &g_pDevicesDesc = *(D3DX_DEVICEDESC**)0x4D6CCC; // WRITABLE
+DWORD &g_nDeviceCount = *(DWORD *)0x4D6CC8; // WRITABLE
+
 IUnknown * &g_pUnk_4D6C8C                  = *(IUnknown * *)0x4D6C8C; // WRITABLE
+
+#else
+
+LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78        = s_pD3DDevice_4D6C78;
+D3DDEVICEDESC7 &g_d3dDevDesc_4D6980           = s_d3dDevDesc_4D6980;
+LPD3DXCONTEXT &g_pRenderCtx                   = s_pRenderCtx;
+LPDIRECTDRAWSURFACE7 &g_pZBuffer_4D6C94       = s_pZBuffer_4D6C94;
+LPDIRECTDRAWSURFACE7 &g_pBackBuffer_4D6C90    = s_pBackBuffer_4D6C90;
+LPDIRECTDRAWSURFACE7 &g_pPrimaryBuffer_4D6C88 = s_pPrimaryBuffer_4D6C88;
+LPDIRECTDRAW7 &g_pDD_4D6C7C                   = s_pDD_4D6C7C;
+LPDIRECT3D7 &g_pD3D_4D6C84                    = s_pD3D_4D6C84;
+BOOL &g_bD3Dinited_4D6C6C                     = s_bD3Dinited_4D6C6C;
+
+DDPIXELFORMAT &g_ddPixFormat = s_ddPixFormat;
+DWORD &g_dwPixelFormat   = s_dwPixelFormat;
+DWORD &g_dwBytesPerPixel = s_dwBytesPerPixel;
+DWORD &g_dwRGBBitMask    = s_dwRGBBitMask;
+DWORD &g_dwGBitMask      = s_dwGBitMask;
+DWORD &g_dwRBitMask      = s_dwRBitMask;
+
+LPDIRECTSOUND &g_ppDS                    = s_ppDS;
+LPDIRECTSOUND3DLISTENER &g_pds3DListener = s_pds3DListener;
+LPDIRECTSOUNDBUFFER &g_pdsBuffer         = s_pdsBuffer;
+BOOL &g_bDSInited_5185C4                 = s_bDSInited_5185C4;
+
+CObjItemRef_S208 * &g_pObjectTable       = s_pObjectTable;
+int&                g_nObjectTableCount  = s_nObjectTableCount;
+CObjPoolMgr_S58* &g_pObjPool = s_pObjPool;
+
+HGDIOBJ             &g_hFont         = s_hFont;
+int                 &g_dwCharWidth   = s_dwCharWidth;
+int                 &g_dwFontHeight  = s_dwFontHeight;
+
+CHanaLightT3EF_S1A0 * &g_pLight_4D6CE0  = s_pLight_4D6CE0;
+CHanaMateT3EE_S184 * &g_pMaterial       = s_pMaterial;
+CHanaFrameT3EC_S354 * &g_pLightFrame     = s_pLightFrame;
+CHanaFrameT3EC_S354 * &g_pCameraFrame    = s_pCameraFrame;
+CHanaFrameRootT3EC_S2D4 * &g_pSceneFrame = s_pSceneFrame;
+
+// ---
+
+DSCAPS g_dsCaps_518560;
+
+float g_CosineTable[360];
+float g_SineTable[360];
+DDBLTFX g_ddBltFx;
+DWORD g_dwBBitMask;
+
+uint32_t g_nBBitCount;
+uint32_t g_nRBitCount;
+uint32_t g_nRGBBitCount;
+DWORD g_dwLowestBBit;
+DWORD g_dwLowestRBit;
+DWORD g_dwLowestRGBBit;
+CHAR  g_szFontFaceName;
+LPSTR g_pDDErrStr;
+
+D3DX_DEVICEDESC* g_pDevicesDesc;
+DWORD g_nDeviceCount;
+IUnknown * g_pUnk_4D6C8C;
 
 #endif
 
@@ -130,6 +188,7 @@ LPDIRECTSOUND3DLISTENER (*HanaDS_Create3DListener)() = reinterpret_cast<LPDIRECT
 int (* Renderer_CleanupFont)() = reinterpret_cast<int(*)()>(0x41888E);
 void (__cdecl * SetUiFont_419BCD)(int nCharW, int nFontH, LPCSTR szFaceName) = reinterpret_cast<void(__cdecl*)(int nCharW, int nFontH, LPCSTR szFaceName)>(0x419BCD);
 LRESULT (__stdcall * WndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) = reinterpret_cast<LRESULT(__stdcall*)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)>(0x485FC2);
+void (*AllocateDevicesDescArray)(void) = reinterpret_cast<void(*)(void)>(0x40AEFB);
 
 // === FUNCTION IMPLEMENTATIONS ===
 // 
@@ -160,10 +219,10 @@ void __cdecl hook_D3DDeinit()
       CHanaObj__Free_40C1E4((CHanaBase_S130*)g_pMaterial);
       g_pMaterial = 0;
     }
-    if ( g_pSekHeader )
+    if ( g_pDevicesDesc )
     {
-      MemFree_40DF64(g_pSekHeader);
-      g_pSekHeader = 0;
+      MemFree_40DF64(g_pDevicesDesc);
+      g_pDevicesDesc = 0;
     }
     if ( g_pObjPool )
     {
@@ -608,6 +667,19 @@ LRESULT __stdcall hook_WndProcCheckSystem_485FC2(HWND hWnd, UINT Msg, WPARAM wPa
   }
 }
 
+void hook_AllocateDevicesDescArray()
+{
+  unsigned int i; // [esp+0h] [ebp-4h]
+
+  ONCELOG("[HNH:SUB] %s\n", "AllocateDevicesDescArray_40AEFB");
+
+  g_nDeviceCount = D3DXGetDeviceCount();
+  g_pDevicesDesc = (D3DX_DEVICEDESC*)MemAlloc_40DEF7(sizeof(D3DX_DEVICEDESC) * g_nDeviceCount);
+  for ( i = 0; i < g_nDeviceCount; ++i )
+    D3DXGetDeviceDescription(i, &g_pDevicesDesc[i]);
+}
+
+
 // ---
 
 void register_WndProcCheckSystem_485FC2(int cfg) {
@@ -626,6 +698,7 @@ void register_WndProcCheckSystem_485FC2(int cfg) {
     HanaDS_Create3DListener = hook_HanaDS_Create3DListener;
     Renderer_CleanupFont = hook_Renderer_CleanupFont;
     SetUiFont_419BCD = hook_SetUiFont_419BCD;
+    AllocateDevicesDescArray = hook_AllocateDevicesDescArray;
   }
 
   if (cfg != 2) hnh_HookOff();
@@ -642,6 +715,6 @@ void register_WndProcCheckSystem_485FC2(int cfg) {
   hnh_Hook(0x422690, hook_HanaDS_Create3DListener, "HanaDS_Create3DListener_422690"); // [OK] 
   hnh_Hook(0x419BCD, hook_SetUiFont_419BCD, "SetUiFont_419BCD"); // [OK] 
   hnh_Hook(0x41888E, hook_Renderer_CleanupFont, "Renderer_CleanupFont_41888E"); // [OK]
-
+  hnh_Hook(0x40AEFB, hook_AllocateDevicesDescArray, "AllocateDevicesDescArray_40AEFB"); // [OK] 
   hnh_HookOn();
 }

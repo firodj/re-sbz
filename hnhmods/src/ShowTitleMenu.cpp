@@ -23,8 +23,6 @@ int &g_nModeSetIndex = *(int *)0x518C90; // WRITABLE
 DWORD &g_nWidth  = *(DWORD *)0x518C94; // WRITABLE
 DWORD &g_nHeight = *(DWORD *)0x518C8C; // WRITABLE
 uint32_t &g_nHeight2 = *(uint32_t *)0x518C84; // WRITABLE
-uint32_t &g_nDeviceCount = *(uint32_t *)0x4D6CC8; // WRITABLE
-D3DX_DEVICEDESC * &g_pDevicesDesc = *(D3DX_DEVICEDESC**)0x4D6CCC; // WRITABLE
 
 // === GLOBAL FUNCTIONS ===
 
@@ -32,21 +30,8 @@ BOOL(__cdecl *ShowTitleMenu_427DA8)(HWND hWnd, BOOL bFullScreen) = (BOOL(__cdecl
 void(__cdecl* DisplayConfig_Destroy)(CDisplayConfig* pDisplayConfig) = reinterpret_cast<void (__cdecl * )(CDisplayConfig *)>(0x427CC9);
 void (*D3DSetRenderStates_4276C0)(void) = reinterpret_cast<void(*)()>(0x4276C0);
 HRESULT (__cdecl*D3DInit_40A894)(CD3DInitParam *pDevParam) = reinterpret_cast<HRESULT(__cdecl*)(CD3DInitParam *)>(0x40A894);
-void (*AllocateDevicesDescArray)(void) = reinterpret_cast<void(*)(void)>(0x40AEFB);
 
 // === FUNCTION IMPLEMENTATIONS ===
-
-void hook_AllocateDevicesDescArray()
-{
-  unsigned int i; // [esp+0h] [ebp-4h]
-
-  ONCELOG("[HNH:SUB] %s\n", "AllocateDevicesDescArray_40AEFB");
-
-  g_nDeviceCount = D3DXGetDeviceCount();
-  g_pDevicesDesc = (D3DX_DEVICEDESC*)MemAlloc_40DEF7(sizeof(D3DX_DEVICEDESC) * g_nDeviceCount);
-  for ( i = 0; i < g_nDeviceCount; ++i )
-    D3DXGetDeviceDescription(i, &g_pDevicesDesc[i]);
-}
 
 // ShowTitleMenu_427DA8
 // Displays the title menu and initializes Direct3D for the game
@@ -341,8 +326,7 @@ void register_ShowTitleMenu_427DA8(int cfg)
     ShowTitleMenu_427DA8 = hook_ShowTitleMenu_427DA8;
     DisplayConfig_Destroy = hook_DisplayConfig_Destroy;
     D3DSetRenderStates_4276C0 = hook_D3DSetRenderStates_4276C0;
-    D3DInit_40A894 = hook_D3DInit_40A894;
-    AllocateDevicesDescArray = hook_AllocateDevicesDescArray;
+    D3DInit_40A894 = hook_D3DInit_40A894; 
   }
 
   if (cfg != 2) hnh_HookOff();
@@ -350,7 +334,5 @@ void register_ShowTitleMenu_427DA8(int cfg)
   hnh_Hook(0x40A894, hook_D3DInit_40A894, "D3DInit_40A894"); // [OK] 
   hnh_Hook(0x427DA8, hook_ShowTitleMenu_427DA8, "ShowTitleMenu_427DA8"); // [OK] 
   hnh_Hook(0x427CC9, hook_DisplayConfig_Destroy, "DisplayConfig_Destroy_427CC9"); // [OK] 
-  hnh_Hook(0x40AEFB, hook_AllocateDevicesDescArray, "AllocateDevicesDescArray_40AEFB"); // [OK] 
-
   hnh_HookOn();
 }

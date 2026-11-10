@@ -37,8 +37,7 @@ int (__cdecl*ShowYesNoDialog_461A9E)(CHanaSpriteT3F6_S1FC *pCursor,
   CHanaSpriteT3F6_S1FC *pDialog, LPCSTR szCaption) =
   reinterpret_cast<int(__cdecl*)(CHanaSpriteT3F6_S1FC *, CHanaSpriteT3F6_S1FC *, LPCSTR)>(0x461A9E);
 
-
-// === PINNED GLOBALS ===
+// === GLOBAL VARIABLES ===
 BYTE &g_mapFrameFlag_530264       = *(BYTE *)0x530264;  // WRITABLE
 BYTE &g_nEffectLevel_530265       = *(BYTE *)0x530265;  // WRITABLE
 BYTE &g_btoggleC_530268           = *(BYTE *)0x530268;  // WRITABLE
@@ -840,6 +839,7 @@ void __cdecl hook_SysMenu_Options_462FE9(CSceneState *sceneStates /*unused*/,
       {
         g_nEffectLevel_530265 = (BYTE)i;
         bChanged = 1;
+        DebugLog("[HNH:SysMenu_Options] change [1][%d]\n", i);
       }
     }
     // map frame flag: 2 cells
@@ -852,6 +852,8 @@ void __cdecl hook_SysMenu_Options_462FE9(CSceneState *sceneStates /*unused*/,
       {
         g_mapFrameFlag_530264 = (BYTE)i;
         bChanged = 1;
+        DebugLog("[HNH:SysMenu_Options] change [2][%d]\n", i);
+
       }
     }
     // AVI/BGM volume: 5 cells
@@ -864,6 +866,8 @@ void __cdecl hook_SysMenu_Options_462FE9(CSceneState *sceneStates /*unused*/,
       {
         g_nAviVolumeIndex_530266 = (BYTE)i;
         bChanged = 1;
+        DebugLog("[HNH:SysMenu_Options] change [3][%d]\n", i);
+
       }
     }
     // AVI frame multiplier: 3 cells
@@ -876,6 +880,8 @@ void __cdecl hook_SysMenu_Options_462FE9(CSceneState *sceneStates /*unused*/,
       {
         g_nAviFrameMultipler_530267 = (BYTE)i;
         bChanged = 1;
+        DebugLog("[HNH:SysMenu_Options] change [4][%d]\n", i);
+
       }
     }
     // toggle C: 2 cells (1024-space x, scaled 0.625 then ConvertFrom640)
@@ -888,6 +894,8 @@ void __cdecl hook_SysMenu_Options_462FE9(CSceneState *sceneStates /*unused*/,
       {
         g_btoggleC_530268 = (BYTE)i;
         bChanged = 1;
+        DebugLog("[HNH:SysMenu_Options] change [5][%d]\n", i);
+
       }
     }
     if (bChanged == 1 && g_arrUIEffectDSBuffer_52F168[3])   // "click"
@@ -1486,11 +1494,13 @@ void register_SystemMenu_4655AB(int cfg) {
 
   }
 
+  hnh_Hook(0x462FE9, hook_SysMenu_Options_462FE9, "SysMenu_Options_462FE9");  // [OK]
+
+
   hnh_HookOff();
   hnh_Hook(0x4655AB, hook_SystemMenu_4655AB, "SystemMenu_4655AB"); // [OK]
   hnh_Hook(0x464919, hook_SysMenu_GirlStatusCheck_464919, "SysMenu_GirlStatusCheck_464919");  // [OK]
   hnh_Hook(0x46380D, hook_SysMenu_Graphics_46380D, "SysMenu_Graphics_46380D");  // [OK]
-  hnh_Hook(0x462FE9, hook_SysMenu_Options_462FE9, "SysMenu_Options_462FE9");  // [OK]
   hnh_Hook(0x462135, hook_SysMenu_SaveMenu_462135, "SysMenu_SaveMenu_462135");  // [OK]
   hnh_Hook(0x462851, hook_SysMenu_LoadMenu_462851, "SysMenu_LoadMenu_462851");  // [OK]
   hnh_Hook(0x461A9E, hook_ShowYesNoDialog_461A9E, "ShowYesNoDialog_461A9E");  // [OK]
