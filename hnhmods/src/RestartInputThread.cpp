@@ -8,6 +8,7 @@
 // === GLOBAL VARIABLES ===
 
 #ifdef _USRDLL
+
 HANDLE &g_hThread = *(HANDLE*)0x52F3B0;
 bool& g_bRequestThreadStop = *(bool*)0x52F3AC;
 
@@ -44,14 +45,14 @@ CInputState *g_pInputState_4C7354;
 CInputState g_arrInputState1_52F1C0[30];
 CInputState g_arrInputState2_52F2B0[30];
 
-int g_vkBtnRightAlt_4C7330;
-int g_vkBtnLeftAlt_4C7334;
-int g_vkBtnMidAlt_4C7338;
-int g_vkKbdLeft_4C733C;
-int g_vkKbdRight_4C7340;
-int g_vkKbdUp_4C7344;
-int g_vkKbdDown_4C7348;
-int g_vkKbdEsc_4C734C;
+int g_vkBtnRightAlt_4C7330 = 45;
+int g_vkBtnLeftAlt_4C7334 = 44;
+int g_vkBtnMidAlt_4C7338 = 57;
+int g_vkKbdLeft_4C733C = 203;
+int g_vkKbdRight_4C7340 = 205;
+int g_vkKbdUp_4C7344 = 200;
+int g_vkKbdDown_4C7348 = 208;
+int g_vkKbdEsc_4C734C = 1;
 
 int g_nMouseX_52F1B8;
 int g_nMouseY_52F3A0;

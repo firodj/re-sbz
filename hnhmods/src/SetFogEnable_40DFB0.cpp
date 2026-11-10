@@ -5,12 +5,30 @@
 #include "shared.hpp"
 
 // === GLOBAL VARIABLES ===
+
+static DWORD s_dwFogEnable_4D6CF4;
+static DWORD s_dwFogRangeEnable_4D6CFC;
+static DWORD s_dwFogMode_4B00C8 = 3;
+static DWORD s_dwFogTableEnable_4D6CF8;
+static DWORD s_dwFogColor_4B00CC = 0xFFFFFFFF;
+static BOOL  s_bFogIsActive_4B3480 = TRUE;
+
+
+#ifdef _USRDLL
 DWORD &g_dwFogEnable_4D6CF4      = *(DWORD *)0x4D6CF4; 
 DWORD &g_dwFogRangeEnable_4D6CFC = *(DWORD *)0x4D6CFC;
 DWORD &g_dwFogMode_4B00C8        = *(DWORD *)0x4B00C8;
 DWORD &g_dwFogTableEnable_4D6CF8 = *(DWORD *)0x4D6CF8;
 DWORD &g_dwFogColor_4B00CC       = *(DWORD*)0x4B00CC;
 BOOL &g_bFogIsActive_4B3480      = *(BOOL*)0x4B3480;
+#else
+DWORD &g_dwFogEnable_4D6CF4      = s_dwFogEnable_4D6CF4;
+DWORD &g_dwFogRangeEnable_4D6CFC = s_dwFogRangeEnable_4D6CFC;
+DWORD &g_dwFogMode_4B00C8        = s_dwFogMode_4B00C8;
+DWORD &g_dwFogTableEnable_4D6CF8 = s_dwFogTableEnable_4D6CF8;
+DWORD &g_dwFogColor_4B00CC       = s_dwFogColor_4B00CC;
+BOOL &g_bFogIsActive_4B3480      = s_bFogIsActive_4B3480;
+#endif
 
 // === GLOBAL FUNCTIONS ===
 HRESULT (__cdecl * SetFogEnable_40DFB0)(BOOL bFogEnable, BOOL bFogRangeEnable) = reinterpret_cast<HRESULT(__cdecl*)(BOOL bFogEnable, BOOL bFogRangeEnable)>(0x40DFB0);

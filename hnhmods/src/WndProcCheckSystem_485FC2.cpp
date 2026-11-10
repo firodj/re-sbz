@@ -41,8 +41,8 @@ static int               s_nObjectTableCount;
 static CObjPoolMgr_S58*  s_pObjPool;
 
 static HGDIOBJ s_hFont;
-static int     s_dwCharWidth;
-static int     s_dwFontHeight;
+static int     s_dwCharWidth = 16;
+static int     s_dwFontHeight = 16;
 
 static CHanaLightT3EF_S1A0*     s_pLight_4D6CE0;
 static CHanaMateT3EE_S184*      s_pMaterial;

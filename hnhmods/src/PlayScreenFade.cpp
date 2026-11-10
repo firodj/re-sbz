@@ -60,19 +60,32 @@ void (__cdecl*HanaMorpT457_ApplySubs)(CHanaFrameT3EC_S354* pFrame) = reinterpret
 void (__cdecl * HanaVert_BlendMorph)( D3DVERTEX **pVertexBufs, int nBufs, unsigned int dwNumVerts, int nFlags, float *fParams) = reinterpret_cast<void(__cdecl*)( D3DVERTEX **pVertexBufs, int nBufs, unsigned int dwNumVerts, int nFlags, float *fParams)>(0x432DB0);
 
 
-
 // === GLOBAL VARIABLES ===
 
-float &TIMER_SCALE_FACTOR = *(float*)0x4C6F74; // 20.0f
+static LPD3DXMATRIXSTACK s_pMatrixStack_4CD77C = nullptr;
+static BOOL              s_bCurFrameIsScene = FALSE;
+static CHanaFrameT3EC_S354 * s_pCurFrame = FALSE;
+
+
+#ifdef _USRDLL
+float &TIMER_SCALE_FACTOR = *(float*)0x4C6F74;
 DWORD& g_timerStart = *(DWORD*)0x52F1A0;
 DWORD& g_timerLast = *(DWORD*)0x52F1A4;
 
 LPD3DXMATRIXSTACK& g_pMatrixStack_4CD77C = *(LPD3DXMATRIXSTACK*)0x4CD77C;
-int (&g_texCoordSizeLUT_4A8368)[4] = *(int(*)[4])0x4A8368; // READ-ONLY
-
-uint32_t &g_fCurFrameIsScene = *(uint32_t *)0x4CD770; // WRITABLE
+//int (&g_texCoordSizeLUT_4A8368)[4] = *(int(*)[4])0x4A8368; // READ-ONLY
+BOOL &g_bCurFrameIsScene = *(BOOL *)0x4CD770; // WRITABLE
 CHanaFrameT3EC_S354 * &g_pCurFrame = *(CHanaFrameT3EC_S354 * *)0x4CD774; // WRITABLE
+#else
 
+LPD3DXMATRIXSTACK& g_pMatrixStack_4CD77C = s_pMatrixStack_4CD77C;
+BOOL &g_bCurFrameIsScene = s_bCurFrameIsScene;
+CHanaFrameT3EC_S354 * &g_pCurFrame = s_pCurFrame;
+
+float  TIMER_SCALE_FACTOR = 20.0f;
+DWORD& g_timerStart;
+DWORD& g_timerLast;
+#endif
 
 // === FUNCTIONS ===
 
@@ -830,13 +843,13 @@ void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
 
 // HanaFrame_Draw - per-frame render/dispatch entry (thin wrapper sub_405BE1 sets g_bRendering=1 around it).
 // 1) DS3D listener: CommitDeferredSettings; orient/position it to the camera relative to the scene (CalculateLocalRotationMatrix->SetOrientation, HanaFrame_GetRelPosition->SetPosition).
-// 2) g_pCurFrame = pFrame; g_fCurFrameIsScene = (pFrame==g_pSceneFrame). sub_40773F() builds/pushes the world-matrix stack for all scene children.
+// 2) g_pCurFrame = pFrame; g_bCurFrameIsScene = (pFrame==g_pSceneFrame). sub_40773F() builds/pushes the world-matrix stack for all scene children.
 // 3) If the frame's skip-draw flag (*(pFrame+304)) is 0: prep the frame (sub_4339B2), save D3DRS_AMBIENT, then for each scene child frame:
 //    - reset the light mask; when g_dwLightningState, disable all 0x40 lights;
 //    - set per-frame fog (FOGENABLE/COLOR/START/END from bHasFog/dwFogColor/fFogStart/fFogEnd) or disable fog;
 //    - position & enable the frame's CHanaLight (sub_409510 positions by dltType, sub_40929C does SetLight+LightEnable / ambient), set its bit in bitLightEnables;
 //    - run the object updater sub_40600C(child, {bitLightEnables, ambient}) and restore ambient.
-// Returns ambient-restore HRESULT. g_pCurFrame/g_fCurFrameIsScene/g_bRendering are read by sub_40600C.
+// Returns ambient-restore HRESULT. g_pCurFrame/g_bCurFrameIsScene/g_bRendering are read by sub_40600C.
 void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
 {
   DWORD nAmbient; // [esp+8h] [ebp-7Ch] BYREF
@@ -876,11 +889,11 @@ void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
     HanaFrame_GetRelPosition(g_pCameraFrame, g_pSceneFrame, &pXpos, &pYpos, &pZpos);
     g_pds3DListener->SetPosition(pXpos, pYpos, pZpos, 1u);
   }
-  g_fCurFrameIsScene = 0;
+  g_bCurFrameIsScene = 0;
   g_pCurFrame = pFrame;
   HanaFrame_BuildMatrixStack();
   if ( g_pSceneFrame == g_pCurFrame )
-    g_fCurFrameIsScene = 1;
+    g_bCurFrameIsScene = 1;
   if ( !g_pCurFrame->bAlphaDeferred_130 )
   {
     HanaFrame_PreDraw(pFrame);

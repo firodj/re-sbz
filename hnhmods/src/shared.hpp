@@ -67,6 +67,9 @@ extern const char g_aG00Gp_4C9FB0[100][50];    // compiled-in copy of .rdata @0x
 //extern String 50 (&g_ascSndFileNames_4C78A0)[200]; // READ-ONLY @0x4C78A0
 extern const char g_ascSndFileNames_4C78A0[200][50];
 
+extern const int g_texCoordSizeLUT_4A8368[4];
+
+extern const float g_fVolumeDbTable[10];
 
 // === DEFINED MemAlloc.cpp ===
 
@@ -292,7 +295,6 @@ extern void(__cdecl* DrawSpriteAtRect)(CHanaSpriteT3F6_S1FC* pSprite, D2D_RECT_F
 
 extern void (__cdecl*MainMenu_47DF0D)(void);
 extern int (__cdecl*InGameMenu_4799E2)(void);
-extern const float g_fVolumeDbTable[10];  // compiled-in copy of .rdata @0x4C6F4C (-10000/-2000/-1000/-500/0 dB ladder + 5 unused)
 extern void(__cdecl*HanaVert_DrawBatch)(BOOL bDraw);
 
 extern int (&g_sceneItemBits)[10];
@@ -419,10 +421,11 @@ extern void(__cdecl* CameraLookAtFrame)(CHanaFrameT3EC_S354* pCameraFrame,
   CHanaFrameT3EC_S354* pTargetFrame, CHanaFrameT3EC_S354* pSceneFrame, short iMode);
 extern void (__cdecl* ApplyFrameEffectOption)(CHanaSceneT458_S504* pScene);
 extern void(__cdecl* DrawSpritePulse_46D7A7)(CHanaSpriteT3F6_S1FC* pSprite, float fPhase);
-extern LPDIRECTSOUNDBUFFER& g_pDSBuf_52EFD0;
+
 extern int(__cdecl* RunSceneSelectScreen)(CHanaSceneT458_S504* pScene,
   CHanaSpriteT3F6_S1FC** arrModeSprites, CHanaSpriteT3F6_S1FC** arrMouseSprites, int* piSelected,
   int iSceneGroup, QWORD* pSelMask, int iMenuTab);
+
 
 // === DEFINED PlayExploring_45BCAE.cpp ===
 // (faithful pseudocode dump of the 0x55FB-byte map scene; helpers pinned in-file)
@@ -442,6 +445,7 @@ extern int(__cdecl* PlayCutInScene_46A76F)(CHanaSceneT458_S504 *pScene,
   CHanaSpriteT3F6_S1FC **arrPostureSprites, CSekBody *pLockOnBody,
   CSekBody *pModeBody, int iGroup, CSoundStruct_8 **arrSoundAHs,
   CSoundStruct_8 **arrSoundSEs, CSekBody **arrTearsBodies, int iMenuTab);
+extern LPDIRECTSOUNDBUFFER& g_pDSBufAssault_52EFD0;
 
 // === DEFINED MenuCharSelect.cpp (continued) ===
 
@@ -484,10 +488,9 @@ extern void(__cdecl* SetInversTransf_405BB4)(D3DXMATRIX* pM);
 extern void(__cdecl*HanaFrame_PreDraw)(CHanaFrameT3EC_S354* pFrame);
 
 extern LPD3DXMATRIXSTACK& g_pMatrixStack_4CD77C;
-extern uint32_t& g_fCurFrameIsScene;
+extern BOOL& g_bCurFrameIsScene;
 extern CHanaFrameT3EC_S354 * &g_pCurFrame;
-extern BOOL& g_bRendering;
-extern BOOL& g_bObjBatchActive;
+
 
 // === DEFINED ParseODFContent.cpp ===
 
@@ -553,6 +556,9 @@ extern void(__cdecl*SetLightEnableMask)(QWORD bitLightEnables);
 extern void(__cdecl*UpdateVertTextureFromFrame)(CHanaVertT3EA_S1FC* pVertArg, CHanaFrameT3EC_S354* pFrameArg);
 extern void(__cdecl* UpdateBoneLookAtTransform)(CHanaFrameT3EC_S354* pBoneFrame, CHanaFrameT3EC_S354* pParentFrame, float dirForwardX, float dirForwardY, float dirForwardZ, float dirUpX, float dirUpY, float dirUpZ);
 extern void(__cdecl* BuildViewportMatrix)();
+
+extern BOOL& g_bRendering;
+extern BOOL& g_bObjBatchActive;
 
 // === DEFINED SetupHeroEntry_4593E0.cpp ===
 

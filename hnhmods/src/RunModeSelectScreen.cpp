@@ -39,12 +39,7 @@ double (__cdecl *CHanaSpriteT3F6__GetScale_414B1A)(CHanaSpriteT3F6_S1FC *pSprite
 void (__cdecl *CHanaSpriteT3F6__GetPos_414A7A)(CHanaSpriteT3F6_S1FC *pSprite, float *pOutX, float *pOutY)
 = reinterpret_cast<void (__cdecl*)(CHanaSpriteT3F6_S1FC *pSprite, float *pOutX, float *pOutY)>(0x414a7a);
 
-
-// === PINNED GLOBALS ===
-LPDIRECTSOUNDBUFFER &g_pDSBuf_52EFD0 = *(LPDIRECTSOUNDBUFFER *)0x52EFD0;  // WRITABLE
-
 // === FUNCTIONS ===
-
 
 // RunModeSelectScreen_46F37E -- the 5-button "mode" choice screen (sibling of
 // RunSceneSelectScreen; sole caller PlayAssault_4703AE: odd mode id -> here,
@@ -66,7 +61,7 @@ LPDIRECTSOUNDBUFFER &g_pDSBuf_52EFD0 = *(LPDIRECTSOUNDBUFFER *)0x52EFD0;  // WRI
 // all five chosen and the pulse button clicked.
 //
 // Loop: menu key -> PauseSceneAudio + SystemMenu on the global BGM
-// g_pDSBuf_52EFD0 (tab = iMenuTab ? 2 : 0) over a CSceneState snapshot with
+// g_pDSBufAssault_52EFD0 (tab = iMenuTab ? 2 : 0) over a CSceneState snapshot with
 // the protagonist HP pair; >= 1 returns immediately (after
 // ApplyFrameEffectOption). Scene time advances (a2 starts 9999999); the 3D
 // camera looks at the "_mune_" (chest) frame: SetFrameVisibilityAndGetHIndex
@@ -162,7 +157,7 @@ int __cdecl hook_RunModeSelectScreen(CHanaSceneT458_S504 *pScene,
             PauseSceneAudio_46A2A0(pScene, 1);
             RestartInputThread(0);
             memcpy(&sceneSnapshot, &g_sceneState_52F7E0, sizeof(sceneSnapshot));
-            nResult = SystemMenu_4655AB(g_pDSBuf_52EFD0, -1000, iMenuTab ? 2 : 0,
+            nResult = SystemMenu_4655AB(g_pDSBufAssault_52EFD0, -1000, iMenuTab ? 2 : 0,
                                         g_sceneState_52F7E0.protCurrentHP_C0,
                                         g_sceneState_52F7E0.protMaximumHP_C4,
                                         sceneSnapshot);
@@ -355,7 +350,7 @@ int __cdecl hook_RunModeSelectScreen(CHanaSceneT458_S504 *pScene,
 // four bits five times via its per-page table).
 //
 // Loop identical in shape to RunModeSelectScreen: menu key -> SystemMenu on
-// g_pDSBuf_52EFD0 (tab = iMenuTab ? 2 : 0, protagonist HP pair, snapshot)
+// g_pDSBufAssault_52EFD0 (tab = iMenuTab ? 2 : 0, protagonist HP pair, snapshot)
 // -> >= 1 returns; scene timer advances (starts 9999999); camera looks at
 // the "_mune_" frame; buttons fade fFrameTime/10 toward 1.0 (0.5 for
 // already-chosen bits / pulse while choices remain), hit-test
@@ -491,7 +486,7 @@ int __cdecl hook_RunSceneSelectScreen(CHanaSceneT458_S504 *pScene,
       PauseSceneAudio_46A2A0(pScene, 1);
       RestartInputThread(0);
       memcpy(&sceneSnapshot, &g_sceneState_52F7E0, sizeof(sceneSnapshot));
-      nResult = SystemMenu_4655AB(g_pDSBuf_52EFD0, -1000, iMenuTab ? 2 : 0,
+      nResult = SystemMenu_4655AB(g_pDSBufAssault_52EFD0, -1000, iMenuTab ? 2 : 0,
         g_sceneState_52F7E0.protCurrentHP_C0,
         g_sceneState_52F7E0.protMaximumHP_C4,
         sceneSnapshot);

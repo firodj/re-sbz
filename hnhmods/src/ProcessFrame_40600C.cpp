@@ -12,7 +12,7 @@
 //      direction = Z column (_13,_23,_33) -- and its index bit is OR-ed into
 //      the passed 64-bit light mask and a local "lights I enabled" mask
 //   2. bUpdateBone_218 frames get a bone-transform update against camera + scene
-//   3. world transform set, bIsRoot_1F8 = 1; g_fCurFrameIsScene latches to 1
+//   3. world transform set, bIsRoot_1F8 = 1; g_bCurFrameIsScene latches to 1
 //      once the traversal reaches g_pCurFrame
 //   4. frames passing the render gate (!bAlphaDeferred_130 && cur-frame reached
 //      && !g_bRendering && AlwaysTrue()) get:
@@ -66,10 +66,23 @@ void (__cdecl * HanaMeshT3F5_Draw)(CHanaMeshT3F5_S138 *pMesh) = reinterpret_cast
 void (__cdecl * HanaMorpT457_Draw)(CHanaMorpT457_S40C *pMorp) = reinterpret_cast<void(__cdecl*)(CHanaMorpT457_S40C *pMorp)>(0x434FC9);
 //void(__cdecl*HanaT3FB_Draw)(CHanaBase_S130* pObj) = reinterpret_cast<void(__cdecl*)(CHanaBase_S130*)>(0x416776);
 
-// === PINNED GLOBALS ===
+// === GLOBALS VARIABLES ===
+
+static BOOL s_bRendering = FALSE;
+static BOOL s_bObjBatchActive;
+
+#ifdef _USRDLL
 BOOL &g_bRendering      = *(BOOL*)0x4CD778;  // WRITABLE default = 0
 BOOL &g_bObjBatchActive = *(BOOL*)0x4D6CD8; // WRITABLE default = 0
-float (&g_floats_4CE958)[6000] = *(float (*)[6000])0x4CE958; // WRITABLE default = 0
+
+float (&g_nObjZIndexes_4CE958)[6000] = *(float (*)[6000])0x4CE958; // WRITABLE default = 0
+#else
+BOOL &g_bRendering      = s_bRendering;
+BOOL &g_bObjBatchActive = s_bObjBatchActive;
+
+float g_nObjZIndexes_4CE958[6000];
+
+#endif
 
 // === FUNCTIONS ===
 // alpha/blend-vert test shared by all three object kinds
@@ -151,9 +164,9 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
     g_pD3DDevice_4D6C78->SetTransform(D3DTRANSFORMSTATE_WORLD, (LPD3DMATRIX) & pChildFrame->matWorld_178);
     pChildFrame->bIsRoot_1F8 = 1;
     if (pChildFrame == g_pCurFrame)
-        g_fCurFrameIsScene = 1;
+        g_bCurFrameIsScene = 1;
 
-    if (!pChildFrame->bAlphaDeferred_130 && g_fCurFrameIsScene && !g_bRendering && AlwaysTrue())
+    if (!pChildFrame->bAlphaDeferred_130 && g_bCurFrameIsScene && !g_bRendering && AlwaysTrue())
     {
         BOOL bPooledOnly = FALSE;
 
@@ -286,17 +299,17 @@ void __cdecl hook_SortObjectsByDepth()
     for ( i = 0; i < g_nObjCount; ++i )
     {
       HanaFrame_GetCenterPosition_408C3E(g_pObjPool[i].pFrame, g_pCameraFrame, &centerX, &centerY, &centerZ);
-      g_floats_4CE958[i] = centerZ - (double)(1000 * g_pObjPool[i].pVert->nAlphaPriority_1F8);
+      g_nObjZIndexes_4CE958[i] = centerZ - (double)(1000 * g_pObjPool[i].pVert->nAlphaPriority_1F8);
     }
     for ( i = 0; i < g_nObjCount - 1; ++i )
     {
       for ( j = i + 1; j < g_nObjCount; ++j )
       {
-        if ( g_floats_4CE958[i] < (double)g_floats_4CE958[j] )
+        if ( g_nObjZIndexes_4CE958[i] < (double)g_nObjZIndexes_4CE958[j] )
         {
-          tempFloat = g_floats_4CE958[i];
-          g_floats_4CE958[i] = g_floats_4CE958[j];
-          g_floats_4CE958[j] = tempFloat;
+          tempFloat = g_nObjZIndexes_4CE958[i];
+          g_nObjZIndexes_4CE958[i] = g_nObjZIndexes_4CE958[j];
+          g_nObjZIndexes_4CE958[j] = tempFloat;
           tempFrame = g_pObjPool[i].pFrame;
           g_pObjPool[i].pFrame = g_pObjPool[j].pFrame;
           g_pObjPool[j].pFrame = tempFrame;

@@ -32,13 +32,15 @@ int  (__cdecl*PlayAssault_4703AE)(int iModeId, int iMenuTab) =
 reinterpret_cast<int(__cdecl*)(int, int)>(0x4703AE);
 
 // === PINNED GLOBALS ===
-// (none new - g_pDSBuf_52EFD0 is pinned in RunModeSelectScreen.cpp; every
+// (none new - g_pDSBufAssault_52EFD0 is pinned in RunModeSelectScreen.cpp; every
 //  other global used here is already extern in shared.hpp)
 
 
 HANDLE &g_hWaitScreenThread = *(HANDLE *)0x52F0D0; // WRITABLE
 uint32_t &g_bWaitScreenOn = *(uint32_t *)0x52F0CC; // WRITABLE
 HWND &g_hwndWaitScreen = *(HWND *)0x52F0C8; // WRITABLE
+LPDIRECTSOUNDBUFFER &g_pDSBufAssault_52EFD0 = *(LPDIRECTSOUNDBUFFER *)0x52EFD0;  // WRITABLE
+
 
 // === FUNCTIONS ===
 
@@ -72,7 +74,7 @@ HWND &g_hwndWaitScreen = *(HWND *)0x52F0C8; // WRITABLE
 // InitializePracticeAnimations + UpdateTo2(3), hidden), <=3 Tears bodies
 // h\Tears\h[.sek] + h\Tears\hXX[_sl/_sr].odf (hidden; group h05's hands are
 // h04_sl/h04_sr, sic); BGM s012.wav (even) / s013.wav (odd) into
-// g_pDSBuf_52EFD0 at AVI-volume - 1000 dB, looped. Returns -1 if the
+// g_pDSBufAssault_52EFD0 at AVI-volume - 1000 dB, looped. Returns -1 if the
 // lock-on/mode/Tears bodies or the selected .Ods fail to load.
 //
 // Session loop: pick via the group's select screen (skipped on the first
@@ -554,24 +556,24 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     i = (iModeId % 2) != 0;
     wsprintfA(pszFileName, "%s", arrBgmWavs[i].str);
     CHanaObj__GetRealPath_486D9A(pszFileName, 1006);          // WAV dir
-    g_pDSBuf_52EFD0 = LoadWav_422E7B(pszFileName);
-    if (g_pDSBuf_52EFD0)
+    g_pDSBufAssault_52EFD0 = LoadWav_422E7B(pszFileName);
+    if (g_pDSBufAssault_52EFD0)
     {
         // clamp table[aviVolume] - 1000 dB to [-10000, 0]
         if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) >= -10000)
         {
             if ((int)(__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0) <= 0)
-                g_pDSBuf_52EFD0->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0));
+                g_pDSBufAssault_52EFD0->SetVolume((__int64)(g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] - 1000.0));
             else
-                g_pDSBuf_52EFD0->SetVolume(0);
+                g_pDSBufAssault_52EFD0->SetVolume(0);
         }
         else
         {
-            g_pDSBuf_52EFD0->SetVolume(-10000);
+            g_pDSBufAssault_52EFD0->SetVolume(-10000);
         }
     }
-    if (g_pDSBuf_52EFD0)
-        DSBufferPlay(g_pDSBuf_52EFD0, 1);
+    if (g_pDSBufAssault_52EFD0)
+        DSBufferPlay(g_pDSBufAssault_52EFD0, 1);
     for (i = 0; i < 20; ++i)      // (no-op here: no scene is loaded yet)
     {
         if (arrScenes[i])
@@ -717,7 +719,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
                 PauseSceneAudio_46A2A0(arrScenes[piSelected], 1);
                 RestartInputThread(0);
                 sceneMenuCopy = g_sceneState_52F7E0;
-                nResult = SystemMenu_4655AB(g_pDSBuf_52EFD0, -1000,
+                nResult = SystemMenu_4655AB(g_pDSBufAssault_52EFD0, -1000,
                         iMenuTab ? 2 : 0, g_sceneState_52F7E0.protCurrentHP_C0,
                         g_sceneState_52F7E0.protMaximumHP_C4, sceneMenuCopy);
                 RestartInputThread(2);
@@ -917,11 +919,11 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     }
     CSekBody__Release_4012FE(pLockOnBody);
     CSekBody__Release_4012FE(pModeBody);
-    if (g_pDSBuf_52EFD0)
+    if (g_pDSBufAssault_52EFD0)
     {
-        g_pDSBuf_52EFD0->Stop();
-        g_pDSBuf_52EFD0->Release();
-        g_pDSBuf_52EFD0 = 0;
+        g_pDSBufAssault_52EFD0->Stop();
+        g_pDSBufAssault_52EFD0->Release();
+        g_pDSBufAssault_52EFD0 = 0;
     }
     for (i = 0; i < 30; ++i)
     {

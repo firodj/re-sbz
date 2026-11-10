@@ -6,17 +6,17 @@
 // === GLOBAL VARIABLES ===
 
 CDisplayConfig s_displayConfig_518C30;
-BOOL           s_dwShadowOff;
+BOOL           s_dwShadowOff = TRUE;
 D3DXMATRIX     s_pM2;
 CD3DInitParam  s_D3DDevParams;
 CHanaMateT3EE_S184* s_pCurMatObj;
 int            s_nObjCount;
-int            s_nCapObjects_4CD780;
-D3DX_SURFACEFORMAT s_dwSurfaceFormat_4B00B4;
+int            s_nCapObjects_4CD780 = 0;
+D3DX_SURFACEFORMAT s_dwSurfaceFormat_4B00B4 = D3DX_SF_A4R4G4B4;
 unsigned int   s_nBitness;
 int            s_nZBufDepthSelValue_518C98;
 int            s_nModeSetIndex;
-DWORD          s_nWidth ;
+DWORD          s_nWidth;
 DWORD          s_nHeight;
 
 #ifdef _USRDLL

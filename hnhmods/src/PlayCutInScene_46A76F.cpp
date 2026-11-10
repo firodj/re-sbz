@@ -504,10 +504,10 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
             RestartInputThread(0);
             sceneScratch = g_sceneState_52F7E0;
             nMenuResult = iMenuTab
-                ? SystemMenu_4655AB(g_pDSBuf_52EFD0, -1000, 2,
+                ? SystemMenu_4655AB(g_pDSBufAssault_52EFD0, -1000, 2,
                       g_sceneState_52F7E0.protCurrentHP_C0,
                       g_sceneState_52F7E0.protMaximumHP_C4, sceneScratch)
-                : SystemMenu_4655AB(g_pDSBuf_52EFD0, -1000, 0,
+                : SystemMenu_4655AB(g_pDSBufAssault_52EFD0, -1000, 0,
                       g_sceneState_52F7E0.protCurrentHP_C0,
                       g_sceneState_52F7E0.protMaximumHP_C4, sceneScratch);
             RestartInputThread(2);

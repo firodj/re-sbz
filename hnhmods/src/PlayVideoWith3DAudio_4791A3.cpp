@@ -6,6 +6,7 @@
 
 #include "vfw.h"
 
+// === GLOBAL FUNCTIONS ===
 void (__cdecl*PlayVideoWith3DAudio_4791A3)(const char* szMoviePath, int bLoopFlags) =
 reinterpret_cast<void(__cdecl*)(const char*, int)>(0x4791A3);
 BOOL (__cdecl *CreateAviWnd_43A95B)(HINSTANCE hInstance, HWND hwndParent, LPARAM szMoviePath, int nX, int nY, int nWidth, int nHeight, LPARAM nZoom)
@@ -23,12 +24,23 @@ void (__cdecl *AviWnd_Pause)()
 void (__cdecl *AviWnd_Destroy)()
 = reinterpret_cast<void (__cdecl*)()>(0x43a7f8);
 
+// === GLOBAL VARIABLES ===
 
-HWND &g_hwndAvi = *(HWND *)0x5196C0; // WRITABLE
+#ifdef _USRDLL
+HWND     &g_hwndAvi = *(HWND *)0x5196C0; // WRITABLE
 uint32_t &g_nPosAviWnd_5196B8 = *(uint32_t *)0x5196B8; // WRITABLE
 uint32_t &g_nAviEnd = *(uint32_t *)0x5196C4; // WRITABLE
 uint32_t &g_nPrevPosAviWnd_5196C8 = *(uint32_t *)0x5196C8; // WRITABLE
+#else
 
+HWND     g_hwndAvi;
+uint32_t g_nPosAviWnd_5196B8;
+uint32_t g_nAviEnd;
+uint32_t g_nPrevPosAviWnd_5196C8;
+
+#endif
+
+// === HOOK FUNCTIONS ===
 
 LPVOID orig_PlayVideoWith3DAudio_4791A3 = NULL;
 
