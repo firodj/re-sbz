@@ -3,6 +3,7 @@
 
 #include "console.hpp"
 #include "shared.hpp"
+#include "hnh_hook.hpp"
 
 // === PINNED GAME FUNCTIONS ===
 int (__cdecl*ParseODS_483932)(LPBYTE pBuf, CHanaSceneT458_S504 *pScene) =

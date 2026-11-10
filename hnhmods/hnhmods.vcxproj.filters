@@ -109,6 +109,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="exemain.cpp" />
+    <ClCompile Include="src\hnh_hook.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
@@ -126,6 +129,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\d3dx\ida_defs.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\hnh_hook.hpp">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

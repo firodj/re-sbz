@@ -3,6 +3,7 @@
 
 #include "console.hpp"
 #include "shared.hpp"
+#include "hnh_hook.hpp"
 
 // ProcessFrame_40600C -- the recursive scene-frame renderer (entry from
 // HanaFrame_Draw; 3 of its 5 xrefs are its own recursion). Per frame:

@@ -1,11 +1,10 @@
 #include "dx7.hpp"
 #include "console.hpp"
-
-#include <cmath>
-#include <corecrt_math_defines.h>
+#include "hnh_hook.hpp"
 
 
 // === GLOBAL FUNCTIONS ===
+
 HRESULT (*D3DXUninitialize)(void) = reinterpret_cast<HRESULT(*)(void)>(0x48B8F0);
 HRESULT (*D3DXInitialize)(void) = (HRESULT(*)(void))0x48B80B; 
 DWORD (*D3DXGetDeviceCount)(void) = (DWORD(*)(void))0x48B9DD;
@@ -29,14 +28,8 @@ DWORD(__stdcall* D3DXGetMaxSurfaceFormats)(int devIndex, _DWORD* pVidMode, int s
 
 D3DXVECTOR3 * (__stdcall * D3DXVec3Normalize)(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV) = reinterpret_cast<D3DXVECTOR3 *(__stdcall*)(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV)>(0x48A1EC);
 D3DXMATRIX * (__stdcall * D3DXMatrixRotationAxis)(D3DXMATRIX *pOut, const D3DXVECTOR3 *pV, float angle) = reinterpret_cast<D3DXMATRIX *(__stdcall*)(D3DXMATRIX *pOut, const D3DXVECTOR3 *pV, float angle)>(0x48ABB3);
-double (__cdecl * Vec3LengthSq)(const D3DXVECTOR3 *pV) = reinterpret_cast<double(__cdecl*)(const D3DXVECTOR3 *pV)>(0x40E3C0);
-void (__thiscall * Vec3Set)(D3DXVECTOR3 *This, float x, float y, float z) = reinterpret_cast<void(__thiscall*)(D3DXVECTOR3 *This, float x, float y, float z)>(0x40E420);
-double (__cdecl * Vec3Dot)(const D3DXVECTOR3 *pV1, const D3DXVECTOR3 *pV2) = reinterpret_cast<double(__cdecl*)(const D3DXVECTOR3 *pV1, const D3DXVECTOR3 *pV2)>(0x40E3F0);
-double (__cdecl * DegreesToRadians)(float deg) = reinterpret_cast<double(__cdecl*)(float deg)>(0x40DDF3);
-HRESULT (__cdecl * MatrixPerspectiveFovLH)(D3DXMATRIX *pMat, float fovy, float aspect, float zn, float zf) = reinterpret_cast<HRESULT(__cdecl*)(D3DXMATRIX *pMat, float fovy, float aspect, float zn, float zf)>(0x40CB94);
-D3DXMATRIX * (__cdecl * D3DXMatrixIdentity)(D3DXMATRIX *pOut) = reinterpret_cast<D3DXMATRIX *(__cdecl*)(D3DXMATRIX *pOut)>(0x40E450);
+
 D3DXMATRIX * (__stdcall * D3DXMatrixMultiply)(D3DXMATRIX *pOut, const D3DXMATRIX *pM1, const D3DXMATRIX *pM2) = reinterpret_cast<D3DXMATRIX *(__stdcall*)(D3DXMATRIX *pOut, const D3DXMATRIX *pM1, const D3DXMATRIX *pM2)>(0x48A4BC);
-HRESULT (__cdecl * MatrixLookAtLH)(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, const D3DXVECTOR3 *pAt, const D3DXVECTOR3 *pUp) = reinterpret_cast<HRESULT(__cdecl*)(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, const D3DXVECTOR3 *pAt, const D3DXVECTOR3 *pUp)>(0x40C64A);
 D3DXMATRIX * (__stdcall * D3DXMatrixInverse)(D3DXMATRIX *pOut, float *pfDeterminant, const D3DXMATRIX *pM) = reinterpret_cast<D3DXMATRIX *(__stdcall*)(D3DXMATRIX *pOut, float *pfDeterminant, const D3DXMATRIX *pM)>(0x48A5BD);
 HRESULT (__stdcall *D3DXCreateMatrixStack)(DWORD flags, LPD3DXMATRIXSTACK* ppStack) = reinterpret_cast<HRESULT (__stdcall*)(DWORD flags, LPD3DXMATRIXSTACK* ppStack)>(0x48B793);
 
@@ -199,103 +192,6 @@ D3DXMATRIX *__stdcall hook_D3DXMatrixRotationAxis(D3DXMATRIX *pOut, const D3DXVE
   return pOut;
 }
 
-double __cdecl hook_Vec3LengthSq(const D3DXVECTOR3 *pV)
-{
-  ONCELOG("[HNH:SUB] Vec3LengthSq_40E3C0\n");
-  return pV->x * pV->x + pV->y * pV->y + pV->z * pV->z;
-}
-
-void __fastcall hook_Vec3Set(D3DXVECTOR3 *This, int unused_edx, float x, float y, float z)
-{
-  ONCELOG("[HNH:SUB] hook_Vec3Set_40E420\n");
-  This->Vec3Set(x, y, z);
-}
-
-double __cdecl hook_Vec3Dot(const D3DXVECTOR3 *pV1, const D3DXVECTOR3 *pV2)
-{
-  ONCELOG("[HNH:SUB] Vec3Dot_40E3F0\n");
-  return pV1->x * pV2->x + pV1->y * pV2->y + pV1->z * pV2->z;
-}
-
-double __cdecl hook_DegreesToRadians(float deg)
-{
-  float sign = 1.0f;
-  float accumulatedPi = 0.0f;
-
-  ONCELOG("[HNH:SUB] %s\n", "DegreesToRadians_40DDF3");
-
-  if (deg < 0.0f)
-  {
-    sign = -1.0f;
-    deg = -deg;
-  }
-
-  while (deg > 180.0f)
-  {
-    deg -= 180.0f;
-    accumulatedPi += (float)M_PI;
-  }
-
-  return (deg * (float)(M_PI / 180.0) + accumulatedPi) * sign;
-}
-
-HRESULT __cdecl hook_MatrixPerspectiveFovLH(D3DXMATRIX *pMat, float fovy, float aspect, float zn, float zf)
-{
-  double X; // st7
-  float v7; // [esp+18h] [ebp-24h]
-  float v8; // [esp+20h] [ebp-1Ch]
-  float v9; // [esp+30h] [ebp-Ch]
-  float v10; // [esp+34h] [ebp-8h]
-  float v11; // [esp+38h] [ebp-4h]
-
-  ONCELOG("[HNH:SUB] %s\n", "MatrixPerspectiveFovLH_40CB94");
-
-  if ( fabs(zf - zn) < 0.009999999776482582 )
-    return E_INVALIDARG;
-  X = sin(fovy / 2.0);
-  if ( fabs(X) < 0.009999999776482582 )
-    return E_INVALIDARG;
-  v8 = sin(fovy / 2.0);
-  v10 = cos(fovy / 2.0) / v8 * aspect;
-  v7 = sin(fovy / 2.0);
-  v9 = cos(fovy / 2.0) / v7 * 1.0;
-  v11 = zf / (zf - zn);
-  memset(pMat, 0, sizeof(D3DXMATRIX));
-  pMat->_11 = v10;
-  pMat->_22 = v9;
-  pMat->_33 = v11;
-  pMat->_34 = 1.0;
-  pMat->_43 = -v11 * zn;
-  return S_OK;
-}
-
-D3DXMATRIX *__cdecl hook_D3DXMatrixIdentity(D3DXMATRIX *pOut)
-{
-  D3DXMATRIX *result; // eax
-
-  ONCELOG("[HNH:SUB] %s\n", "D3DXMatrixIdentity_40E450");
- 
-
-  result = pOut;
-  pOut->m[3][2] = 0.0;
-  pOut->m[3][1] = 0.0;
-  pOut->m[3][0] = 0.0;
-  pOut->m[2][3] = 0.0;
-  pOut->m[2][1] = 0.0;
-  pOut->m[2][0] = 0.0;
-  pOut->m[1][3] = 0.0;
-  pOut->m[1][2] = 0.0;
-  pOut->m[1][0] = 0.0;
-  pOut->m[0][3] = 0.0;
-  pOut->m[0][2] = 0.0;
-  pOut->m[0][1] = 0.0;
-  pOut->m[3][3] = 1.0;
-  pOut->m[2][2] = 1.0;
-  pOut->m[1][1] = 1.0;
-  pOut->m[0][0] = 1.0;
-  return result;
-}
-
 D3DXMATRIX *__stdcall hook_D3DXMatrixMultiply(D3DXMATRIX *pOut, const D3DXMATRIX *pM1, const D3DXMATRIX *pM2)
 {
   if (!pOut || !pM1 || !pM2)
@@ -331,92 +227,6 @@ D3DXMATRIX *__stdcall hook_D3DXMatrixMultiply(D3DXMATRIX *pOut, const D3DXMATRIX
   return pOut;
 }
 
-HRESULT __cdecl hook_MatrixLookAtLH(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, const D3DXVECTOR3 *pAt, const D3DXVECTOR3 *pUp)
-{
-  float lenSq;
-  float invLen;
-  float dotProduct;
-  D3DXVECTOR3 forward; // Formerly v60
-  D3DXVECTOR3 up;      // Formerly v64
-  D3DXVECTOR3 right;   // Formerly v61
-  D3DXVECTOR3 tempVec;
-
-  ONCELOG("[HNH:SUB] %s\n", "MatrixLookAtLH_40C64A");
-
-  // --- 1. Compute and normalize the forward vector (Z-axis) ---
-  float dx = pAt->x - pEye->x;
-  float dy = pAt->y - pEye->y;
-  float dz = pAt->z - pEye->z;
-
-  Vec3Set(&tempVec, dx, dy, dz);
-  forward = tempVec;
-
-  lenSq = Vec3LengthSq(&forward);
-  invLen = sqrt(lenSq);
-  if (invLen < 0.000001f)
-    return E_INVALIDARG;
-
-  float forwardLenInv = 1.0f / invLen;
-  forward.x *= forwardLenInv;
-  forward.y *= forwardLenInv;
-  forward.z *= forwardLenInv;
-
-  // --- 2. Orthogonalize the up vector (Y-axis) with fallbacks ---
-  dotProduct = forward.z * pUp->z + forward.y * pUp->y + forward.x * pUp->x;
-  Vec3Set(&tempVec, dotProduct * forward.x, dotProduct * forward.y, dotProduct * forward.z);
-
-  Vec3Set(&up, pUp->x - tempVec.x, pUp->y - tempVec.y, pUp->z - tempVec.z);
-  lenSq = Vec3LengthSq(&up);
-  invLen = sqrt(lenSq);
-
-  if (invLen < 0.000001f)
-  {
-    // Fallback 1: Try alignment using Y world axis
-    float cy = forward.y;
-    Vec3Set(&tempVec, forward.x * cy, forward.y * cy, forward.z * cy);
-    Vec3Set(&up, 0.0f - tempVec.x, 1.0f - tempVec.y, 0.0f - tempVec.z);
-    lenSq = Vec3LengthSq(&up);
-    invLen = sqrt(lenSq);
-
-    if (invLen < 0.000001f)
-    {
-      // Fallback 2: Try alignment using Z world axis
-      float cz = forward.z;
-      Vec3Set(&tempVec, forward.x * cz, forward.y * cz, forward.z * cz);
-      Vec3Set(&up, 0.0f - tempVec.x, 0.0f - tempVec.y, 1.0f - tempVec.z);
-      lenSq = Vec3LengthSq(&up);
-      invLen = sqrt(lenSq);
-
-      if (invLen < 0.000001f)
-        return E_INVALIDARG;
-    }
-  }
-
-  float upLenInv = 1.0f / invLen;
-  up.x *= upLenInv;
-  up.y *= upLenInv;
-  up.z *= upLenInv;
-
-  // --- 3. Compute the right vector (X-axis) using cross product (up x forward) ---
-  right.x = up.y * forward.z - up.z * forward.y;
-  right.y = up.z * forward.x - up.x * forward.z;
-  right.z = up.x * forward.y - up.y * forward.x;
-
-  // --- 4. Assemble the final view matrix ---
-  D3DXMatrixIdentity(pMat);
-
-  // Rotation components
-  pMat->_11 = right.x;   pMat->_12 = up.x;   pMat->_13 = forward.x;
-  pMat->_21 = right.y;   pMat->_22 = up.y;   pMat->_23 = forward.y;
-  pMat->_31 = right.z;   pMat->_32 = up.z;   pMat->_33 = forward.z;
-
-  // Translation components (dot product with eye position)
-  pMat->_41 = Vec3Dot(pEye, &right);
-  pMat->_42 = Vec3Dot(pEye, &up);
-  pMat->_43 = Vec3Dot(pEye, &forward);
-
-  return S_OK;
-}
 
 D3DXMATRIX* WINAPI hook_D3DXMatrixInverse(D3DXMATRIX *pOut, float *pfDeterminant, const D3DXMATRIX *pM)
 {
@@ -504,34 +314,10 @@ D3DXMATRIX* WINAPI hook_D3DXMatrixInverse(D3DXMATRIX *pOut, float *pfDeterminant
   return pOut;
 }
 
-static bool _create_hook = true;
-
-void hnh_HookOn() { _create_hook = true; }
-void hnh_HookOff() { _create_hook = false; }
-
-LPVOID hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName) {
-  if (!_create_hook) {
-    return NULL;
-  }
-  LPVOID addr = (LPVOID)dwAddr;
-  LPVOID orig = NULL;
-  MH_STATUS res = MH_CreateHook(addr, pDetour, reinterpret_cast<LPVOID*>(&orig));
-  if (res == MH_OK) res = MH_EnableHook(addr);
-  DebugLog("[HNH] Hooked %s; %s\n", pszName, MH_StatusToString(res));
-  return orig;
-}
-
 void register_D3DXMatrixIdentity_40E450(int cfg) {
-  hnh_HookOff();
-  hnh_Hook(0x40C64A, hook_MatrixLookAtLH, "MatrixLookAtLH_40C64A"); // [OK] 
+  if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x48A1EC, hook_D3DXVec3Normalize, "D3DXVec3Normalize_48A1EC"); // [OK] 
   hnh_Hook(0x48ABB3, hook_D3DXMatrixRotationAxis, "D3DXMatrixRotationAxis_48ABB3"); // [OK] 
-  hnh_Hook(0x40E3C0, hook_Vec3LengthSq, "Vec3LengthSq_40E3C0"); // [OK] 
-  hnh_Hook(0x40E420, hook_Vec3Set, "hook_Vec3Set_40E420"); // [OK] 
-  hnh_Hook(0x40E3F0, hook_Vec3Dot, "Vec3Dot_40E3F0"); // [OK] 
-  hnh_Hook(0x40DDF3, hook_DegreesToRadians, "DegreesToRadians_40DDF3"); // [OK} 
-  hnh_Hook(0x40CB94, hook_MatrixPerspectiveFovLH, "MatrixPerspectiveFovLH_40CB94"); // [OK] 
-  hnh_Hook(0x40E450, hook_D3DXMatrixIdentity, "D3DXMatrixIdentity_40E450"); // [OK] 
   hnh_Hook(0x48A4BC, hook_D3DXMatrixMultiply, "D3DXMatrixMultiply_48A4BC"); // [OK] 
   hnh_Hook(0x48A5BD, hook_D3DXMatrixInverse, "D3DXMatrixInverse_48A5BD"); // [OK] 
   hnh_HookOn();

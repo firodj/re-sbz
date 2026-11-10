@@ -1,6 +1,10 @@
-#include "pch.h"
-#include "hnh_intern.hpp"
+#include "src/dx7.hpp"
+
 #include "console.hpp"
+#include "src/shared.hpp"
+
+#include "hnh_intern.hpp"
+
 
 void DirectHookHNH() {
 	AssertHanaStructSize();
@@ -50,8 +54,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	console::Alloc();
 	DirectHookHNH();
-  MessageBoxA(NULL, "Hello World from ANSI WinMain!", "Simple Win32 ANSI", MB_OK | MB_ICONINFORMATION);
 	
+	int ret = WinMain_485CE0(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+
 	console::Free();
-  return 0;
+  return ret;
 }

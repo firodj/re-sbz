@@ -3,6 +3,7 @@
 
 #include "console.hpp"
 #include "shared.hpp"
+#include "hnh_hook.hpp"
 
 // === PINNED GAME FUNCTIONS ===
 BOOL (__cdecl*ParseODFContent_441A5D)(LPBYTE pBuf1, CHanaFrameT3EC_S354 *pRootFrameT3EC,

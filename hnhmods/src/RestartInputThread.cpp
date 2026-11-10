@@ -3,6 +3,8 @@
 
 #include "console.hpp"
 #include "shared.hpp"
+#include "hnh_hook.hpp"
+
 #include "../hnh_header.hpp"
 
 // === GLOBAL VARIABLES ===

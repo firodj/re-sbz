@@ -3,6 +3,7 @@
 
 #include "console.hpp"
 #include "shared.hpp"
+#include "hnh_hook.hpp"
 
 // === PINNED GAME FUNCTIONS ===
 int (__cdecl*SystemMenu_4655AB)(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int nMenuMode,

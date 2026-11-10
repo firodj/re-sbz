@@ -3,6 +3,7 @@
 
 #include "console.hpp"
 #include "shared.hpp"
+#include "hnh_hook.hpp"
 
 // === PINNED GAME FUNCTIONS ===
 int (__cdecl*RunModeSelectScreen)(CHanaSceneT458_S504 *pScene,

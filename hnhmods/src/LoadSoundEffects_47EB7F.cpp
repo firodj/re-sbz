@@ -3,6 +3,7 @@
 #include <mmiscapi.h>
 #include "console.hpp"
 #include "shared.hpp"
+#include "hnh_hook.hpp"
 
 // LoadSoundEffects_47EB7F / ReleaseSoundEffects_47EEEC -- the UI sound-effect
 // set plus the "Darken.BMP" overlay surface. Load is called from GameMainLoop

@@ -3,6 +3,7 @@
 
 #include "console.hpp"
 #include "shared.hpp"
+#include "hnh_hook.hpp"
 
 // ParseExecStr_487D89 -- the ODS scene-script interpreter. Runs chunks from
 // pScene->ptrStrData_260 (cursor dwPtrCurrent_448, restart mark dwPtrPos_444,

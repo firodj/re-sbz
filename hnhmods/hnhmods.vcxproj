@@ -138,7 +138,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\SB3ImGuiHook\imgui;$(SolutionDir)\SB3ImGuiHook;$(PYTHON_INCLUDES);$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\SB3ImGuiHook\imgui;$(SolutionDir)\SB3ImGuiHook;$(PYTHON_INCLUDES);$(ProjectDir);$(SolutionDir)\libs\dx7sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -219,6 +219,7 @@
     <ClInclude Include="hnh_header.hpp" />
     <ClInclude Include="hnh_intern.hpp" />
     <ClInclude Include="src\dx7.hpp" />
+    <ClInclude Include="src\hnh_hook.hpp" />
     <ClInclude Include="src\shared.hpp" />
     <ClInclude Include="src\struct.hpp" />
     <ClInclude Include="user32hook.hpp" />
@@ -229,6 +230,7 @@
     </ClCompile>
     <ClCompile Include="exemain.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -263,6 +265,9 @@
     <ClCompile Include="src\dx7.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\hnh_hook.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\MemAlloc_40DEF7.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

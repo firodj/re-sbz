@@ -3,6 +3,7 @@
 
 #include "console.hpp"
 #include "shared.hpp"
+#include "hnh_hook.hpp"
 
 // GameMainLoop_47F013() -- top-level game loop, entered once from WinMain after
 // CheckRunGame / D3D init. One-time intro (war.bmp splash, sound-table reset,

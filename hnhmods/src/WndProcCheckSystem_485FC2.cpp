@@ -7,6 +7,7 @@
 #include "console.hpp"
 #include "shared.hpp"
 #include "struct.hpp"
+#include "hnh_hook.hpp"
 
 // ---
 #define WMU_CHECK_SYSTEM 0x0BD0   // posted by WM_CREATE: install/disc/config gate

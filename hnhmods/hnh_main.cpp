@@ -463,8 +463,6 @@ std::string getModuleDir() {
 	return std::string(buffer).substr(0, pos);
 }
 
-int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
-
 int WINAPI hookWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 	DebugLog("[HNH] WinMain ! Wait for Start Event...\n");
 	WaitForSingleObject(g_hStartEvent, INFINITE);

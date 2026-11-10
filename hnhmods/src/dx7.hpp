@@ -353,9 +353,7 @@ struct D2D_RECT_F
 
 #define D3DX_UPDATE_NOVSYNC (1<<0)
 
-LPVOID hnh_Hook(DWORD dwAddr, LPVOID pDetour, const char* pszName);
-void hnh_HookOn();
-void hnh_HookOff();
+#ifdef _USRDLL
 
 extern HRESULT(*D3DXUninitialize)(void);
 extern HRESULT (*D3DXInitialize)(void); 
@@ -368,14 +366,8 @@ extern void (__stdcall* D3DXGetErrorString)(int hr, size_t strLength, char* str)
 
 extern D3DXVECTOR3* (__stdcall*D3DXVec3Normalize)(D3DXVECTOR3* pOut, const D3DXVECTOR3* pV);
 extern D3DXMATRIX* (__stdcall*D3DXMatrixRotationAxis)(D3DXMATRIX* pOut, const D3DXVECTOR3* pV, float angle);
-extern double (__cdecl*Vec3LengthSq)(const D3DXVECTOR3* pV);
-extern void (__thiscall * Vec3Set)(D3DXVECTOR3 *This, float x, float y, float z);
-extern double (__cdecl*Vec3Dot)(const D3DXVECTOR3* pV1, const D3DXVECTOR3* pV2);
-extern double (__cdecl*DegreesToRadians)(float deg);
-extern HRESULT (__cdecl*MatrixPerspectiveFovLH)(D3DXMATRIX* pMat, float fovy, float aspect, float zn, float zf);
-extern D3DXMATRIX* (__cdecl*D3DXMatrixIdentity)(D3DXMATRIX* pOut);
+
 extern D3DXMATRIX* (__stdcall*D3DXMatrixMultiply)(D3DXMATRIX* pOut, const D3DXMATRIX* pM1, const D3DXMATRIX* pM2);
-extern HRESULT (__cdecl*MatrixLookAtLH)(D3DXMATRIX* pMat, const D3DXVECTOR3* pEye, const D3DXVECTOR3* pAt, const D3DXVECTOR3* pUp);
 extern D3DXMATRIX* (__stdcall*D3DXMatrixInverse)(D3DXMATRIX* pOut, float* pfDeterminant, const D3DXMATRIX* pM);
 extern HRESULT(__stdcall* D3DXCreateContextEx)(unsigned int devIndex, unsigned int flags, HWND hwnd, HWND focusWnd, int nNumColorBits, int nNumAlphaBits, int nNumDepthBits, int nNumStencilBits, int nNumBackBuffers, int nWidth, int nHeight, int nRefreshRate, LPD3DXCONTEXT* ppCtx);
 extern HRESULT(__stdcall* D3DXCreateContext)(unsigned int devIndex, unsigned int flags, HWND hWnd, int width, int height, LPD3DXCONTEXT* ppCtx);
@@ -408,3 +400,4 @@ extern D3DXQUATERNION* (__stdcall* D3DXQuaternionRotationMatrix)(D3DXQUATERNION*
   const D3DXMATRIX* pM);
 
 
+#endif

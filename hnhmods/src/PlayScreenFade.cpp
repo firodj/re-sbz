@@ -3,6 +3,7 @@
 
 #include "console.hpp"
 #include "shared.hpp"
+#include "hnh_hook.hpp"
 
 // === PINNED GAME FUNCTIONS ===
 void (__cdecl* PlayScreenFade)(int bisGo, COLORREF colorref,
