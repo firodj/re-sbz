@@ -572,6 +572,7 @@ extern double(__cdecl* UpdateFoeAI_446A38)(CSekBody* pFoeBody, CSekBody* pHeroBo
   float* pfAggro, float* pfHeroHp, float fAggroMax, int nDuelIndex);
 
 
+// === DEFINED SetupHeroEntry.cpp ===
 extern int& g_dwBattleMode;
 
 

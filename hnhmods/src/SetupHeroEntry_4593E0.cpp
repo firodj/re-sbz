@@ -35,26 +35,52 @@ void (__cdecl *UpdateVoicePlayback_458B3A)(CSekBody *pFoeBody, CHanaFrameRootT3E
 int (__cdecl *DSBufferGetVolume_423C65)(LPDIRECTSOUNDBUFFER pDSBuf)
 = reinterpret_cast<int (__cdecl*)(LPDIRECTSOUNDBUFFER pDSBuf)>(0x423c65);
 
+// === GLOBAL VARIABLSE ===
 
+static int s_dwBattleMode;
 
-
-uint8_t &g_bHeroAttackHold = *(uint8_t *)0x52ED08; // WRITABLE
-uint8_t &g_bHeroLightAttack = *(uint8_t *)0x52ED09; // WRITABLE
-float &g_fHeroLightAttackTime = *(float *)0x52ED0C; // WRITABLE
+#ifdef _USRDLL
 int &g_dwBattleMode = *(int *)0x52ED04; // WRITABLE
-uint8_t &g_bHeroChargeActive = *(uint8_t *)0x52ED0A; // WRITABLE
+
+bool &g_bHeroAttackHold = *(bool *)0x52ED08; // WRITABLE
+bool &g_bHeroLightAttack = *(bool *)0x52ED09; // WRITABLE
+float &g_fHeroLightAttackTime = *(float *)0x52ED0C; // WRITABLE
+bool &g_bHeroChargeActive = *(bool *)0x52ED0A; // WRITABLE
 float &g_fHeroChargeTime = *(float *)0x52ED00; // WRITABLE
 float &g_fHeroIdleTime = *(float *)0x52ED10; // WRITABLE
 
 char (&g_pMapCollGrid)[40804] = *(char (*)[40804])0x519D48; // WRITABLE
 
-uint16_t &g_nFloodCandidates_52ED14 = *(uint16_t *)0x52ED14; // WRITABLE
+short &g_nFloodCandidates_52ED14 = *(short *)0x52ED14; // WRITABLE
 POINT (&g_arrFloodPathXY_5244F8)[1024][5] = *(POINT (*)[1024][5])0x5244F8; // WRITABLE -- [candidate][waypoint]
 __int16 (&g_arrFloodPathLen_523CAC)[1024] = *(__int16 (*)[1024])0x523CAC; // WRITABLE
 __int16 (&g_arrFloodPathCnt_52E500)[1024] = *(__int16 (*)[1024])0x52E500; // WRITABLE
 
-uint32_t &g_nCurVoiceIdx_52EF64 = *(uint32_t *)0x52EF64; // WRITABLE
-uint32_t &g_nVoiceRotate_52EF68 = *(uint32_t *)0x52EF68; // WRITABLE
+int &g_nCurVoiceIdx_52EF64 = *(int *)0x52EF64; // WRITABLE
+int &g_nVoiceRotate_52EF68 = *(int *)0x52EF68; // WRITABLE
+
+#else
+
+int& g_dwBattleMode = s_dwBattleMode;
+
+bool  g_bHeroAttackHold;
+bool  g_bHeroLightAttack;
+float g_fHeroLightAttackTime;
+bool  g_bHeroChargeActive;
+float g_fHeroChargeTime;
+float g_fHeroIdleTime;
+
+char g_pMapCollGrid[40804];
+
+short g_nFloodCandidates_52ED14;
+POINT g_arrFloodPathXY_5244F8[1024][5];
+__int16 g_arrFloodPathLen_523CAC[1024];
+__int16 g_arrFloodPathCnt_52E500[1024];
+
+int g_nCurVoiceIdx_52EF64;
+int g_nVoiceRotate_52EF68;
+
+#endif
 
 // === FUNCTIONS ===
 
