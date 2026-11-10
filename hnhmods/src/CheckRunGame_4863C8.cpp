@@ -6,69 +6,56 @@
 
 // === GLOBAL VARIABLES ===
 
-/*
-A null-terminated table of (width, height, bpp) triples -- the game's officially supported fullscreen modes:
+#ifdef _USRDLL
+D3DXMATRIX &g_mat4x4View_4D4780       = *(D3DXMATRIX *)0x4D4780; // WRITABLE
+D3DXMATRIX &g_mat4x4Projection_4CE870 = *(D3DXMATRIX *)0x4CE870; // WRITABLE
 
-+-----+-------+--------+-----+
-|  #  | Width | Height | bpp |
-+-----+-------+--------+-----+
-| 1   | 640   | 480    | 16  |
-+-----+-------+--------+-----+
-| 2   | 640   | 480    | 32  |
-+-----+-------+--------+-----+
-| 3   | 800   | 600    | 16  |
-+-----+-------+--------+-----+
-| 4   | 800   | 600    | 32  |
-+-----+-------+--------+-----+
-| 5   | 1024  | 768    | 16  |
-+-----+-------+--------+-----+
-| 6   | 1024  | 768    | 32  |
-+-----+-------+--------+-----+
-| 7   | 0     | 0      | 0   |
-*/
-CVideoModeWhiteItem(&g_arrModeWhitelist_4B33F0)[7] = *(CVideoModeWhiteItem(*)[7])0x4B33F0; // once!
+float &g_fProjZFar   = *(float *)0x4B00C0; // WRITABLE default: 100000.0
+float &g_fProjZNear  = *(float *)0x4B00BC; // WRITABLE default: 1.0
+float &g_fProjAspect = *(float *)0x4B00B8; // WRITABLE default: 0.75
+float &g_fProjFov    = *(float *)0x4B00C4; // WRITABLE default: 0.5
 
-int &g_bPreferTnLHal_4B33E8 = *(int*)0x4B33E8; // once!
+int &g_bAlphaBlendEnabled_4D6CC0    = *(int *)0x4D6CC0; // WRITABLE
+int &g_nAlphaOpState_4D6CC4         = *(int *)0x4D6CC4; // WRITABLE
+BOOL &g_bSpecularEnable_4B00A0      = *(BOOL*)0x4B00A0; // WRITABLE default: 1
+BOOL &g_bSpecularEnable_4B3474 = *(BOOL*)0x4B3474; //  default: 1
+int  &g_nObjectTableCapacity_4B009C  = *(int*)0x4B009C; // default: 64
+int (&g_arrZBufDepthCountPerDev_518C40)[16] = *(int(*)[16])0x518C40;
+int (&g_arrZBufDepthsPerDev_518828)[256]    = *(int(*)[256])0x518828;
 
-uint32_t   &g_dwRGBBitCount_4D6D00 = *(uint32_t *)0x4D6D00; // WRITABLE
-D3DXMATRIX &g_mat4x4View_4D4780    = *(D3DXMATRIX *)0x4D4780; // WRITABLE
+HWND &g_hWnd             = *(HWND*)0x518CAC;
+BOOL &g_bRunGame         = *(BOOL*)0x4B3488; // default: 0xFFFFFFFF
 
-float &g_fProjZFar   = *(float *)0x4B00C0; // WRITABLE
-float &g_fProjZNear  = *(float *)0x4B00BC; // WRITABLE
-float &g_fProjAspect = *(float *)0x4B00B8; // WRITABLE
-float &g_fProjFov    = *(float *)0x4B00C4; // WRITABLE
-D3DXMATRIX  &g_mat4x4Projection_4CE870 = *(D3DXMATRIX *)0x4CE870; // WRITABLE
+BOOL &g_bAntiAliasEnable       = *(BOOL *)0x4B347C; // WRITABLE, default: 1
+BOOL &g_bDitherEnable          = *(BOOL *)0x4B3478; // WRITABLE, default: 1
+BOOL &g_bLightEnable_4B3484    = *(BOOL *)0x4B3484; // WRITABLE, default: 1
+BOOL &g_bShadowEnable_518CA8   = *(BOOL *)0x518CA8; // WRITABLE
+int  &g_nResolutionMode_518C80      = *(int *)0x518C80; // WRITABLE
+int  &g_nZBufDepthMode_518C9C = *(int *)0x518C9C; // WRITABLE
+int  &g_nRenderHALMode_518CA0       = *(int *)0x518CA0; // WRITABLE
+int  &g_nWidth2                = *(int *)0x518C28; // WRITABLE
+int  &g_nScreenScale_52F19C    = *(int *)0x52F19C; // WRITABLE
+#else
+
+#endif
+
+// --- internal
+//CVideoModeWhiteItem(&g_arrModeWhitelist_4B33F0)[7] = *(CVideoModeWhiteItem(*)[7])0x4B33F0; // once!
+
+int &g_bPreferTnLHal_4B33E8 = *(int*)0x4B33E8; // once! default: 1
+unsigned int   &g_dwRGBBitCount_4D6D00 = *(unsigned int *)0x4D6D00; // WRITABLE
+
 D3DXVECTOR3 &g_vec3AxisX_4CE8E8 = *(D3DXVECTOR3 *)0x4CE8E8; // WRITABLE
 D3DXVECTOR3 &g_vec3AxisY_4CE8F8 = *(D3DXVECTOR3 *)0x4CE8F8; // WRITABLE
 D3DXVECTOR3 &g_vec3AxisZ_4CE908 = *(D3DXVECTOR3 *)0x4CE908; // WRITABLE
 D3DXVECTOR3 (&g_arrFwdByYaw360_4CD788)[360]   = *(D3DXVECTOR3 (*)[360])0x4CD788; // WRITABLE
 D3DXVECTOR3 (&g_arrUpByPitch360_4D47C0)[360]  = *(D3DXVECTOR3 (*)[360])0x4D47C0; // WRITABLE
 D3DXVECTOR3 (&g_arrFwdByPitch360_4D58A0)[360] = *(D3DXVECTOR3 (*)[360])0x4D58A0; // WRITABLE
-int &g_bAlphaBlendEnabled_4D6CC0    = *(int *)0x4D6CC0; // WRITABLE
-int &g_nAlphaOpState_4D6CC4         = *(int *)0x4D6CC4; // WRITABLE
-BOOL     &g_bSpecularEnable              = *(BOOL*)0x4B00A0; // WRITABLE
-BOOL     &g_bSpecularEnableMirror_4B00A4 = *(BOOL*)0x4B00A4; // WRITABLE
-int      &g_nObjectTableCapacity_4B009C  = *(int*)0x4B009C;
-int &g_nLightningState              = *(int *)0x4B00A8; // WRITABLE
 
-int (&g_arrZBufDepthCountPerDev_518C40)[16] = *(int(*)[16])0x518C40;
-int (&g_arrZBufDepthsPerDev_518828)[256]    = *(int(*)[256])0x518828;
-
-
+BOOL      &g_bSpecularEnableMirror_4B00A4 = *(BOOL*)0x4B00A4; // WRITABLE, default: 1
 HINSTANCE &g_hInstance_518CB0 = *(HINSTANCE*)0x518CB0;
-HWND      &g_hWnd             = *(HWND*)0x518CAC;
-BOOL      &g_bRunGame         = *(BOOL*)0x4B3488;
-
-BOOL     &g_bSpecularEnable_4B3474 = *(BOOL*)0x4B3474;
-BOOL     &g_bAntiAliasEnable       = *(BOOL *)0x4B347C; // WRITABLE
-BOOL     &g_bDitherEnable          = *(BOOL *)0x4B3478; // WRITABLE
-BOOL     &g_bLightEnable_4B3484    = *(BOOL *)0x4B3484; // WRITABLE
-BOOL     &g_bShadowEnable_518CA8   = *(BOOL *)0x518CA8; // WRITABLE
-int      &g_nResolutionMode_518C80      = *(int *)0x518C80; // WRITABLE
-int &g_nZBufDepthMode_518C9C = *(int *)0x518C9C; // WRITABLE
-int      &g_nRenderHALMode_518CA0       = *(int *)0x518CA0; // WRITABLE
-int &g_nWidth2                = *(int *)0x518C28; // WRITABLE
-int &g_nScreenScale_52F19C    = *(int *)0x52F19C; // WRITABLE
+int       &g_nLightningState  = *(int *)0x4B00A8; // WRITABLE, default: 1
+BOOL      &g_nLightningEnabled = *(BOOL *)0x4B00AC; // WRITABLE, default: 1
 
 // === GLOBAL FUNCTIONS ===
 
@@ -606,7 +593,7 @@ HRESULT hook_D3DInitBuffers_40AF60()
   hr = g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_COLORVERTEX, 1);
   if (hr < 0) return hr;
 
-  g_bSpecularEnable = 1;
+  g_bSpecularEnable_4B00A0 = 1;
   g_bSpecularEnableMirror_4B00A4 = 1;
 
   hr = g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, 1);

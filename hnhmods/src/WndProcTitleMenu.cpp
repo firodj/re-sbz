@@ -22,10 +22,10 @@ CBMPFile *g_pbmpDdBt;
 CBMPFile *g_pbmpDd2;
 CBMPFile *g_pbmpDdBt3;
 HGDIOBJ  g_hFontTitleMenu_518CCC;
-int  g_nTitleMenuHotId_4B348C = 0xFFFFFFFF;
-BOOL g_bLMouseClick;
-BOOL g_bTitleMenuConfigScreen_518CC4;
-int  g_nTitleMenuHotToggleRow_4B3490;
+int      g_nTitleMenuHotId_4B348C = 0xFFFFFFFF;
+BOOL     g_bLMouseClick;
+BOOL     g_bTitleMenuConfigScreen_518CC4;
+int      g_nTitleMenuHotToggleRow_4B3490;
 
 #endif
 

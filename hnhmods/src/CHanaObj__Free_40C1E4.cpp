@@ -23,7 +23,6 @@ uint32_t &g_nRefAnimT3F0 = *(uint32_t *)0x4D6D1C; // WRITABLE
 uint32_t &g_nRefAnimSetT3F1 = *(uint32_t *)0x4D6D20; // WRITABLE
 uint32_t &g_nRefMorpT457 = *(uint32_t *)0x4D6D50; // WRITABLE
 
-uint32_t &g_nLightningEnabled = *(uint32_t *)0x4B00AC; // WRITABLE
 uint32_t &g_bForceDirectionalLights = *(uint32_t *)0x4D6D04; // WRITABLE
 
 CHanaTextureT3EB_S2CC* &g_pCurTexObj = *(CHanaTextureT3EB_S2CC**)0x4D6CA0;
@@ -638,7 +637,7 @@ void __cdecl hook_ApplyLightSettings(CHanaLightT3EF_S1A0 *pLight)
     }
     else
     {
-      if ( !g_bSpecularEnable )
+      if ( !g_bSpecularEnable_4B00A0 )
       {
         pLight->d3dLight_134.dcvSpecular.r = 0.0;
         pLight->d3dLight_134.dcvSpecular.g = 0.0;

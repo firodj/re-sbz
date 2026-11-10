@@ -43,23 +43,45 @@ HRESULT(__cdecl* GetDC_4188B4)(LPDIRECTDRAWSURFACE7 pDDSurface, HDC* pDC) = rein
 void (__cdecl*GameMainLoop_47F013)(void) = reinterpret_cast<void(__cdecl*)()>(0x47F013);
 
 // === PINNED GLOBALS ===
-LPDIRECTSOUNDBUFFER (&g_arrUIEffectDSBuffer_52F168)[5] = *(LPDIRECTSOUNDBUFFER(*)[5])0x52F168; // WRITABLE
-CSoundStruct_8 *(&g_arrFootstepSound_52F17C)[4] = *(CSoundStruct_8 *(*)[4])0x52F17C; // WRITABLE
-CSoundStruct_8 *(&g_arrFootstepSound_52F18C)[4] = *(CSoundStruct_8 *(*)[4])0x52F18C; // WRITABLE
-BYTE (&g_byData0Dat_530170)[256]     = *(BYTE(*)[256])0x530170; // WRITABLE
-BYTE &g_sceneProgressFlag_530269     = *(BYTE*)0x530269; // WRITABLE
-CSceneState &g_sceneState_52F7E0     = *(CSceneState*)0x52F7E0; // WRITABLE
+
+static LPDIRECTSOUNDBUFFER s_arrUIEffectDSBuffer_52F168[5];
+static CSoundStruct_8* s_arrFootstepSound_52F17C[4];
+static CSoundStruct_8* s_arrFootstepSound_52F18C[4];
+static BYTE s_byData0Dat_530170[256];
+static BYTE s_sceneProgressFlag_530269;
+static CSceneState s_sceneState_52F7E0;
+static const char* s_szLastDDError_51836C;
+
+#ifdef _USRDLL
+LPDIRECTSOUNDBUFFER(&g_arrUIEffectDSBuffer_52F168)[5] = *(LPDIRECTSOUNDBUFFER(*)[5])0x52F168; // WRITABLE
+CSoundStruct_8* (&g_arrFootstepSound_52F17C)[4] = *(CSoundStruct_8 * (*)[4])0x52F17C; // WRITABLE
+CSoundStruct_8* (&g_arrFootstepSound_52F18C)[4] = *(CSoundStruct_8 * (*)[4])0x52F18C; // WRITABLE
+BYTE(&g_byData0Dat_530170)[256] = *(BYTE(*)[256])0x530170; // WRITABLE
+BYTE& g_sceneProgressFlag_530269 = *(BYTE*)0x530269; // WRITABLE
+CSceneState& g_sceneState_52F7E0 = *(CSceneState*)0x52F7E0; // WRITABLE
+const char*& g_szLastDDError_51836C = *(const char**)0x51836C; // WRITABLE
+
 // CSceneSlot (&g_arrSceneNo_4C6F78)[10] = *(CSceneSlot(*)[10])0x4C6F78; // READ-ONLY  // replaced by compiled-in [100] copy
 // Vestigial save-name format string. Past .data's raw image (runtime zero-fill,
 // IDA shows 0xFF filler) and never written -- this file holds its only xref --
 // so it is always the empty string. The guard below really tests the DATA
 // directory, which SetupDirPath_486630 just created -> the autosave always fires.
-CHAR *g_pszSaveNameFmt_52F1AC = (CHAR*)0x52F1AC; // WRITABLE (never written)
 
-const char* &g_szLastDDError_51836C = *(const char* *)0x51836C; // WRITABLE
+CHAR(&g_pszSaveNameFmt_52F1AC)[4] = *(CHAR(*)[4])0x52F1AC; // WRITABLE (never written)
+//char(&g_BayerDitherMatrix8x8)[] = *(char (*)[])0x4B23B0; // READ-ONLY, to struct.cpp
 
-char (&g_BayerDitherMatrix8x8)[] = *(char (*)[])0x4B23B0;
+#else
 
+LPDIRECTSOUNDBUFFER(&g_arrUIEffectDSBuffer_52F168)[5] = s_arrUIEffectDSBuffer_52F168;
+CSoundStruct_8* (&g_arrFootstepSound_52F17C)[4] = s_arrFootstepSound_52F17C;
+CSoundStruct_8* (&g_arrFootstepSound_52F18C)[4] = s_arrFootstepSound_52F18C;
+BYTE(&g_byData0Dat_530170)[256] = s_byData0Dat_530170;
+BYTE& g_sceneProgressFlag_530269 = s_sceneProgressFlag_530269;
+CSceneState& g_sceneState_52F7E0 = s_sceneState_52F7E0;
+const char*& g_szLastDDError_51836C = s_szLastDDError_51836C;
+
+CHAR g_pszSaveNameFmt_52F1AC[4];
+#endif
 
 // === FUNCTION ===
 void __cdecl hook_GameMainLoop_47F013(void)
@@ -314,27 +336,27 @@ int __cdecl hook_BMP_DitherRGB24ToRGB565(char b, char g, char r, int x, int y)
   ditherY = y % 8;
   ditherX = x % 8;
   r5 = b & 0xF8;
-  if ( g_BayerDitherMatrix8x8[72 * (b & 7) + 9 * (y % 8) + x % 8] == '1' )
+  if ( g_BayerDitherMatrix8x8[b & 7][y % 8][x % 8] == '1' )
   {
     r5 += 8;
     if ( r5 > 0xF8u )
       r5 = 0xF8;
   }
   g6 = g & 0xF8;
-  if ( g_BayerDitherMatrix8x8[72 * (g & 7) + 9 * ditherY + ditherX] == '1' )
+  if ( g_BayerDitherMatrix8x8[g & 7][ditherY][ditherX] == '1' )
   {
     g6 += 8;
     if ( g6 > 0xF8u )
       g6 = 0xF8;
   }
   b5 = r & 0xF8;
-  if ( g_BayerDitherMatrix8x8[72 * (r & 7) + 9 * ditherY + ditherX] == '1' )
+  if ( g_BayerDitherMatrix8x8[r & 7][ditherY][ditherX] == '1' )
   {
     b5 += 8;
     if ( b5 > 0xF8u )
       b5 = 0xF8;
   }
-  return (r5 >> 3) | (4 * g6) | (b5 << 7);
+  return ((int)r5 >> 3) | (4 * g6) | (b5 << 7);
 }
 
 int __cdecl hook_ConvertFrom640AsInt(int nNum)

@@ -35,11 +35,22 @@ reinterpret_cast<int(__cdecl*)(int, int)>(0x4703AE);
 // (none new - g_pDSBufAssault_52EFD0 is pinned in RunModeSelectScreen.cpp; every
 //  other global used here is already extern in shared.hpp)
 
+static LPDIRECTSOUNDBUFFER s_pDSBufAssault_52EFD0;
+
+#ifdef _USRDLL
+LPDIRECTSOUNDBUFFER &g_pDSBufAssault_52EFD0 = *(LPDIRECTSOUNDBUFFER *)0x52EFD0;  // WRITABLE
 
 HANDLE &g_hWaitScreenThread = *(HANDLE *)0x52F0D0; // WRITABLE
-uint32_t &g_bWaitScreenOn = *(uint32_t *)0x52F0CC; // WRITABLE
+BOOL &g_bWaitScreenOn = *(BOOL *)0x52F0CC; // WRITABLE
 HWND &g_hwndWaitScreen = *(HWND *)0x52F0C8; // WRITABLE
-LPDIRECTSOUNDBUFFER &g_pDSBufAssault_52EFD0 = *(LPDIRECTSOUNDBUFFER *)0x52EFD0;  // WRITABLE
+#else
+LPDIRECTSOUNDBUFFER& g_pDSBufAssault_52EFD0 = s_pDSBufAssault_52EFD0;
+
+HANDLE g_hWaitScreenThread;
+BOOL   g_bWaitScreenOn;
+HWND   g_hwndWaitScreen;
+
+#endif
 
 
 // === FUNCTIONS ===

@@ -663,7 +663,7 @@ void __cdecl hook_HanaMate_SetMaterial(CHanaMateT3EE_S184 *pMate)
   if ( mat.diffuse.a > 1.0 )
     mat.diffuse.a = 1.0;
   pMate->fMatDirty = 0;
-  if ( !g_bSpecularEnable )
+  if ( !g_bSpecularEnable_4B00A0 )
   {
     memset(&mat.specular, 0, sizeof(mat.specular));
     mat.power = 0.0;

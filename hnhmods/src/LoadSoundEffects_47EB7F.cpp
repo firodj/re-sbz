@@ -32,7 +32,14 @@ LPDIRECTDRAWSURFACE7(__cdecl*LoadSoundEffects_47EB7F)(void) =
 void (__cdecl*ReleaseSoundEffects)(void) = reinterpret_cast<void(__cdecl*)()>(0x47EEEC);
 
 // === PINNED GLOBALS ===
+
+static LPDIRECTDRAWSURFACE7 s_pSurfaceDarkenBmp_52F1A8;
+
+#ifdef _USRDLL
 LPDIRECTDRAWSURFACE7 &g_pSurfaceDarkenBmp_52F1A8 = *(LPDIRECTDRAWSURFACE7 *)0x52F1A8; // WRITABLE
+#else
+LPDIRECTDRAWSURFACE7& g_pSurfaceDarkenBmp_52F1A8 = s_pSurfaceDarkenBmp_52F1A8;
+#endif
 
 // === FUNCTIONS ===
 LPDIRECTDRAWSURFACE7 __cdecl hook_LoadSoundEffects_47EB7F(void)

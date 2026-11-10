@@ -71,6 +71,10 @@ extern const int g_texCoordSizeLUT_4A8368[4];
 
 extern const float g_fVolumeDbTable[10];
 
+extern const char g_BayerDitherMatrix8x8[8][8][9];
+
+extern const CVideoModeWhiteItem g_arrModeWhitelist_4B33F0[7];
+
 // === DEFINED MemAlloc.cpp ===
 
 extern int  &g_nMemCnt_4D6CF0;
@@ -144,9 +148,12 @@ extern void(__cdecl* HanaMesh_AddVertexReference)(CHanaMeshT3F5_S138* pMeshT3F5,
 // === DEFINED CheckRunGame.cpp ===
 
 extern BOOL     &g_bSpecularEnable_4B3474;
+extern BOOL     &g_bSpecularEnable_4B00A0;
+
 extern BOOL     &g_bAntiAliasEnable;
 extern BOOL     &g_bDitherEnable;
 extern BOOL     &g_bLightEnable_4B3484;
+extern BOOL     &g_nLightningEnabled;
 extern BOOL     &g_bShadowEnable_518CA8;
 extern int      &g_nResolutionMode_518C80;
 extern int &g_nZBufDepthMode_518C9C;
@@ -163,11 +170,8 @@ extern int (&g_arrZBufDepthCountPerDev_518C40)[16];
 extern int (&g_arrZBufDepthsPerDev_518828)[256];
 
 extern int      &g_nObjectTableCapacity_4B009C;
-extern int &g_nLightningState;
 
-extern BOOL      &g_bSpecularEnable;
 extern HWND      &g_hWnd;
-extern HINSTANCE &g_hInstance_518CB0;
 extern BOOL      &g_bRunGame;
 extern D3DXMATRIX &g_mat4x4View_4D4780;
 extern D3DXMATRIX &g_mat4x4Projection_4CE870;
@@ -218,7 +222,6 @@ extern HRESULT(__cdecl* D3DInit_40A894)(CD3DInitParam* pDevParam);
 
 // === DEFINED CHanaObj__Free.cpp ===
 
-extern uint32_t& g_nLightningEnabled;
 extern __int64& g_bitsLightIndexes_4D6CB8;
 
 extern void(__cdecl*ApplyMaterial)(CHanaMateT3EE_S184* pMate, D3DMATERIAL7* pD3Dmaterial);
@@ -445,6 +448,7 @@ extern int(__cdecl* PlayCutInScene_46A76F)(CHanaSceneT458_S504 *pScene,
   CHanaSpriteT3F6_S1FC **arrPostureSprites, CSekBody *pLockOnBody,
   CSekBody *pModeBody, int iGroup, CSoundStruct_8 **arrSoundAHs,
   CSoundStruct_8 **arrSoundSEs, CSekBody **arrTearsBodies, int iMenuTab);
+
 extern LPDIRECTSOUNDBUFFER& g_pDSBufAssault_52EFD0;
 
 // === DEFINED MenuCharSelect.cpp (continued) ===

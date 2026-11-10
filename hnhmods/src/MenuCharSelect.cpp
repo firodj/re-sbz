@@ -22,9 +22,20 @@ int (__cdecl*MenuMusicSelect)(LPDIRECTSOUNDBUFFER *ppDSndBuf, CHanaSpriteT3F6_S1
 
 // === GLOBAL VARIABLES ===
 
+static char s_arrGalleryUnlocked_5301A2[150];
+
+#ifdef _USRDLL
+char (&g_arrGalleryUnlocked_5301A2)[150] = *(char(*)[150])0x5301A2;  // WRITABLE
+
 LPDIRECTDRAWSURFACE7 &g_lpDDSurface_519CF8 = *(LPDIRECTDRAWSURFACE7 *)0x519CF8; // WRITABLE
 char (&g_tempText_519D00)[50] = *(char (*)[50])0x519D00; // WRITABLE
-char (&g_arrGalleryUnlocked_5301A2)[150] = *(char(*)[150])0x5301A2;  // WRITABLE
+#else
+char(&g_arrGalleryUnlocked_5301A2)[150] = s_arrGalleryUnlocked_5301A2;
+
+LPDIRECTDRAWSURFACE7 g_lpDDSurface_519CF8;
+char g_tempText_519D00[50];
+
+#endif
 
 // String 50 (&g_ascSndFileNames_4C78A0)[200] = *(String 50(*)[200])0x4C78A0;  // READ-ONLY
 

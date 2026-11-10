@@ -5,6 +5,7 @@
 #include "shared.hpp"
 
 // === PINNED GAME FUNCTIONS ===
+
 int (__cdecl*PlayHunting_44C38D)(int nDuelIndex) =
     reinterpret_cast<int(__cdecl*)(int)>(0x44C38D);
 double (__cdecl*UpdateFoeAI_446A38)(CSekBody *pFoeBody, CSekBody *pHeroBody,
@@ -90,26 +91,45 @@ BOOL (__cdecl *StepWanaProjectile_4581B0)(CSekBody *pWanaBody, CSekBody *pHeroBo
 void (__cdecl *DrawSprite3D)(CHanaSpriteT3F6_S1FC *pSprite, D3DXVECTOR3 *parrPos)
 = reinterpret_cast<void (__cdecl*)(CHanaSpriteT3F6_S1FC *pSprite, D3DXVECTOR3 *parrPos)>(0x414344);
 
-// === PINNED GLOBALS ===
+// === GLOBALS VARIABLES ===
 
+#ifdef _USRDLL
 // UI/menu SFX slots 0..9 (0 Start, 1 GameOver, 2 On, 3 per-duel act\HitN)
-LPDIRECTSOUNDBUFFER (&g_pArrSndBuf_5244AC)[10] =
-*(LPDIRECTSOUNDBUFFER(*)[10])0x5244AC;
-
+LPDIRECTSOUNDBUFFER (&g_pArrSndBuf)[10] = *(LPDIRECTSOUNDBUFFER(*)[10])0x5244AC;
 
 // foe 3D hit SFX (each foot wav loaded twice, one per side)
-CSoundStruct_8 *(&g_pFoeHitSfxB_5244D4)[4] = *(CSoundStruct_8 *(*)[4])0x5244D4; // WRITABLE (also pinned in PlayHunting)
-CSoundStruct_8 *(&g_pFoeHitSfxE_5244E4)[5] = *(CSoundStruct_8 *(*)[5])0x5244E4; // WRITABLE (also pinned in PlayHunting)
+CSoundStruct_8 *(&g_pFoeHitSfxB)[4] = *(CSoundStruct_8 *(*)[4])0x5244D4; // WRITABLE (also pinned in PlayHunting)
+CSoundStruct_8 *(&g_pFoeHitSfxE)[4] = *(CSoundStruct_8 *(*)[4])0x5244E4; // WRITABLE (also pinned in PlayHunting)
 
-int &g_dwFoeAiState_52ED20 = *(int *)0x52ED20; // WRITABLE
-int &g_bFoeCharging_52ED24 = *(int *)0x52ED24; // WRITABLE (dword store despite the b- name: C7 05 at 0x44767E)
-float &g_fFoeAiTimer_52ED28 = *(float *)0x52ED28; // WRITABLE
-float &g_fFoeCdTimer_52ED18 = *(float *)0x52ED18; // WRITABLE
-int &g_dwFoeCellXCache_52E4F8 = *(int *)0x52E4F8; // WRITABLE (right after g_arrFloodPathXY_5244F8, which spans 0x5244F8..0x52E4F8)
-int &g_dwFoeCellYCache_52E4FC = *(int *)0x52E4FC; // WRITABLE
+int &g_dwFoeAiState = *(int *)0x52ED20; // WRITABLE
+int &g_bFoeCharging = *(int *)0x52ED24; // WRITABLE (dword store despite the b- name: C7 05 at 0x44767E)
+float &g_fFoeAiTimer = *(float *)0x52ED28; // WRITABLE
+float &g_fFoeCdTimer = *(float *)0x52ED18; // WRITABLE
+int &g_dwFoeCellXCache = *(int *)0x52E4F8; // WRITABLE (right after g_arrFloodPathXY_5244F8, which spans 0x5244F8..0x52E4F8)
+int &g_dwFoeCellYCache = *(int *)0x52E4FC; // WRITABLE
 
-uint32_t &g_bFoeSpun_52EF60 = *(uint32_t *)0x52EF60; // WRITABLE
-float &g_fFoeSpinDir_52EF5C = *(float *)0x52EF5C; // WRITABLE
+BOOL &g_bFoeSpun = *(BOOL *)0x52EF60; // WRITABLE
+float &g_fFoeSpinDir = *(float *)0x52EF5C; // WRITABLE
+#else
+
+// UI/menu SFX slots 0..9 (0 Start, 1 GameOver, 2 On, 3 per-duel act\HitN)
+LPDIRECTSOUNDBUFFER g_pArrSndBuf[10];
+
+// foe 3D hit SFX (each foot wav loaded twice, one per side)
+CSoundStruct_8 *g_pFoeHitSfxB[4];
+CSoundStruct_8* g_pFoeHitSfxE[4];
+
+int   g_dwFoeAiState;
+int   g_bFoeCharging;
+float g_fFoeAiTimer;
+float g_fFoeCdTimer;
+int   g_dwFoeCellXCache;
+int   g_dwFoeCellYCache;
+
+BOOL  g_bFoeSpun;
+float g_fFoeSpinDir;
+
+#endif
 
 // === FUNCTIONS ===
 
@@ -723,9 +743,9 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   memset(pArrSprites, 0, sizeof(pArrSprites));
   memset(arrSparkSprites, 0, sizeof(arrSparkSprites));
   memcpy(&g_sceneState_52F7E0, &sceneStateEntry, sizeof(g_sceneState_52F7E0)); // (round-trip as-is)
-  memset(g_pArrSndBuf_5244AC, 0, sizeof(g_pArrSndBuf_5244AC));
-  memset(g_pFoeHitSfxE_5244E4, 0, 12); // (sic) original zeroes only 3 slots
-  memset(g_pFoeHitSfxB_5244D4, 0, 12); // (sic) ditto
+  memset(g_pArrSndBuf, 0, sizeof(g_pArrSndBuf));
+  memset(g_pFoeHitSfxE, 0, sizeof(g_pFoeHitSfxE)); // (sic) original zeroes only 3 slots
+  memset(g_pFoeHitSfxB, 0, sizeof(g_pFoeHitSfxB)); // (sic) ditto
   memset(arrVoiceBufs, 0, sizeof(arrVoiceBufs));
 
   // --- one-time loads: UI SFX, foe-attack SE, foe-hit 3D SFX, voices, BGM
@@ -733,17 +753,17 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   {
     wsprintfA(pszFileName, "%s.wav", arrUiWavNames[i]);
     CHanaObj__GetRealPath_486D9A(pszFileName, 1009);      // SE dir
-    g_pArrSndBuf_5244AC[i] = LoadWav_422E7B(pszFileName);
+    g_pArrSndBuf[i] = LoadWav_422E7B(pszFileName);
   }
   wsprintfA(pszFileName, "%s.wav", arrFoeAtkWavs[nDuelIndex]);
   CHanaObj__GetRealPath_486D9A(pszFileName, 1009);          // SE dir
-  g_pArrSndBuf_5244AC[3] = LoadWav_422E7B(pszFileName);
+  g_pArrSndBuf[3] = LoadWav_422E7B(pszFileName);
   for (i = 0; i < 4; ++i)
   {
     wsprintfA(pszFileName, "%s.wav", arrFootWavNames[i]);
     CHanaObj__GetRealPath_486D9A(pszFileName, 1009);      // SE dir
-    g_pFoeHitSfxE_5244E4[i] = LoadWavToDS3DBuffer_42277E(pszFileName);
-    g_pFoeHitSfxB_5244D4[i] = LoadWavToDS3DBuffer_42277E(pszFileName);
+    g_pFoeHitSfxE[i] = LoadWavToDS3DBuffer_42277E(pszFileName);
+    g_pFoeHitSfxB[i] = LoadWavToDS3DBuffer_42277E(pszFileName);
   }
   for (i = 0; i < 20; ++i)
   {
@@ -863,43 +883,43 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
 
   // opening jingle + one test frame
   g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_AMBIENT, 0xFFFFFF);
-  if (g_pArrSndBuf_5244AC[0])
+  if (g_pArrSndBuf[0])
   {
     // clamp table[aviVolume] dB to [-10000, 0]
     if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] >= -10000)
     {
       if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] <= 0)
-        g_pArrSndBuf_5244AC[0]->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]);
+        g_pArrSndBuf[0]->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]);
       else
-        g_pArrSndBuf_5244AC[0]->SetVolume(0);
+        g_pArrSndBuf[0]->SetVolume(0);
     }
     else
     {
-      g_pArrSndBuf_5244AC[0]->SetVolume(-10000);
+      g_pArrSndBuf[0]->SetVolume(-10000);
     }
-    DSBufferPlay(g_pArrSndBuf_5244AC[0], 0);
+    DSBufferPlay(g_pArrSndBuf[0], 0);
   }
 
   RenderDualBodyScene_456807(pOdsScene, pHeroBody, pFoeBody, arrSparkSprites,
     pArrSprites);
 
-  if (g_pArrSndBuf_5244AC[0])
-    g_pArrSndBuf_5244AC[0]->Stop();
-  if (g_pArrSndBuf_5244AC[2])
+  if (g_pArrSndBuf[0])
+    g_pArrSndBuf[0]->Stop();
+  if (g_pArrSndBuf[2])
   {
     // clamp table[aviVolume] dB to [-10000, 0]
     if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] >= -10000)
     {
       if ((int)(__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266] <= 0)
-        g_pArrSndBuf_5244AC[2]->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]);
+        g_pArrSndBuf[2]->SetVolume((__int64)g_fVolumeDbTable[(unsigned __int8)g_nVolumeLevel_530266]);
       else
-        g_pArrSndBuf_5244AC[2]->SetVolume(0);
+        g_pArrSndBuf[2]->SetVolume(0);
     }
     else
     {
-      g_pArrSndBuf_5244AC[2]->SetVolume(-10000);
+      g_pArrSndBuf[2]->SetVolume(-10000);
     }
-    DSBufferPlay(g_pArrSndBuf_5244AC[2], 0);
+    DSBufferPlay(g_pArrSndBuf[2], 0);
   }
 
   // park the actors; capture pos/rot for the round restarts
@@ -1046,8 +1066,8 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
         updated = UpdateFoeAI_446A38(pFoeBody, pHeroBody, pMapFrame,
           pOccGrid, fDelta, &fFoeHpCur, &fHeroHpCur,
           fFoeHpMax, nDuelIndex);
-        if (updated != 0.0 && g_pArrSndBuf_5244AC[3])
-          g_pArrSndBuf_5244AC[3]->Play(0, 0, 0);
+        if (updated != 0.0 && g_pArrSndBuf[3])
+          g_pArrSndBuf[3]->Play(0, 0, 0);
         fActTimer = (float)(fActTimer + updated);
         UpdateVoicePlayback_458B3A(pFoeBody,
           (CHanaFrameRootT3EC_S2D4 *)pFoeTalkFrame, arrVoiceBufs,
@@ -1127,16 +1147,16 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
     if (fHeroHpCur <= 0.0f || 100 * nClockBase - (int)dwElapsedMs / 10 <= 0)
     {
       // defeat / timeout
-      if (g_pArrSndBuf_5244AC[1])
+      if (g_pArrSndBuf[1])
       {
-        g_pArrSndBuf_5244AC[1]->SetVolume(-500);
-        DSBufferPlay(g_pArrSndBuf_5244AC[1], 0);
+        g_pArrSndBuf[1]->SetVolume(-500);
+        DSBufferPlay(g_pArrSndBuf[1], 0);
       }
       PlayResultsCutscene_455BE2(pHeroBody, pFoeBody, pWanaBodies, pMapFrame,
         pArrHudMeters, pArrSprites, fHeroHpCur, fHeroHpMax,
         fFoeHpCur, fFoeHpMax, nClockBase, dwElapsedMs);
       nSelectResult = ShowMouseSelectDialog_4573CF(arrSparkSprites,
-        g_pArrSndBuf_5244AC);
+        g_pArrSndBuf);
       PlayScreenFade(0, 0, g_pBackBuffer_4D6C90, 10.0f, 0);
       // heal 15% of the persisted max HP (clamped)
       g_sceneState_52F7E0.protCurrentHP_C0 =
@@ -1179,19 +1199,19 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
   RestartInputThread(0);
   for (i = 0; i < 10; ++i)
   {
-    if (g_pArrSndBuf_5244AC[i])
+    if (g_pArrSndBuf[i])
     {
-      g_pArrSndBuf_5244AC[i]->Stop();
-      g_pArrSndBuf_5244AC[i]->Release();
-      g_pArrSndBuf_5244AC[i] = 0;
+      g_pArrSndBuf[i]->Stop();
+      g_pArrSndBuf[i]->Release();
+      g_pArrSndBuf[i] = 0;
     }
   }
   for (i = 0; i < 4; ++i)
   {
-    if (g_pFoeHitSfxE_5244E4[i])
-      FreeSoundStruct_422C72(g_pFoeHitSfxE_5244E4[i]);
-    if (g_pFoeHitSfxB_5244D4[i])
-      FreeSoundStruct_422C72(g_pFoeHitSfxB_5244D4[i]);
+    if (g_pFoeHitSfxE[i])
+      FreeSoundStruct_422C72(g_pFoeHitSfxE[i]);
+    if (g_pFoeHitSfxB[i])
+      FreeSoundStruct_422C72(g_pFoeHitSfxB[i]);
   }
   if (pBgmBuf)
   {
@@ -1516,20 +1536,20 @@ double __cdecl hook_UpdateFoeAI_446A38(
   arrFoeTuning[11][2] = 6.0;   arrFoeTuning[11][3] = -2.5;
   arrFoeTuning[11][4] = 6.0;   arrFoeTuning[11][5] = 0.8;
   arrFoeTuning[11][6] = 41.0;
-  g_fFoeAiTimer_52ED28 = g_fFoeAiTimer_52ED28 - fDelta;
+  g_fFoeAiTimer = g_fFoeAiTimer - fDelta;
   HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &x2, &y2, &z2);
   HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &px, &py, &pz);
   HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &x, &y, &z);
-  if ( g_fFoeCdTimer_52ED18 >= 0.0 )
-    g_fFoeCdTimer_52ED18 = g_fFoeCdTimer_52ED18 - fDelta;
+  if ( g_fFoeCdTimer >= 0.0 )
+    g_fFoeCdTimer = g_fFoeCdTimer - fDelta;
   else
-    g_fFoeCdTimer_52ED18 = 0.0;
+    g_fFoeCdTimer = 0.0;
   pnHeroCell.x = (int)x / 5;
   pnHeroCell.y = (int)z / 5;
   HanaFrame_GetRelPosition(pFrame, (CHanaFrameRootT3EC_S2D4 *)pHeroFrame, &pOutX, &pOutY, &pOutZ);
   fDist = pOutX * pOutX + pOutZ * pOutZ;
-  if ( (g_dwFoeAiState_52ED20 == 5 && pFoeBody->field_200 != 3)
-    || (g_dwFoeAiState_52ED20 <= 3
+  if ( (g_dwFoeAiState == 5 && pFoeBody->field_200 != 3)
+    || (g_dwFoeAiState <= 3
       && pFoeBody->field_200 != 3
       && (arrFoeTuning[nDuelIndex][2] * arrFoeTuning[nDuelIndex][2] > fDist
         || pFoeBody->field_200 > 10
@@ -1616,8 +1636,8 @@ double __cdecl hook_UpdateFoeAI_446A38(
     {
       if ( pFoeBody->field_200 == 21 )
       {
-        if ( g_dwFoeAiState_52ED20 == 5 )
-          g_dwFoeAiState_52ED20 = 0;
+        if ( g_dwFoeAiState == 5 )
+          g_dwFoeAiState = 0;
         bFoeActDone = 1;
       }
       if ( pFoeBody->field_200 == 21 || pFoeBody->field_200 == 3 )
@@ -1636,20 +1656,20 @@ double __cdecl hook_UpdateFoeAI_446A38(
     x = x2;
     y = y2;
     z = z2;
-    if ( g_bFoeCharging_52ED24 )
+    if ( g_bFoeCharging )
     {
-      g_dwFoeAiState_52ED20 = 0;
-      if ( g_fFoeAiTimer_52ED28 <= 0.0 )
-        g_bFoeCharging_52ED24 = 0;
+      g_dwFoeAiState = 0;
+      if ( g_fFoeAiTimer <= 0.0 )
+        g_bFoeCharging = 0;
       nMode = 3;
     }
-    else if ( g_fFoeAiTimer_52ED28 < 0.0 || g_bFoeCharging_52ED24 )
+    else if ( g_fFoeAiTimer < 0.0 || g_bFoeCharging )
     {
-      g_fFoeAiTimer_52ED28 = (float)(rand() % 250 + 50);
-      g_dwFoeAiState_52ED20 = rand() % 3;
+      g_fFoeAiTimer = (float)(rand() % 250 + 50);
+      g_dwFoeAiState = rand() % 3;
       nMode = 0;
     }
-    if ( g_dwFoeAiState_52ED20 )
+    if ( g_dwFoeAiState )
     {
       if ( nDuelIndex < 2
         || arrFoeTuning[nDuelIndex][6] * arrFoeTuning[nDuelIndex][6] <= (x - px) * (x - px) + (z - pz) * (z - pz)
@@ -1668,7 +1688,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
       }
       else
       {
-        nMode = g_dwFoeAiState_52ED20;
+        nMode = g_dwFoeAiState;
       }
     }
     if ( !pOccGrid[200 * ((int)pz / 5) + 20100 + (int)px / 5]
@@ -1792,8 +1812,8 @@ double __cdecl hook_UpdateFoeAI_446A38(
         (fFoeSaveX - px) * (fFoeSaveX - px)
         + (fFoeSaveY - py) * (fFoeSaveY - py)
         + (fFoeSaveZ - pz) * (fFoeSaveZ - pz)) < 0.0099999998
-        && g_dwFoeCellXCache_52E4F8 == pnFoeCell.x
-        && g_dwFoeCellYCache_52E4FC == pnFoeCell.y )
+        && g_dwFoeCellXCache == pnFoeCell.x
+        && g_dwFoeCellYCache == pnFoeCell.y )
       {
         fTurnBlend = fDelta / 4.0 * arrFoeTuning[nDuelIndex][5];
         if ( fTurnBlend > 1.0 )
@@ -1879,8 +1899,8 @@ double __cdecl hook_UpdateFoeAI_446A38(
           Frame_RotateMatrixAxis_4070AB(pFrame, 1, &pV, 0.0034908999);
         SetFramePosRel_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, z);
       }
-      g_dwFoeCellXCache_52E4F8 = pnFoeCell.x;
-      g_dwFoeCellYCache_52E4FC = pnFoeCell.y;
+      g_dwFoeCellXCache = pnFoeCell.x;
+      g_dwFoeCellYCache = pnFoeCell.y;
       SekBody__UpdateTo2_401647(pFoeBody, nMoveMode);
     }
     fAnimRateB = fDelta * fAggroSpeedMul;
@@ -1902,7 +1922,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
       fSepZ = 5.0 / fDist * pOutZ;
       SetFramePosRel_4069DD(pFrame, pHeroFrame, fSepX, pOutY, fSepZ);
       if ( bFoeActDone != 1 )
-        g_dwFoeAiState_52ED20 = 5;
+        g_dwFoeAiState = 5;
     }
   }
   px = fFoeSaveX;
@@ -1922,14 +1942,14 @@ double __cdecl hook_UpdateFoeAI_446A38(
   }
   if ( *pfFoeHpCur < 10.0 )
     *pfFoeHpCur = 10.0;
-  if ( (unsigned int)--nHitSfx < 4 && g_pFoeHitSfxE_5244E4[nHitSfx] && g_pFoeHitSfxB_5244D4[nHitSfx] )
+  if ( (unsigned int)--nHitSfx < 4 && g_pFoeHitSfxE[nHitSfx] && g_pFoeHitSfxB[nHitSfx] )
   {
     pAnimItem = &pFoeBody->items_250[pFoeBody->field_200];
     HanaFrame_GetCenterPosition_408C3E((CHanaFrameRootT3EC_S2D4 *)pFrame, g_pSceneFrame, &px, &py, &pz);
-    g_pFoeHitSfxE_5244E4[nHitSfx]->pDS3DBuffer_4->SetPosition(px, py, pz, 1u);
-    g_pFoeHitSfxB_5244D4[nHitSfx]->pDS3DBuffer_4->SetPosition(px, py, pz, 1u);
-    if ( !g_pFoeHitSfxB_5244D4[nHitSfx]->pDSBuffer_0
-      || g_pFoeHitSfxB_5244D4[nHitSfx]->pDSBuffer_0->GetStatus(
+    g_pFoeHitSfxE[nHitSfx]->pDS3DBuffer_4->SetPosition(px, py, pz, 1u);
+    g_pFoeHitSfxB[nHitSfx]->pDS3DBuffer_4->SetPosition(px, py, pz, 1u);
+    if ( !g_pFoeHitSfxB[nHitSfx]->pDSBuffer_0
+      || g_pFoeHitSfxB[nHitSfx]->pDSBuffer_0->GetStatus(
         &g_dwDSStatus_5185C8)
       || (g_dwDSStatus_5185C8 & 1) == 0 )
     {
@@ -1937,16 +1957,16 @@ double __cdecl hook_UpdateFoeAI_446A38(
         && (pAnimItem->float_60 < 200.0 || pAnimItem->float_60 > 206.0)
         && (pAnimItem->float_60 < 400.0 || pAnimItem->float_60 > 406.0) )
       {
-        g_pFoeHitSfxB_5244D4[nHitSfx]->pDSBuffer_0->Stop();
-        g_pFoeHitSfxB_5244D4[nHitSfx]->pDSBuffer_0->SetCurrentPosition(0);
+        g_pFoeHitSfxB[nHitSfx]->pDSBuffer_0->Stop();
+        g_pFoeHitSfxB[nHitSfx]->pDSBuffer_0->SetCurrentPosition(0);
       }
       else
       {
-        g_pFoeHitSfxB_5244D4[nHitSfx]->pDSBuffer_0->Play(0, 0, 0);
+        g_pFoeHitSfxB[nHitSfx]->pDSBuffer_0->Play(0, 0, 0);
       }
     }
-    if ( !g_pFoeHitSfxE_5244E4[nHitSfx]->pDSBuffer_0
-      || g_pFoeHitSfxE_5244E4[nHitSfx]->pDSBuffer_0->GetStatus(
+    if ( !g_pFoeHitSfxE[nHitSfx]->pDSBuffer_0
+      || g_pFoeHitSfxE[nHitSfx]->pDSBuffer_0->GetStatus(
         &g_dwDSStatus_5185C8)
       || (g_dwDSStatus_5185C8 & 1) == 0 )
     {
@@ -1954,27 +1974,27 @@ double __cdecl hook_UpdateFoeAI_446A38(
         && (pAnimItem->float_60 < 205.0 || pAnimItem->float_60 > 212.0)
         && (pAnimItem->float_60 < 407.0 || pAnimItem->float_60 > 415.0) )
       {
-        g_pFoeHitSfxE_5244E4[nHitSfx]->pDSBuffer_0->Stop();
-        g_pFoeHitSfxE_5244E4[nHitSfx]->pDSBuffer_0->SetCurrentPosition(0);
+        g_pFoeHitSfxE[nHitSfx]->pDSBuffer_0->Stop();
+        g_pFoeHitSfxE[nHitSfx]->pDSBuffer_0->SetCurrentPosition(0);
       }
       else
       {
-        g_pFoeHitSfxE_5244E4[nHitSfx]->pDSBuffer_0->Play(0, 0, 0);
+        g_pFoeHitSfxE[nHitSfx]->pDSBuffer_0->Play(0, 0, 0);
       }
     }
     for ( i = 0; i < 4; ++i )
     {
       if ( nHitSfx != i )
       {
-        if ( g_pFoeHitSfxB_5244D4[i] )
+        if ( g_pFoeHitSfxB[i] )
         {
-          g_pFoeHitSfxB_5244D4[i]->pDSBuffer_0->Stop();
-          g_pFoeHitSfxB_5244D4[i]->pDSBuffer_0->SetCurrentPosition(0);
+          g_pFoeHitSfxB[i]->pDSBuffer_0->Stop();
+          g_pFoeHitSfxB[i]->pDSBuffer_0->SetCurrentPosition(0);
         }
-        if ( g_pFoeHitSfxE_5244E4[i] )
+        if ( g_pFoeHitSfxE[i] )
         {
-          g_pFoeHitSfxE_5244E4[i]->pDSBuffer_0->Stop();
-          g_pFoeHitSfxE_5244E4[i]->pDSBuffer_0->SetCurrentPosition(0);
+          g_pFoeHitSfxE[i]->pDSBuffer_0->Stop();
+          g_pFoeHitSfxE[i]->pDSBuffer_0->SetCurrentPosition(0);
         }
       }
     }
@@ -3399,22 +3419,22 @@ void __cdecl hook_StepFoeSpin_45804C(
     SetFramePosRel_4069DD(pFoeSpinFrame, pFoeSpinFrame, 0.0, 0.0, fAngleOne);
     if ( CheckFrameCollision_443CC5(pFoeSpinFrame, pMapFrame, 0) )
     {
-      g_bFoeSpun_52EF60 = 0;
+      g_bFoeSpun = 0;
     }
     else
     {
-      if ( !g_bFoeSpun_52EF60 )
+      if ( !g_bFoeSpun )
       {
         HanaFrame_GetRelPosition(pHeroFrame, pFoeSpinFrame, &fRelX, &fRelY, &fRelZ);
         if ( fRelX < 0.0 )
-          g_fFoeSpinDir_52EF5C = 1.0;
+          g_fFoeSpinDir = 1.0;
         else
-          g_fFoeSpinDir_52EF5C = -1.0;
+          g_fFoeSpinDir = -1.0;
       }
-      g_bFoeSpun_52EF60 = 1;
+      g_bFoeSpun = 1;
       fAngleRev = fDelta * fSpeed;
       SetFramePosRel_4069DD(pFoeSpinFrame, pFoeSpinFrame, 0.0, 0.0, fAngleRev);
-      fAngleHalf = fDelta * 3.1418099 / 180.0 * g_fFoeSpinDir_52EF5C * fSpinRate;
+      fAngleHalf = fDelta * 3.1418099 / 180.0 * g_fFoeSpinDir * fSpinRate;
       fAngleTwo = fAngleHalf + fAngleHalf;
       Frame_RotateMatrixAxis_4070AB(pFoeSpinFrame, 1, &vecSpinAxis, fAngleTwo);
     }
