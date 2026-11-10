@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugBinDX7|Win32">
+      <Configuration>DebugBinDX7</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugBinDX7|x64">
+      <Configuration>DebugBinDX7</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -32,6 +40,12 @@
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -40,6 +54,12 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
@@ -61,11 +81,19 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="PropertySheet.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="PropertySheet.props" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="PropertySheet.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="PropertySheet.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="PropertySheet.props" />
   </ImportGroup>
@@ -79,11 +107,34 @@
     <TargetName>$(ProjectName) $(Configuration) $(Platform)</TargetName>
     <IntDir>$(ShortProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">
+    <OutDir>$(APPDIR)\</OutDir>
+    <TargetName>re-hnh_$(Configuration)_$(Platform)</TargetName>
+    <IntDir>$(ShortProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;EXAMPLE1_EXPORTS;_WINDOWS;_USRDLL;ENABLE_BACKEND_DX9;ENABLE_BACKEND_DX10;ENABLE_BACKEND_DX11;ENABLE_BACKEND_DX12;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\SB3ImGuiHook\imgui;$(SolutionDir)\SB3ImGuiHook;$(PYTHON_INCLUDES);$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>%VULKAN_SDK%\Lib;$(PYTHON_LIBS);$(SolutionDir)\SB3ImGuiHook;$(SolutionDir)\libs\dx7sdk</AdditionalLibraryDirectories>
+      <AdditionalDependencies>python311.lib;dsound.lib;dxguid.lib;winmm.lib;dinput.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;ENABLE_BACKEND_DX9;ENABLE_BACKEND_DX10;ENABLE_BACKEND_DX11;ENABLE_BACKEND_DX12;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -129,6 +180,21 @@
       <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;EXAMPLE1_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -158,10 +224,15 @@
     <ClInclude Include="user32hook.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="dllmain.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="exemain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
@@ -169,105 +240,139 @@
     <ClCompile Include="hnh_main.cpp" />
     <ClCompile Include="src\CDROM_VerifyDiscSignature_485C50.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\CHanaObj__Free_40C1E4.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\CHanaObj__NewFrameT3EC_S354.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\CheckRunGame_4863C8.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\DSErrToString_423CE7.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\dx7.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\MemAlloc_40DEF7.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\PlayTugOfWar_45460A.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\PlayExploring_45BCAE.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\PlayVideoWith3DAudio_4791A3.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\SetupHeroEntry_4593E0.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\PlayHunting_44C38D.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\PlayAssault_4703AE.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\PlayCutInScene_46A76F.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\ShowTitleMenu.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\StopAndRestartThread.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\struct.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\WinMain_485CE0.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\WndProcCheckSystem_485FC2.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\CheckInstalledDirRoot_4869A7.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\SetFogEnable_40DFB0.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\WndProcTitleMenu.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\GameMainLoop_47F013.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\LoadSoundEffects_47EB7F.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\InGameMenu_4799E2.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\MenuCharSelect.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\SystemMenu_4655AB.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\ParseExecStr_487D89.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\RunModeSelectScreen.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\PlayOdsDialogueScene_477F90.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\PlayScreenFade.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\ParseODFContent_441A5D.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\ParseODS_483932.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\ProcessFrame_40600C.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="user32hook.cpp" />
   </ItemGroup>

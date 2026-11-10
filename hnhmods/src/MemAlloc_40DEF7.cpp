@@ -5,12 +5,29 @@
 #include "shared.hpp"
 
 // === GLOBAL VARIABLES ===
-int &g_nMemCnt_4D6CF0 = *(int*)0x4D6CF0;
-char (&g_szDbgPrefix)[104] = *(char(*)[104])0x4D4718;
-int &g_nMinD3DPrintfLevel_534388 = *(int*)0x534388;
 
-HANDLE              &g_hHeapHandle   = *(HANDLE*)0x5187F0;
-int                 &g_nHeapRefCount = *(int*)0x5187F4;
+static int s_nMemCnt_4D6CF0;
+static char s_szDbgPrefix[104];
+static int s_nMinD3DPrintfLevel_534388;
+static HANDLE s_hHeapHandle;
+static int s_nHeapRefCount;
+
+#ifdef _USRDLL
+int   &g_nMemCnt_4D6CF0 = *(int*)0x4D6CF0;
+char (&g_szDbgPrefix)[104] = *(char(*)[104])0x4D4718;
+int   &g_nMinD3DPrintfLevel_534388 = *(int*)0x534388;
+
+HANDLE  &g_hHeapHandle   = *(HANDLE*)0x5187F0;
+int     &g_nHeapRefCount = *(int*)0x5187F4;
+#else
+
+int    &g_nMemCnt_4D6CF0 = s_nMemCnt_4D6CF0;
+char   (&g_szDbgPrefix)[104] = s_szDbgPrefix;
+int    &g_nMinD3DPrintfLevel_534388 = s_nMinD3DPrintfLevel_534388;
+HANDLE &g_hHeapHandle = s_hHeapHandle;
+int    &g_nHeapRefCount = s_nHeapRefCount;
+
+#endif
 
 // === GLOBAL FUNCTIONS ===
 void(__cdecl* D3DXDprintf)(int nLevel, LPCSTR szMsg) = reinterpret_cast<void(__cdecl*)(int nLevel, LPCSTR szMsg)>(0x490AC6);

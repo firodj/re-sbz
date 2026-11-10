@@ -23,10 +23,7 @@ extern BOOL (__cdecl*DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd);
 
 // === DEFINED WndProcCheckSystem.cpp ===
 
-extern void (*HanaDS_Shutdown)();
-extern int(__cdecl* HanaDS_Init)(HWND hwnd);
-extern IDirectSound3DListener* (*HanaDS_Create3DListener)();
-
+extern BOOL &g_bD3Dinited_4D6C6C;
 extern LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78;
 extern D3DDEVICEDESC7    &g_d3dDevDesc_4D6980;
 
@@ -37,43 +34,50 @@ extern LPDIRECTDRAWSURFACE7    &g_pBackBuffer_4D6C90;
 extern LPDIRECTDRAWSURFACE7    &g_pPrimaryBuffer_4D6C88;
 extern LPDIRECTDRAW7           &g_pDD_4D6C7C;
 extern LPDIRECT3D7             &g_pD3D_4D6C84;
+
+extern BOOL &g_bDSInited_5185C4;
 extern LPDIRECTSOUND           &g_ppDS;
 extern LPDIRECTSOUNDBUFFER     &g_pdsBuffer;
 extern DDPIXELFORMAT& g_ddPixFormat;
 
 extern CObjItemRef_S208* &g_pObjectTable;
 extern int &g_nObjectTableCount;
-extern int &g_bDSInited_5185C4;
+extern CObjPoolMgr_S58* &g_pObjPool;
 
-// persistent scene-flags copy @0x530238 (IDA g_sceneFlag CSceneFlag_28;
-// written by ParseExecStr HITEMGET, memcpy'd into sceneState by MainMenu)
-extern int (&g_Src)[10];
-// 50-char name tables (entries: "GNN.GP" picture / sound wav names)
-extern const char g_aG00Gp_4C9FB0[100][50];    // compiled-in copy of .rdata @0x4C9FB0 (G00..G98.GP)
+extern int (&g_sceneItemBits)[10];  // in:  InGameMenu.cpp
 
-//extern String 50 (&g_ascSndFileNames_4C78A0)[200]; // READ-ONLY @0x4C78A0
-extern const char g_ascSndFileNames_4C78A0[200][50];
+extern DWORD &g_dwBytesPerPixel;
+extern DWORD &g_dwGBitMask;
+extern DWORD &g_dwRBitMask;
+extern DWORD &g_dwPixelFormat;   // READ-ONLY (16/24/32 bpp)
+extern DWORD &g_dwRGBBitMask;   // READ-ONLY (B channel mask)
 
-extern uint32_t &g_dwBytesPerPixel;
-extern uint32_t &g_bInited_4D6C6C;
 extern CHanaLightT3EF_S1A0* &g_pLight_4D6CE0;
 extern CHanaMateT3EE_S184*  &g_pMaterial;
 extern CHanaFrameRootT3EC_S2D4* &g_pSceneFrame;
 extern CHanaFrameT3EC_S354*     &g_pCameraFrame;
 extern CHanaFrameT3EC_S354*     &g_pLightFrame;
 
-extern uint32_t &g_dwGBitMask;
-extern uint32_t &g_dwRBitMask;
 extern HGDIOBJ& g_hFont;
 extern int& g_dwCharWidth;
 extern int& g_dwFontHeight;
-extern DWORD &g_dwPixelFormat;   // READ-ONLY (16/24/32 bpp)
-extern DWORD &g_dwRGBBitMask;   // READ-ONLY (B channel mask)
 
+extern LPDIRECTSOUND3DLISTENER (*HanaDS_Create3DListener)();
 extern const char *(__cdecl*HanaDS_SetErrStr)(DWORD hr);
 extern void (__cdecl*SetUiFont_419BCD)(int nCharW, int nFontH, LPCSTR szFaceName);
 extern void (__cdecl*D3DDeinit)(void);
 extern LRESULT (__stdcall*WndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+extern void (*HanaDS_Shutdown)();
+extern int(__cdecl* HanaDS_Init)(HWND hwnd);
+
+// === DEFINED struct.cpp ===
+ 
+// 50-char name tables (entries: "GNN.GP" picture / sound wav names)
+extern const char g_aG00Gp_4C9FB0[100][50];    // compiled-in copy of .rdata @0x4C9FB0 (G00..G98.GP)
+
+//extern String 50 (&g_ascSndFileNames_4C78A0)[200]; // READ-ONLY @0x4C78A0
+extern const char g_ascSndFileNames_4C78A0[200][50];
+
 
 // === DEFINED MemAlloc.cpp ===
 
@@ -212,7 +216,6 @@ extern uint32_t &g_bCreateFlags_4D6CD4;
 extern HWND &g_hWndDev_4D6C74;
 extern uint32_t &g_nObjCount;
 extern uint32_t &g_nCapObjects_4CD780;
-extern CObjPoolMgr_S58* &g_pObjPool;
 extern D3DX_SURFACEFORMAT& g_dwSurfaceFormat_4B00B4;
 extern uint32_t& g_nColorBits_518C2C;
 extern uint32_t &g_nZBufDepthSelValue_518C98;

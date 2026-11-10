@@ -639,8 +639,8 @@ int __cdecl hook_PlayExploring_45BCAE(int nStageIndex)
                 Time = timeGetTime();
                 memcpy(&sceneStateLive, &g_sceneState_52F7E0, sizeof(sceneStateLive));
                 memcpy(&g_sceneState_52F7E0, &Src, sizeof(g_sceneState_52F7E0)); // entry state...
-                memcpy(g_sceneState_52F7E0.sceneFlags_98, sceneStateLive.sceneFlags_98,
-                       sizeof(g_sceneState_52F7E0.sceneFlags_98));               // ...live flags
+                memcpy(g_sceneState_52F7E0.sceneItemBits_98, sceneStateLive.sceneItemBits_98,
+                       sizeof(g_sceneState_52F7E0.sceneItemBits_98));               // ...live flags
                 StopAndRestartThread(0);
                 sceneMenuCopy = sceneStateLive;
                 nMenuResult = SystemMenu_4655AB(pBgmBuffer, -1000, 0, fHeroHp, fHeroHpMax,

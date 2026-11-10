@@ -47,8 +47,10 @@ int  (__cdecl*InGameMenu_4799E2)(void)
 = reinterpret_cast<int(__cdecl*)()>(0x4799E2);
 
 // === PINNED GLOBALS ===
-// float (&g_fVolumeDbTable)[10] = *(float(*)[10])0x4C6F4C;   // READ-ONLY  // replaced by compiled-in copy
-int   (&g_Src)[10]            = *(int(*)[10])0x530238;     // WRITABLE
+
+// persistent scene-flags copy @0x530238 (IDA g_sceneFlag CSceneFlag_28;
+// written by ParseExecStr HITEMGET, memcpy'd into sceneState by MainMenu)
+int   (&g_sceneItemBits)[10]            = *(int(*)[10])0x530238;     // WRITABLE
 DWORD &g_dwDSStatus_5185C8    = *(DWORD*)0x5185C8;         // WRITABLE
 
 // clamp g_fVolumeDbTable[g_nAviVolumeIndex_530266] - 1000 to [-10000, 0] dB
@@ -91,7 +93,7 @@ void __cdecl hook_MainMenu_47DF0D(void)
     }
 
     // carry the persistent scene flags into the scene state block
-    memcpy(g_sceneState_52F7E0.sceneFlags_98, g_Src, 0x28);
+    memcpy(g_sceneState_52F7E0.sceneItemBits_98, g_sceneItemBits, 0x28);
 
     // dispatch until a sub-menu answers with a non-negative state; the mouse
     // is pumped each round (the previous-button read in the original is dead)
@@ -127,7 +129,7 @@ void __cdecl hook_MainMenu_47DF0D(void)
         }
     }
     g_sceneState_52F7E0.bActiveSceneStep = 0;
-    memset(g_sceneState_52F7E0.sceneFlags_98, 0, 0x28);
+    memset(g_sceneState_52F7E0.sceneItemBits_98, 0, 0x28);
     if (nMenuState < 0)                                     // exited via sub-menu
         PlayScreenFade(0, 0, g_pPrimaryBuffer_4D6C88, 25.0f, 0);
 }

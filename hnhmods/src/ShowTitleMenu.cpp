@@ -235,7 +235,7 @@ HRESULT __cdecl hook_D3DInit_40A894(CD3DInitParam *pDevParam)
   g_nObjectTableCapacity_4B009C = 256;
   g_nObjectTableCount = 1;
   g_pObjectTable = 0;
-  g_bInited_4D6C6C = 0;
+  g_bD3Dinited_4D6C6C = 0;
   g_pD3DDevice_4D6C78 = 0;
   g_pRenderCtx = 0;
   g_pDD_4D6C7C = 0;
@@ -287,7 +287,7 @@ HRESULT __cdecl hook_D3DInit_40A894(CD3DInitParam *pDevParam)
       g_nObjCount = 0;
       g_nCapObjects_4CD780 = 1024;
       g_pObjPool = (CObjPoolMgr_S58*) MemAlloc_40DEF7(0x16000u);
-      g_bInited_4D6C6C = 1;
+      g_bD3Dinited_4D6C6C = 1;
       max_surface_fmts =  (-1, 0, 4);
       cur_surface_fmt = 0;
       is_r5g5b5 = 0;

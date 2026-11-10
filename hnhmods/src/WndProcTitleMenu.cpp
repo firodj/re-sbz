@@ -5,15 +5,29 @@
 
 // === GLOBAL VARIABLES ==
 
+#ifdef _USRDLL
 CBMPFile * &g_pbmpDd = *(CBMPFile * *)0x518CB4; // WRITABLE
 CBMPFile * &g_pbmpDdBt = *(CBMPFile * *)0x518CB8; // WRITABLE
 CBMPFile * &g_pbmpDd2 = *(CBMPFile * *)0x518CBC; // WRITABLE
 CBMPFile * &g_pbmpDdBt3 = *(CBMPFile * *)0x518CC0; // WRITABLE
 HGDIOBJ &g_hFontTitleMenu_518CCC = *(HGDIOBJ *)0x518CCC; // WRITABLE
-uint32_t &g_nTitleMenuHotId_4B348C = *(uint32_t *)0x4B348C; // WRITABLE
-uint32_t &g_bLMouseClick = *(uint32_t *)0x518CC8; // WRITABLE
-uint32_t &g_bTitleMenuConfigScreen_518CC4 = *(uint32_t *)0x518CC4; // WRITABLE
-uint32_t &g_nTitleMenuHotToggleRow_4B3490 = *(uint32_t *)0x4B3490; // WRITABLE
+int &g_nTitleMenuHotId_4B348C = *(int *)0x4B348C; // WRITABLE
+BOOL &g_bLMouseClick = *(BOOL *)0x518CC8; // WRITABLE
+BOOL &g_bTitleMenuConfigScreen_518CC4 = *(BOOL *)0x518CC4; // WRITABLE
+int &g_nTitleMenuHotToggleRow_4B3490 = *(int *)0x4B3490; // WRITABLE
+#else
+
+static CBMPFile* g_pbmpDd;
+static CBMPFile * g_pbmpDdBt;
+static CBMPFile * g_pbmpDd2;
+static CBMPFile * g_pbmpDdBt3;
+static HGDIOBJ g_hFontTitleMenu_518CCC;
+static int g_nTitleMenuHotId_4B348C;
+static BOOL g_bLMouseClick;
+static BOOL g_bTitleMenuConfigScreen_518CC4;
+static int g_nTitleMenuHotToggleRow_4B3490;
+
+#endif
 
 // === GLOBAL FUNCTIONS ===
 

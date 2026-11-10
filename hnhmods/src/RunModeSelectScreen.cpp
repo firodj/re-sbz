@@ -347,7 +347,7 @@ int __cdecl hook_RunModeSelectScreen(CHanaSceneT458_S504 *pScene,
 // [1..8] buttons, [9..13] page labels, [14..15] panels, [16] page-4 panel,
 // [17..25] page-4 button mirrors.
 //
-// Unlock gating (sceneFlags_98[iSceneGroup]):
+// Unlock gating (sceneItemBits_98[iSceneGroup]):
 //   flags & 0x3FF == 0 (nothing done in the group) -> the pulse indicator
 //     is hidden on pages 0..3 (page 4 keeps it);
 //   each of bits 0..2 clear -> page-4 extra button 6+bit parked at x=-999.
@@ -449,14 +449,14 @@ int __cdecl hook_RunSceneSelectScreen(CHanaSceneT458_S504 *pScene,
   }
 
   // unlock gating from the group's scene flags
-  if ((g_sceneState_52F7E0.sceneFlags_98[iSceneGroup] & 0x3FF) == 0)
+  if ((g_sceneState_52F7E0.sceneItemBits_98[iSceneGroup] & 0x3FF) == 0)
   {
     for (i = 0; i < 4; ++i)
       arrPos[i][0][0] = -999.0f;      // hide pulse on pages 0..3
   }
   for (i = 0; i < 3; ++i)
   {
-    if (!(g_sceneState_52F7E0.sceneFlags_98[iSceneGroup] & ((QWORD)1 << i)))
+    if (!(g_sceneState_52F7E0.sceneItemBits_98[iSceneGroup] & ((QWORD)1 << i)))
       arrPos[4][6 + i][0] = -999.0f;   // park page-4 extras
   }
 

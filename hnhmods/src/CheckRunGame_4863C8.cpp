@@ -468,7 +468,7 @@ HRESULT hook_D3DInitBuffers_40AF60()
   ONCELOG("[HNH:SUB] %s\n", "D3DInitBuffers_40AF60");
 
   // --- 1. Guard Clauses (Early Exits for Pointers & Init Flags) ---
-  if (!g_bInited_4D6C6C) 
+  if (!g_bD3Dinited_4D6C6C) 
     return E_FAIL;
 
   g_pD3DDevice_4D6C78 = g_pRenderCtx->GetD3DDevice();

@@ -1,7 +1,10 @@
 // GAME: [011019][TEATIME] âÿÇÃîﬂñ¬Å@Å`âÛÇÍÇΩè…éqÇÃêSÅ`
 #pragma once
 
-// #include "dx7.hpp"
+#if DIRECT3D_VERSION != 0x0700
+typedef LPVOID LPDIRECTDRAWSURFACE7;
+#endif
+
 
 #pragma pack(push, 1)
 
@@ -311,8 +314,8 @@ struct CHanaSubObj_S38
 
 struct CSoundStruct_8
 {
-  LPDIRECTSOUNDBUFFER pDSBuffer_0;
-  IDirectSound3DBuffer *pDS3DBuffer_4;
+  LPDIRECTSOUNDBUFFER   pDSBuffer_0;
+  LPDIRECTSOUND3DBUFFER pDS3DBuffer_4;
 };
 
 struct CHanaObj_S118
@@ -595,10 +598,6 @@ struct CSceneSlot  // sizeof=0x8
 
 #endif
 
-#ifdef HNHMAIN
-typedef LPVOID LPDIRECTDRAWSURFACE7;
-#endif
-
 // No more CSceneMenuState_9C / CSceneMenuState_98 (who made this!?)
 // Whole per-playthrough scene state @0x52F7E0 (g_sceneState_52F7E0).
 struct CSceneState
@@ -612,7 +611,7 @@ struct CSceneState
   char byte_32;
   char ary33[100];
   char bMaxSubStage;
-  QWORD sceneFlags_98[5];
+  QWORD sceneItemBits_98[5];
   float protCurrentHP_C0;
   float protMaximumHP_C4;
   QWORD qwSelMask_C8;

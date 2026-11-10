@@ -19,8 +19,8 @@
 //
 // CHUNKS:
 //   TEXT=...;         ParseStrChunkText + by_461=by_460=1 (show dialogue)
-//   HITEMGET<n>;      set bit n of sceneFlags_98[bMaxSubStage] AND of
-//                     g_Src[2*substage] (the persistent copy @0x530238,
+//   HITEMGET<n>;      set bit n of sceneItemBits_98[bMaxSubStage] AND of
+//                     g_sceneItemBits[2*substage] (the persistent copy @0x530238,
 //                     IDA type CSceneFlag_28 -- same storage). Cursor +=2
 //                     (assumes single digit + ';').
 //   GETBOOK<n>;       g_byData0Dat_530170[n]=1; save-slot mask |= 1<<n
@@ -271,16 +271,16 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
       pScene->dwPtrCurrent_448 += 8;// chunk == 'HITEMGET'
       nItemBit = 1 << atoi(&pScene->ptrStrData_260[pScene->dwPtrCurrent_448]);
       v2 = ((unsigned __int64)nItemBit >> 32)
-        | g_sceneState_52F7E0.sceneFlags_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage
+        | g_sceneState_52F7E0.sceneItemBits_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage
         + 1];
       bMaxSubStage = (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage;
-      g_sceneState_52F7E0.sceneFlags_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
-      g_sceneState_52F7E0.sceneFlags_98[2 * bMaxSubStage + 1] = v2;
+      g_sceneState_52F7E0.sceneItemBits_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
+      g_sceneState_52F7E0.sceneItemBits_98[2 * bMaxSubStage + 1] = v2;
       v4 = ((unsigned __int64)nItemBit >> 32)
-        | g_Src[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage + 1];
+        | g_sceneItemBits[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage + 1];
       v5 = (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage;
-      g_Src[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
-      g_Src[2 * v5 + 1] = v4;
+      g_sceneItemBits[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
+      g_sceneItemBits[2 * v5 + 1] = v4;
       pScene->dwPtrCurrent_448 += 2;
       continue;
     }

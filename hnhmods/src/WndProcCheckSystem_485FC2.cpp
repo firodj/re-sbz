@@ -13,62 +13,107 @@
 #define WMU_ENGINE_INIT  0x2B10   // posted on success: sound + renderer init
 
 // === GLOBAL VARIABLES ===
+
+static LPDIRECT3DDEVICE7    s_pD3DDevice_4D6C78;
+static D3DDEVICEDESC7       s_d3dDevDesc_4D6980;
+static LPD3DXCONTEXT        s_pRenderCtx;
+static LPDIRECTDRAWSURFACE7 s_pZBuffer_4D6C94;
+static LPDIRECTDRAWSURFACE7 s_pBackBuffer_4D6C90;
+static LPDIRECTDRAWSURFACE7 s_pPrimaryBuffer_4D6C88;
+static LPDIRECTDRAW7        s_pDD_4D6C7C;
+static LPDIRECT3D7          s_pD3D_4D6C84;
+static BOOL                 s_bD3Dinited_4D6C6C;
+
+static DDPIXELFORMAT s_ddPixFormat;
+static DWORD         s_dwPixelFormat;
+static DWORD         s_dwBytesPerPixel;
+static DWORD         s_dwRGBBitMask;
+static DWORD         s_dwGBitMask;
+static DWORD         s_dwRBitMask;
+
+static LPDIRECTSOUND           s_ppDS;
+static LPDIRECTSOUND3DLISTENER s_pds3DListener;
+static LPDIRECTSOUNDBUFFER     s_pdsBuffer;
+static BOOL                    s_bDSInited_5185C4;
+
+static CObjItemRef_S208* s_pObjectTable;
+static int               s_nObjectTableCount;
+
+static HGDIOBJ s_hFont;
+static int     s_dwCharWidth;
+static int     s_dwFontHeight;
+
+static CHanaLightT3EF_S1A0*     s_pLight_4D6CE0;
+static CHanaMateT3EE_S184*      s_pMaterial;
+static CHanaFrameT3EC_S354*     s_pLightFrame;
+static CHanaFrameT3EC_S354*     s_pCameraFrame;
+static CHanaFrameRootT3EC_S2D4* s_pSceneFrame;
+
+#ifdef _USRDLL
+
 LPDIRECT3DDEVICE7 &g_pD3DDevice_4D6C78 = *(LPDIRECT3DDEVICE7*)0x4D6C78;
 D3DDEVICEDESC7    &g_d3dDevDesc_4D6980 = *(D3DDEVICEDESC7 *)0x4D6980;
+LPD3DXCONTEXT &g_pRenderCtx              = *(LPD3DXCONTEXT*)0x4D6C80; // WRITABLE
+LPDIRECTDRAWSURFACE7 &g_pZBuffer_4D6C94    = *(LPDIRECTDRAWSURFACE7 *)0x4D6C94; // WRITABLE
+LPDIRECTDRAWSURFACE7 &g_pBackBuffer_4D6C90 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C90; // WRITABLE
+LPDIRECTDRAWSURFACE7 &g_pPrimaryBuffer_4D6C88 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C88; // WRITABLE
+LPDIRECTDRAW7 &g_pDD_4D6C7C              = *(LPDIRECTDRAW7 *)0x4D6C7C; // WRITABLE
+LPDIRECT3D7 &g_pD3D_4D6C84               = *(LPDIRECT3D7 *)0x4D6C84; // WRITABLE
+BOOL &g_bD3Dinited_4D6C6C              = *(BOOL *)0x4D6C6C; // WRITABLE
+
+DDPIXELFORMAT &g_ddPixFormat = *(DDPIXELFORMAT *)0x517790; // WRITABLE
+DWORD &g_dwPixelFormat = *(DWORD *)0x518370;   // (16/24/32 bpp)
+DWORD &g_dwBytesPerPixel = *(DWORD *)0x518374; // WRITABLE
+DWORD &g_dwRGBBitMask  = *(DWORD *)0x517788;   // (B channel mask)
+DWORD &g_dwGBitMask      = *(DWORD *)0x517D5C; // WRITABLE
+DWORD &g_dwRBitMask      = *(DWORD *)0x517D58; // WRITABLE
 
 LPDIRECTSOUND       &g_ppDS          = *(LPDIRECTSOUND*)0x5185C0;
-DSCAPS              &g_dsCaps_518560 = *(DSCAPS*)0x518560;
-int                 &g_bDSInited_5185C4 = *(int*)0x5185C4;
+LPDIRECTSOUND3DLISTENER &g_pds3DListener = *(LPDIRECTSOUND3DLISTENER*)0x52F3C4;
 LPDIRECTSOUNDBUFFER &g_pdsBuffer     = *(LPDIRECTSOUNDBUFFER*)0x5185D0;
+BOOL                 &g_bDSInited_5185C4 = *(BOOL*)0x5185C4;
+
+CObjItemRef_S208 * &g_pObjectTable       = *(CObjItemRef_S208 * *)0x4D6C98; // WRITABLE
+int&                g_nObjectTableCount                 = *(int*)0x4D6C9C;
+
 HGDIOBJ             &g_hFont         = *(HGDIOBJ*)0x518378;
 int                 &g_dwCharWidth   = *(int*)0x4B01B4;
 int                 &g_dwFontHeight  = *(int*)0x4B01B8;
 
-LPDIRECTSOUND3DLISTENER &g_pds3DListener = *(LPDIRECTSOUND3DLISTENER*)0x52F3C4;
+CHanaLightT3EF_S1A0 * &g_pLight_4D6CE0  = *(CHanaLightT3EF_S1A0 * *)0x4D6CE0; // WRITABLE
+CHanaMateT3EE_S184 * &g_pMaterial       = *(CHanaMateT3EE_S184 * *)0x4D6CDC; // WRITABLE
+CHanaFrameT3EC_S354 * &g_pLightFrame     = *(CHanaFrameT3EC_S354 * *)0x4D6CB0; // WRITABLE
+CHanaFrameT3EC_S354 * &g_pCameraFrame    = *(CHanaFrameT3EC_S354 * *)0x4D6CAC; // WRITABLE
+CHanaFrameRootT3EC_S2D4 * &g_pSceneFrame = *(CHanaFrameRootT3EC_S2D4 * *)0x4D6CA8; // WRITABLE
+
+// ---
+
+DSCAPS              &g_dsCaps_518560 = *(DSCAPS*)0x518560;
 
 float (&g_CosineTable)[360] = *(float (*)[360])0x517D68; // WRITABLE
 float (&g_SineTable)[360]   = *(float (*)[360])0x5177B4; // WRITABLE
 DDBLTFX &g_ddBltFx          = *(DDBLTFX *)0x518308; // WRITABLE
-DDPIXELFORMAT &g_ddPixFormat = *(DDPIXELFORMAT *)0x517790; // WRITABLE
-LPDIRECTDRAWSURFACE7 &g_pPrimaryBuffer_4D6C88 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C88; // WRITABLE
-uint32_t &dword_51779C      = *(uint32_t *)0x51779C; // WRITABLE
+DWORD &g_dwBBitMask      = *(DWORD *)0x517D60; // WRITABLE
 
-// === PINNED GLOBALS ===
-DWORD &g_dwPixelFormat = *(DWORD *)0x518370;   // (16/24/32 bpp)
-uint32_t &g_dwBytesPerPixel = *(uint32_t *)0x518374; // WRITABLE
+uint32_t &dword_51779C      = *(uint32_t *)0x51779C; // WRITABLE
 uint32_t &dword_5177A0      = *(uint32_t *)0x5177A0; // WRITABLE
-DWORD &g_dwRGBBitMask  = *(DWORD *)0x517788;   // (B channel mask)
 uint32_t &dword_5177A4      = *(uint32_t *)0x5177A4; // WRITABLE
-uint32_t &g_dwRBitMask      = *(uint32_t *)0x517D58; // WRITABLE
 uint32_t &dword_5177A8      = *(uint32_t *)0x5177A8; // WRITABLE
-uint32_t &g_dwGBitMask      = *(uint32_t *)0x517D5C; // WRITABLE
-uint32_t &g_dwBBitMask      = *(uint32_t *)0x517D60; // WRITABLE
+
 uint32_t &g_nBBitCount      = *(uint32_t *)0x4B01C4; // WRITABLE
 uint32_t &g_nRBitCount      = *(uint32_t *)0x4B01C0; // WRITABLE
 uint32_t &g_nRGBBitCount    = *(uint32_t *)0x4B01BC; // WRITABLE
-uint32_t &g_dwLowestBBit    = *(uint32_t *)0x518384; // WRITABLE
-uint32_t &g_dwLowestRBit    = *(uint32_t *)0x518380; // WRITABLE
-uint32_t &g_dwLowestRGBBit  = *(uint32_t *)0x51837C; // WRITABLE
+DWORD &g_dwLowestBBit    = *(DWORD *)0x518384; // WRITABLE
+DWORD &g_dwLowestRBit    = *(DWORD *)0x518380; // WRITABLE
+DWORD &g_dwLowestRGBBit  = *(DWORD *)0x51837C; // WRITABLE
 CHAR &g_szFontFaceName      = *(CHAR *)0x4B01C8; // WRITABLE
 LPSTR &g_pDDErrStr = *(LPSTR*)0x5185CC;
 
-uint32_t &g_bInited_4D6C6C              = *(uint32_t *)0x4D6C6C; // WRITABLE
-CHanaLightT3EF_S1A0 * &g_pLight_4D6CE0  = *(CHanaLightT3EF_S1A0 * *)0x4D6CE0; // WRITABLE
-CHanaMateT3EE_S184 * &g_pMaterial       = *(CHanaMateT3EE_S184 * *)0x4D6CDC; // WRITABLE
 HGLOBAL &g_pSekHeader                   = *(HGLOBAL *)0x4D6CCC; // WRITABLE
 CObjPoolMgr_S58 * &g_pObjPool           = *(CObjPoolMgr_S58 * *)0x4D6CD0; // WRITABLE
-LPDIRECTDRAWSURFACE7 &g_pZBuffer_4D6C94    = *(LPDIRECTDRAWSURFACE7 *)0x4D6C94; // WRITABLE
-LPDIRECTDRAWSURFACE7 &g_pBackBuffer_4D6C90 = *(LPDIRECTDRAWSURFACE7 *)0x4D6C90; // WRITABLE
 IUnknown * &g_pUnk_4D6C8C                  = *(IUnknown * *)0x4D6C8C; // WRITABLE
 
-CHanaFrameT3EC_S354 * &g_pLightFrame     = *(CHanaFrameT3EC_S354 * *)0x4D6CB0; // WRITABLE
-CHanaFrameT3EC_S354 * &g_pCameraFrame    = *(CHanaFrameT3EC_S354 * *)0x4D6CAC; // WRITABLE
-CHanaFrameRootT3EC_S2D4 * &g_pSceneFrame = *(CHanaFrameRootT3EC_S2D4 * *)0x4D6CA8; // WRITABLE
-CObjItemRef_S208 * &g_pObjectTable       = *(CObjItemRef_S208 * *)0x4D6C98; // WRITABLE
-int& g_nObjectTableCount                 = *(int*)0x4D6C9C;
-LPDIRECTDRAW7 &g_pDD_4D6C7C              = *(LPDIRECTDRAW7 *)0x4D6C7C; // WRITABLE
-LPDIRECT3D7 &g_pD3D_4D6C84               = *(LPDIRECT3D7 *)0x4D6C84; // WRITABLE
-LPD3DXCONTEXT &g_pRenderCtx              = *(LPD3DXCONTEXT*)0x4D6C80; // WRITABLE
+#endif
 
 // === FUNCTION POINTERS ===
 
@@ -81,7 +126,7 @@ int (__cdecl * HanaDS_Init)(HWND hwnd) = reinterpret_cast<int(__cdecl*)(HWND hwn
 int (* HanaHeap_Destroy)() = reinterpret_cast<int(*)()>(0x427551);
 int (* HanaDS_DestroyHeap)() = reinterpret_cast<int(*)()>(0x42489D);
 void (* HanaDS_Shutdown)() = reinterpret_cast<void(*)()>(0x422E14);
-IDirectSound3DListener * (* HanaDS_Create3DListener)() = reinterpret_cast<IDirectSound3DListener *(*)()>(0x422690);
+LPDIRECTSOUND3DLISTENER (*HanaDS_Create3DListener)() = reinterpret_cast<LPDIRECTSOUND3DLISTENER(*)()>(0x422690);
 int (* Renderer_CleanupFont)() = reinterpret_cast<int(*)()>(0x41888E);
 void (__cdecl * SetUiFont_419BCD)(int nCharW, int nFontH, LPCSTR szFaceName) = reinterpret_cast<void(__cdecl*)(int nCharW, int nFontH, LPCSTR szFaceName)>(0x419BCD);
 LRESULT (__stdcall * WndProcCheckSystem_485FC2)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) = reinterpret_cast<LRESULT(__stdcall*)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)>(0x485FC2);
@@ -103,7 +148,7 @@ void __cdecl hook_D3DDeinit()
 {
   ONCELOG("[HNH:SUB] D3DDeinit_40AC7C\n");
 
-  if ( g_bInited_4D6C6C )
+  if ( g_bD3Dinited_4D6C6C )
   {
     if ( g_pLight_4D6CE0 )
     {
@@ -185,7 +230,7 @@ void __cdecl hook_D3DDeinit()
       g_pRenderCtx->Release();
       g_pRenderCtx = 0;
     }
-    g_bInited_4D6C6C = 0;
+    g_bD3Dinited_4D6C6C = 0;
     D3DXUninitialize();
     if ( g_nMemCnt_4D6CF0 )
     {
@@ -271,7 +316,9 @@ BOOL __cdecl hook_HanaHeap_Create(SIZE_T dwInitialSize)
   return g_hHeapHandle != 0;
 }
 
-// HanaDS_InitHeap - initialize the DirectSound/audio subsystem heap to a fixed 40000-byte (0x9C40) initial size via HanaHeap_Create(40000). Returns 1 unconditionally (the heap-create result is not propagated to the caller).
+// HanaDS_InitHeap - initialize the DirectSound/audio subsystem heap to a fixed 40000-byte (0x9C40)
+// initial size via HanaHeap_Create(40000). Returns 1 unconditionally (the heap-create result is not =
+// propagated to the caller).
 int hook_HanaDS_InitHeap()
 {
   ONCELOG("[HNH:SUB] HanaDS_InitHeap_424886\n");
@@ -283,7 +330,8 @@ int hook_HanaDS_InitHeap()
 // HanaDS_Init - initialize the global DirectSound device. Ensures the audio heap is up (HanaDS_InitHeap);
 // then DirectSoundCreate(0, &g_ppDS, 0) and SetCooperativeLevel(hwnd, DSSCL_EXCLUSIVE=3). 
 // On any failure it records the DS error string (sub_423CCC -> g_szDDErr) and returns 0.
-// On success it Compact()s the device, zero-fills and queries capabilities into g_dsCaps (dwSize=96), sets g_bDSInited_5185C4=1, and returns 1.
+// On success it Compact()s the device, zero-fills and queries capabilities into g_dsCaps (dwSize=96), 
+// sets g_bDSInited_5185C4=1, and returns 1.
 int __cdecl hook_HanaDS_Init(HWND hwnd)
 {
   HRESULT hr; // [esp+0h] [ebp-4h]
@@ -323,7 +371,8 @@ int hook_HanaHeap_Destroy()
   return 1;
 }
 
-// HanaDS_DestroyHeap - audio-subsystem hook that tears down the private module heap by calling HanaHeap_Destroy(); returns its result. Called as the final step of HanaDS_Shutdown.
+// HanaDS_DestroyHeap - audio-subsystem hook that tears down the private module heap by calling
+// HanaHeap_Destroy(); returns its result. Called as the final step of HanaDS_Shutdown.
 int hook_HanaDS_DestroyHeap()
 {
   ONCELOG("[HNH:SUB] HanaDS_DestroyHeap_42489D\n");
@@ -331,7 +380,9 @@ int hook_HanaDS_DestroyHeap()
   return HanaHeap_Destroy();
 }
 
-// HanaDS_Shutdown - tear down the DirectSound subsystem if initialized: release g_pdsBuffer and g_ppDS, null both, clear g_bDSInited_5185C4, then call sub_42489D() (further 3D/audio cleanup) and return its result. Returns 0 when not initialized.
+// HanaDS_Shutdown - tear down the DirectSound subsystem if initialized: release g_pdsBuffer and g_ppDS,
+// null both, clear g_bDSInited_5185C4, then call sub_42489D() (further 3D/audio cleanup) and
+// return its result. Returns 0 when not initialized.
 void hook_HanaDS_Shutdown()
 {
   ONCELOG("[HNH:SUB] HanaDS_Shutdown_422E14\n");
@@ -350,11 +401,11 @@ void hook_HanaDS_Shutdown()
 }
 
 // HanaDS_Create3DListener - obtain the 3D sound listener. Requires g_bDSInited. If g_pdsBuffer is not yet created, create it (DSBUFFERDESC dwSize=36, dwFlags=17) via g_ppDS->CreateSoundBuffer; on failure record the error (HanaDS_SetErrStr) and return 0. Then QueryInterface IDirectSound3DListener - on failure record the error, release the buffer, return 0; on success SetDistanceFactor(1.0f) and SetRolloffFactor(~0.1f) and return the listener.
-IDirectSound3DListener *hook_HanaDS_Create3DListener()
+LPDIRECTSOUND3DLISTENER hook_HanaDS_Create3DListener()
 {
   DSBUFFERDESC dsbDesc; // [esp+0h] [ebp-2Ch] BYREF
   DWORD hr; // [esp+24h] [ebp-8h]
-  IDirectSound3DListener *pListener; // [esp+28h] [ebp-4h] BYREF
+  LPDIRECTSOUND3DLISTENER pListener; // [esp+28h] [ebp-4h] BYREF
 
   ONCELOG("[HNH:SUB] HanaDS_Create3DListener_422690\n");
 
