@@ -15,7 +15,7 @@
 static HINSTANCE s_hInstance;
 static HWND      s_hwndParent;
 
-#ifdef __USRDLL
+#ifdef _USRDLL
 HINSTANCE &g_hInstance  = *(HINSTANCE*)0x52F5C8;
 HWND      &g_hwndParent = *(HWND*)0x52F5CC;
 
@@ -29,14 +29,14 @@ DIDATAFORMAT         &g_diKeyboardFormat_4ACD08 = *(DIDATAFORMAT *)0x4ACD08; // 
 #else
 
 HINSTANCE &g_hInstance  = s_hInstance;
-HWND& g_hwndParent = s_hwndParent;
+HWND      &g_hwndParent = s_hwndParent;
 
-static BOOL                 g_bdiAcquire_5196E0;
-static LPDIRECTINPUTA       g_ppDI;
-static LPDIRECTINPUTDEVICEA g_pdiMouse_5196D8;
-static DIDATAFORMAT         g_diMouseFormat_4ACD20 = c_dfDIMouse;
-static LPDIRECTINPUTDEVICEA g_pdiKeyboard;
-static DIDATAFORMAT         g_diKeyboardFormat_4ACD08 = c_dfDIKeyboard;
+BOOL                 g_bdiAcquire_5196E0;
+LPDIRECTINPUTA       g_ppDI;
+LPDIRECTINPUTDEVICEA g_pdiMouse_5196D8;
+DIDATAFORMAT         g_diMouseFormat_4ACD20 = c_dfDIMouse;
+LPDIRECTINPUTDEVICEA g_pdiKeyboard;
+DIDATAFORMAT         g_diKeyboardFormat_4ACD08 = c_dfDIKeyboard;
 
 #endif
 

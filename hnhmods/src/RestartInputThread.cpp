@@ -7,6 +7,7 @@
 
 // === GLOBAL VARIABLES ===
 
+#ifdef _USRDLL
 HANDLE &g_hThread = *(HANDLE*)0x52F3B0;
 bool& g_bRequestThreadStop = *(bool*)0x52F3AC;
 
@@ -31,6 +32,34 @@ int& g_nMouseY_52F3A0 = *(int*)0x52F3A0;
 
 bool& g_bThreadWait_52F3AD = *(bool*)0x52F3AD;
 bool& g_bThreadInWaiting_52F3AE = *(bool*)0x52F3AE;
+#else
+
+HANDLE g_hThread;
+bool   g_bRequestThreadStop;
+
+CInputState *g_pInputState1_52F3A4;
+CInputState *g_pInputState2_52F3A8;
+CInputState *g_pInputState_4C7354;
+
+CInputState g_arrInputState1_52F1C0[30];
+CInputState g_arrInputState2_52F2B0[30];
+
+int g_vkBtnRightAlt_4C7330;
+int g_vkBtnLeftAlt_4C7334;
+int g_vkBtnMidAlt_4C7338;
+int g_vkKbdLeft_4C733C;
+int g_vkKbdRight_4C7340;
+int g_vkKbdUp_4C7344;
+int g_vkKbdDown_4C7348;
+int g_vkKbdEsc_4C734C;
+
+int g_nMouseX_52F1B8;
+int g_nMouseY_52F3A0;
+
+bool g_bThreadWait_52F3AD;
+bool g_bThreadInWaiting_52F3AE;
+
+#endif
 
 // === GLOBAL FUNCTIONS ===
 
@@ -40,6 +69,8 @@ CInputState*(*GetInputState_481B37)(void)
 = reinterpret_cast<CInputState * (*)(void)>(0x481B37);
 void(__cdecl*MutexThreadWait_4815EC)(bool bWait)
 = reinterpret_cast<void(__cdecl*)(bool bWait)>(0x4815EC);
+bool(__cdecl*GetCursorPos_4811FA)(int* pOutX, int* pOutY, __int16* pOutBtn)
+= reinterpret_cast<bool(__cdecl*)(int* pOutX, int* pOutY, __int16* pOutBtn)>(0x4811FA);
 
 HANDLE(__cdecl* TerminateThreadGracefully)(HANDLE hThread)
 = reinterpret_cast<HANDLE(__cdecl*)(HANDLE hThread)>(0x481A35);
@@ -49,8 +80,6 @@ void (WINAPI* InputThread_Relative_481637)(LPVOID lpThreadParameter)
 = reinterpret_cast<void(WINAPI  *)(LPVOID lpThreadParameter)>(0x481637);
 void ( WINAPI* InputThread_Absolute_4817B1)(LPVOID lpThreadParameter)
 = reinterpret_cast< void(WINAPI   *)(LPVOID lpThreadParameter)>(0x4817B1);
-bool(__cdecl*GetCursorPos_4811FA)(int* pOutX, int* pOutY, __int16* pOutBtn)
-= reinterpret_cast<bool(__cdecl*)(int* pOutX, int* pOutY, __int16* pOutBtn)>(0x4811FA);
 
 // === FUNCTION HOOKS ===
 
@@ -438,14 +467,12 @@ void register_RestartInputThread_481AE4(int cfg) {
     GetCursorPos_4811FA = hook_GetCursorPos_4811FA;
   }
   else {
+    hnh_Hook(0x481637, hook_InputThread_Relative_481637, "InputThread_Relative_481637"); // [OK] 
+    hnh_Hook(0x4817B1, hook_InputThread_Absolute_4817B1, "InputThread_Absolute_4817B1"); // [OK] 
+    hnh_Hook(0x4811FA, hook_GetCursorPos_4811FA, "GetCursorPos_4811FA"); // [OK] 
   }
 
   hnh_HookOff();
-  hnh_Hook(0x481637, hook_InputThread_Relative_481637, "InputThread_Relative_481637"); // [OK] 
-  hnh_Hook(0x4817B1, hook_InputThread_Absolute_4817B1, "InputThread_Absolute_4817B1"); // [OK] 
-  hnh_Hook(0x4811FA, hook_GetCursorPos_4811FA, "GetCursorPos_4811FA"); // [OK] 
-
-
   hnh_Hook(0x481AE4, hook_RestartInputThread, "RestartInputThread_481AE4"); // [OK] 
   hnh_Hook(0x481A35, hook_TerminateThreadGracefully, "TerminateThreadGracefully_481A35"); // [OK] 
   hnh_Hook(0x4818FD, hook_CreateNewThread, "CreateNewThread_4818FD"); // [OK] 

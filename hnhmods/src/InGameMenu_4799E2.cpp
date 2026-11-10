@@ -1403,6 +1403,10 @@ void register_InGameMenu_4799E2(int cfg) {
     MainMenu_47DF0D = hook_MainMenu_47DF0D;
     InGameMenu_4799E2 = hook_InGameMenu_4799E2; // somehow make stack corrupts
   }
+  else {
+    hnh_Hook(0x481550, hook_DoPeekMessages, "DoPeekMessages_481550"); // [OK] 
+
+  }
 
   if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x4799E2, hook_InGameMenu_4799E2, "InGameMenu_4799E2"); // [OK] 
@@ -1419,7 +1423,6 @@ void register_InGameMenu_4799E2(int cfg) {
   hnh_Hook(0x43EA05, hook_CreateTextureFromSurfaceWithAlphaMask, "CreateTextureFromSurfaceWithAlphaMask_43EA05"); // [OK] 
 
   hnh_Hook(0x47DF0D, hook_MainMenu_47DF0D, "MainMenu_47DF0D"); // [OK]
-  hnh_Hook(0x481550, hook_DoPeekMessages, "DoPeekMessages_481550"); // [OK] 
   hnh_Hook(0x423BAF, hook_DSBufferPlay, "DSBufferPlay_423BAF"); // [OK] 
   hnh_Hook(0x45A41B, hook_GetMouseBtn_45A41B, "GetMouseBtn_45A41B"); // [OK] 
   hnh_Hook(0x45A4D8, hook_GetMouseXY_45A4D8, "GetMouseXY_45A4D8"); // [OK] 

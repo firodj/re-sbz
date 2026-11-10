@@ -214,10 +214,9 @@ BOOL WINAPI hookPeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wM
 			TranslateMessage(lpMsg);
 		}
 		if (wm_input) {
-			ImGui_ImplWin32_WndProcHandler(lpMsg->hwnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
-			
+			LRESULT res = ImGui_ImplWin32_WndProcHandler(lpMsg->hwnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
 		}
-
+#if 0
 		if (logging) {
 			DebugLog("[user32] PeekMessage req.hWnd=0x%x hWnd=0x%x message=0x%x(%s) wParam=0x%x lParam=0x%x time=%d pt=(%d,%d)\n",
 				hWnd, lpMsg->hwnd,
@@ -225,6 +224,7 @@ BOOL WINAPI hookPeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wM
 				lpMsg->time, lpMsg->pt.x, lpMsg->pt.y
 			);
 		}
+#endif
 	}
 	return ret;
 }

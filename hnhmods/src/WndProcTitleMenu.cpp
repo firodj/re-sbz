@@ -17,15 +17,15 @@ BOOL &g_bTitleMenuConfigScreen_518CC4 = *(BOOL *)0x518CC4; // WRITABLE
 int &g_nTitleMenuHotToggleRow_4B3490 = *(int *)0x4B3490; // WRITABLE
 #else
 
-static CBMPFile* g_pbmpDd;
-static CBMPFile * g_pbmpDdBt;
-static CBMPFile * g_pbmpDd2;
-static CBMPFile * g_pbmpDdBt3;
-static HGDIOBJ g_hFontTitleMenu_518CCC;
-static int g_nTitleMenuHotId_4B348C;
-static BOOL g_bLMouseClick;
-static BOOL g_bTitleMenuConfigScreen_518CC4;
-static int g_nTitleMenuHotToggleRow_4B3490;
+CBMPFile *g_pbmpDd;
+CBMPFile *g_pbmpDdBt;
+CBMPFile *g_pbmpDd2;
+CBMPFile *g_pbmpDdBt3;
+HGDIOBJ  g_hFontTitleMenu_518CCC;
+int  g_nTitleMenuHotId_4B348C;
+BOOL g_bLMouseClick;
+BOOL g_bTitleMenuConfigScreen_518CC4;
+int  g_nTitleMenuHotToggleRow_4B3490;
 
 #endif
 

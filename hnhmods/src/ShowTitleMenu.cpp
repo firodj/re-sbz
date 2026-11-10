@@ -5,24 +5,64 @@
 
 // === GLOBAL VARIABLES ===
 
+CDisplayConfig s_displayConfig_518C30;
+BOOL           s_dwShadowOff;
+D3DXMATRIX     s_pM2;
+CD3DInitParam  s_D3DDevParams;
+CHanaMateT3EE_S184* s_pCurMatObj;
+int            s_nObjCount;
+int            s_nCapObjects_4CD780;
+D3DX_SURFACEFORMAT s_dwSurfaceFormat_4B00B4;
+unsigned int   s_nBitness;
+int            s_nZBufDepthSelValue_518C98;
+int            s_nModeSetIndex;
+DWORD          s_nWidth ;
+DWORD          s_nHeight;
+
+#ifdef _USRDLL
 CDisplayConfig &g_displayConfig_518C30 = *(CDisplayConfig *)0x518C30; // WRITABLE
-uint32_t &g_dwShadowOff = *(uint32_t *)0x4B00B0; // WRITABLE
-D3DXMATRIX& g_pM2 = *(D3DXMATRIX*)0x4CE918;
-CD3DInitParam& g_D3DDevParams = *(CD3DInitParam*)0x4CE8B0;
-uint32_t &g_bNonShowMenu_4D6C70 = *(uint32_t *)0x4D6C70; // WRITABLE
-uint32_t &g_pCurMatObj = *(uint32_t *)0x4D6CA4; // WRITABLE
-uint32_t &g_bCreateFlags_4D6CD4 = *(uint32_t *)0x4D6CD4; // WRITABLE
-HWND &g_hWndDev_4D6C74 = *(HWND *)0x4D6C74; // WRITABLE
-uint32_t &g_nObjCount = *(uint32_t *)0x4CE868; // WRITABLE
-uint32_t &g_nCapObjects_4CD780 = *(uint32_t *)0x4CD780; // WRITABLE
+BOOL           &g_dwShadowOff = *(BOOL *)0x4B00B0; // WRITABLE
+D3DXMATRIX     &g_pM2 = *(D3DXMATRIX*)0x4CE918;
+CD3DInitParam  &g_D3DDevParams = *(CD3DInitParam*)0x4CE8B0;
+CHanaMateT3EE_S184* &g_pCurMatObj = *(CHanaMateT3EE_S184* *)0x4D6CA4; // WRITABLE
+int            &g_nObjCount = *(int *)0x4CE868; // WRITABLE
+int            &g_nCapObjects_4CD780 = *(int *)0x4CD780; // WRITABLE
 D3DX_SURFACEFORMAT &g_dwSurfaceFormat_4B00B4 = *(D3DX_SURFACEFORMAT *)0x4B00B4; // WRITABLE
-uint32_t &g_nColorBits_518C2C = *(uint32_t *)0x518C2C; // WRITABLE
-unsigned int &g_nBitness = *(unsigned int *)0x518C88; // WRITABLE
-uint32_t &g_nZBufDepthSelValue_518C98 = *(uint32_t *)0x518C98; // WRITABLE
-int &g_nModeSetIndex = *(int *)0x518C90; // WRITABLE
-DWORD &g_nWidth  = *(DWORD *)0x518C94; // WRITABLE
-DWORD &g_nHeight = *(DWORD *)0x518C8C; // WRITABLE
-uint32_t &g_nHeight2 = *(uint32_t *)0x518C84; // WRITABLE
+unsigned int   &g_nBitness = *(unsigned int *)0x518C88; // WRITABLE
+int            &g_nZBufDepthSelValue_518C98 = *(int *)0x518C98; // WRITABLE
+int            &g_nModeSetIndex = *(int *)0x518C90; // WRITABLE
+DWORD          &g_nWidth  = *(DWORD *)0x518C94; // WRITABLE
+DWORD          &g_nHeight = *(DWORD *)0x518C8C; // WRITABLE
+
+BOOL           &g_bNonShowMenu_4D6C70 = *(BOOL *)0x4D6C70; // WRITABLE
+int            &g_nHeight2 = *(int *)0x518C84; // WRITABLE
+unsigned int   &g_nColorBits_518C2C = *(unsigned int *)0x518C2C; // WRITABLE
+BOOL           &g_bCreateFlags_4D6CD4 = *(BOOL *)0x4D6CD4; // WRITABLE
+HWND           &g_hWndDev_4D6C74 = *(HWND *)0x4D6C74; // WRITABLE
+
+
+#else
+CDisplayConfig& g_displayConfig_518C30 = s_displayConfig_518C30;
+BOOL           &g_dwShadowOff = s_dwShadowOff;
+D3DXMATRIX     &g_pM2 = s_pM2;
+CD3DInitParam  &g_D3DDevParams = s_D3DDevParams;
+CHanaMateT3EE_S184* &g_pCurMatObj = s_pCurMatObj;
+int            &g_nObjCount = s_nObjCount;
+int            &g_nCapObjects_4CD780 = s_nCapObjects_4CD780;
+D3DX_SURFACEFORMAT &g_dwSurfaceFormat_4B00B4 = s_dwSurfaceFormat_4B00B4;
+unsigned int   &g_nBitness = s_nBitness;
+int            &g_nZBufDepthSelValue_518C98 = s_nZBufDepthSelValue_518C98;
+int            &g_nModeSetIndex = s_nModeSetIndex;
+DWORD          &g_nWidth  = s_nWidth ;
+DWORD          &g_nHeight = s_nHeight;
+
+BOOL           g_bNonShowMenu_4D6C70;
+int            g_nHeight2;
+unsigned int   g_nColorBits_518C2C;
+BOOL           g_bCreateFlags_4D6CD4;
+HWND           g_hWndDev_4D6C74;
+
+#endif
 
 // === GLOBAL FUNCTIONS ===
 

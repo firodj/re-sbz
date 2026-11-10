@@ -191,23 +191,19 @@ extern HRESULT(__cdecl* D3DInitBuffers_40AF60)(void);
 
 // === DEFINED ShowTitleMenu.cpp ===
 
-extern uint32_t &g_dwShadowOff;
+extern BOOL &g_dwShadowOff;
 extern uint32_t &g_bForceDirectionalLights;
 extern CDisplayConfig &g_displayConfig_518C30;
 extern D3DXMATRIX &g_pM2;
 extern CD3DInitParam &g_D3DDevParams;
-extern uint32_t &g_bNonShowMenu_4D6C70;
-extern uint32_t &g_pCurMatObj;
+extern CHanaMateT3EE_S184* &g_pCurMatObj;
 extern CHanaTextureT3EB_S2CC* &g_pCurTexObj;
-extern int &g_bAlphaBlendEnabled_4D6CC0;
-extern int &g_nAlphaOpState_4D6CC4;
-extern uint32_t &g_bCreateFlags_4D6CD4;
-extern HWND &g_hWndDev_4D6C74;
-extern uint32_t &g_nObjCount;
-extern uint32_t &g_nCapObjects_4CD780;
+extern int &g_bAlphaBlendEnabled_4D6CC0; // in: CheckRunGame.cpp
+extern int &g_nAlphaOpState_4D6CC4; // in: CheckRunGame.cpp
+extern int &g_nObjCount;
+extern int &g_nCapObjects_4CD780;
 extern D3DX_SURFACEFORMAT& g_dwSurfaceFormat_4B00B4;
-extern uint32_t& g_nColorBits_518C2C;
-extern uint32_t &g_nZBufDepthSelValue_518C98;
+extern int &g_nZBufDepthSelValue_518C98;
 extern int &g_nModeSetIndex;
 extern DWORD &g_nWidth;
 extern DWORD &g_nHeight;
