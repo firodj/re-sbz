@@ -24,6 +24,7 @@ temp*.i
 
 # --- Build Directories (Standard MSVC output) ---
 [Dd]ebug/
+[Dd]ebugBinDX7/
 [Rr]elease/
 build/
 
