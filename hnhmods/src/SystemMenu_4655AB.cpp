@@ -39,17 +39,7 @@ int (__cdecl*ShowYesNoDialog_461A9E)(CHanaSpriteT3F6_S1FC *pCursor,
   reinterpret_cast<int(__cdecl*)(CHanaSpriteT3F6_S1FC *, CHanaSpriteT3F6_S1FC *, LPCSTR)>(0x461A9E);
 
 // === GLOBAL VARIABLES ===
-BYTE s_nHSceneMale_530265;
-BYTE s_nFirstPersonCam_530268;    
-BYTE s_nTextSpeed_530267;
 
-#ifdef _USRDLLBYTE &g_nFirstPersonCam_530268      = *(BYTE *)0x530268;  // WRITABLE
-BYTE &g_nTextSpeed_530267    = *(BYTE*)0x530267; // WRITABLE
-
-#else
-BYTE &g_nFirstPersonCam_530268      = s_nFirstPersonCam_530268; 
-BYTE& g_nTextSpeed_530267           = s_nTextSpeed_530267;
-#endif
 // === FUNCTIONS ===
 
 // SystemMenu_4655AB -- the shared in-game SYSTEM MENU (save / load / girl
@@ -885,7 +875,7 @@ void __cdecl hook_SysMenu_Options_462FE9(CSceneState *sceneStates /*unused*/,
         && (int)ConvertFrom640AsFloat(336.875f) < nMouseY
         && nMouseY < (int)ConvertFrom640AsFloat(356.875f))
       {
-        g_nTextSpeed_530267 = (BYTE)i;
+        g_sysDataSave_530170.g_nTextSpeed_530267 = (BYTE)i;
         bChanged = 1;
         DebugLog("[HNH:SysMenu_Options] change [4][%d]\n", i);
 
@@ -899,7 +889,7 @@ void __cdecl hook_SysMenu_Options_462FE9(CSceneState *sceneStates /*unused*/,
         && (int)ConvertFrom640AsFloat(244.375f) < nMouseY
         && nMouseY < (int)ConvertFrom640AsFloat(264.375f))
       {
-        g_nFirstPersonCam_530268 = (BYTE)i;
+        g_sysDataSave_530170.g_nFirstPersonCam_530268 = (BYTE)i;
         bChanged = 1;
         DebugLog("[HNH:SysMenu_Options] change [5][%d]\n", i);
 
@@ -954,14 +944,14 @@ void __cdecl hook_SysMenu_Options_462FE9(CSceneState *sceneStates /*unused*/,
     arrSurf[11], ConvertFrom640AsInt(40 * g_sysDataSave_530170.g_nVolumeLevel_530266), 0,
     ConvertFrom640AsInt(40), ConvertFrom640AsInt(20), 0);
   BltFastWH(g_pBackBuffer_4D6C90,                         // frame multiplier (40x20)
-    ConvertFrom640AsInt(42 * (g_nTextSpeed_530267 + 1) + 362),
+    ConvertFrom640AsInt(42 * (g_sysDataSave_530170.g_nTextSpeed_530267 + 1) + 362),
     (int)ConvertFrom640AsFloat(336.25f),
-    arrSurf[11], ConvertFrom640AsInt(40 * g_nTextSpeed_530267), 0,
+    arrSurf[11], ConvertFrom640AsInt(40 * g_sysDataSave_530170.g_nTextSpeed_530267), 0,
     ConvertFrom640AsInt(40), ConvertFrom640AsInt(20), 0);
   BltFastWH(g_pBackBuffer_4D6C90,                         // toggle C (60x20, scaled)
-    (int)(ConvertFrom640AsFloat((double)g_nFirstPersonCam_530268 * 101.0 + 413.0) * 0.625),
+    (int)(ConvertFrom640AsFloat((double)g_sysDataSave_530170.g_nFirstPersonCam_530268 * 101.0 + 413.0) * 0.625),
     (int)ConvertFrom640AsFloat(244.375f),
-    arrSurf[11], ConvertFrom640AsInt(60 * g_nFirstPersonCam_530268),
+    arrSurf[11], ConvertFrom640AsInt(60 * g_sysDataSave_530170.g_nFirstPersonCam_530268),
     ConvertFrom640AsInt(60), ConvertFrom640AsInt(60),
     ConvertFrom640AsInt(20), 0);
 

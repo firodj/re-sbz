@@ -129,7 +129,7 @@ int __cdecl hook_MenuCharSelect(LPDIRECTSOUNDBUFFER *ppBgmBuffer, CHanaSpriteT3F
         nHoverChar = -1;
         for (i = 0; i < 5; ++i)
         {
-            if (i == 1 && g_sceneProgressFlag_530269 != 1)
+            if (i == 1 && g_sysDataSave_530170.g_sceneProgressFlag_530269 != 1)
                 continue;
             if ((int)ConvertFrom640AsFloat(arrHitOffset[i][1] * 0.625f) < ymouse
                 && ymouse < (int)ConvertFrom640AsFloat((arrPos[i][1] + arrHitOffset[i][1]) * 0.625f)
@@ -359,7 +359,7 @@ bool hook_IsMenuKeyPressed_481170()
   {
     if ( !g_keyC )
     {
-      g_nFirstPersonCam_530268 = g_nFirstPersonCam_530268 == 0;
+      g_sysDataSave_530170.g_nFirstPersonCam_530268 = g_sysDataSave_530170.g_nFirstPersonCam_530268 == 0;
       g_keyC = 1;
     }
   }

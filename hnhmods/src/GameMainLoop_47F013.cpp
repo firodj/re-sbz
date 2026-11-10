@@ -58,7 +58,6 @@ LPDIRECTSOUNDBUFFER(&g_arrUIEffectDSBuffer_52F168)[5] = *(LPDIRECTSOUNDBUFFER(*)
 CSoundStruct_8* (&g_arrFootstepSound_52F17C)[4] = *(CSoundStruct_8 * (*)[4])0x52F17C; // WRITABLE
 CSoundStruct_8* (&g_arrFootstepSound_52F18C)[4] = *(CSoundStruct_8 * (*)[4])0x52F18C; // WRITABLE
 CSystemDataSave& g_sysDataSave_530170 = *(CSystemDataSave*)0x530170; // WRITABLE
-BYTE& g_sceneProgressFlag_530269 = *(BYTE*)0x530269; // WRITABLE
 CSceneState& g_sceneState_52F7E0 = *(CSceneState*)0x52F7E0; // WRITABLE
 const char*& g_szLastDDError_51836C = *(const char**)0x51836C; // WRITABLE
 
@@ -77,7 +76,6 @@ LPDIRECTSOUNDBUFFER(&g_arrUIEffectDSBuffer_52F168)[5] = s_arrUIEffectDSBuffer_52
 CSoundStruct_8* (&g_arrFootstepSound_52F17C)[4] = s_arrFootstepSound_52F17C;
 CSoundStruct_8* (&g_arrFootstepSound_52F18C)[4] = s_arrFootstepSound_52F18C;
 CSystemDataSave &g_sysDataSave_530170 = s_sysDataSave_530170;
-BYTE& g_sceneProgressFlag_530269 = s_sceneProgressFlag_530269;
 CSceneState& g_sceneState_52F7E0 = s_sceneState_52F7E0;
 const char*& g_szLastDDError_51836C = s_szLastDDError_51836C;
 
@@ -117,7 +115,7 @@ void __cdecl hook_GameMainLoop_47F013(void)
   // reset the data0.dat save image, default AVI volume (2), byte_530267 := 1
   memset(&g_sysDataSave_530170, 0, sizeof(g_sysDataSave_530170));
   g_sysDataSave_530170.g_nVolumeLevel_530266 = 2;
-  g_nTextSpeed_530267 = 1;
+  g_sysDataSave_530170.g_nTextSpeed_530267 = 1;
 
   // load the previous save if present: <DATA>\data0.dat
   wsprintfA(szPathBuf, "data0.dat");                // aData0Dat @0x4C7300
@@ -132,7 +130,7 @@ void __cdecl hook_GameMainLoop_47F013(void)
   LoadSoundEffects_47EB7F();
 
   // --- HACK
-  g_sceneProgressFlag_530269 = 1;
+  //g_sysDataSave_530170.g_sceneProgressFlag_530269 = 1;
 
   // --- outer loop: menu <-> scene chapter <-> autosave ---------------------
   for (;;)
@@ -189,14 +187,14 @@ void __cdecl hook_GameMainLoop_47F013(void)
           PlayVideoWith3DAudio_4791A3("ED.avi", 0);  // aEdAvi @0x4C731C
           LoadSoundEffects_47EB7F();
           g_sceneState_52F7E0.bActiveSceneStep = 0;
-          g_sceneProgressFlag_530269 = 2;    // ending seen
+          g_sysDataSave_530170.g_sceneProgressFlag_530269 = 2;    // ending seen
           break;
         case 6:                               // backdrop
           nMenuResult = 1;
           ShowBackdropAndWait_4795CE();
           g_sceneState_52F7E0.bActiveSceneStep = 0;
-          if (!g_sceneProgressFlag_530269)
-            g_sceneProgressFlag_530269 = 1; // backdrop seen
+          if (!g_sysDataSave_530170.g_sceneProgressFlag_530269)
+            g_sysDataSave_530170.g_sceneProgressFlag_530269 = 1; // backdrop seen
           break;
         default:
           break;

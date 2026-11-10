@@ -435,9 +435,10 @@ bool DrawHNH(const char *window_name) {
 					BYTE step = 1;
 					if (ImGui::InputScalar("g_sceneProgressFlag_530269",
 						ImGuiDataType_U8,
-						&g_sceneProgressFlag_530269,
+						&g_sysDataSave_530170.g_sceneProgressFlag_530269,
 						&step, NULL, "%u")) {
-						if (g_sceneProgressFlag_530269 > 2) g_sceneProgressFlag_530269 = 2;
+						if (g_sysDataSave_530170.g_sceneProgressFlag_530269 > 2)
+							g_sysDataSave_530170.g_sceneProgressFlag_530269 = 2;
 					}
 					ImGui::TreePop();
 				}

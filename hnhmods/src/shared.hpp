@@ -270,11 +270,9 @@ extern int(__cdecl* ConvertFrom640AsInt)(int nNum);
 extern double(__cdecl*ConvertFrom640AsFloat)(float fNum);
 extern int(__cdecl* ConvertFrom1024AsInt)(int nNum);
 extern double(__cdecl* ConvertFrom1024AsFloat)(float fNum);
-extern CSystemDataSave &g_sysDataSave_530170;
 
 #endif
-
-extern BYTE &g_sceneProgressFlag_530269;
+extern CSystemDataSave &g_sysDataSave_530170;
 extern CSceneState &g_sceneState_52F7E0;
 #ifndef HNHMAIN
 
@@ -369,10 +367,6 @@ extern int(__cdecl* SysMenu_GirlStatusCheck_464919)(LPDIRECTDRAWSURFACE7* arrSur
 extern void(__cdecl* SysMenu_Options_462FE9)(CSceneState* sceneStates,
   LPDIRECTDRAWSURFACE7* arrSurf, CHanaSpriteT3F6_S1FC* pCursor, CHanaSpriteT3F6_S1FC* pYesNo,
   int nMouseX, int nMouseY, int bPressed);
-
-extern BYTE& g_nHSceneBackground_530264;
-extern BYTE& g_nFirstPersonCam_530268;
-extern BYTE& g_nTextSpeed_530267; // in: SystemMenu.cpp
 
 // === DEFINED SysMenu_Graphics_46380D.cpp ===
 

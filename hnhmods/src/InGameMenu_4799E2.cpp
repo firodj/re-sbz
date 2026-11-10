@@ -201,7 +201,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
     pButtonStrip = LoadBmpScaled_4203B3(szFileName, (int)ConvertFrom640AsFloat(200.0f), (int)ConvertFrom640AsFloat(105.0f));
     DebugLog("[HNH:InGameMenu] loaded Title.bmp\n");
     // fresh game: splash the lower-right area of the title art
-    if (!g_sceneProgressFlag_530269 && pTitleSurface)
+    if (!g_sysDataSave_530170.g_sceneProgressFlag_530269 && pTitleSurface)
         BltSurface(pTitleSurface, ConvertFrom1024AsInt(600), ConvertFrom1024AsInt(470),
                    ConvertFrom1024AsInt(960), ConvertFrom1024AsInt(525), 0);
 
@@ -247,7 +247,7 @@ int __cdecl hook_InGameMenu_4799E2(void)
                 && (int)ConvertFrom640AsFloat(381.25f) < mouseX
                 && mouseX < (int)ConvertFrom640AsFloat(581.25f))
             {
-                if (i != 2 || g_sceneProgressFlag_530269)
+                if (i != 2 || g_sysDataSave_530170.g_sceneProgressFlag_530269)
                     nMenuSelected = i;
                 break;
             }

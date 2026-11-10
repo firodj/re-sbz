@@ -1033,7 +1033,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
             &fHeroHpCur, fHeroHpMax);
           fActTimer = 0.0f;
         }
-        if (pHeroBody->field_200 <= 6 && g_nFirstPersonCam_530268)
+        if (pHeroBody->field_200 <= 6 && g_sysDataSave_530170.g_nFirstPersonCam_530268)
         {
           UpdateCameraFollowDuel_44C028(pHeroBody, pFoeBody, fDelta);
         }

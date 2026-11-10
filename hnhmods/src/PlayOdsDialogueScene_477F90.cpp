@@ -852,7 +852,7 @@ void __cdecl hook_DrawDialogueWindow_480B2D(
   fFrameTime = fDeltaTime;
   if ( pScene )
   {
-    fFrameTime = fFrameTime * arrTextSpeedMult[(unsigned __int8)g_nTextSpeed_530267];
+    fFrameTime = fFrameTime * arrTextSpeedMult[(unsigned __int8)g_sysDataSave_530170.g_nTextSpeed_530267];
     g_fFrameTime_52F1B4 = g_fFrameTime_52F1B4 + fFrameTime;
     if ( btnMouse == 3 && pScene->by_460 )
       fFrameTime = 1000.0 * fDeltaTime;
