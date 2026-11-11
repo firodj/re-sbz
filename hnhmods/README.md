@@ -10,6 +10,7 @@
 - Part VI: [File Format Specifications](./docs/FORMATS.md)
 - Part VII: [Combat & Scene Systems](./docs/COMBAT.md)
 - Part VIII: [Text, Font & UI Pipeline](./docs/TEXTUI.md)
+- Part IX: [Appendix - Globals Registry & Reconstruction Status](./docs/APPENDIX.md)
 
 NOTE: The standalone application start from [exemain.cpp](./exemain.cpp), redirecting all function into its implemented function which has prefix `hook_`,
 then execute the game `WinMain_485CE0` function. All sources in the [src](./src/) folder. For the game folder/asset in the `APPDIR` folder defined in [PropertySheet.props](./PropertySheet.props). The project configuration in [hnhmods.vcxproj](./hnhmods.vcxproj) with **DebugBinDX7|Win32** configuration. 
