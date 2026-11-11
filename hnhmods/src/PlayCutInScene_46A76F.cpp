@@ -441,12 +441,12 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
     {
         pCameraFrame = pScene->refsFrames_134[iHeroIdx];
         pHeroBody = pScene->refsSekBody_13C[iHeroIdx];
-        CSekBody__CutToAnim_4018E1(pModeBody, pHeroBody->field_200);
-        pModeBody->float_21C = 0.0f;
-        pModeBody->float_224 = 0.0f;
+        CSekBody__CutToAnim_4018E1(pModeBody, pHeroBody->nCurItem_200);
+        pModeBody->fBlendReq_21C = 0.0f;
+        pModeBody->fBlendWeight_224 = 0.0f;
         CSekBody__UpdateAnim_4019E1(pModeBody, 1.0f);
-        pHeroBody->float_21C = 0.0f;
-        pHeroBody->float_224 = 0.0f;
+        pHeroBody->fBlendReq_21C = 0.0f;
+        pHeroBody->fBlendWeight_224 = 0.0f;
         SetAnimSetTime(pModeBody->pSekHeader_220->pAnimSetT3F1, fAnimTime);
         MtxStackStartMultLocal_4074EF();
     }
@@ -459,7 +459,7 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
     {
         if ( pHeroBody )
         {
-            CSekBody__CutToAnim_4018E1(pModeBody, pHeroBody->field_200);
+            CSekBody__CutToAnim_4018E1(pModeBody, pHeroBody->nCurItem_200);
             CSekBody__UpdateAnim_4019E1(pModeBody, 1.0f);
             MtxStackStartMultLocal_4074EF();
         }
@@ -471,8 +471,8 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
         UpdateBoneLookAtTransform(pModeBody->pSekHeader_220->pFrameT3EC, (CHanaFrameT3EC_S354*)g_pSceneFrame,
             dirForwardX[0], dirForwardY, dirForwardZ, dirUpX, dirUpY[0], dirUpZ);
         IsObjectValidRecursive_467DFD(pCameraFrame, pModeBody->pSekHeader_220->pFrameT3EC);
-        pModeBody->float_21C = 1.0f;
-        pModeBody->float_224 = 1.0f;
+        pModeBody->fBlendReq_21C = 1.0f;
+        pModeBody->fBlendWeight_224 = 1.0f;
     }
     pModeBody->pSekHeader_220->pFrameT3EC->bAlphaDeferred_130 = 0;
     pFrameAtariSita = FindFrameByName_47E999(pModeBody->pSekHeader_220->pFrameT3EC, "atari_sita");
@@ -868,12 +868,12 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
                     dirForwardX, &dirForwardY, &dirForwardZ, &dirUpX, dirUpY, &dirUpZ);
                 if ( dirUpZ >= 0.0f )
                 {
-                    if ( arrTearsBodies[0]->field_200 % 2 )
+                    if ( arrTearsBodies[0]->nCurItem_200 % 2 )
                         SekBody__UpdateTo_4014E4(arrTearsBodies[0], 2);
                     else
                         SekBody__UpdateTo_4014E4(arrTearsBodies[0], 3);
                 }
-                else if ( arrTearsBodies[0]->field_200 % 2 )
+                else if ( arrTearsBodies[0]->nCurItem_200 % 2 )
                 {
                     SekBody__UpdateTo_4014E4(arrTearsBodies[0], 0);
                 }
@@ -883,7 +883,7 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
                 }
             }
         }
-        if ( arrTearsBodies[0]->field_200 == 3 )
+        if ( arrTearsBodies[0]->nCurItem_200 == 3 )
         {
             UpdateBoneLookAtTransform(arrTearsBodies[0]->pSekHeader_220->pFrameT3EC,
                 arrTearsFrames[0], 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
@@ -1021,8 +1021,8 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
             dirForwardX[0], dirForwardY, dirForwardZ, dirUpX, dirUpY[0], dirUpZ);
         IsObjectValidRecursive_467DFD(pModeBody->pSekHeader_220->pFrameT3EC,
                                       pHeroBody->pSekHeader_220->pFrameT3EC);
-        pHeroBody->float_21C = 1.0f;
-        pHeroBody->float_224 = 1.0f;
+        pHeroBody->fBlendReq_21C = 1.0f;
+        pHeroBody->fBlendWeight_224 = 1.0f;
         CSekBody__UpdateAnim_4019E1(pHeroBody, frameTime);
     }
     for ( k = 0; k < 30; ++k )
@@ -1407,9 +1407,9 @@ double __cdecl hook_GetSekBodyCurrentAnimTime(CSekBody *pSekBody)
 {
   ONCELOG("[HNH:SUB] GetSekBodyCurrentAnimTime_401C67\n");
 
-  if ( !pSekBody || pSekBody->field_24C || !pSekBody->pSekHeader_220 || !pSekBody->pSekHeader_220->pAnimSetT3F1 )
+  if ( !pSekBody || pSekBody->bDisabled_24C || !pSekBody->pSekHeader_220 || !pSekBody->pSekHeader_220->pAnimSetT3F1 )
     return 0.0;
-  g_pSekItem_4CD760 = &pSekBody->items_250[pSekBody->field_200];
+  g_pSekItem_4CD760 = &pSekBody->items_250[pSekBody->nCurItem_200];
   return g_pSekItem_4CD760->float_60;
 }
 

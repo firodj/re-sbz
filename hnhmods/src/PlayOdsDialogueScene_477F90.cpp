@@ -451,8 +451,8 @@ void __cdecl hook_ResetSceneBodies_4857CA(CHanaSceneT458_S504 *pScene)
       if ( pScene->arrSizes_144[i] )
       {
         CSekBody__CutToAnim_4018E1(pScene->refsSekBody_13C[i], pScene->arrSekItemProps_140[i]->index);
-        pScene->refsSekBody_13C[i]->float_21C = 0.0;
-        pScene->refsSekBody_13C[i]->float_224 = 0.0;
+        pScene->refsSekBody_13C[i]->fBlendReq_21C = 0.0;
+        pScene->refsSekBody_13C[i]->fBlendWeight_224 = 0.0;
         CSekBody__CutToAnim_4018E1(pScene->refsSekBody_13C[i], pScene->arrSekItemProps_140[i]->index);
         CSekBody__UpdateAnim_4019E1(pScene->refsSekBody_13C[i], 1.0);
       }
@@ -467,7 +467,7 @@ void __cdecl hook_ResetSceneBodies_4857CA(CHanaSceneT458_S504 *pScene)
 void __cdecl hook_CSekBody__CutToAnim_4018E1(CSekBody *pSekBody, int nItemIndex)
 {
   ONCELOG("[HNH:SUB] CSekBody__CutToAnim_4018E1\n");
-  pSekBody->field_200 = nItemIndex;
+  pSekBody->nCurItem_200 = nItemIndex;
   pSekBody->items_250[nItemIndex].field_44 = 0;
   pSekBody->items_250[nItemIndex].field_6C = 0;
   pSekBody->items_250[nItemIndex].field_64 = 0;
@@ -475,10 +475,10 @@ void __cdecl hook_CSekBody__CutToAnim_4018E1(CSekBody *pSekBody, int nItemIndex)
     - pSekBody->items_250[nItemIndex].float_54)
     / (double)pSekBody->items_250[nItemIndex].field_50;
   pSekBody->items_250[nItemIndex].float_60 = pSekBody->items_250[nItemIndex].float_54;
-  pSekBody->field_244 = 0;
-  pSekBody->field_248 = 0;
-  pSekBody->float_21C = 0.0;
-  pSekBody->float_224 = 0.0;
+  pSekBody->bStepAdvanced_244 = 0;
+  pSekBody->bLooped_248 = 0;
+  pSekBody->fBlendReq_21C = 0.0;
+  pSekBody->fBlendWeight_224 = 0.0;
 }
 
 // CSekBody::UpdateAnim(pSekBody, fDelta) - per-frame animation state machine (returns 1 when the
@@ -498,9 +498,9 @@ BOOL __cdecl hook_CSekBody__UpdateAnim_4019E1(CSekBody *pSekBody, float fDelta)
   ONCELOG("[HNH:SUB] CSekBody__UpdateAnim_4019E1\n");
 
   bCompleted = 0;
-  if ( !pSekBody || pSekBody->field_24C || !pSekBody->pSekHeader_220 || !pSekBody->pSekHeader_220->pAnimSetT3F1 )
+  if ( !pSekBody || pSekBody->bDisabled_24C || !pSekBody->pSekHeader_220 || !pSekBody->pSekHeader_220->pAnimSetT3F1 )
     return 0;
-  g_pSekItem_4CD760 = &pSekBody->items_250[pSekBody->field_200];
+  g_pSekItem_4CD760 = &pSekBody->items_250[pSekBody->nCurItem_200];
   g_pSekItem_4CD760->float_60 = fDelta * g_pSekItem_4CD760->float_5C + g_pSekItem_4CD760->float_60;
   if ( g_pSekItem_4CD760->float_58 <= (double)g_pSekItem_4CD760->float_60 )
   {
@@ -511,13 +511,13 @@ BOOL __cdecl hook_CSekBody__UpdateAnim_4019E1(CSekBody *pSekBody, float fDelta)
       {
         g_pSekItem_4CD760->field_44 = g_pSekItem_4CD760->field_50;
         g_nSekStep_4CD764 = g_pSekItem_4CD760->field_50 - 1;
-        pSekBody->field_244 = 1;
+        pSekBody->bStepAdvanced_244 = 1;
         g_pSekItem_4CD760->float_60 = g_pSekItem_4CD760->float_58;
         goto LABEL_15;
       }
     LABEL_11:
       CSekBody__CutToAnim_4018E1(pSekBody, g_pSekItem_4CD760->field_74);
-      pSekBody->float_21C = 0.0;
+      pSekBody->fBlendReq_21C = 0.0;
       goto LABEL_15;
     }
     if ( g_pSekItem_4CD760->flag_0 == 1 )
@@ -527,8 +527,8 @@ BOOL __cdecl hook_CSekBody__UpdateAnim_4019E1(CSekBody *pSekBody, float fDelta)
       {
         g_nSekStep_4CD764 = g_pSekItem_4CD760->field_48;
         g_pSekItem_4CD760->field_44 = g_nSekStep_4CD764;
-        pSekBody->field_244 = 1;
-        pSekBody->field_248 = 1;
+        pSekBody->bStepAdvanced_244 = 1;
+        pSekBody->bLooped_248 = 1;
         g_pSekItem_4CD760->float_60 = g_pSekItem_4CD760->float_54;
         goto LABEL_15;
       }
@@ -538,14 +538,14 @@ BOOL __cdecl hook_CSekBody__UpdateAnim_4019E1(CSekBody *pSekBody, float fDelta)
 LABEL_15:
   if ( pSekBody->pSekHeader_220->pAnimSetT3F1 )
   {
-    if ( pSekBody->float_21C != 0.0 )
+    if ( pSekBody->fBlendReq_21C != 0.0 )
     {
       CHanaAnimSetT3F1__BeginBlend_43A371(pSekBody->pSekHeader_220->pAnimSetT3F1);
-      pSekBody->float_21C = 0.0;
-      pSekBody->float_224 = 1.0;
+      pSekBody->fBlendReq_21C = 0.0;
+      pSekBody->fBlendWeight_224 = 1.0;
     }
     CHanaAnimSetT3F1__SetTime_403D61(pSekBody->pSekHeader_220->pAnimSetT3F1, g_pSekItem_4CD760->float_60);
-    CHanaAnimSetT3F1__BlendStep_43A643(pSekBody->pSekHeader_220->pAnimSetT3F1, &pSekBody->float_224, fDelta);
+    CHanaAnimSetT3F1__BlendStep_43A643(pSekBody->pSekHeader_220->pAnimSetT3F1, &pSekBody->fBlendWeight_224, fDelta);
   }
   return bCompleted;
 }
@@ -713,12 +713,12 @@ void __cdecl hook_SekBody__UpdateTo2_401647(CSekBody *pSekBody, int nIndex)
 {
   ONCELOG("[HNH:SUB] SekBody__UpdateTo2_401647\n");
 
-  if ( pSekBody->field_208 != nIndex )
+  if ( pSekBody->nReqItem_208 != nIndex )
   {
     if ( !pSekBody->items_250[nIndex].field_7C )
-      pSekBody->float_21C = 1.0;
-    pSekBody->field_200 = nIndex;
-    pSekBody->field_208 = nIndex;
+      pSekBody->fBlendReq_21C = 1.0;
+    pSekBody->nCurItem_200 = nIndex;
+    pSekBody->nReqItem_208 = nIndex;
     pSekBody->items_250[nIndex].field_44 = 0;
     pSekBody->items_250[nIndex].field_6C = 0;
     pSekBody->items_250[nIndex].field_64 = 0;
@@ -728,8 +728,8 @@ void __cdecl hook_SekBody__UpdateTo2_401647(CSekBody *pSekBody, int nIndex)
     else
       pSekBody->items_250[nIndex].float_5C = 0.0;
     pSekBody->items_250[nIndex].float_60 = pSekBody->items_250[nIndex].float_54;
-    pSekBody->field_244 = 0;
-    pSekBody->field_248 = 0;
+    pSekBody->bStepAdvanced_244 = 0;
+    pSekBody->bLooped_248 = 0;
   }
 }
 

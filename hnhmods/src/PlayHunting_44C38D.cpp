@@ -1035,7 +1035,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
           pMaskBmp);
         for (i = 0; i < 8; ++i)
         {
-          if (pWanaBodies[i] && pWanaBodies[i]->field_24C != 1)
+          if (pWanaBodies[i] && pWanaBodies[i]->bDisabled_24C != 1)
             pWanaBodies[i]->pSekHeader_220->pFrameT3EC->bAlphaDeferred_130 = 0;
         }
       }
@@ -1054,7 +1054,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
             &fHeroHpCur, fHeroHpMax);
           fActTimer = 0.0f;
         }
-        if (pHeroBody->field_200 <= 6 && g_sysDataSave_530170.g_nFirstPersonCam_530268)
+        if (pHeroBody->nCurItem_200 <= 6 && g_sysDataSave_530170.g_nFirstPersonCam_530268)
         {
           UpdateCameraFollowDuel_44C028(pHeroBody, pFoeBody, fDelta);
         }
@@ -1130,8 +1130,8 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
     }
     while ((100 * nClockBase - (int)dwElapsedMs / 10 > 0 && fFoeHpCur > 0.0f
       && fHeroHpCur > 0.0f)
-      || pHeroBody->field_200 == 16 || pHeroBody->field_200 == 10
-      || pHeroBody->field_200 == 11 || pHeroBody->field_200 == 13);
+      || pHeroBody->nCurItem_200 == 16 || pHeroBody->nCurItem_200 == 10
+      || pHeroBody->nCurItem_200 == 11 || pHeroBody->nCurItem_200 == 13);
 
     // --- round ended: menu exit / defeat-timeout / victory / next wana
     RestartInputThread(0);
@@ -1187,9 +1187,9 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
     // reveal the next live wana (mark dead + hide) and restart the round
     for (i = 7; i >= 0; --i)
     {
-      if (pWanaBodies[i] && !pWanaBodies[i]->field_24C)
+      if (pWanaBodies[i] && !pWanaBodies[i]->bDisabled_24C)
       {
-        pWanaBodies[i]->field_24C = 1;
+        pWanaBodies[i]->bDisabled_24C = 1;
         pWanaBodies[i]->pSekHeader_220->pFrameT3EC->bAlphaDeferred_130 = 1;
         goto LABEL_68;
       }
@@ -1549,13 +1549,13 @@ double __cdecl hook_UpdateFoeAI_446A38(
   pnHeroCell.y = (int)z / 5;
   HanaFrame_GetRelPosition(pFrame, (CHanaFrameRootT3EC_S2D4 *)pHeroFrame, &pOutX, &pOutY, &pOutZ);
   fDist = pOutX * pOutX + pOutZ * pOutZ;
-  if ( (g_dwFoeAiState == 5 && pFoeBody->field_200 != 3)
+  if ( (g_dwFoeAiState == 5 && pFoeBody->nCurItem_200 != 3)
     || (g_dwFoeAiState <= 3
-      && pFoeBody->field_200 != 3
+      && pFoeBody->nCurItem_200 != 3
       && (arrFoeTuning[nDuelIndex][2] * arrFoeTuning[nDuelIndex][2] > fDist
-        || pFoeBody->field_200 > 10
-        || pFoeBody->field_200 == 6)
-      && (g_dwBattleMode >= 0 || pFoeBody->field_200 > 10 || pFoeBody->field_200 == 6)) )
+        || pFoeBody->nCurItem_200 > 10
+        || pFoeBody->nCurItem_200 == 6)
+      && (g_dwBattleMode >= 0 || pFoeBody->nCurItem_200 > 10 || pFoeBody->nCurItem_200 == 6)) )
   {
     fFoeSaveX = px;
     fFoeSaveY = py;
@@ -1599,7 +1599,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
       1.0,
       0.0);
     SetFramePosRel_4069DD(pHeroFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, x, y, z);
-    if ( pFoeBody->field_200 == 6 )
+    if ( pFoeBody->nCurItem_200 == 6 )
     {
       fBlendFactor = fDelta * arrFoeTuning[nDuelIndex][0];
       if ( nDuelIndex >= 4 && nDuelIndex <= 5 )
@@ -1607,11 +1607,11 @@ double __cdecl hook_UpdateFoeAI_446A38(
       fZNudge = -fBlendFactor;
       SetFramePosRel_4069DD(pFrame, pFrame, 0.0, 0.0, fZNudge);
     }
-    else if ( pFoeBody->field_200 != 19 )
+    else if ( pFoeBody->nCurItem_200 != 19 )
     {
-      if ( pFoeBody->field_200 == 20 )
+      if ( pFoeBody->nCurItem_200 == 20 )
       {
-        if ( pHeroBody->field_200 != 13 )
+        if ( pHeroBody->nCurItem_200 != 13 )
         {
           HanaFrame_GetRelPosition(pFrame, g_pSceneFrame, &px, &py, &pz);
           SetFramePosRel_4069DD(pFrame, pFrame, 0.0, 0.0, arrFoeTuning[nDuelIndex][3]);
@@ -1627,7 +1627,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
           }
         }
       }
-      else if ( pFoeBody->field_200 != 21 )
+      else if ( pFoeBody->nCurItem_200 != 21 )
       {
         SekBody__UpdateTo_4014E4(pFoeBody, 6);
       }
@@ -1635,13 +1635,13 @@ double __cdecl hook_UpdateFoeAI_446A38(
     fAnimRateA = fDelta + fDelta - fDelta * fAggroSpeedMul;
     if ( CSekBody__UpdateAnim_4019E1(pFoeBody, fAnimRateA) )
     {
-      if ( pFoeBody->field_200 == 21 )
+      if ( pFoeBody->nCurItem_200 == 21 )
       {
         if ( g_dwFoeAiState == 5 )
           g_dwFoeAiState = 0;
         bFoeActDone = 1;
       }
-      if ( pFoeBody->field_200 == 21 || pFoeBody->field_200 == 3 )
+      if ( pFoeBody->nCurItem_200 == 21 || pFoeBody->nCurItem_200 == 3 )
         SekBody__UpdateTo_4014E4(pFoeBody, 2);
     }
   }
@@ -1729,11 +1729,11 @@ double __cdecl hook_UpdateFoeAI_446A38(
       fStepX0 = pFloodStep->x;
       fStepZ0 = pFloodStep->y;
       fHeroDist = sqrt((x - px) * (x - px) + (z - pz) * (z - pz));
-      if ( pFoeBody->field_200 == 3
+      if ( pFoeBody->nCurItem_200 == 3
         || fHeroDist >= (double)arrFoeTuning[nDuelIndex][6]
-        && (pFoeBody->field_200 != 2 || arrFoeTuning[nDuelIndex][6] + 10.0 <= fHeroDist) )
+        && (pFoeBody->nCurItem_200 != 2 || arrFoeTuning[nDuelIndex][6] + 10.0 <= fHeroDist) )
       {
-        if ( pFoeBody->field_200 == 3 )
+        if ( pFoeBody->nCurItem_200 == 3 )
         {
           fTimeDiv = fDelta / 3.0;
           nMoveMode = 3;
@@ -1907,7 +1907,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
     fAnimRateB = fDelta * fAggroSpeedMul;
     if ( CSekBody__UpdateAnim_4019E1(pFoeBody, fAnimRateB) )
     {
-      if ( pFoeBody->field_200 == 21 || pFoeBody->field_200 == 3 )
+      if ( pFoeBody->nCurItem_200 == 21 || pFoeBody->nCurItem_200 == 3 )
         nMoveMode = 1;
       SekBody__UpdateTo2_401647(pFoeBody, nMoveMode);
     }
@@ -1945,7 +1945,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
     *pfFoeHpCur = 10.0;
   if ( (unsigned int)--nHitSfx < 4 && g_pFoeHitSfxE[nHitSfx] && g_pFoeHitSfxB[nHitSfx] )
   {
-    pAnimItem = &pFoeBody->items_250[pFoeBody->field_200];
+    pAnimItem = &pFoeBody->items_250[pFoeBody->nCurItem_200];
     HanaFrame_GetCenterPosition_408C3E((CHanaFrameRootT3EC_S2D4 *)pFrame, g_pSceneFrame, &px, &py, &pz);
     g_pFoeHitSfxE[nHitSfx]->pDS3DBuffer_4->SetPosition(px, py, pz, 1u);
     g_pFoeHitSfxB[nHitSfx]->pDS3DBuffer_4->SetPosition(px, py, pz, 1u);
@@ -2022,7 +2022,7 @@ double __cdecl hook_WanaAttack_Close_4535DE(
 
   pFrame = pWanaBody->pSekHeader_220->pFrameT3EC;
   pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
-  if ( pWanaBody->field_24C == 1 )
+  if ( pWanaBody->nCurItem_200 == 1 )
     return 0.0;
   if ( g_dwBattleMode == 2
     && (HanaFrame_GetRelPosition(pFrame, pHeroFrame, &fRelX, &fRelY, &fRelZ),
@@ -2123,7 +2123,7 @@ double __cdecl hook_WanaAttack_Knockback_4536F6(
 
   pWanaFrame = pWanaBody->pSekHeader_220->pFrameT3EC;
   pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
-  if ( pWanaBody->field_24C == 1 )
+  if ( pWanaBody->bDisabled_24C == 1 )
     return 0.0;
   HanaFrame_GetRelPosition(pHeroFrame, pWanaFrame, &fRelX, &fRelY, &fRelZ);
   fDist = sqrt(fRelX * fRelX + fRelY * fRelY + fRelZ * fRelZ);
@@ -2148,7 +2148,7 @@ double __cdecl hook_WanaAttack_Knockback_4536F6(
   }
   if ( pHeroBody->pSekHeader_220->pAnimSetT3F1->field_130 >= 1600.0
     && pHeroBody->pSekHeader_220->pAnimSetT3F1->field_130 <= 1645.0
-    || pHeroBody->field_200 == 13
+    || pHeroBody->nCurItem_200 == 13
     || fDist >= 5.0
     || fDist == 0.0 )
   {
@@ -2198,13 +2198,13 @@ double __cdecl hook_WanaAttack_Charged_4539D1(
 
   pWanaFrame = pWanaBody->pSekHeader_220->pFrameT3EC;
   pHeroFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
-  if ( pWanaBody->field_24C == 1 )
+  if ( pWanaBody->bDisabled_24C == 1 )
     return 0.0;
   if ( g_dwBattleMode == -1 )
     goto LABEL_16;
   HanaFrame_GetRelPosition(pWanaFrame, pHeroFrame, &fRelX, &fRelY, &fRelZ);
-  if ( pHeroBody->field_200 != 13
-    && (sqrt(fRelX * fRelX + fRelY * fRelY + fRelZ * fRelZ) < 10.0 && !pWanaBody->field_200 || pWanaFrame->flt_110 != 0.0) )
+  if ( pHeroBody->nCurItem_200 != 13
+    && (sqrt(fRelX * fRelX + fRelY * fRelY + fRelZ * fRelZ) < 10.0 && !pWanaBody->nCurItem_200 || pWanaFrame->flt_110 != 0.0) )
   {
     if ( pWanaFrame->flt_110 > 5.0 )
       SekBody__UpdateTo2_401647(pWanaBody, 1);
@@ -2265,7 +2265,7 @@ double __cdecl hook_WanaAttack_Projectile_453B92(
   v15 = 0;
   fHitValue = 0.0;
   fProjSpeed = 1.2;
-  if ( pWanaBody->field_24C == 1 )
+  if ( pWanaBody->bDisabled_24C == 1 )
     return 0.0;
   HanaFrame_GetRelPosition(pHeroFrame, g_pSceneFrame, &heroRelX, &heroRelY, &heroRelZ);
   HanaFrame_GetRelPosition(pWanaFrame, g_pSceneFrame, &x, &y, &z);
@@ -2303,16 +2303,16 @@ double __cdecl hook_WanaAttack_Projectile_453B92(
     pWanaFrame->bOk_10C = 0;
     if ( fProjHit )
     {
-      if ( pWanaBody->field_200 == 3 )
+      if ( pWanaBody->nCurItem_200 == 3 )
         SekBody__UpdateTo2_401647(pWanaBody, 2);
     }
-    else if ( fDist < 40.0 && sqrt(x * x) < 2.0 && z < -10.0 && pWanaBody->field_200 == 1 )
+    else if ( fDist < 40.0 && sqrt(x * x) < 2.0 && z < -10.0 && pWanaBody->nCurItem_200 == 1 )
     {
       CSekBody__CutToAnim_4018E1(pWanaBody, 3);
     }
-    if ( pHeroBody->field_200 != 13 && fDist < 4.0 )
+    if ( pHeroBody->nCurItem_200 != 13 && fDist < 4.0 )
     {
-      if ( pWanaBody->field_200 == 3 )
+      if ( pWanaBody->nCurItem_200 == 3 )
       {
         pWanaFrame->bOk_10C = 1;
         g_dwBattleMode = -1;
@@ -2502,12 +2502,12 @@ BOOL __cdecl hook_StepWanaProjectile_4581B0(
   }
   else
   {
-    if ( pWanaBody->field_200 != 4 )
+    if ( pWanaBody->nCurItem_200 != 4 )
     {
       fProbeZ = -fDelta * fSpeed * 1.5;
       SetFramePosRel_4069DD(pProjFrame, pProjFrame, 0.0, 0.0, fProbeZ);
     }
-    if ( pWanaBody->field_200 != 3 )
+    if ( pWanaBody->nCurItem_200 != 3 )
     {
       fSteerRad = fDelta * 3.1418099 / 180.0 * fForwardSign * fSpinRate;
       Frame_RotateMatrixAxis_4070AB(pProjFrame, 1, &vecSpinAxis, fSteerRad);
@@ -3168,8 +3168,8 @@ void __cdecl hook_RenderDualBodyScene_456807(
     if ( pfExecTime >= (double)pScene->pAnimSet_148->fRes_13C )
       break;
     UpdateSceneAtTime_4825D5(pScene, &pfExecTime, fDelta);
-    SekBody__UpdateTo2_401647(pBodyA, pStandInA->field_200);
-    SekBody__UpdateTo2_401647(pBodyB, pStandInB->field_200);
+    SekBody__UpdateTo2_401647(pBodyA, pStandInA->nCurItem_200);
+    SekBody__UpdateTo2_401647(pBodyB, pStandInB->nCurItem_200);
     if ( pBodyA )
       CSekBody__UpdateAnim_4019E1(pBodyA, fDelta);
     if ( pBodyB )
@@ -3369,7 +3369,7 @@ void __cdecl hook_StepFoeTurn_457EE0(
   {
     fTurnDir = -1.0;
   }
-  if ( pFoeBody->field_200 <= 5 && pFoeBody->field_200 != 3 )
+  if ( pFoeBody->nCurItem_200 <= 5 && pFoeBody->nCurItem_200 != 3 )
   {
     SekBody__UpdateTo_4014E4(pFoeBody, 2);
     fAngleOne = fDelta * 3.1418099 / 180.0 * fTurnDir * fSpinRate;
@@ -3413,7 +3413,7 @@ void __cdecl hook_StepFoeSpin_45804C(
   vecSpinAxis.x = 0.0;
   vecSpinAxis.y = 1.0;
   vecSpinAxis.z = 0.0;
-  if ( pFoeBody->field_200 <= 5 && pFoeBody->field_200 != 3 )
+  if ( pFoeBody->nCurItem_200 <= 5 && pFoeBody->nCurItem_200 != 3 )
   {
     SekBody__UpdateTo_4014E4(pFoeBody, 2);
     fAngleOne = -fDelta * fSpeed;
@@ -3835,10 +3835,10 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
   vecRotAxis.x = 0.0;
   vecRotAxis.y = 1.0;
   vecRotAxis.z = 0.0;
-  if ( pHeroBody->field_200 != '\t' && pHeroBody->field_200 != '\b' )
+  if ( pHeroBody->nCurItem_200 != '\t' && pHeroBody->nCurItem_200 != '\b' )
     SekBody__UpdateTo2_401647(pHeroBody, 15);
-  nFoeAnimItem = pFoeBody->field_200;
-  fSavedFoeFloat224 = pFoeBody->float_224;
+  nFoeAnimItem = pFoeBody->nCurItem_200;
+  fSavedFoeFloat224 = pFoeBody->fBlendWeight_224;
   fOldFov = GetProjectionFov_40DCF6();
   SetProjectionFov_40DCA3(0.80000001);
   fTimeScale = GetTimerScaleFactor();
@@ -3982,16 +3982,16 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
       fScriptTime = 0.0;
       if ( ++iPhase > 1 )
         fAnimTimeScale = 3.0;
-      CSekBody__CutToAnim_4018E1(pHeroBody, pHeroBody->field_200);
-      pHeroBody->float_224 = 1.0;
+      CSekBody__CutToAnim_4018E1(pHeroBody, pHeroBody->nCurItem_200);
+      pHeroBody->fBlendWeight_224 = 1.0;
       CSekBody__CutToAnim_4018E1(pFoeBody, nFoeAnimItem);
-      pFoeBody->float_224 = fSavedFoeFloat224;
+      pFoeBody->fBlendWeight_224 = fSavedFoeFloat224;
       for ( i = 0; i < 8; ++i )
       {
         if ( pWanaBodies[i] )
         {
-          CSekBody__CutToAnim_4018E1(pWanaBodies[i], pWanaBodies[i]->field_200);
-          pWanaBodies[i]->float_224 = 1.0;
+          CSekBody__CutToAnim_4018E1(pWanaBodies[i], pWanaBodies[i]->nCurItem_200);
+          pWanaBodies[i]->fBlendWeight_224 = 1.0;
         }
       }
     }

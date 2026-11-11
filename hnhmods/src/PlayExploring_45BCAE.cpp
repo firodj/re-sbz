@@ -885,7 +885,7 @@ LABEL_84:
                     UpdateBoneLookAtTransform(pHeroBody->pSekHeader_220->pFrameT3EC,
                             (CHanaFrameT3EC_S354 *)g_pSceneFrame,
                             pXpos, pYpos, pZpos, pXYrot, pYXrot, pZXrot);
-                    SekBody__UpdateTo2_401647(pHeroBody, pCursorBody->field_200);
+                    SekBody__UpdateTo2_401647(pHeroBody, pCursorBody->nCurItem_200);
                 }
                 CSekBody__UpdateAnim_4019E1(pHeroBody, fDeltaTime);
                 if (!bSkipMode)
@@ -908,12 +908,12 @@ LABEL_84:
                 HanaVert_DrawBatch(0);
                 // HP gone or countdown over (and not mid-special-anim) -> exit
                 if (!bDialogueMode
-                    && fBlendTime <= 0.0f
-                    && (100 * nTimeLimit - (int)nElapsed / 10 <= 0 || fHeroHp <= 0.0f)
-                    && pHeroBody->field_200 != 16
-                    && pHeroBody->field_200 != 10
-                    && pHeroBody->field_200 != 11
-                    && pHeroBody->field_200 != 13)
+                  && fBlendTime <= 0.0f
+                  && (100 * nTimeLimit - (int)nElapsed / 10 <= 0 || fHeroHp <= 0.0f)
+                  && pHeroBody->nCurItem_200 != 16
+                  && pHeroBody->nCurItem_200 != 10
+                  && pHeroBody->nCurItem_200 != 11
+                  && pHeroBody->nCurItem_200 != 13)
                 {
                     goto LABEL_125;
                 }
@@ -2310,7 +2310,7 @@ char __cdecl hook_UpdateHeroControl_45A513(
       {
         SekBody__UpdateTo2_401647(pHeroBody, 1);
       }
-      else if ( pHeroBody->field_200 == 1 )
+      else if ( pHeroBody->nCurItem_200 == 1 )
       {
         if ( rand() % 3 )
           SekBody__UpdateTo2_401647(pHeroBody, 2);
@@ -2327,7 +2327,7 @@ char __cdecl hook_UpdateHeroControl_45A513(
   }
   if ( *pfHeroHp <= 1.0 )
     *pfHeroHp = 1.0;
-  if ( pHeroBody->field_200 >= 7 )
+  if ( pHeroBody->nCurItem_200 >= 7 )
     g_fHeroAnimSpeed = 1.0;
   else
     g_fHeroAnimSpeed = (*pfCamFactor + 2.0) / 3.0;
@@ -2362,7 +2362,7 @@ char __cdecl hook_UpdateHeroControl_45A513(
   }
   if ( (unsigned int)--nCollision < 4 && g_arrFootstepSound_52F18C[nCollision] && g_arrFootstepSound_52F17C[nCollision] )
   {
-    pCurItem = &pHeroBody->items_250[pHeroBody->field_200];
+    pCurItem = &pHeroBody->items_250[pHeroBody->nCurItem_200];
     HanaFrame_GetCenterPosition_408C3E(pHeroFrame, g_pSceneFrame, &px, &py, &pz);
     g_arrFootstepSound_52F18C[nCollision]->pDS3DBuffer_4->SetPosition(
       px,
@@ -3033,7 +3033,7 @@ void __cdecl hook_PrepareTargetSelect_45B5BD(
   vecUpAxis.x = 0.0;
   vecUpAxis.y = 1.0;
   vecUpAxis.z = 0.0;
-  if ( pHeroBody->field_200 != 9 && pHeroBody->field_200 != 8 )
+  if ( pHeroBody->nCurItem_200 != 9 && pHeroBody->nCurItem_200 != 8 )
     SekBody__UpdateTo2_401647(pHeroBody, 15);
   ProjectionFov_40DCF6 = GetProjectionFov_40DCF6();
   SetProjectionFov_40DCA3(0.80000001);
@@ -3127,8 +3127,8 @@ void __cdecl hook_PrepareTargetSelect_45B5BD(
       {
         if ( pSpriteNames[iTarget] )
         {
-          CSekBody__CutToAnim_4018E1(pSpriteNames[iTarget], pSpriteNames[iTarget]->field_200);
-          pSpriteNames[iTarget]->float_224 = 1.0;
+          CSekBody__CutToAnim_4018E1(pSpriteNames[iTarget], pSpriteNames[iTarget]->nCurItem_200);
+          pSpriteNames[iTarget]->fBlendWeight_224 = 1.0;
         }
       }
     }

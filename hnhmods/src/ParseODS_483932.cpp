@@ -756,7 +756,7 @@ CSekBody *__cdecl hook_ParseSekFile_401039(LPCSTR lpFileName)
     CloseHandle(hObject);
     v2 = SekHeader_CloneClean(&sekHeader);
     pOut->pSekHeader_220 = v2;
-    pOut->field_24C = 0;
+    pOut->bDisabled_24C = 0;
     pOut->angle_214 = 0;
     pOut->angle_218 = 0;
     pOut->angle_210 = 0;
@@ -796,8 +796,8 @@ CSekHeader *__cdecl hook_SekHeader_CloneClean(const CSekHeader *pSrc)
 void __cdecl hook_CSekBody__PlayAnim_40179D(CSekBody *pSekBody, int nItemIndex)
 {
   ONCELOG("[HNH:SUB] CSekBody__PlayAnim_40179D\n");
-  pSekBody->field_200 = nItemIndex;
-  pSekBody->field_208 = nItemIndex;
+  pSekBody->nCurItem_200 = nItemIndex;
+  pSekBody->nReqItem_208 = nItemIndex;
   pSekBody->items_250[nItemIndex].field_44 = 0;
   pSekBody->items_250[nItemIndex].field_6C = 0;
   pSekBody->items_250[nItemIndex].field_64 = 0;
@@ -808,10 +808,10 @@ void __cdecl hook_CSekBody__PlayAnim_40179D(CSekBody *pSekBody, int nItemIndex)
   else
     pSekBody->items_250[nItemIndex].float_5C = 0.0;
   pSekBody->items_250[nItemIndex].float_60 = pSekBody->items_250[nItemIndex].float_54;
-  pSekBody->field_244 = 0;
-  pSekBody->field_248 = 0;
+  pSekBody->bStepAdvanced_244 = 0;
+  pSekBody->bLooped_248 = 0;
   if ( !pSekBody->items_250[nItemIndex].field_7C )
-    pSekBody->float_21C = 1.0;
+    pSekBody->fBlendReq_21C = 1.0;
 }
 
 void __cdecl hook_ParseOds3DON_483704(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAnimSet, CHanaFrameT3EC_S354 *pFrame)
@@ -1256,12 +1256,12 @@ void __cdecl hook_SekBody__UpdateTo_4014E4(CSekBody *pSekBody, int nItem)
 {
   ONCELOG("[HNH:SUB] SekBody__UpdateTo_4014E4\n");
 
-  if ( pSekBody->field_200 != nItem && nItem < 128 )
+  if ( pSekBody->nCurItem_200 != nItem && nItem < 128 )
   {
     if ( !pSekBody->items_250[nItem].field_7C )
-      pSekBody->float_21C = 1.0;
-    pSekBody->field_200 = nItem;
-    pSekBody->field_208 = nItem;
+      pSekBody->fBlendReq_21C = 1.0;
+    pSekBody->nCurItem_200 = nItem;
+    pSekBody->nReqItem_208 = nItem;
     pSekBody->items_250[nItem].field_44 = 0;
     pSekBody->items_250[nItem].field_6C = 0;
     pSekBody->items_250[nItem].field_64 = 0;
@@ -1271,8 +1271,8 @@ void __cdecl hook_SekBody__UpdateTo_4014E4(CSekBody *pSekBody, int nItem)
     else
       pSekBody->items_250[nItem].float_5C = 0.0;
     pSekBody->items_250[nItem].float_60 = pSekBody->items_250[nItem].float_54;
-    pSekBody->field_244 = 0;
-    pSekBody->field_248 = 0;
+    pSekBody->bStepAdvanced_244 = 0;
+    pSekBody->bLooped_248 = 0;
   }
 }
 

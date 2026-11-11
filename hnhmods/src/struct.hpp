@@ -469,20 +469,20 @@ struct CSekBody
 {
   char szName_0[256];
   char szName_100[256];
-  int field_200;
-  int field_204;
-  int field_208;
-  int field_20C;
+  int nCurItem_200; // was: field_200
+  int gap204; // unused?
+  int nReqItem_208; // was: field_208 
+  int gap20C; // unused?
   int angle_210;
   int angle_214;
   int angle_218;
-  float float_21C;
+  float fBlendReq_21C;  // was: float_21C
   CSekHeader *pSekHeader_220;
-  float float_224;
+  float fBlendWeight_224;  // was: float_224
   int gap228[7];
-  int field_244;
-  int field_248;
-  int field_24C;
+  int bStepAdvanced_244; // was: field_244 
+  int bLooped_248; // was: field_248 
+  int bDisabled_24C; // was: field_24C 
   CSekItem items_250[128];
   int count_5050;
 };

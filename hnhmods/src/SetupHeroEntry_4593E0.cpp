@@ -311,7 +311,7 @@ bool __cdecl hook_UpdateHeroBody_44474E(
         rotZChargeSpin = -1.8 * fDelta;
         SetFramePosRel_4069DD((CHanaFrameT3EC_S354 *)pBodyFrame, (CHanaFrameT3EC_S354 *)pBodyFrame, 0.0, 0.0, rotZChargeSpin);
       }
-      if ( g_fHeroChargeTime > 70.0 && pHeroBody->field_200 != 16 )
+      if ( g_fHeroChargeTime > 70.0 && pHeroBody->nCurItem_200 != 16 )
       {
         g_fHeroChargeTime = 0.0;
         g_bHeroChargeActive = 0;
@@ -388,7 +388,7 @@ bool __cdecl hook_UpdateHeroBody_44474E(
       {
         SekBody__UpdateTo2_401647(pHeroBody, 1);
       }
-      else if ( pHeroBody->field_200 == 1 )
+      else if ( pHeroBody->nCurItem_200 == 1 )
       {
         SekBody__UpdateTo2_401647(pHeroBody, 2);
       }
@@ -406,7 +406,7 @@ bool __cdecl hook_UpdateHeroBody_44474E(
   {
     if ( g_fHeroIdleTime >= 500.0 )
       g_fHeroIdleTime = 0.0;
-    if ( pHeroBody->field_200 == 16 )
+    if ( pHeroBody->nCurItem_200 == 16 )
       SekBody__UpdateTo2_401647(pHeroBody, 1);
   }
   nHitMode = 0;
@@ -426,7 +426,7 @@ bool __cdecl hook_UpdateHeroBody_44474E(
   }
   if ( (unsigned int)--nHitMode < 4 && g_arrFootstepSound_52F18C[nHitMode] && g_arrFootstepSound_52F17C[nHitMode] )
   {
-    pAnimData = &pHeroBody->items_250[pHeroBody->field_200];
+    pAnimData = &pHeroBody->items_250[pHeroBody->nCurItem_200];
     HanaFrame_GetCenterPosition_408C3E((CHanaFrameRootT3EC_S2D4 *)pBodyFrame, g_pSceneFrame, &px, &py, &pz);
     g_arrFootstepSound_52F18C[nHitMode]->pDS3DBuffer_4->SetPosition(
       px,
@@ -1502,7 +1502,7 @@ void __cdecl hook_UpdateVoicePlayback_458B3A(
   {
     if ( fDelta < 0.0099999998 )
       fDelta = 0.0099999998;
-    nSpeakerState = pFoeBody->field_200;
+    nSpeakerState = pFoeBody->nCurItem_200;
     HanaFrame_GetCenterPosition_408C3E(pFoeFocusFrame, g_pSceneFrame, &px, &py, &pz);
     for ( i = 0; i < 20; ++i )
     {
