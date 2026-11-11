@@ -4027,7 +4027,7 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
     }
     MtxStackStartMultLocal_4074EF();
     g_pRenderCtx->Clear(3);
-    if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+    if ( SUCCEEDED(g_pD3DDevice_4D6C78->BeginScene()) )
     {
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
       HanaFrame_Draw((CHanaFrameT3EC_S354 *)g_pSceneFrame);

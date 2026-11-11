@@ -3309,16 +3309,7 @@ int __cdecl hook_ShowMouseSelectDialog_4573CF(CHanaSpriteT3F6_S1FC **arrSprModes
   __int16 bPrevBtn; // [esp+18Ch] [ebp-78h]
   CInputState *pInput; // [esp+190h] [ebp-74h]
   int nChoice; // [esp+194h] [ebp-70h]
-  D3DXVECTOR3 vtx0; // [esp+198h] [ebp-6Ch] BYREF
-  float vtx1X; // [esp+1A4h] [ebp-60h]
-  float vtx1Y; // [esp+1A8h] [ebp-5Ch]
-  int vtx1Z; // [esp+1ACh] [ebp-58h]
-  float vtx2X; // [esp+1B0h] [ebp-54h]
-  float vtx2Y; // [esp+1B4h] [ebp-50h]
-  int vtx2Z; // [esp+1B8h] [ebp-4Ch]
-  float vtx3X; // [esp+1BCh] [ebp-48h]
-  float vtx3Y; // [esp+1C0h] [ebp-44h]
-  int vtx3Z; // [esp+1C4h] [ebp-40h]
+  D3DXVECTOR3 vtxQuadWave[4]; // [esp+198h] [ebp-6Ch] BYREF
   float fSinPhase; // [esp+1C8h] [ebp-3Ch]
   float fCosPhase; // [esp+1CCh] [ebp-38h]
   int nMouseY; // [esp+1D0h] [ebp-34h]
@@ -3341,7 +3332,7 @@ int __cdecl hook_ShowMouseSelectDialog_4573CF(CHanaSpriteT3F6_S1FC **arrSprModes
   rcScreen.right = ConvertFrom640AsInt(640);
   rcScreen.bottom = ConvertFrom640AsInt(480);
   nDeadInitCtr = 4;
-  for ( pDeadInitPtr = &vtx0; --nDeadInitCtr >= 0; ++pDeadInitPtr )
+  for ( pDeadInitPtr = vtxQuadWave; --nDeadInitCtr >= 0; ++pDeadInitPtr )
     ;
   pCursorSpr = 0;
   pWaveSpr = 0;
@@ -3434,33 +3425,35 @@ int __cdecl hook_ShowMouseSelectDialog_4573CF(CHanaSpriteT3F6_S1FC **arrSprModes
       0,
       D3DX_FT_POINT);
     nChoice = -1;
-    if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+    if ( SUCCEEDED(g_pD3DDevice_4D6C78->BeginScene()) )
     {
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
       DrawSpriteLTRB(pBackdropSpr, rcScreen.left, rcScreen.top, rcScreen.right, rcScreen.bottom);
+
       fW0X = sin(fSinPhase) - 1.0;
-      vtx0.x = ConvertFrom640AsFloat(fW0X);
+      vtxQuadWave[0].x = ConvertFrom640AsFloat(fW0X);
       fW0Y = cos(fCosPhase) - 1.0;
-      vtx0.y = ConvertFrom640AsFloat(fW0Y);
-      vtx0.z = 0.0;
+      vtxQuadWave[0].y = ConvertFrom640AsFloat(fW0Y);
+      vtxQuadWave[0].z = 0.0;
       fW1X = sin(fSinPhase) + 640.0 + 1.0;
-      vtx1X = ConvertFrom640AsFloat(fW1X);
+      vtxQuadWave[1].x = ConvertFrom640AsFloat(fW1X);
       fW1Y = cos(fCosPhase) - 1.0;
-      vtx1Y = ConvertFrom640AsFloat(fW1Y);
-      vtx1Z = 0;
+      vtxQuadWave[1].y = ConvertFrom640AsFloat(fW1Y);
+      vtxQuadWave[1].z = 0.0;
       fW2X = sin(fSinPhase) + 640.0 + 1.0;
-      vtx2X = ConvertFrom640AsFloat(fW2X);
+      vtxQuadWave[2].x = ConvertFrom640AsFloat(fW2X);
       fW2Y = cos(fCosPhase) + 480.0 + 1.0;
-      vtx2Y = ConvertFrom640AsFloat(fW2Y);
-      vtx2Z = 0;
+      vtxQuadWave[2].y = ConvertFrom640AsFloat(fW2Y);
+      vtxQuadWave[2].z = 0.0;
       fW3X = sin(fSinPhase) - 1.0;
-      vtx3X = ConvertFrom640AsFloat(fW3X);
+      vtxQuadWave[3].x = ConvertFrom640AsFloat(fW3X);
       fW3Y = cos(fCosPhase) + 480.0 + 1.0;
-      vtx3Y = ConvertFrom640AsFloat(fW3Y);
-      vtx3Z = 0;
-      DrawSprite3D(pWaveSpr, &vtx0);
+      vtxQuadWave[3].y = ConvertFrom640AsFloat(fW3Y);
+      vtxQuadWave[3].z = 0.0;
+
+      DrawSprite3D(pWaveSpr, vtxQuadWave);
       DrawSprite2D(arrSprModes[3]);
       if ( fTargetAlpha > 0.0 )
       {
