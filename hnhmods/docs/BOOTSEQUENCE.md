@@ -97,7 +97,7 @@ flowchart TB
 
 - `Name_485CE0` - the suffix is the original function's VA (base `0x400000`).
 - `hook_Name_485CE0` - the recompiled drop-in; the unprefixed name is the pinned original.
-- `CHanaObj__Free_40C1E4` - `__` spells `::`; vtable ids survive as suffixes
+- `CHanaObj__Free_40C1E4` - `__` spells `::`; runtime type tags (`dwType` values) survive as suffixes
   (`CHanaObj__NewFrameT3EC_S354`).
 - `g_pD3DDevice_4D6C78` - globals carry their original address suffix; marked
   `// WRITABLE` or `// READ-ONLY`.
