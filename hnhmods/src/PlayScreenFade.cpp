@@ -1180,85 +1180,80 @@ void __cdecl hook_HanaMorpT457_ApplySubs(CHanaFrameT3EC_S354 *pFrame)
   CHanaVertT3EA_S1FC *pTgtVert; // [esp+CCh] [ebp-88h]
   D3DXMATRIX pTgtMat; // [esp+D0h] [ebp-84h] BYREF
   DWORD dwNumVertices; // [esp+110h] [ebp-44h] BYREF
-  D3DXMATRIX pAxisRot; // [esp+114h] [ebp-40h] BYREF
 
   ONCELOG("[HNH:SUB] HanaMorpT457_ApplySubs_4365B9\n");
 
   nMatOff = 0;
   pSubObjArr = 0;
-  *(QWORD *)&pAxisRot._11 = 0x3F800000;
-  *(QWORD *)&pAxisRot.m[0][2] = 0;
-  *(QWORD *)&pAxisRot.m[1][0] = 0x3F80000000000000LL;
-  memset(&pAxisRot.m[1][2], 0, 16);
-  *(QWORD *)&pAxisRot.m[2][2] = 0x3F800000;
-  *(QWORD *)&pAxisRot.m[3][0] = 0;
-  *(QWORD *)&pAxisRot.m[3][2] = 0x3F80000000000000LL;
-  if ( pFrame )
+  D3DXMATRIX pAxisRot =
   {
-    if ( CHanaObj__GetType_40BBF4(pFrame->pAttachedObj_20C) == 1111 )
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f,
+  };
+
+  if (!pFrame) return;
+  if ( CHanaObj__GetType_40BBF4(pFrame->pAttachedObj_20C) != 0x457 ) return;
+    
+  pMorp = pFrame->pAttachedObj_20C;
+  if (!pMorp) return;
+
+  for ( i = 0; i < pMorp->nCount_344; ++i )
+  {
+    if (!pMorp->arrSubObj_144[i].pSubObj_0) continue;
+    if (!pMorp->arrSubObj_144[i].pSubObj_0->pVert_14) continue;
+   
+    nCountSubObjs = pMorp->arrSubObj_144[i].pSubObj_0->nCountS2C_0;
+    if (!nCountSubObjs) continue;
+        
+    nMatOff = pMorp->arrSubObj_144[i].pSubObj_0->pFrame_118;
+    D3DXMatrixInverse(&pTgtMat, 0, &pFrame->matWorld_178);
+    D3DXMatrixMultiply(&pTgtMat, &pAxisRot, &pTgtMat);
+    pTgtVert = pMorp->pMeshT3F5_138->refsVertT3EA[pMorp->arrSubObj_144[i].pSubObj_0->n1];
+    pSrcVert = pMorp->arrSubObj_144[i].pSubObj_0->pVert_14;
+    pSubObjArr = pMorp->arrSubObj_144[i].pSubObj_0->parrS2C;
+
+    if ( pTgtVert == pSrcVert )
     {
-      pMorp = pFrame->pAttachedObj_20C;
-      if ( pMorp )
-      {
-        for ( i = 0; i < pMorp->nCount_344; ++i )
-        {
-          if ( pMorp->arrSubObj_144[i].pSubObj_0 )
-          {
-            if ( pMorp->arrSubObj_144[i].pSubObj_0->pVert_14 )
-            {
-              nCountSubObjs = pMorp->arrSubObj_144[i].pSubObj_0->nCountS2C_0;
-              if ( nCountSubObjs )
-              {
-                nMatOff = pMorp->arrSubObj_144[i].pSubObj_0->pFrame_118;
-                D3DXMatrixInverse(&pTgtMat, 0, &pFrame->matWorld_178);
-                D3DXMatrixMultiply(&pTgtMat, &pAxisRot, &pTgtMat);
-                pTgtVert = pMorp->pMeshT3F5_138->refsVertT3EA[pMorp->arrSubObj_144[i].pSubObj_0->n1];
-                pSrcVert = pMorp->arrSubObj_144[i].pSubObj_0->pVert_14;
-                pSubObjArr = pMorp->arrSubObj_144[i].pSubObj_0->parrS2C;
-                if ( pTgtVert == pSrcVert )
-                {
-                  CHanaObj__LockVtxBufT3EA_418544(pTgtVert, &dwNumVertices, (LPVOID *)&pTgtBuf);
-                  pSrcBuf = pTgtBuf;
-                }
-                else
-                {
-                  CHanaObj__LockVtxBufT3EA_418544(pTgtVert, &dwNumVertices, (LPVOID *)&pTgtBuf);
-                  CHanaObj__LockVtxBufT3EA_418544(pSrcVert, &dwNumVertices, (LPVOID *)&pSrcBuf);
-                }
-                for ( j = 0; j < nCountSubObjs; ++j )
-                {
-                  qmemcpy(
-                    vtxTgt,
-                    HanaVert_Transform(&vtxTmp0, &pFrame->matWorld_178, (D3DXVECTOR3 *)&pTgtBuf[pSubObjArr[j].nFrame_4]),
-                    sizeof(vtxTgt));
-                  qmemcpy(
-                    &vtxSrc,
-                    HanaVert_Transform(&vtxTmp1, &nMatOff->matWorld_178, (D3DXVECTOR3 *)&pSrcBuf[pSubObjArr[j].nSrc_0]),
-                    sizeof(vtxSrc));
-                  pMorp->arrSubObj_144[i].arrFun_4[j]((float *)vtxTgt, &vtxSrc.x, pSubObjArr[j].fWeight_8);
-                  pVtx = HanaVert_Transform(&vtxTmp2, &pTgtMat, (D3DXVECTOR3 *)vtxTgt);
-                  qmemcpy(&pTgtBuf[pSubObjArr[j].nFrame_4], pVtx, sizeof(_D3DVERTEX));
-                  pTgtBuf[pSubObjArr[j].nFrame_4].x = pTgtBuf[pSubObjArr[j].nFrame_4].x - pSubObjArr[j].pos.x;
-                  pTgtBuf[pSubObjArr[j].nFrame_4].y = pTgtBuf[pSubObjArr[j].nFrame_4].y - pSubObjArr[j].pos.y;
-                  pTgtBuf[pSubObjArr[j].nFrame_4].z = pTgtBuf[pSubObjArr[j].nFrame_4].z - pSubObjArr[j].pos.z;
-                  pTgtBuf[pSubObjArr[j].nFrame_4].nx = pTgtBuf[pSubObjArr[j].nFrame_4].nx - pSubObjArr[j].norm.x;
-                  pTgtBuf[pSubObjArr[j].nFrame_4].ny = pTgtBuf[pSubObjArr[j].nFrame_4].ny - pSubObjArr[j].norm.y;
-                  pTgtBuf[pSubObjArr[j].nFrame_4].nz = pTgtBuf[pSubObjArr[j].nFrame_4].nz - pSubObjArr[j].norm.z;
-                }
-                if ( pTgtVert == pSrcVert )
-                {
-                  CHanaObj__UnlockVrxBufT3EA_41858E(pTgtVert);
-                }
-                else
-                {
-                  CHanaObj__UnlockVrxBufT3EA_41858E(pSrcVert);
-                  CHanaObj__UnlockVrxBufT3EA_41858E(pTgtVert);
-                }
-              }
-            }
-          }
-        }
-      }
+      CHanaObj__LockVtxBufT3EA_418544(pTgtVert, &dwNumVertices, (LPVOID *)&pTgtBuf);
+      pSrcBuf = pTgtBuf;
+    }
+    else
+    {
+      CHanaObj__LockVtxBufT3EA_418544(pTgtVert, &dwNumVertices, (LPVOID *)&pTgtBuf);
+      CHanaObj__LockVtxBufT3EA_418544(pSrcVert, &dwNumVertices, (LPVOID *)&pSrcBuf);
+    }
+
+    for ( j = 0; j < nCountSubObjs; ++j )
+    {
+      qmemcpy(
+        vtxTgt,
+        HanaVert_Transform(&vtxTmp0, &pFrame->matWorld_178, (D3DXVECTOR3 *)&pTgtBuf[pSubObjArr[j].nFrame_4]),
+        sizeof(vtxTgt));
+      qmemcpy(
+        &vtxSrc,
+        HanaVert_Transform(&vtxTmp1, &nMatOff->matWorld_178, (D3DXVECTOR3 *)&pSrcBuf[pSubObjArr[j].nSrc_0]),
+        sizeof(vtxSrc));
+      pMorp->arrSubObj_144[i].arrFun_4[j]((float *)vtxTgt, &vtxSrc.x, pSubObjArr[j].fWeight_8);
+      pVtx = HanaVert_Transform(&vtxTmp2, &pTgtMat, (D3DXVECTOR3 *)vtxTgt);
+      qmemcpy(&pTgtBuf[pSubObjArr[j].nFrame_4], pVtx, sizeof(_D3DVERTEX));
+      pTgtBuf[pSubObjArr[j].nFrame_4].x = pTgtBuf[pSubObjArr[j].nFrame_4].x - pSubObjArr[j].pos.x;
+      pTgtBuf[pSubObjArr[j].nFrame_4].y = pTgtBuf[pSubObjArr[j].nFrame_4].y - pSubObjArr[j].pos.y;
+      pTgtBuf[pSubObjArr[j].nFrame_4].z = pTgtBuf[pSubObjArr[j].nFrame_4].z - pSubObjArr[j].pos.z;
+      pTgtBuf[pSubObjArr[j].nFrame_4].nx = pTgtBuf[pSubObjArr[j].nFrame_4].nx - pSubObjArr[j].norm.x;
+      pTgtBuf[pSubObjArr[j].nFrame_4].ny = pTgtBuf[pSubObjArr[j].nFrame_4].ny - pSubObjArr[j].norm.y;
+      pTgtBuf[pSubObjArr[j].nFrame_4].nz = pTgtBuf[pSubObjArr[j].nFrame_4].nz - pSubObjArr[j].norm.z;
+    }
+
+    if ( pTgtVert == pSrcVert )
+    {
+      CHanaObj__UnlockVrxBufT3EA_41858E(pTgtVert);
+    }
+    else
+    {
+      CHanaObj__UnlockVrxBufT3EA_41858E(pSrcVert);
+      CHanaObj__UnlockVrxBufT3EA_41858E(pTgtVert);
     }
   }
 }
@@ -1324,7 +1319,9 @@ void register_PlayScreenFade_4874DE(int cfg)
     HanaVert_BlendMorph = hook_HanaVert_BlendMorph;
   } else {
     hnh_Hook(0x4874DE, hook_PlayScreenFade, "PlayScreenFade_4874DE"); // [OK]
+    hnh_Hook(0x414589, hook_DrawSpriteLTRB, "DrawSpriteLTRB_414589"); // [OK] 
 
+    hnh_Hook(0x4365B9, hook_HanaMorpT457_ApplySubs, "HanaMorpT457_ApplySubs_4365B9"); // [OK] 
   }
 
 
@@ -1357,10 +1354,8 @@ void register_PlayScreenFade_4874DE(int cfg)
   hnh_Hook(0x433916, hook_HanaMorp_ApplySubTree,  "HanaMorp_ApplySubTree_433916"); // [OK] 
   hnh_Hook(0x43315F, hook_HanaMorpT457_Interp,    "HanaMorpT457_Interp_43315F"); // [OK] 
   hnh_Hook(0x432DB0, hook_HanaVert_BlendMorph,    "HanaVert_BlendMorph_432DB0"); // [OK] 
-  hnh_Hook(0x4365B9, hook_HanaMorpT457_ApplySubs, "HanaMorpT457_ApplySubs_4365B9"); // [OK] 
   hnh_Hook(0x4363EE, hook_HanaVert_Transform,     "HanaVert_Transform_4363EE"); // [OK]
   hnh_Hook(0x43F3F7, hook_SelfBltDC,    "SelfBltDC_43F3F7"); // [OK]
-  hnh_Hook(0x414589, hook_DrawSpriteLTRB,                "DrawSpriteLTRB_414589"); // [OK] 
 
   hnh_HookOn();
 }

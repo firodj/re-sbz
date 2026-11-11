@@ -294,9 +294,9 @@ void __cdecl hook_CHanaObj__NewMateT3EE_S184(CHanaMateT3EE_S184 **ppOutMate)
 
 void hook_CHanaObj__NewSprite3F6byWH(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWORD h)
 {
-  _D3DX_SURFACEFORMAT pixelformat; // [esp+8h] [ebp-14h] BYREF
+  D3DX_SURFACEFORMAT pixelformat; // [esp+8h] [ebp-14h] BYREF
   DWORD flags; // [esp+Ch] [ebp-10h] BYREF
-  LPDIRECTDRAWSURFACE7 pSurf_v1; // [esp+10h] [ebp-Ch]
+  LPDIRECTDRAWSURFACE7 pSurface; // [esp+10h] [ebp-Ch]
   CHanaSpriteT3F6_S1FC *pSprite; // [esp+14h] [ebp-8h]
   HRESULT hr; // [esp+18h] [ebp-4h]
 
@@ -310,10 +310,10 @@ void hook_CHanaObj__NewSprite3F6byWH(CHanaSpriteT3F6_S1FC **ppOut, DWORD w, DWOR
   hr = D3DXCreateTexture(g_pD3DDevice_4D6C78, &flags, &w, &h, &pixelformat, 0, &pSprite->pTexture_134, 0);
   if ( hr < 0 )
     PrintDebugError(hr);
-  pSurf_v1 = CreateSurfaceWH(16u, 0x10u);
-  BltSurface(pSurf_v1, 0, 0, 16, 16, 0);
-  D3DXLoadTextureFromSurface(g_pD3DDevice_4D6C78, pSprite->pTexture_134, 0xFFFFFFFF, pSurf_v1, 0, 0, D3DX_FT_POINT);
-  pSurf_v1->Release();
+  pSurface = CreateSurfaceWH(16u, 16u);
+  BltSurface(pSurface, 0, 0, 16, 16, 0);
+  D3DXLoadTextureFromSurface(g_pD3DDevice_4D6C78, pSprite->pTexture_134, 0xFFFFFFFF, pSurface, 0, 0, D3DX_FT_POINT);
+  pSurface->Release();
   pSprite->ddSurfaceDesc_170.dwSize = 124;
   pSprite->ddSurfaceDesc_170.dwFlags = 4102;
   pSprite->pTexture_134->GetSurfaceDesc(&pSprite->ddSurfaceDesc_170);
@@ -346,6 +346,10 @@ void register_CHanaObj__NewFrameT3EC_S354_404720(int cfg) {
     CHanaObj__NewMateT3EE_S184 = hook_CHanaObj__NewMateT3EE_S184;
     CHanaObj__NewSprite3F6byWH = hook_CHanaObj__NewSprite3F6byWH;
   }
+  else {
+    hnh_Hook(0x4133D0, hook_CHanaObj__NewSprite3F6byWH, "CHanaObj__NewSprite3F6byWH_4133D0"); // [OK] 
+
+  }
 
   if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x4074EF, hook_MtxStackStartMultLocal_4074EF, "MtxStackStartMultLocal_4074EF"); // [OK] 
@@ -355,6 +359,5 @@ void register_CHanaObj__NewFrameT3EC_S354_404720(int cfg) {
   hnh_Hook(0x4055FD, hook_AttachChild_4055FD, "AttachChild_4055FD"); // [OK] 
   hnh_Hook(0x404908, hook_CHanaObj__NewFrameRootT3EC_S2D4, "CHanaObj__NewFrameRootT3EC_S2D4_404908"); // [OK] 
   hnh_Hook(0x40F720, hook_CHanaObj__NewMateT3EE_S184, "CHanaObj__NewMateT3EE_S184_40F720"); // [OK] 
-  hnh_Hook(0x4133D0, hook_CHanaObj__NewSprite3F6byWH, "CHanaObj__NewSprite3F6byWH_4133D0"); // [OK] 
   hnh_HookOn();
 }

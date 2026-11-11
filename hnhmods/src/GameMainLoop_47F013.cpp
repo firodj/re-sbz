@@ -362,28 +362,28 @@ int __cdecl hook_ConvertFrom640AsInt(int nNum)
 {
   ONCELOG("[HNH:SUB] %s\n", "ConvertFrom640AsInt_47E6AF");
 
-  return g_nScreenScale_52F19C * nNum / 640;
+  return g_nWidth3 * nNum / 640;
 }
 
 double __cdecl hook_ConvertFrom640AsFloat(float fNum)
 {
   ONCELOG("[HNH:SUB] %s\n", "ConvertFrom640AsFloat_47E6C6");
 
-  return (double)g_nScreenScale_52F19C * fNum / 640.0;
+  return (double)g_nWidth3 * fNum / 640.0;
 }
 
 int __cdecl hook_ConvertFrom1024AsInt(int nNum)
 {
   ONCELOG("[HNH:SUB] %s\n", "ConvertFrom1024AsInt_47E680");
 
-  return g_nScreenScale_52F19C * nNum / 1024;
+  return g_nWidth3 * nNum / 1024;
 }
 
 double __cdecl hook_ConvertFrom1024AsFloat(float fNum)
 {
   ONCELOG("[HNH:SUB] %s\n", "ConvertFrom1024AsFloat_47E69B");
 
-  return (double)g_nScreenScale_52F19C * fNum / 1024.0;
+  return (double)g_nWidth3 * fNum / 1024.0;
 }
 
 void __cdecl hook_BMP_Convert24bitTo16bitWithDither(CBMPFile *pBMPFile)
@@ -564,6 +564,13 @@ void register_GameMainLoop_47F013(int cfg) {
     BMP_Convert24bitTo16bitWithDither = hook_BMP_Convert24bitTo16bitWithDither;
     GetDC_4188B4 = hook_GetDC_4188B4;
   }
+  else {
+    hnh_Hook(0x47E6AF, hook_ConvertFrom640AsInt, "ConvertFrom640AsInt_47E6AF"); // [OK]  
+    hnh_Hook(0x47E6C6, hook_ConvertFrom640AsFloat, "ConvertFrom640AsFloat_47E6C6"); // [OK] 
+    hnh_Hook(0x47E680, hook_ConvertFrom1024AsInt, "ConvertFrom1024AsInt_47E680"); // [OK] 
+    hnh_Hook(0x47E69B, hook_ConvertFrom1024AsFloat, "ConvertFrom1024AsFloat_47E69B"); // [OK] 
+
+  }
 
   if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x421BD5, hook_BMP_DitherRGB24ToRGB565, "BMP_DitherRGB24ToRGB565");
@@ -573,9 +580,5 @@ void register_GameMainLoop_47F013(int cfg) {
   hnh_Hook(0x419DE5, hook_GetSurfaceFromBmp_419DE5, "GetSurfaceFromBmp_419DE5"); // [OK] 
   hnh_Hook(0x4188B4, hook_GetDC_4188B4, "GetDC_4188B4"); // [OK]
 
-  hnh_Hook(0x47E6AF, hook_ConvertFrom640AsInt, "ConvertFrom640AsInt_47E6AF"); // [OK]  
-  hnh_Hook(0x47E6C6, hook_ConvertFrom640AsFloat, "ConvertFrom640AsFloat_47E6C6"); // [OK] 
-  hnh_Hook(0x47E680, hook_ConvertFrom1024AsInt, "ConvertFrom1024AsInt_47E680"); // [OK] 
-  hnh_Hook(0x47E69B, hook_ConvertFrom1024AsFloat, "ConvertFrom1024AsFloat_47E69B"); // [OK] 
   hnh_HookOn();
 }

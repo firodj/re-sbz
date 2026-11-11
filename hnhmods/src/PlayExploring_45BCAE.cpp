@@ -2851,15 +2851,6 @@ double __cdecl hook_GetSceneEventTime_459CA2(
   return fEventTime;
 }
 
-#define EVERYLOG(count, format, ...) \
-  { \
-    static int _counted = count; \
-    if (_counted-- == 0) { \
-      _counted = count; \
-      DebugLog(format, __VA_ARGS__); \
-    } \
-  }
-
 
 // Update the on-screen health gauge HUD from the pHudRes resource table, using fHpPct/fHpMaxPct (hero hp and max, passed divided by 100).
 void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpPct, int fHpMaxPct)

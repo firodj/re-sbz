@@ -134,6 +134,7 @@
     <ClInclude Include="src\hnh_hook.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -144,5 +145,8 @@
     <None Include="CURRENT.md" />
     <None Include="GOALS.md" />
     <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="hnhmods.rc" />
   </ItemGroup>
 </Project>

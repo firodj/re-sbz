@@ -53,7 +53,7 @@ int (__cdecl*ShowYesNoDialog_461A9E)(CHanaSpriteT3F6_S1FC *pCursor,
 //   0 (scenes)   : all 7 tabs
 //   1 (Continue) : start on tab 1 (Load), tabs 1/5 selectable; three
 //                  alpha-0.5 menu strips over the scene, positioned at
-//                  g_nScreenScale_52F19C/1024 scale -- and the menu exits
+//                  g_nWidth3/1024 scale -- and the menu exits
 //                  early once g_sceneState.bActiveSceneStep advances
 //   2 (submenus) : start on tab 3 (Options), tabs 3..6, one strip
 // Tabs are 79-wide hit bands across a 30-high top strip:
@@ -303,7 +303,7 @@ int __cdecl hook_SystemMenu_4655AB(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int
     {
       if (g_sceneState_52F7E0.bActiveSceneStep)
         break;                         // the scene advanced under us
-      double fScale = (double)g_nScreenScale_52F19C / 1024.0;
+      double fScale = (double)g_nWidth3 / 1024.0;
       pMenuStrip->fAlpha_144 = 0.5f;
       DrawSpriteLTRB(pMenuStrip, (int)(fScale * 1.0), (int)(fScale * 1.0),
         (int)(fScale * 126.0), (int)(fScale * 46.0));
@@ -314,7 +314,7 @@ int __cdecl hook_SystemMenu_4655AB(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int
     }
     else if (nMenuMode == 2)
     {
-      double fScale = (double)g_nScreenScale_52F19C / 1024.0;
+      double fScale = (double)g_nWidth3 / 1024.0;
       pMenuStrip->fAlpha_144 = 0.5f;
       DrawSpriteLTRB(pMenuStrip, (int)(fScale * 1.0), (int)(fScale * 1.0),
         (int)(fScale * 384.0), (int)(fScale * 46.0));

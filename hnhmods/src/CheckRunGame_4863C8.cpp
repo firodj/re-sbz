@@ -40,8 +40,7 @@ int  s_nResolutionMode_518C80;
 int  s_nZBufDepthMode_518C9C;
 int  s_nRenderHALMode_518CA0;
 int  s_nWidth2;
-int  s_nScreenScale_52F19C;
-
+int  s_nWidth3;
 
 #ifdef _USRDLL
 D3DXMATRIX &g_mat4x4View_4D4780       = *(D3DXMATRIX *)0x4D4780; // WRITABLE
@@ -73,7 +72,7 @@ int  &g_nResolutionMode_518C80 = *(int *)0x518C80; // WRITABLE
 int  &g_nZBufDepthMode_518C9C  = *(int *)0x518C9C; // WRITABLE
 int  &g_nRenderHALMode_518CA0  = *(int *)0x518CA0; // WRITABLE
 int  &g_nWidth2                = *(int *)0x518C28; // WRITABLE
-int  &g_nScreenScale_52F19C    = *(int *)0x52F19C; // WRITABLE
+int  &g_nWidth3    = *(int *)0x52F19C; // WRITABLE
 
 // --- internal
 //CVideoModeWhiteItem(&g_arrModeWhitelist_4B33F0)[7] = *(CVideoModeWhiteItem(*)[7])0x4B33F0; // once!
@@ -123,7 +122,7 @@ int  &g_nResolutionMode_518C80= s_nResolutionMode_518C80;
 int  &g_nZBufDepthMode_518C9C = s_nZBufDepthMode_518C9C;
 int  &g_nRenderHALMode_518CA0 = s_nRenderHALMode_518CA0;
 int  &g_nWidth2               = s_nWidth2;
-int  &g_nScreenScale_52F19C   = s_nScreenScale_52F19C;
+int  &g_nWidth3               = s_nWidth3;
 
 // --- internal
 //CVideoModeWhiteItem(&g_arrModeWhitelist_4B33F0)[7] = *(CVideoModeWhiteItem(*)[7])0x4B33F0; // once!
@@ -416,8 +415,8 @@ int __cdecl hook_ShowTitleMenuWnd_428927(HINSTANCE hInstance)
   v4 = 0;
   hDesktopWnd = GetDesktopWindow();
   GetWindowRect(hDesktopWnd, &Rect);
-  Rect.right = 1280;
-  Rect.bottom = 960;
+  //Rect.right = 1280;
+  //Rect.bottom = 960;
 
   g_hInstance_518CB0 = hInstance;
   WndClass.style = 0;
@@ -425,8 +424,8 @@ int __cdecl hook_ShowTitleMenuWnd_428927(HINSTANCE hInstance)
   WndClass.cbClsExtra = 0;
   WndClass.cbWndExtra = 0;
   WndClass.hInstance = hInstance;
-  WndClass.hIcon = LoadIconA(hInstance, MAKEINTRESOURCEA(0x69));
-  WndClass.hCursor = LoadCursorA(hInstance, MAKEINTRESOURCEA(0x68));
+  WndClass.hIcon = LoadIconA(hInstance, MAKEINTRESOURCEA(0x69)); // 105
+  WndClass.hCursor = LoadCursorA(hInstance, MAKEINTRESOURCEA(0x68)); // 104
   WndClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
   WndClass.lpszMenuName = 0;
   WndClass.lpszClassName = " ƒƒjƒ…[ ";
@@ -510,7 +509,7 @@ BOOL __cdecl hook_CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen)
   bRunGame = ShowTitleMenu_427DA8(hWnd, bFullScreen);
   if ( bRunGame > 0 )
   {
-    g_nScreenScale_52F19C = g_nWidth2;
+    g_nWidth3 = g_nWidth2;
     szTeaConfigData[0] = g_bFogIsActive_4B3480;
     szTeaConfigData[1] = g_bSpecularEnable_4B3474;
     szTeaConfigData[2] = g_bAntiAliasEnable;

@@ -53,12 +53,12 @@ BOOL(__cdecl* DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd) = reinterpret_cast<
 int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
     size_t stringLength; // Length of window text
-    struct tagMSG msg; // Message structure for window message loop
+    MSG msg; // Message structure for window message loop
     CHAR windowText[256]; // Buffer for window text
     int directInputInitResult; // Return value from DirectInput initialization
     int exitCode; // Return value (0 for success, -1 for failure)
     WNDCLASSA windowClass; // Window class structure
-    struct tagRECT desktopRect; // Desktop rectangle dimensions
+    RECT desktopRect; // Desktop rectangle dimensions
     HWND installerWnd; // Handle to existing installer window
     int soundInitResult; // Return value from sound initialization
     HWND desktopWnd; // Handle to desktop window
@@ -118,8 +118,8 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
             desktopRect.right = 1;
             desktopRect.bottom = 1;
             GetWindowRect(desktopWnd, &desktopRect);
-            desktopRect.right = 1280;
-            desktopRect.bottom = 960;
+            //desktopRect.right = 1280;
+            //desktopRect.bottom = 960;
 
             // Create main application window
             g_hwndParent = CreateWindowExA(

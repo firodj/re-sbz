@@ -982,7 +982,7 @@ void __cdecl hook_FlushD3DAndTouchSurface(LPDIRECTDRAWSURFACE7 pSurface)
 
   hr = g_pD3DDevice_4D6C78->BeginScene();
   g_pD3DDevice_4D6C78->DrawPrimitive(D3DPT_TRIANGLEFAN, D3DFVF_TLVERTEX, 0, 0, 1);
-  if ( !hr )
+  if ( hr == S_OK )
     g_pD3DDevice_4D6C78->EndScene();
   ddSurfaceDesc.dwSize = 124;
   pSurface->Lock(0, &ddSurfaceDesc, 1, 0);

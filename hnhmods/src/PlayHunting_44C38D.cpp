@@ -3462,7 +3462,7 @@ void __cdecl hook_PlayVictoryCutscene_455183(
   CSoundStruct_8 **pArrVoiceBufs) //   CHanaSpriteT3F6_S1FC **pSounds) =
 
 {
-  double v13; // st7
+  double fSwinTimeNext; // st7
   int nRectLeft; // eax
   float fKubiCamX; // [esp+7Ch] [ebp-90h]
   float fCamSwingX1; // [esp+7Ch] [ebp-90h]
@@ -3481,7 +3481,7 @@ void __cdecl hook_PlayVictoryCutscene_455183(
   float fCamSwingZ1; // [esp+84h] [ebp-88h]
   float fCamSwingZ2; // [esp+84h] [ebp-88h]
   int nRectBottom; // [esp+84h] [ebp-88h]
-  float fViewfinderAlpha; // [esp+84h] [ebp-88h]
+  float fSpriteAlpha; // [esp+84h] [ebp-88h]
   float fHudAlpha; // [esp+84h] [ebp-88h]
   float fFovSwing; // [esp+8Ch] [ebp-80h]
   float fTimeScaleSaved; // [esp+90h] [ebp-7Ch]
@@ -3495,7 +3495,7 @@ void __cdecl hook_PlayVictoryCutscene_455183(
   int i; // [esp+B0h] [ebp-5Ch]
   float fHudFade; // [esp+B4h] [ebp-58h]
   float fDelta; // [esp+B8h] [ebp-54h]
-  struct tagRECT rc; // [esp+BCh] [ebp-50h] BYREF
+  RECT rc; // [esp+BCh] [ebp-50h] BYREF
   float fFoeRelZ; // [esp+CCh] [ebp-40h] BYREF
   float fFovSaved; // [esp+D0h] [ebp-3Ch]
   float fScriptTime; // [esp+D4h] [ebp-38h]
@@ -3504,11 +3504,12 @@ void __cdecl hook_PlayVictoryCutscene_455183(
   float fFoeRelY; // [esp+E0h] [ebp-2Ch] BYREF
   float fFovZoomIn; // [esp+E4h] [ebp-28h]
   float fRelY; // [esp+E8h] [ebp-24h] BYREF
-  float arrFoeRelPos[4]; // [esp+ECh] [ebp-20h] BYREF
+  float fOutX; // [esp+ECh] [ebp-20h] BYREF
   float fRelX; // [esp+FCh] [ebp-10h] BYREF
   float fDollyOffset; // [esp+100h] [ebp-Ch]
   HGLOBAL pDimOverlay; // [esp+104h] [ebp-8h] BYREF
   int bClearedOnce; // [esp+108h] [ebp-4h]
+  RECT rcPrim;
 
   ONCELOG("[HNH:SUB] PlayVictoryCutscene_455183\n");
 
@@ -3523,7 +3524,7 @@ void __cdecl hook_PlayVictoryCutscene_455183(
   pDimOverlay = 0;
   bClearedOnce = 0;
   dwLastTickMs = timeGetTime();
-  CHanaObj__NewSprite3F6byWH((CHanaSpriteT3F6_S1FC **)&pDimOverlay, 0x20u, 0x20u);
+  CHanaObj__NewSprite3F6byWH((CHanaSpriteT3F6_S1FC **)&pDimOverlay, 32, 32);
   pFoeKubiFrame = FindFrameByName_47E999(pFoeBody->pSekHeader_220->pFrameT3EC, "_kubi");
   for ( i = 0; i < pOdsScene->dwCount_130; ++i )
   {
@@ -3533,9 +3534,17 @@ void __cdecl hook_PlayVictoryCutscene_455183(
       break;
     }
   }
-  arrFoeRelPos[1] = 0.0;
-  arrFoeRelPos[2] = 1.0;
-  arrFoeRelPos[3] = 0.0;
+  fOutX = 0.0;
+  //arrFoeRelPos[2] = 1.0;
+  //arrFoeRelPos[3] = 0.0;
+  nRectBottom = ConvertFrom640AsInt(480);
+  nRectRight = ConvertFrom640AsInt(640);
+  nRectTop = ConvertFrom640AsInt(0);
+  nRectLeft = ConvertFrom640AsInt(0);
+  SetRect(&rc, nRectLeft, nRectTop, nRectRight, nRectBottom);
+  SetRect(&rcPrim, ConvertFrom640AsInt(20), ConvertFrom640AsInt(20),
+    ConvertFrom640AsInt(640-20), ConvertFrom640AsInt(480-20));
+
   CSekBody__PlayAnim_40179D(pHeroBody, 26);
   CSekBody__PlayAnim_40179D(pFoeBody, 9);
   fFovSaved = GetProjectionFov_40DCF6();
@@ -3544,9 +3553,9 @@ void __cdecl hook_PlayVictoryCutscene_455183(
   FrameTimer_EndFrame();
   while ( 1 )
   {
-    do
+    //do
       DoPeekMessages();
-    while ( timeGetTime() - dwLastTickMs <= 0x64 && fHudFade >= 0.80000001 );
+    //while ( timeGetTime() - dwLastTickMs <= 100 && fHudFade >= 0.80000001 );
     dwLastTickMs = timeGetTime();
     fDelta = GetFrameTime();
     if ( fDelta > 5.0 )
@@ -3556,57 +3565,115 @@ void __cdecl hook_PlayVictoryCutscene_455183(
     CSekBody__UpdateAnim_4019E1(pFoeBody, fDelta);
     fScriptTime = fScriptTime + fDelta;
     UpdateVoicePlayback_458B3A(pFoeBody, pFoeKubiFrame, pArrVoiceBufs, fDelta);
-    fHudFade = fDelta / 5.0 + fHudFade;
-    if ( fScriptTime > 10.0 )
-      break;
-    fFovSwing = 1.5 - fScriptTime / 25.0;
-    if ( fFovSwing < 0.89999998 )
-      fFovSwing = 0.89999998;
-    fSlowMoScale3 = fTimeScaleSaved / 3.0;
-    SetTimerScaleFactor(fSlowMoScale3);
-    SetProjectionFov_40DCA3(fFovSwing);
-    HanaFrame_GetRelPosition(pHeroBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, &fRelX, &fRelY, &fRelZ);
-    HanaFrame_GetRelPosition(pFoeBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, arrFoeRelPos, &fFoeRelY, &fFoeRelZ);
-    fCamSwingZ1 = (fFoeRelZ - fRelZ) * -0.60000002 + fRelZ;
-    fCamSwingY1 = fRelY - 1.0;
-    fCamSwingX1 = (arrFoeRelPos[0] - fRelX) * -0.60000002 + fRelX;
-    SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fCamSwingX1, fCamSwingY1, fCamSwingZ1);
-    HanaFrame_GetRelPosition(
-      g_pCameraFrame,
-      pFoeBody->pSekHeader_220->pFrameT3EC,
-      &fCamFoeRelX,
-      &fCamFoeRelY,
-      &fCamFoeRelZ);
-    fFoeRelXBack8 = fCamFoeRelX - 8.0;
-    SetFramePosRel_4069DD(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, fFoeRelXBack8, fCamFoeRelY, fCamFoeRelZ);
-    HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, 0);
-    fCamSwingZ2 = (fFoeRelZ - fRelZ) * -0.60000002 + fRelZ;
-    fCamSwingY2 = fRelY + 10.0;
-    fCamSwingX2 = (arrFoeRelPos[0] - fRelX) * -0.60000002 + fRelX;
-    SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame, fCamSwingX2, fCamSwingY2, fCamSwingZ2);
-    HanaFrame_GetRelPosition(
-      g_pCameraFrame,
-      pFoeBody->pSekHeader_220->pFrameT3EC,
-      &fCamFoeRelX,
-      &fCamFoeRelY,
-      &fCamFoeRelZ);
-    fFoeRelXBack6 = fCamFoeRelX - 6.0;
-    SetFramePosRel_4069DD(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, fFoeRelXBack6, fCamFoeRelY, fCamFoeRelZ);
-    HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pFoeKubiFrame, g_pSceneFrame, 0);
-  LABEL_23:
+    fHudFade += fDelta / 5.0;
+    if (fScriptTime <= 10.0)
+    {
+      fFovSwing = 1.5 - fScriptTime / 25.0;
+      if (fFovSwing < 0.89999998)
+        fFovSwing = 0.89999998;
+#if 0
+      fSlowMoScale3 = fTimeScaleSaved / 3.0;
+#else
+      fSlowMoScale3 = fTimeScaleSaved / 1.5;
+#endif
+      SetTimerScaleFactor(fSlowMoScale3);
+      SetProjectionFov_40DCA3(fFovSwing);
+      HanaFrame_GetRelPosition(pHeroBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, &fRelX, &fRelY, &fRelZ);
+      HanaFrame_GetRelPosition(pFoeBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, &fOutX, &fFoeRelY, &fFoeRelZ);
+      fCamSwingZ1 = (fFoeRelZ - fRelZ) * -0.60000002 + fRelZ;
+      fCamSwingY1 = fRelY - 1.0;
+      fCamSwingX1 = (fOutX - fRelX) * -0.60000002 + fRelX;
+      SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354*)g_pSceneFrame, fCamSwingX1, fCamSwingY1, fCamSwingZ1);
+      HanaFrame_GetRelPosition(
+        g_pCameraFrame,
+        pFoeBody->pSekHeader_220->pFrameT3EC,
+        &fCamFoeRelX,
+        &fCamFoeRelY,
+        &fCamFoeRelZ);
+      fFoeRelXBack8 = fCamFoeRelX - 8.0;
+      SetFramePosRel_4069DD(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, fFoeRelXBack8, fCamFoeRelY, fCamFoeRelZ);
+      HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, g_pSceneFrame, 0);
+      fCamSwingZ2 = (fFoeRelZ - fRelZ) * -0.60000002 + fRelZ;
+      fCamSwingY2 = fRelY + 10.0;
+      fCamSwingX2 = (fOutX - fRelX) * -0.60000002 + fRelX;
+      SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354*)g_pSceneFrame, fCamSwingX2, fCamSwingY2, fCamSwingZ2);
+      HanaFrame_GetRelPosition(
+        g_pCameraFrame,
+        pFoeBody->pSekHeader_220->pFrameT3EC,
+        &fCamFoeRelX,
+        &fCamFoeRelY,
+        &fCamFoeRelZ);
+      fFoeRelXBack6 = fCamFoeRelX - 6.0;
+      SetFramePosRel_4069DD(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, fFoeRelXBack6, fCamFoeRelY, fCamFoeRelZ);
+      HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pFoeKubiFrame, g_pSceneFrame, 0);
+    }
+    else
+    {
+      if ( !bClearedOnce )
+      {
+        bClearedOnce = 1;
+        g_pRenderCtx->Clear(3);
+      }
+#if 0
+      fSlowMoScale5 = fTimeScaleSaved / 5.0;
+#else
+      fSlowMoScale5 = fTimeScaleSaved / 3.0;
+#endif
+      SetTimerScaleFactor(fSlowMoScale5);
+      HanaFrame_GetRelPosition(
+        pHeroBody->pSekHeader_220->pFrameT3EC,
+        pFoeBody->pSekHeader_220->pFrameT3EC,
+        &fRelX,
+        &fRelY,
+        &fRelZ);
+      fKubiCamZ = fRelZ + 12.0 - fZoomOffset + 6.0;
+      fKubiCamY = fRelY + 18.0 - fDollyOffset / 2.0;
+      fKubiCamX = fRelX + 10.0 + fDollyOffset;
+      SetFramePosRel_4069DD(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, fKubiCamX, fKubiCamY, fKubiCamZ);
+      HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pFoeKubiFrame, g_pSceneFrame, 0);
+      fKubiPullbackZ = -(fDollyOffset + 10.0) - (fDollyOffset + 10.0);
+      SetFramePosRel_4069DD(g_pCameraFrame, g_pCameraFrame, 0.0, 0.0, fKubiPullbackZ);
+      fDollyOffset = fDollyOffset + fDelta;
+      fZoomOffset = fDelta / 15.0 + fZoomOffset;
+      if ( fDollyOffset > 0.0 )
+      {
+        fDollyOffset = 0.0;
+        fFovZoomIn = GetProjectionFov_40DCF6();
+        fFovZoomIn = fFovZoomIn - fDelta / 25.0;
+        if ( fFovZoomIn <= 0.2 )
+          fFovZoomIn = 0.2;
+        SetProjectionFov_40DCA3(fFovZoomIn);
+      }
+      fSwinTimeNext = fSwingTime + fDelta;
+      fSwingTime = fSwinTimeNext;
+      if ( fSwinTimeNext > 50.0 ) {
+        SetTimerScaleFactor(fTimeScaleSaved);
+        SetProjectionFov_40DCA3(fFovSaved);
+        if (pDimOverlay)
+          CHanaObj__Free_40C1E4((CHanaBase_S130*)pDimOverlay);
+        break;
+      }
+    }
+  
     MtxStackStartMultLocal_4074EF();
+
     if ( fHudFade >= 1.0 )
     {
       fHudFade = 1.0;
+
       FlushD3DAndTouchSurface(g_pBackBuffer_4D6C90);
       FlushD3DAndTouchSurface(g_pPrimaryBuffer_4D6C88);
-      g_pBackBuffer_4D6C90->BltFast(0, 0, g_pPrimaryBuffer_4D6C88, 0, 16);
+#if 0
+      g_pBackBuffer_4D6C90->BltFast(0, 0, g_pPrimaryBuffer_4D6C88, &rc, DDBLTFAST_WAIT); 
+#else
+      g_pBackBuffer_4D6C90->Blt(0, g_pPrimaryBuffer_4D6C88, &rcPrim, DDBLTFAST_WAIT, NULL);
+#endif
       g_pRenderCtx->Clear(2);
     }
     else
     {
       g_pRenderCtx->Clear(3);
-      if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+      if ( SUCCEEDED(g_pD3DDevice_4D6C78->BeginScene()) )
       {
         pOdsMapFrame->bAlphaDeferred_130 = 0;
         g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
@@ -3616,23 +3683,26 @@ void __cdecl hook_PlayVictoryCutscene_455183(
         g_pD3DDevice_4D6C78->EndScene();
       }
     }
-    if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+
+    if ( SUCCEEDED(g_pD3DDevice_4D6C78->BeginScene()) )
     {
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZENABLE, 0);
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
-      nRectBottom = ConvertFrom640AsInt(480);
-      nRectRight = ConvertFrom640AsInt(640);
-      nRectTop = ConvertFrom640AsInt(0);
-      nRectLeft = ConvertFrom640AsInt(0);
-      SetRect(&rc, nRectLeft, nRectTop, nRectRight, nRectBottom);
-      CHanaObj__SetAlpha3F6((CHanaSpriteT3F6_S1FC *)pDimOverlay, 0.30000001);
+#if 0
+      const float fDimAlpha = 0.30000001;
+#else
+      const float fDimAlpha = 0.7;
+#endif
+      CHanaObj__SetAlpha3F6((CHanaSpriteT3F6_S1FC *)pDimOverlay, fDimAlpha);
       DrawSpriteLTRB((CHanaSpriteT3F6_S1FC *)pDimOverlay, rc.left, rc.top, rc.right, rc.bottom);
+
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
       g_pD3DDevice_4D6C78->EndScene();
     }
-    if ( g_pD3DDevice_4D6C78->BeginScene() >= 0 )
+
+    if ( SUCCEEDED(g_pD3DDevice_4D6C78->BeginScene()) )
     {
       pOdsMapFrame->bAlphaDeferred_130 = 1;
       g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
@@ -3641,66 +3711,31 @@ void __cdecl hook_PlayVictoryCutscene_455183(
       HanaVert_DrawBatch(1);
       g_pD3DDevice_4D6C78->EndScene();
     }
+
     for ( i = 0; i < 20 && pArrSprites[i]; ++i )
     {
-      fViewfinderAlpha = 1.0 - fHudFade;
-      CHanaObj__SetAlpha3F6(pArrSprites[i], fViewfinderAlpha);
+      fSpriteAlpha = 1.0 - fHudFade;
+      CHanaObj__SetAlpha3F6(pArrSprites[i], fSpriteAlpha);
     }
+
     for ( i = 0; i < 15 && pArrHudMeters[i]; ++i )
     {
       fHudAlpha = 1.0 - fHudFade;
       CHanaObj__SetAlpha3F6(pArrHudMeters[i], fHudAlpha);
     }
+
     DrawDuelHealthHud_44B23B(
-      (CHanaSpriteT3F6_S1FC **)pArrSprites,
-      (__int64)fHeroHpCur / 100,
-      (__int64)fHeroHpMax / 100,
-      (__int64)fFoeHpCur / 100,
-      (__int64)fFoeHpMax / 100);
+     (CHanaSpriteT3F6_S1FC **)pArrSprites,
+     (__int64)fHeroHpCur / 100,
+     (__int64)fHeroHpMax / 100,
+     (__int64)fFoeHpCur / 100,
+     (__int64)fFoeHpMax / 100);
     DrawClockHud_44AF5B(pArrHudMeters, 320, 16, 100 * nClockBase - dwElapsedMs / 0xA);
 
     PresentFrame();
     HanaVert_DrawBatch(0);
   }
-  if ( !bClearedOnce )
-  {
-    bClearedOnce = 1;
-    g_pRenderCtx->Clear(3);
-  }
-  fSlowMoScale5 = fTimeScaleSaved / 5.0;
-  SetTimerScaleFactor(fSlowMoScale5);
-  HanaFrame_GetRelPosition(
-    pHeroBody->pSekHeader_220->pFrameT3EC,
-    pFoeBody->pSekHeader_220->pFrameT3EC,
-    &fRelX,
-    &fRelY,
-    &fRelZ);
-  fKubiCamZ = fRelZ + 12.0 - fZoomOffset + 6.0;
-  fKubiCamY = fRelY + 18.0 - fDollyOffset / 2.0;
-  fKubiCamX = fRelX + 10.0 + fDollyOffset;
-  SetFramePosRel_4069DD(g_pCameraFrame, pFoeBody->pSekHeader_220->pFrameT3EC, fKubiCamX, fKubiCamY, fKubiCamZ);
-  HanaMatrix_BuildLookAtAndTransform(g_pCameraFrame, pFoeKubiFrame, g_pSceneFrame, 0);
-  fKubiPullbackZ = -(fDollyOffset + 10.0) - (fDollyOffset + 10.0);
-  SetFramePosRel_4069DD(g_pCameraFrame, g_pCameraFrame, 0.0, 0.0, fKubiPullbackZ);
-  fDollyOffset = fDollyOffset + fDelta;
-  fZoomOffset = fDelta / 15.0 + fZoomOffset;
-  if ( fDollyOffset > 0.0 )
-  {
-    fDollyOffset = 0.0;
-    fFovZoomIn = GetProjectionFov_40DCF6();
-    fFovZoomIn = fFovZoomIn - fDelta / 25.0;
-    if ( fFovZoomIn <= 0.2 )
-      fFovZoomIn = 0.2;
-    SetProjectionFov_40DCA3(fFovZoomIn);
-  }
-  v13 = fSwingTime + fDelta;
-  fSwingTime = v13;
-  if ( v13 <= 50.0 )
-    goto LABEL_23;
-  SetTimerScaleFactor(fTimeScaleSaved);
-  SetProjectionFov_40DCA3(fFovSaved);
-  if ( pDimOverlay )
-    CHanaObj__Free_40C1E4((CHanaBase_S130 *)pDimOverlay);
+
 }
 
 /**
@@ -3729,7 +3764,7 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
   int nClockBase,
   unsigned int dwElapsedMs)
 {
-  double v12; // st7
+  double fScripTimeNext; // st7
   float fHeroRaisedY; // [esp+0h] [ebp-100h]
   float fHeroDroppedY; // [esp+0h] [ebp-100h]
   float fRotNegRad; // [esp+4h] [ebp-FCh]
@@ -3884,9 +3919,9 @@ void __cdecl hook_PlayResultsCutscene_455BE2(
         fFovWide = 1.2;
       SetProjectionFov_40DCA3(fFovWide);
     }
-    v12 = fScriptTime + FrameTime;
-    fScriptTime = v12;
-    if ( v12 > 280.0 )
+    fScripTimeNext = fScriptTime + FrameTime;
+    fScriptTime = fScripTimeNext;
+    if ( fScripTimeNext > 280.0 )
       break;
     if ( fScriptTime > 30.0 && fScriptTime < 90.0 )
     {
@@ -4039,9 +4074,14 @@ void register_PlayHunting_44C38D(int cfg) {
     BindSceneActors_448C72 = hook_BindSceneActors_448C72;
     UpdateCameraFollowDuel_44C028 = hook_UpdateCameraFollowDuel_44C028;
   }
+  else {
+    // TODO: bug no effects
+    hnh_Hook(0x455be2, hook_PlayResultsCutscene_455BE2, "PlayResultsCutscene_455BE2"); // [OK]
+    hnh_Hook(0x455183, hook_PlayVictoryCutscene_455183, "PlayVictoryCutscene_455183"); // [OK]
+
+  }
 
   if (cfg != 2) hnh_HookOff();
-  hnh_Hook(0x44C38D, hook_PlayHunting_44C38D, "PlayHunting_44C38D"); // [OK]
   hnh_Hook(0x456807, hook_RenderDualBodyScene_456807, "RenderDualBodyScene_456807"); // [OK]
   hnh_Hook(0x414344, hook_DrawSprite3D, "DrawSprite3D_414344"); // [OK]
 
@@ -4055,11 +4095,9 @@ void register_PlayHunting_44C38D(int cfg) {
   hnh_Hook(0x44c028, hook_UpdateCameraFollowDuel_44C028, "UpdateCameraFollowDuel_44C028"); // [OK]
 
   hnh_Hook(0x45804c, hook_StepFoeSpin_45804C, "StepFoeSpin_45804C"); // [OK]
-  hnh_Hook(0x455be2, hook_PlayResultsCutscene_455BE2, "PlayResultsCutscene_455BE2"); // [OK]
   hnh_Hook(0x453b92, hook_WanaAttack_Projectile_453B92, "WanaAttack_Projectile_453B92"); // [OK]
   hnh_Hook(0x4581b0, hook_StepWanaProjectile_4581B0, "StepWanaProjectile_4581B0"); // [OK]
   hnh_Hook(0x457ee0, hook_StepFoeTurn_457EE0, "StepFoeTurn_457EE0"); // [OK]
-  hnh_Hook(0x455183, hook_PlayVictoryCutscene_455183, "PlayVictoryCutscene_455183"); // [OK]
   hnh_Hook(0x4539d1, hook_WanaAttack_Charged_4539D1, "WanaAttack_Charged_4539D1"); // [OK]
 
   hnh_HookOn();

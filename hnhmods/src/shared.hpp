@@ -166,7 +166,7 @@ extern int      &g_nResolutionMode_518C80;
 extern int &g_nZBufDepthMode_518C9C;
 extern int      &g_nRenderHALMode_518CA0;
 extern int &g_nWidth2;
-extern int &g_nScreenScale_52F19C;
+extern int &g_nWidth3;
 
 extern float &g_fProjZFar;
 extern float &g_fProjZNear;

@@ -220,6 +220,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="hnh_header.hpp" />
     <ClInclude Include="hnh_intern.hpp" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="src\dx7.hpp" />
     <ClInclude Include="src\hnh_hook.hpp" />
     <ClInclude Include="src\shared.hpp" />
@@ -395,6 +396,9 @@
     <None Include="CURRENT.md" />
     <None Include="GOALS.md" />
     <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="hnhmods.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

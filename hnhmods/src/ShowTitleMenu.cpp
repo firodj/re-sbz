@@ -113,8 +113,8 @@ BOOL __cdecl hook_ShowTitleMenu_427DA8(HWND hWnd, BOOL bFullScreen)
     // Resize window to full desktop
     hDesktopWindow = GetDesktopWindow();
     GetWindowRect(hDesktopWindow, &rect);
-    rect.right = 1280;
-    rect.bottom = 960;
+    //rect.right = 1280;
+    //rect.bottom = 960;
 
     MoveWindow(hWnd, 0, 0, rect.right - rect.left, rect.bottom - rect.top, TRUE);
     UpdateWindow(hWnd);

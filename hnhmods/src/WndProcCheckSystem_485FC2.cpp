@@ -702,12 +702,15 @@ void register_WndProcCheckSystem_485FC2(int cfg) {
     SetUiFont_419BCD = hook_SetUiFont_419BCD;
     AllocateDevicesDescArray = hook_AllocateDevicesDescArray;
   }
+  else {
+    hnh_Hook(0x485FC2, hook_WndProcCheckSystem_485FC2, "WndProcCheckSystem_485FC2"); // [OK] 
+
+  }
 
   if (cfg != 2) hnh_HookOff();
   hnh_Hook(0x40AC7C, hook_D3DDeinit, "D3DDeinit_40AC7C"); // [OK] 
   hnh_Hook(0x418620, hook_Renderer_InitializeTrigTablesAndPixelFormat, "Renderer_InitializeTrigTablesAndPixelFormat_418620"); // [OK] 
   hnh_Hook(0x423CCC, hook_HanaDS_SetErrStr, "HanaDS_SetErrStr_423CCC");
-  hnh_Hook(0x485FC2, hook_WndProcCheckSystem_485FC2, "WndProcCheckSystem_485FC2"); // [OK] 
   hnh_Hook(0x427520, hook_HanaHeap_Create, "HanaHeap_Create_427520"); // [OK] 
   hnh_Hook(0x424886, hook_HanaDS_InitHeap, "HanaDS_InitHeap_424886"); // [OK] 
   hnh_Hook(0x422D50, hook_HanaDS_Init, "HanaDS_Init_422D50"); // [OK] 
