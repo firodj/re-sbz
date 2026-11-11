@@ -443,13 +443,13 @@ bool __cdecl hook_UpdateHeroBody_44474E(
         &g_dwDSStatus_5185C8)
       || (g_dwDSStatus_5185C8 & 1) == 0 )
     {
-      if ( (pAnimData->float_60 < 303.0 || pAnimData->float_60 > 310.0)
-        && (pAnimData->float_60 < 403.0 || pAnimData->float_60 > 410.0)
-        && (pAnimData->float_60 < 500.0 || pAnimData->float_60 > 504.0)
-        && (pAnimData->float_60 < 600.0 || pAnimData->float_60 > 606.0)
-        && (pAnimData->float_60 < 1630.0 || pAnimData->float_60 > 1640.0)
-        && (pAnimData->float_60 < 1670.0 || pAnimData->float_60 > 1680.0)
-        && (pAnimData->float_60 < 2622.0 || pAnimData->float_60 > 2630.0) )
+      if ( (pAnimData->fCurTime_60 < 303.0 || pAnimData->fCurTime_60 > 310.0)
+        && (pAnimData->fCurTime_60 < 403.0 || pAnimData->fCurTime_60 > 410.0)
+        && (pAnimData->fCurTime_60 < 500.0 || pAnimData->fCurTime_60 > 504.0)
+        && (pAnimData->fCurTime_60 < 600.0 || pAnimData->fCurTime_60 > 606.0)
+        && (pAnimData->fCurTime_60 < 1630.0 || pAnimData->fCurTime_60 > 1640.0)
+        && (pAnimData->fCurTime_60 < 1670.0 || pAnimData->fCurTime_60 > 1680.0)
+        && (pAnimData->fCurTime_60 < 2622.0 || pAnimData->fCurTime_60 > 2630.0) )
       {
         g_arrFootstepSound_52F17C[nHitMode]->pDSBuffer_0->Stop();
         g_arrFootstepSound_52F17C[nHitMode]->pDSBuffer_0->SetCurrentPosition(0);
@@ -467,13 +467,13 @@ bool __cdecl hook_UpdateHeroBody_44474E(
         &g_dwDSStatus_5185C8)
       || (g_dwDSStatus_5185C8 & 1) == 0 )
     {
-      if ( (pAnimData->float_60 < 313.0 || pAnimData->float_60 > 320.0)
-        && (pAnimData->float_60 < 413.0 || pAnimData->float_60 > 420.0)
-        && (pAnimData->float_60 < 507.0 || pAnimData->float_60 > 511.0)
-        && (pAnimData->float_60 < 605.0 || pAnimData->float_60 > 611.0)
-        && (pAnimData->float_60 < 1633.0 || pAnimData->float_60 > 1643.0)
-        && (pAnimData->float_60 < 1658.0 || pAnimData->float_60 > 1665.0)
-        && (pAnimData->float_60 < 2620.0 || pAnimData->float_60 > 2630.0) )
+      if ( (pAnimData->fCurTime_60 < 313.0 || pAnimData->fCurTime_60 > 320.0)
+        && (pAnimData->fCurTime_60 < 413.0 || pAnimData->fCurTime_60 > 420.0)
+        && (pAnimData->fCurTime_60 < 507.0 || pAnimData->fCurTime_60 > 511.0)
+        && (pAnimData->fCurTime_60 < 605.0 || pAnimData->fCurTime_60 > 611.0)
+        && (pAnimData->fCurTime_60 < 1633.0 || pAnimData->fCurTime_60 > 1643.0)
+        && (pAnimData->fCurTime_60 < 1658.0 || pAnimData->fCurTime_60 > 1665.0)
+        && (pAnimData->fCurTime_60 < 2620.0 || pAnimData->fCurTime_60 > 2630.0) )
       {
         g_arrFootstepSound_52F18C[nHitMode]->pDSBuffer_0->Stop();
         g_arrFootstepSound_52F18C[nHitMode]->pDSBuffer_0->SetCurrentPosition(

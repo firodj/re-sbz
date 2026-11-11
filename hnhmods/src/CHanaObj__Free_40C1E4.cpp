@@ -900,7 +900,7 @@ void __cdecl hook_CSekBody__Release_4012FE(CSekBody *pSekBody)
 
   if ( pSekBody )
   {
-    if ( --pSekBody->count_5050 <= 0 )
+    if ( --pSekBody->nRefCount_5050 <= 0 )
     {
       FreeSekHeader(pSekBody->pSekHeader_220);
       pSekBody->pSekHeader_220 = 0;

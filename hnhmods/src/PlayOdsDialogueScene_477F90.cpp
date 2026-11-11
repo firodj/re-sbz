@@ -468,13 +468,13 @@ void __cdecl hook_CSekBody__CutToAnim_4018E1(CSekBody *pSekBody, int nItemIndex)
 {
   ONCELOG("[HNH:SUB] CSekBody__CutToAnim_4018E1\n");
   pSekBody->nCurItem_200 = nItemIndex;
-  pSekBody->items_250[nItemIndex].field_44 = 0;
+  pSekBody->items_250[nItemIndex].nCurStep_44 = 0;
   pSekBody->items_250[nItemIndex].field_6C = 0;
-  pSekBody->items_250[nItemIndex].field_64 = 0;
-  pSekBody->items_250[nItemIndex].float_5C = (pSekBody->items_250[nItemIndex].float_58
-    - pSekBody->items_250[nItemIndex].float_54)
-    / (double)pSekBody->items_250[nItemIndex].field_50;
-  pSekBody->items_250[nItemIndex].float_60 = pSekBody->items_250[nItemIndex].float_54;
+  pSekBody->items_250[nItemIndex].nLoopCount_64 = 0;
+  pSekBody->items_250[nItemIndex].fPlayRate_5C = (pSekBody->items_250[nItemIndex].fEndTime_58
+    - pSekBody->items_250[nItemIndex].fStartTime_54)
+    / (double)pSekBody->items_250[nItemIndex].nEndStep_50;
+  pSekBody->items_250[nItemIndex].fCurTime_60 = pSekBody->items_250[nItemIndex].fStartTime_54;
   pSekBody->bStepAdvanced_244 = 0;
   pSekBody->bLooped_248 = 0;
   pSekBody->fBlendReq_21C = 0.0;
@@ -501,35 +501,35 @@ BOOL __cdecl hook_CSekBody__UpdateAnim_4019E1(CSekBody *pSekBody, float fDelta)
   if ( !pSekBody || pSekBody->bDisabled_24C || !pSekBody->pSekHeader_220 || !pSekBody->pSekHeader_220->pAnimSetT3F1 )
     return 0;
   g_pSekItem_4CD760 = &pSekBody->items_250[pSekBody->nCurItem_200];
-  g_pSekItem_4CD760->float_60 = fDelta * g_pSekItem_4CD760->float_5C + g_pSekItem_4CD760->float_60;
-  if ( g_pSekItem_4CD760->float_58 <= (double)g_pSekItem_4CD760->float_60 )
+  g_pSekItem_4CD760->fCurTime_60 = fDelta * g_pSekItem_4CD760->fPlayRate_5C + g_pSekItem_4CD760->fCurTime_60;
+  if ( g_pSekItem_4CD760->fEndTime_58 <= (double)g_pSekItem_4CD760->fCurTime_60 )
   {
     bCompleted = 1;
-    if ( !g_pSekItem_4CD760->flag_0 )
+    if ( !g_pSekItem_4CD760->nMode_0 )
     {
-      if ( !g_pSekItem_4CD760->field_70 )
+      if ( !g_pSekItem_4CD760->bAutoNext_70 )
       {
-        g_pSekItem_4CD760->field_44 = g_pSekItem_4CD760->field_50;
-        g_nSekStep_4CD764 = g_pSekItem_4CD760->field_50 - 1;
+        g_pSekItem_4CD760->nCurStep_44 = g_pSekItem_4CD760->nEndStep_50;
+        g_nSekStep_4CD764 = g_pSekItem_4CD760->nEndStep_50 - 1;
         pSekBody->bStepAdvanced_244 = 1;
-        g_pSekItem_4CD760->float_60 = g_pSekItem_4CD760->float_58;
+        g_pSekItem_4CD760->fCurTime_60 = g_pSekItem_4CD760->fEndTime_58;
         goto LABEL_15;
       }
     LABEL_11:
-      CSekBody__CutToAnim_4018E1(pSekBody, g_pSekItem_4CD760->field_74);
+      CSekBody__CutToAnim_4018E1(pSekBody, g_pSekItem_4CD760->nNextItem_74);
       pSekBody->fBlendReq_21C = 0.0;
       goto LABEL_15;
     }
-    if ( g_pSekItem_4CD760->flag_0 == 1 )
+    if ( g_pSekItem_4CD760->nMode_0 == 1 )
     {
-      ++g_pSekItem_4CD760->field_64;
-      if ( !g_pSekItem_4CD760->field_70 || g_pSekItem_4CD760->field_64 < g_pSekItem_4CD760->gap78 )
+      ++g_pSekItem_4CD760->nLoopCount_64;
+      if ( !g_pSekItem_4CD760->bAutoNext_70 || g_pSekItem_4CD760->nLoopCount_64 < g_pSekItem_4CD760->nMaxLoops_78 )
       {
-        g_nSekStep_4CD764 = g_pSekItem_4CD760->field_48;
-        g_pSekItem_4CD760->field_44 = g_nSekStep_4CD764;
+        g_nSekStep_4CD764 = g_pSekItem_4CD760->nLoopStartStep_48;
+        g_pSekItem_4CD760->nCurStep_44 = g_nSekStep_4CD764;
         pSekBody->bStepAdvanced_244 = 1;
         pSekBody->bLooped_248 = 1;
-        g_pSekItem_4CD760->float_60 = g_pSekItem_4CD760->float_54;
+        g_pSekItem_4CD760->fCurTime_60 = g_pSekItem_4CD760->fStartTime_54;
         goto LABEL_15;
       }
       goto LABEL_11;
@@ -544,7 +544,7 @@ LABEL_15:
       pSekBody->fBlendReq_21C = 0.0;
       pSekBody->fBlendWeight_224 = 1.0;
     }
-    CHanaAnimSetT3F1__SetTime_403D61(pSekBody->pSekHeader_220->pAnimSetT3F1, g_pSekItem_4CD760->float_60);
+    CHanaAnimSetT3F1__SetTime_403D61(pSekBody->pSekHeader_220->pAnimSetT3F1, g_pSekItem_4CD760->fCurTime_60);
     CHanaAnimSetT3F1__BlendStep_43A643(pSekBody->pSekHeader_220->pAnimSetT3F1, &pSekBody->fBlendWeight_224, fDelta);
   }
   return bCompleted;
@@ -715,19 +715,19 @@ void __cdecl hook_SekBody__UpdateTo2_401647(CSekBody *pSekBody, int nIndex)
 
   if ( pSekBody->nReqItem_208 != nIndex )
   {
-    if ( !pSekBody->items_250[nIndex].field_7C )
+    if ( !pSekBody->items_250[nIndex].bNoBlend_7C )
       pSekBody->fBlendReq_21C = 1.0;
     pSekBody->nCurItem_200 = nIndex;
     pSekBody->nReqItem_208 = nIndex;
-    pSekBody->items_250[nIndex].field_44 = 0;
+    pSekBody->items_250[nIndex].nCurStep_44 = 0;
     pSekBody->items_250[nIndex].field_6C = 0;
-    pSekBody->items_250[nIndex].field_64 = 0;
-    if ( pSekBody->items_250[nIndex].field_50 )
-      pSekBody->items_250[nIndex].float_5C = (pSekBody->items_250[nIndex].float_58 - pSekBody->items_250[nIndex].float_54)
-      / (double)pSekBody->items_250[nIndex].field_50;
+    pSekBody->items_250[nIndex].nLoopCount_64 = 0;
+    if ( pSekBody->items_250[nIndex].nEndStep_50 )
+      pSekBody->items_250[nIndex].fPlayRate_5C = (pSekBody->items_250[nIndex].fEndTime_58 - pSekBody->items_250[nIndex].fStartTime_54)
+      / (double)pSekBody->items_250[nIndex].nEndStep_50;
     else
-      pSekBody->items_250[nIndex].float_5C = 0.0;
-    pSekBody->items_250[nIndex].float_60 = pSekBody->items_250[nIndex].float_54;
+      pSekBody->items_250[nIndex].fPlayRate_5C = 0.0;
+    pSekBody->items_250[nIndex].fCurTime_60 = pSekBody->items_250[nIndex].fStartTime_54;
     pSekBody->bStepAdvanced_244 = 0;
     pSekBody->bLooped_248 = 0;
   }

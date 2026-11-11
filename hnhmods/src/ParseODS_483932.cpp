@@ -757,10 +757,10 @@ CSekBody *__cdecl hook_ParseSekFile_401039(LPCSTR lpFileName)
     v2 = SekHeader_CloneClean(&sekHeader);
     pOut->pSekHeader_220 = v2;
     pOut->bDisabled_24C = 0;
-    pOut->angle_214 = 0;
-    pOut->angle_218 = 0;
-    pOut->angle_210 = 0;
-    pOut->count_5050 = 1;
+    pOut->field_214 = 0;
+    pOut->field_218 = 0;
+    pOut->field_210 = 0;
+    pOut->nRefCount_5050 = 1;
     wsprintfA(pOut->szName_0, "%s", lpFileName);
     return pOut;
   }
@@ -798,19 +798,19 @@ void __cdecl hook_CSekBody__PlayAnim_40179D(CSekBody *pSekBody, int nItemIndex)
   ONCELOG("[HNH:SUB] CSekBody__PlayAnim_40179D\n");
   pSekBody->nCurItem_200 = nItemIndex;
   pSekBody->nReqItem_208 = nItemIndex;
-  pSekBody->items_250[nItemIndex].field_44 = 0;
+  pSekBody->items_250[nItemIndex].nCurStep_44 = 0;
   pSekBody->items_250[nItemIndex].field_6C = 0;
-  pSekBody->items_250[nItemIndex].field_64 = 0;
-  if ( pSekBody->items_250[nItemIndex].field_50 )
-    pSekBody->items_250[nItemIndex].float_5C = (pSekBody->items_250[nItemIndex].float_58
-      - pSekBody->items_250[nItemIndex].float_54)
-    / (double)pSekBody->items_250[nItemIndex].field_50;
+  pSekBody->items_250[nItemIndex].nLoopCount_64 = 0;
+  if ( pSekBody->items_250[nItemIndex].nEndStep_50 )
+    pSekBody->items_250[nItemIndex].fPlayRate_5C = (pSekBody->items_250[nItemIndex].fEndTime_58
+      - pSekBody->items_250[nItemIndex].fStartTime_54)
+    / (double)pSekBody->items_250[nItemIndex].nEndStep_50;
   else
-    pSekBody->items_250[nItemIndex].float_5C = 0.0;
-  pSekBody->items_250[nItemIndex].float_60 = pSekBody->items_250[nItemIndex].float_54;
+    pSekBody->items_250[nItemIndex].fPlayRate_5C = 0.0;
+  pSekBody->items_250[nItemIndex].fCurTime_60 = pSekBody->items_250[nItemIndex].fStartTime_54;
   pSekBody->bStepAdvanced_244 = 0;
   pSekBody->bLooped_248 = 0;
-  if ( !pSekBody->items_250[nItemIndex].field_7C )
+  if ( !pSekBody->items_250[nItemIndex].bNoBlend_7C )
     pSekBody->fBlendReq_21C = 1.0;
 }
 
@@ -1258,19 +1258,19 @@ void __cdecl hook_SekBody__UpdateTo_4014E4(CSekBody *pSekBody, int nItem)
 
   if ( pSekBody->nCurItem_200 != nItem && nItem < 128 )
   {
-    if ( !pSekBody->items_250[nItem].field_7C )
+    if ( !pSekBody->items_250[nItem].bNoBlend_7C )
       pSekBody->fBlendReq_21C = 1.0;
     pSekBody->nCurItem_200 = nItem;
     pSekBody->nReqItem_208 = nItem;
-    pSekBody->items_250[nItem].field_44 = 0;
+    pSekBody->items_250[nItem].nCurStep_44 = 0;
     pSekBody->items_250[nItem].field_6C = 0;
-    pSekBody->items_250[nItem].field_64 = 0;
-    if ( pSekBody->items_250[nItem].field_50 )
-      pSekBody->items_250[nItem].float_5C = (pSekBody->items_250[nItem].float_58 - pSekBody->items_250[nItem].float_54)
-      / (double)pSekBody->items_250[nItem].field_50;
+    pSekBody->items_250[nItem].nLoopCount_64 = 0;
+    if ( pSekBody->items_250[nItem].nEndStep_50 )
+      pSekBody->items_250[nItem].fPlayRate_5C = (pSekBody->items_250[nItem].fEndTime_58 - pSekBody->items_250[nItem].fStartTime_54)
+      / (double)pSekBody->items_250[nItem].nEndStep_50;
     else
-      pSekBody->items_250[nItem].float_5C = 0.0;
-    pSekBody->items_250[nItem].float_60 = pSekBody->items_250[nItem].float_54;
+      pSekBody->items_250[nItem].fPlayRate_5C = 0.0;
+    pSekBody->items_250[nItem].fCurTime_60 = pSekBody->items_250[nItem].fStartTime_54;
     pSekBody->bStepAdvanced_244 = 0;
     pSekBody->bLooped_248 = 0;
   }

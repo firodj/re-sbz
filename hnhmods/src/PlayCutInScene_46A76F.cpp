@@ -1410,7 +1410,7 @@ double __cdecl hook_GetSekBodyCurrentAnimTime(CSekBody *pSekBody)
   if ( !pSekBody || pSekBody->bDisabled_24C || !pSekBody->pSekHeader_220 || !pSekBody->pSekHeader_220->pAnimSetT3F1 )
     return 0.0;
   g_pSekItem_4CD760 = &pSekBody->items_250[pSekBody->nCurItem_200];
-  return g_pSekItem_4CD760->float_60;
+  return g_pSekItem_4CD760->fCurTime_60;
 }
 
 void __cdecl hook_SetAnimSetTime(CHanaAnimSetT3F1_S150 *pAnimSet, float fTimeScale)

@@ -1954,9 +1954,9 @@ double __cdecl hook_UpdateFoeAI_446A38(
         &g_dwDSStatus_5185C8)
       || (g_dwDSStatus_5185C8 & 1) == 0 )
     {
-      if ( (pAnimItem->float_60 < 100.0 || pAnimItem->float_60 > 108.0)
-        && (pAnimItem->float_60 < 200.0 || pAnimItem->float_60 > 206.0)
-        && (pAnimItem->float_60 < 400.0 || pAnimItem->float_60 > 406.0) )
+      if ( (pAnimItem->fCurTime_60 < 100.0 || pAnimItem->fCurTime_60 > 108.0)
+        && (pAnimItem->fCurTime_60 < 200.0 || pAnimItem->fCurTime_60 > 206.0)
+        && (pAnimItem->fCurTime_60 < 400.0 || pAnimItem->fCurTime_60 > 406.0) )
       {
         g_pFoeHitSfxB[nHitSfx]->pDSBuffer_0->Stop();
         g_pFoeHitSfxB[nHitSfx]->pDSBuffer_0->SetCurrentPosition(0);
@@ -1971,9 +1971,9 @@ double __cdecl hook_UpdateFoeAI_446A38(
         &g_dwDSStatus_5185C8)
       || (g_dwDSStatus_5185C8 & 1) == 0 )
     {
-      if ( (pAnimItem->float_60 < 107.0 || pAnimItem->float_60 > 115.0)
-        && (pAnimItem->float_60 < 205.0 || pAnimItem->float_60 > 212.0)
-        && (pAnimItem->float_60 < 407.0 || pAnimItem->float_60 > 415.0) )
+      if ( (pAnimItem->fCurTime_60 < 107.0 || pAnimItem->fCurTime_60 > 115.0)
+        && (pAnimItem->fCurTime_60 < 205.0 || pAnimItem->fCurTime_60 > 212.0)
+        && (pAnimItem->fCurTime_60 < 407.0 || pAnimItem->fCurTime_60 > 415.0) )
       {
         g_pFoeHitSfxE[nHitSfx]->pDSBuffer_0->Stop();
         g_pFoeHitSfxE[nHitSfx]->pDSBuffer_0->SetCurrentPosition(0);

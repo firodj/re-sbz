@@ -2379,13 +2379,13 @@ char __cdecl hook_UpdateHeroControl_45A513(
         &g_dwDSStatus_5185C8)
       || (g_dwDSStatus_5185C8 & 1) == 0 )
     {
-      if ( (pCurItem->float_60 < 303.0 || pCurItem->float_60 > 310.0)
-        && (pCurItem->float_60 < 403.0 || pCurItem->float_60 > 410.0)
-        && (pCurItem->float_60 < 500.0 || pCurItem->float_60 > 504.0)
-        && (pCurItem->float_60 < 600.0 || pCurItem->float_60 > 606.0)
-        && (pCurItem->float_60 < 1630.0 || pCurItem->float_60 > 1640.0)
-        && (pCurItem->float_60 < 1670.0 || pCurItem->float_60 > 1680.0)
-        && (pCurItem->float_60 < 2622.0 || pCurItem->float_60 > 2630.0) )
+      if ( (pCurItem->fCurTime_60 < 303.0 || pCurItem->fCurTime_60 > 310.0)
+        && (pCurItem->fCurTime_60 < 403.0 || pCurItem->fCurTime_60 > 410.0)
+        && (pCurItem->fCurTime_60 < 500.0 || pCurItem->fCurTime_60 > 504.0)
+        && (pCurItem->fCurTime_60 < 600.0 || pCurItem->fCurTime_60 > 606.0)
+        && (pCurItem->fCurTime_60 < 1630.0 || pCurItem->fCurTime_60 > 1640.0)
+        && (pCurItem->fCurTime_60 < 1670.0 || pCurItem->fCurTime_60 > 1680.0)
+        && (pCurItem->fCurTime_60 < 2622.0 || pCurItem->fCurTime_60 > 2630.0) )
       {
         for ( i = 0; i < 4; ++i )
         {
@@ -2406,13 +2406,13 @@ char __cdecl hook_UpdateHeroControl_45A513(
         &g_dwDSStatus_5185C8)
       || (g_dwDSStatus_5185C8 & 1) == 0 )
     {
-      if ( (pCurItem->float_60 < 313.0 || pCurItem->float_60 > 320.0)
-        && (pCurItem->float_60 < 413.0 || pCurItem->float_60 > 420.0)
-        && (pCurItem->float_60 < 507.0 || pCurItem->float_60 > 511.0)
-        && (pCurItem->float_60 < 605.0 || pCurItem->float_60 > 611.0)
-        && (pCurItem->float_60 < 1633.0 || pCurItem->float_60 > 1643.0)
-        && (pCurItem->float_60 < 1658.0 || pCurItem->float_60 > 1665.0)
-        && (pCurItem->float_60 < 2620.0 || pCurItem->float_60 > 2630.0) )
+      if ( (pCurItem->fCurTime_60 < 313.0 || pCurItem->fCurTime_60 > 320.0)
+        && (pCurItem->fCurTime_60 < 413.0 || pCurItem->fCurTime_60 > 420.0)
+        && (pCurItem->fCurTime_60 < 507.0 || pCurItem->fCurTime_60 > 511.0)
+        && (pCurItem->fCurTime_60 < 605.0 || pCurItem->fCurTime_60 > 611.0)
+        && (pCurItem->fCurTime_60 < 1633.0 || pCurItem->fCurTime_60 > 1643.0)
+        && (pCurItem->fCurTime_60 < 1658.0 || pCurItem->fCurTime_60 > 1665.0)
+        && (pCurItem->fCurTime_60 < 2620.0 || pCurItem->fCurTime_60 > 2630.0) )
       {
         for ( i = 0; i < 4; ++i )
         {

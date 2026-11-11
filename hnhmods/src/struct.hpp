@@ -445,23 +445,23 @@ struct CSekHeader
 
 struct CSekItem
 {
-  int flag_0;
+  int nMode_0; //  Playback mode: 0 = one-shot, 1 = loop,  was: flag_0
   char szName_4[64];
-  int field_44;
-  int field_48;
+  int nCurStep_44; // Current step index, was: field_44
+  int nLoopStartStep_48; // Step index restored on loop wrap, was: field_48
   int gap48;
-  int field_50;
-  float float_54;
-  float float_58;
-  float float_5C;
-  float float_60;
-  int field_64;
+  int nEndStep_50; // End/total step count, was: field_50
+  float fStartTime_54; // Anim time where playback starts, was: float_54
+  float fEndTime_58; // Anim time where the item completes, was: float_58
+  float fPlayRate_5C; // was: float_5C
+  float fCurTime_60; // Current anim time, was: float_60
+  int nLoopCount_64; // Incremented on every loop wrap,    was: field_64
   int gap68;
-  int field_6C;
-  int field_70;
-  int field_74;
-  int gap78;
-  int field_7C;
+  int field_6C; // was: field_6C
+  int bAutoNext_70; // Gates both completion chaining and the loop limit, was: field_70
+  int nNextItem_74; // Item index passed to, was: field_74
+  int nMaxLoops_78;
+  int bNoBlend_7C; // Blend-disable flag, was: field_7C
   int gap80[7];
 };
 
@@ -469,22 +469,22 @@ struct CSekBody
 {
   char szName_0[256];
   char szName_100[256];
-  int nCurItem_200; // was: field_200
+  int nCurItem_200; // Currently playing item index,  was: field_200
   int gap204; // unused?
-  int nReqItem_208; // was: field_208 
+  int nReqItem_208; // Last requested item index, was: field_208 
   int gap20C; // unused?
-  int angle_210;
-  int angle_214;
-  int angle_218;
-  float fBlendReq_21C;  // was: float_21C
+  int field_210;
+  int field_214;
+  int field_218;
+  float fBlendReq_21C;  // Pending crossfade request, was: float_21C
   CSekHeader *pSekHeader_220;
-  float fBlendWeight_224;  // was: float_224
+  float fBlendWeight_224;  // Active blend factor, was: float_224
   int gap228[7];
-  int bStepAdvanced_244; // was: field_244 
-  int bLooped_248; // was: field_248 
-  int bDisabled_24C; // was: field_24C 
+  int bStepAdvanced_244; // Signal flag: step counter moved,  was: field_244 
+  int bLooped_248; // Signal flag: loop wrapped this frame,  was: field_248 
+  int bDisabled_24C; // Body disabled/hidden gate, was: field_24C 
   CSekItem items_250[128];
-  int count_5050;
+  int nRefCount_5050;
 };
 
 struct CSekItemProp
