@@ -110,7 +110,7 @@ void InitHNH() {
 	AssertHanaStructSize();
 	
 	register_WinMain_485CE0();
-	register_D3DXMatrixIdentity_40E450(2);
+	register_D3DXMatrixIdentity_40E450();
 	register_CDROM_VerifyDiscSignature_485C50();
 	register_DSErrToString_423CE7();
 	register_RestartInputThread_481AE4();
@@ -134,17 +134,17 @@ void InitHNH() {
 	register_LoadSoundEffects_47EB7F(0);
 	
 	register_GameMainLoop_47F013(2);
-	register_PlayExploring_45BCAE(2);
+	register_PlayExploring_45BCAE();
 
 	register_ProcessFrame_40600C();
 	register_SystemMenu_4655AB();
 	register_PlayOdsDialogueScene_477F90();
 	register_RunModeSelectScreen();
 	register_SetupHeroEntry_4593E0();
-	register_PlayHunting_44C38D(2);
+	register_PlayHunting_44C38D();
 	register_PlayAssault_4703AE();
 	register_PlayCutInScene_46A76F();
-	register_PlayTugOfWar_45460A(2);
+	register_PlayTugOfWar_45460A();
 	register_PlayHunting_44C38D();
 	register_PlayVideoWith3DAudio_4791A3();
 

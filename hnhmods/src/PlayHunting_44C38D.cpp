@@ -1621,7 +1621,7 @@ double __cdecl hook_UpdateFoeAI_446A38(
           if ( fDist < (double)arrFoeTuning[nDuelIndex][4] && g_dwBattleMode >= 0 )
           {
             SekBody__UpdateTo_4014E4(pHeroBody, 9);
-            *pfHeroHpCur = *pfHeroHpCur - 2000.0 * arrFoeTuning[nDuelIndex][1];
+            *pfHeroHpCur = *pfHeroHpCur - 2000.0 * arrFoeTuning[nDuelIndex][1]; // gampar!
             g_dwBattleMode = -1;
             fHitImpact = 122.0;
           }

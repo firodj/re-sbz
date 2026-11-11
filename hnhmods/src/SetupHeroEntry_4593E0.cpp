@@ -146,7 +146,7 @@ void __cdecl hook_SetupHeroEntry_4593E0(CHanaSceneT458_S504 *pScene, CHanaFrameT
 }
 
 //   bool UpdateHeroBody_44474E(CSBody *pHeroBody, CHanaFrameT3EC_S354 *pMapFrame,
-//                            float fDelta, float *pFCharge, float fChargeMax)
+//                            float fDelta, float *pfHeroHpCur, float fHeroHpMax)
 //   // returns bChargedHit -- true while a charge attack (anim 16) is striking
 // 
 //   1. Input harvest (mutex-guarded): accumulate nMouseDX/nMouseDY from 30 input slots relative to screen center (x5 when
@@ -156,7 +156,7 @@ void __cdecl hook_SetupHeroEntry_4593E0(CHanaSceneT458_S504 *pScene, CHanaFrameT
 //   2. State machine (g_dwBattleMode 0-5), gated on g_dwBattleMode > -1 (else full reset):
 // 
 //   +----------------------+----------------------------+--------------------+--------------------------------+------+
-//   |      Condition       |            Anim            |     *pFCharge      |        Body Z-rotation         | Mode |
+//   |      Condition       |            Anim            |     *pfHeroHpCur      |        Body Z-rotation         | Mode |
 //   +----------------------+----------------------------+--------------------+--------------------------------+------+
 //   | no button, idle <    | 1 (idle) / 2 (fidget)      | +0.05*fDelta,      | rotZMouseTurn = nMouseDX/1080  | 0    |
 //   | 500                  |                            | clamp max          | (mouse turn)                   |      |
@@ -193,8 +193,8 @@ bool __cdecl hook_UpdateHeroBody_44474E(
   CSekBody *pHeroBody,
   CHanaFrameT3EC_S354 *pMapFrame,
   float fDelta,
-  float *pFCharge,
-  float fChargeMax)
+  float *pfHeroHpCur,
+  float fHeroHpMax)
 {
   float midX; // [esp+0h] [ebp-80h]
   float midY; // [esp+4h] [ebp-7Ch]
@@ -231,7 +231,7 @@ bool __cdecl hook_UpdateHeroBody_44474E(
   D3DVALUE py; // [esp+7Ch] [ebp-4h] BYREF
 
   ONCELOG("[HNH:SUB] UpdateHeroBody_44474E\n");
- 
+
   pBodyFrame = pHeroBody->pSekHeader_220->pFrameT3EC;
   nMouseDX = 0;
   nMouseDY = 0;
@@ -299,7 +299,7 @@ bool __cdecl hook_UpdateHeroBody_44474E(
     if ( g_bHeroChargeActive )
     {
       g_fHeroChargeTime = g_fHeroChargeTime + fDelta;
-      *pFCharge = *pFCharge - 0.5 * fDelta;
+      *pfHeroHpCur = *pfHeroHpCur - 0.5 * fDelta;
       if ( g_fHeroChargeTime > 1.0 && g_fHeroChargeTime < 35.0 )
       {
         SekBody__UpdateTo2_401647(pHeroBody, 16);
@@ -326,7 +326,7 @@ bool __cdecl hook_UpdateHeroBody_44474E(
       if ( g_fHeroLightAttackTime < 28.0 )
       {
         SekBody__UpdateTo2_401647(pHeroBody, 13);
-        *pFCharge = *pFCharge - 0.30000001 * fDelta;
+        *pfHeroHpCur = *pfHeroHpCur - 0.30000001 * fDelta;
         rotZAttackSpin = 1.5 * fDelta;
         SetFramePosRel_4069DD((CHanaFrameT3EC_S354 *)pBodyFrame, (CHanaFrameT3EC_S354 *)pBodyFrame, 0.0, 0.0, rotZAttackSpin);
       }
@@ -348,7 +348,7 @@ bool __cdecl hook_UpdateHeroBody_44474E(
       if ( g_bHeroAttackHold == 1 && pInput->mouseBtn_4 == 1 )
       {
         SekBody__UpdateTo2_401647(pHeroBody, 6);
-        *pFCharge = *pFCharge - 0.25 * fDelta;
+        *pfHeroHpCur = *pfHeroHpCur - 0.25 * fDelta;
         fZDelta = -1.8 * fDelta;
         SetFramePosRel_4069DD((CHanaFrameT3EC_S354 *)pBodyFrame, (CHanaFrameT3EC_S354 *)pBodyFrame, 0.0, 0.0, fZDelta);
         g_dwBattleMode = 2;
@@ -359,14 +359,14 @@ bool __cdecl hook_UpdateHeroBody_44474E(
         {
         case 1:
           SekBody__UpdateTo2_401647(pHeroBody, 3);
-          *pFCharge = *pFCharge - 0.15000001 * fDelta;
+          *pfHeroHpCur = *pfHeroHpCur - 0.15000001 * fDelta;
           rotZGuardL = -0.5 * fDelta;
           SetFramePosRel_4069DD((CHanaFrameT3EC_S354 *)pBodyFrame, (CHanaFrameT3EC_S354 *)pBodyFrame, 0.0, 0.0, rotZGuardL);
           g_dwBattleMode = 1;
           break;
         case 2:
           SekBody__UpdateTo2_401647(pHeroBody, 4);
-          *pFCharge = *pFCharge - 0.15000001 * fDelta;
+          *pfHeroHpCur = *pfHeroHpCur - 0.15000001 * fDelta;
           rotZGuardR = 0.5 * fDelta;
           SetFramePosRel_4069DD((CHanaFrameT3EC_S354 *)pBodyFrame, (CHanaFrameT3EC_S354 *)pBodyFrame, 0.0, 0.0, rotZGuardR);
           g_dwBattleMode = 3;
@@ -392,16 +392,16 @@ bool __cdecl hook_UpdateHeroBody_44474E(
       {
         SekBody__UpdateTo2_401647(pHeroBody, 2);
       }
-      *pFCharge = 0.050000001 * fDelta + *pFCharge;
-      if ( *pFCharge >= (double)fChargeMax )
-        *pFCharge = fChargeMax;
+      *pfHeroHpCur = 0.050000001 * fDelta + *pfHeroHpCur;
+      if ( *pfHeroHpCur >= (double)fHeroHpMax )
+        *pfHeroHpCur = fHeroHpMax;
       g_dwBattleMode = 0;
     }
     rotZMouseTurn = (double)nMouseDX / 360.0 / 3.0;
     Frame_RotateMatrixAxis_4070AB((CHanaFrameT3EC_S354 *)pBodyFrame, 1, &pDirUp, rotZMouseTurn);
   }
-  if ( *pFCharge <= 1.0 )
-    *pFCharge = 1.0;
+  if ( *pfHeroHpCur <= 1.0 )
+    *pfHeroHpCur = 1.0;
   if ( CSekBody__UpdateAnim_4019E1(pHeroBody, fDelta) )
   {
     if ( g_fHeroIdleTime >= 500.0 )
