@@ -1,6 +1,8 @@
 #include "dx7.hpp"
 
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "console.hpp"
 #include "shared.hpp"
@@ -208,11 +210,217 @@ static void HandlePoseInput(void)
     BOOL bDown = (GetAsyncKeyState('0' + i) & 0x8000) != 0;
     if ( bDown && !s_abPrevKey[i] )
     {
-      SekBody__UpdateTo_4014E4(s_pHeroBody, i);
-      DebugLog("[HNH][Custom] timeline item %d\n", i);
+      // skip empty slots: their zero step count NaNs the play-rate recompute
+      if ( s_pHeroBody->items_250[i].nEndStep_50 == 0 )
+      {
+        DebugLog("[HNH][Custom] timeline item %d empty - skipped\n", i);
+      }
+      else
+      {
+        SekBody__UpdateTo_4014E4(s_pHeroBody, i);
+        DebugLog("[HNH][Custom] timeline item %d\n", i);
+      }
     }
     s_abPrevKey[i] = bDown;
   }
+}
+
+// === EXPERIMENT 4: scene-frame hierarchy in ImGui ===
+//
+// Walks g_pSceneFrame's child tree (CHanaNode lists) and shows every frame:
+// name, local/world translation, flags, the attached object (by dwType tag),
+// its light/anim hooks, and recursive children. Node identity is the frame
+// pointer (names repeat), so each node is PushID'ed before TreeNode.
+
+static const char *TypeNameFromTag(int dwType)
+{
+  switch ( dwType )
+  {
+    case 0x3EA: return "Vert";
+    case 0x3EB: return "Texture";
+    case 0x3EC: return "Frame";
+    case 0x3ED: return "FrameArray";
+    case 0x3EE: return "Mate";
+    case 0x3EF: return "Light";
+    case 0x3F0: return "Anim";
+    case 0x3F1: return "AnimSet";
+    case 0x3F2: return "TexCoord";
+    case 0x3F3: return "TexAnim";
+    case 0x3F4: return "TexAnimSet";
+    case 0x3F5: return "Mesh";
+    case 0x3F6: return "Sprite";
+    case 0x3F7: return "MateAnim";
+    case 0x3F8: return "MateAnimSet";
+    case 0x3F9: return "LightAnim";
+    case 0x3FA: return "LightAnimSet";
+    case 0x457: return "Morp";
+    case 0x458: return "Scene";
+    default:     return "?";
+  }
+}
+
+static void DrawAttachedObject(CHanaBase_S130 *pObj)
+{
+  if ( !pObj )
+    return;
+
+  ImGui::PushID((const void *)pObj);
+  const char *szName = pObj->szName_8[0] ? pObj->szName_8 : "(unnamed)";
+  if ( ImGui::TreeNode("obj", "obj: %s [%s T3%X/T4%X] x%d",
+                       szName, TypeNameFromTag(pObj->dwType),
+                       pObj->dwType & 0xFFF, pObj->dwType >> 12,
+                       pObj->nCount_12C) )
+  {
+    switch ( pObj->dwType )
+    {
+      case 0x3EA:                                       // vertex buffer
+      {
+        CHanaVertT3EA_S1FC *pVert = (CHanaVertT3EA_S1FC *)pObj;
+        ImGui::Text("verts=%lu indices=%lu prim=%d",
+                    pVert->dwNumVertices_134, pVert->dwNumIndices_140,
+                    pVert->nPrimType_154[1]);
+        break;
+      }
+      case 0x3F5:                                       // mesh
+        ImGui::Text("vert objects=%d",
+                    ((CHanaMeshT3F5_S138 *)pObj)->nCountVertT3EA_130);
+        break;
+      case 0x457:                                       // morph
+        ImGui::Text("morpParam=%.3f",
+                    ((CHanaMorpT457_S40C *)pObj)->fMorpParam_130);
+        break;
+      default:
+        break;
+    }
+    ImGui::TreePop();
+  }
+  ImGui::PopID();
+}
+
+// show/hide: sets bAlphaDeferred_130 (the engine's own hide flag, the same
+// one the duel camera and wana reveal use) on the frame and its whole subtree
+static void SetFrameHiddenRecursive(CHanaFrameT3EC_S354 *pFrame, int bHidden)
+{
+  pFrame->bAlphaDeferred_130 = bHidden;
+  CHanaNode *pNode = pFrame->pFirstChildNode;
+  for ( unsigned int i = 0; i < pFrame->nCountChild && pNode; ++i )
+  {
+    SetFrameHiddenRecursive(pNode->pData, bHidden);
+    pNode = pNode->pNext;
+  }
+}
+
+static void DrawFrameNode(CHanaFrameT3EC_S354 *pFrame)
+{
+  if ( !pFrame )
+    return;
+
+  ImGui::PushID((const void *)pFrame);
+  const char *szName = pFrame->szName_8[0] ? pFrame->szName_8 : "(unnamed)";
+  const char *szTag = "Frame";
+  if ( pFrame == g_pCameraFrame )
+    szTag = "CAMERA";
+  else if ( pFrame == g_pLightFrame )
+    szTag = "LIGHT";
+
+  if ( ImGui::TreeNode("frame", "%s [%s] +%d ch", szName, szTag,
+                       pFrame->nCountChild) )
+  {
+    // show/hide toggle on the node row (recursive - hides the subtree)
+    bool bVisible = pFrame->bAlphaDeferred_130 == 0;
+    if ( ImGui::Checkbox("show", &bVisible) )
+      SetFrameHiddenRecursive(pFrame, bVisible ? 0 : 1);
+
+    ImGui::Text("local (%.2f, %.2f, %.2f)  world (%.2f, %.2f, %.2f)",
+                pFrame->matLocal_138._41, pFrame->matLocal_138._42,
+                pFrame->matLocal_138._43,
+                pFrame->matWorld_178._41, pFrame->matWorld_178._42,
+                pFrame->matWorld_178._43);
+    ImGui::TextDisabled("flags:%s%s%s%s%s",
+                        pFrame->bAlphaDeferred_130 ? " HIDE" : "",
+                        pFrame->bUpdateBone_218    ? " BONE" : "",
+                        pFrame->bHasLight_214      ? " HASLIGHT" : "",
+                        pFrame->bDisableFog_134    ? " NOFOG" : "",
+                        pFrame->bIsRoot_1F8        ? " ROOT" : "");
+
+    DrawAttachedObject((CHanaBase_S130 *)pFrame->pAttachedObj_20C);
+
+    if ( pFrame->pHanaLight_210 )
+      ImGui::TextDisabled("light idx=%d type=%d",
+                          pFrame->pHanaLight_210->dwLightIndex_130,
+                          (int)pFrame->pHanaLight_210->d3dLight_134.dltType);
+    if ( pFrame->pHanaAnim_2C0 )
+      ImGui::TextDisabled("anim: %s",
+                          ((CHanaBase_S130 *)pFrame->pHanaAnim_2C0)->szName_8[0]
+                              ? ((CHanaBase_S130 *)pFrame->pHanaAnim_2C0)->szName_8
+                              : "(unnamed)");
+
+    CHanaNode *pNode = pFrame->pFirstChildNode;
+    for ( unsigned int i = 0; i < pFrame->nCountChild && pNode; ++i )
+    {
+      DrawFrameNode(pNode->pData);
+      pNode = pNode->pNext;
+    }
+    ImGui::TreePop();
+  }
+  ImGui::PopID();
+}
+
+static void DrawSceneTree(void)
+{
+  if ( !g_pSceneFrame )
+  {
+    ImGui::Text("(no scene frame)");
+    return;
+  }
+  DrawFrameNode((CHanaFrameT3EC_S354 *)g_pSceneFrame);
+}
+
+// SEK timeline browser: all 128 item slots of the hero body, live state.
+// A slot is playable when its step count is non-zero (empty slots would make
+// the play-rate recompute divide by zero and NaN the clock). Click plays the
+// item with a crossfade (PlayAnim); the number keys hard-cut via UpdateTo.
+static void DrawAnimationUI(void)
+{
+  if ( !s_pHeroBody )
+    return;
+
+  CSekItem *pItems = s_pHeroBody->items_250;
+  int nCur = s_pHeroBody->nCurItem_200;
+
+  ImGui::Text("item %d '%s'  t=%.1f  rate=%.2f  blend=%.2f%s",
+              nCur,
+              pItems[nCur].szName_4[0] ? pItems[nCur].szName_4 : "-",
+              pItems[nCur].fCurTime_60, pItems[nCur].fPlayRate_5C,
+              s_pHeroBody->fBlendWeight_224,
+              s_pHeroBody->bDisabled_24C ? "  (body disabled)" : "");
+  ImGui::Separator();
+
+  ImGui::BeginChild("##animlist", ImVec2(0.0f, 0.0f), true);
+  for ( int i = 0; i < 128; ++i )
+  {
+    CSekItem *pIt = &pItems[i];
+    BOOL bPlayable = pIt->nEndStep_50 != 0;
+
+    char szLabel[112];
+    snprintf(szLabel, sizeof(szLabel),
+             "%s%3d %-18.18s %s %6.1f-%-6.1f st=%3d",
+             i == nCur ? "* " : "  ",
+             i,
+             pIt->szName_4[0] ? pIt->szName_4 : "-",
+             pIt->nMode_0 == 1 ? "LOOP" : "1SHT",
+             pIt->fStartTime_54, pIt->fEndTime_58,
+             pIt->nEndStep_50);
+    if ( pIt->bAutoNext_70 )
+      snprintf(szLabel + strlen(szLabel), sizeof(szLabel) - strlen(szLabel),
+               " -> %d", pIt->nNextItem_74);
+
+    if ( !bPlayable )
+      ImGui::TextDisabled("%s   (empty)", szLabel);
+    else if ( ImGui::Selectable(szLabel, i == nCur) )
+      CSekBody__PlayAnim_40179D(s_pHeroBody, i);
+  }
+  ImGui::EndChild();
 }
 
 void ResetGameData(void) {
@@ -328,24 +536,22 @@ void GameCustomLoop(void)
       static bool bMenuOpen = true;
       ImGui::NewFrame();
      
-      ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
+      ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
       ImGui::SetNextWindowSize(ImVec2(450, 600), ImGuiCond_FirstUseEver);
       ImGui::SetNextWindowPos(ImVec2(25, 25), ImGuiCond_FirstUseEver);
 
       if (ImGui::Begin("ImGui Menu", &bMenuOpen, flags)) {
-        if (ImGui::CollapsingHeader("MENU")) {
-          if (ImGui::TreeNode("SUB MENU")) {
-            ImGui::Text("Text Test");
-            if (ImGui::Button("Button Test")) {
-              DebugLog("[menu] Button Test clicked.\n");
-            }
-            /*if (ImGui::Checkbox("No Title Bar", &noTitleBar)) {
-              DebugLog("[menu] Checkbox No Title Bar toggled. flags=0x%X\n", flags);
-            }
-            ImGui::SliderFloat("Slider Test", &test, 1.0f, 100.0f);
-            ImGui::Text("Slider value=%.2f", test);*/
-            ImGui::TreePop();
-          }
+  
+        if ( ImGui::CollapsingHeader("SCENE TREE") )
+        {
+          ImGui::BeginChild("##scenetree", ImVec2(0.0f, 250.0f), true);
+          DrawSceneTree();
+          ImGui::EndChild();
+        }
+
+        if ( ImGui::CollapsingHeader("ANIMATION") )
+        {
+          DrawAnimationUI();
         }
       }
       ImGui::End();
