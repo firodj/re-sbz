@@ -76451,12 +76451,12 @@ typedef struct IDirect3D9 *LPDIRECT3D9, *PDIRECT3D9;
 #line 426 "D3DX9/Include/d3d9.h"
 typedef struct IDirect3DDevice9 { struct IDirect3DDevice9Vtbl * lpVtbl; } IDirect3DDevice9; typedef struct IDirect3DDevice9Vtbl IDirect3DDevice9Vtbl; struct IDirect3DDevice9Vtbl
 {
-
+    // #0
     HRESULT (__stdcall * QueryInterface)(IDirect3DDevice9 * This, const IID * const riid, void** ppvObj) ;
     ULONG (__stdcall * AddRef)(IDirect3DDevice9 * This) ;
     ULONG (__stdcall * Release)(IDirect3DDevice9 * This) ;
 
-
+    // #3
     HRESULT (__stdcall * TestCooperativeLevel)(IDirect3DDevice9 * This) ;
     UINT (__stdcall * GetAvailableTextureMem)(IDirect3DDevice9 * This) ;
     HRESULT (__stdcall * EvictManagedResources)(IDirect3DDevice9 * This) ;
@@ -76464,16 +76464,21 @@ typedef struct IDirect3DDevice9 { struct IDirect3DDevice9Vtbl * lpVtbl; } IDirec
     HRESULT (__stdcall * GetDeviceCaps)(IDirect3DDevice9 * This, D3DCAPS9* pCaps) ;
     HRESULT (__stdcall * GetDisplayMode)(IDirect3DDevice9 * This, UINT iSwapChain,D3DDISPLAYMODE* pMode) ;
     HRESULT (__stdcall * GetCreationParameters)(IDirect3DDevice9 * This, D3DDEVICE_CREATION_PARAMETERS *pParameters) ;
+    
+    // #10
     HRESULT (__stdcall * SetCursorProperties)(IDirect3DDevice9 * This, UINT XHotSpot,UINT YHotSpot,IDirect3DSurface9* pCursorBitmap) ;
     void (__stdcall * SetCursorPosition)(IDirect3DDevice9 * This, int X,int Y,DWORD Flags) ;
     BOOL (__stdcall * ShowCursor)(IDirect3DDevice9 * This, BOOL bShow) ;
     HRESULT (__stdcall * CreateAdditionalSwapChain)(IDirect3DDevice9 * This, D3DPRESENT_PARAMETERS* pPresentationParameters,IDirect3DSwapChain9** pSwapChain) ;
     HRESULT (__stdcall * GetSwapChain)(IDirect3DDevice9 * This, UINT iSwapChain,IDirect3DSwapChain9** pSwapChain) ;
     UINT (__stdcall * GetNumberOfSwapChains)(IDirect3DDevice9 * This) ;
+    // #16
     HRESULT (__stdcall * Reset)(IDirect3DDevice9 * This, D3DPRESENT_PARAMETERS* pPresentationParameters) ;
     HRESULT (__stdcall * Present)(IDirect3DDevice9 * This, const RECT* pSourceRect,const RECT* pDestRect,HWND hDestWindowOverride,const RGNDATA* pDirtyRegion) ;
     HRESULT (__stdcall * GetBackBuffer)(IDirect3DDevice9 * This, UINT iSwapChain,UINT iBackBuffer,D3DBACKBUFFER_TYPE Type,IDirect3DSurface9** ppBackBuffer) ;
     HRESULT (__stdcall * GetRasterStatus)(IDirect3DDevice9 * This, UINT iSwapChain,D3DRASTER_STATUS* pRasterStatus) ;
+    
+    // #20
     HRESULT (__stdcall * SetDialogBoxMode)(IDirect3DDevice9 * This, BOOL bEnableDialogs) ;
     void (__stdcall * SetGammaRamp)(IDirect3DDevice9 * This, UINT iSwapChain,DWORD Flags,const D3DGAMMARAMP* pRamp) ;
     void (__stdcall * GetGammaRamp)(IDirect3DDevice9 * This, UINT iSwapChain,D3DGAMMARAMP* pRamp) ;
@@ -76484,6 +76489,8 @@ typedef struct IDirect3DDevice9 { struct IDirect3DDevice9Vtbl * lpVtbl; } IDirec
     HRESULT (__stdcall * CreateIndexBuffer)(IDirect3DDevice9 * This, UINT Length,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool,IDirect3DIndexBuffer9** ppIndexBuffer,HANDLE* pSharedHandle) ;
     HRESULT (__stdcall * CreateRenderTarget)(IDirect3DDevice9 * This, UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Lockable,IDirect3DSurface9** ppSurface,HANDLE* pSharedHandle) ;
     HRESULT (__stdcall * CreateDepthStencilSurface)(IDirect3DDevice9 * This, UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Discard,IDirect3DSurface9** ppSurface,HANDLE* pSharedHandle) ;
+    
+    // #30
     HRESULT (__stdcall * UpdateSurface)(IDirect3DDevice9 * This, IDirect3DSurface9* pSourceSurface,const RECT* pSourceRect,IDirect3DSurface9* pDestinationSurface,const POINT* pDestPoint) ;
     HRESULT (__stdcall * UpdateTexture)(IDirect3DDevice9 * This, IDirect3DBaseTexture9* pSourceTexture,IDirect3DBaseTexture9* pDestinationTexture) ;
     HRESULT (__stdcall * GetRenderTargetData)(IDirect3DDevice9 * This, IDirect3DSurface9* pRenderTarget,IDirect3DSurface9* pDestSurface) ;
@@ -76494,8 +76501,12 @@ typedef struct IDirect3DDevice9 { struct IDirect3DDevice9Vtbl * lpVtbl; } IDirec
     HRESULT (__stdcall * SetRenderTarget)(IDirect3DDevice9 * This, DWORD RenderTargetIndex,IDirect3DSurface9* pRenderTarget) ;
     HRESULT (__stdcall * GetRenderTarget)(IDirect3DDevice9 * This, DWORD RenderTargetIndex,IDirect3DSurface9** ppRenderTarget) ;
     HRESULT (__stdcall * SetDepthStencilSurface)(IDirect3DDevice9 * This, IDirect3DSurface9* pNewZStencil) ;
+    
+    // #40
     HRESULT (__stdcall * GetDepthStencilSurface)(IDirect3DDevice9 * This, IDirect3DSurface9** ppZStencilSurface) ;
+    // #41
     HRESULT (__stdcall * BeginScene)(IDirect3DDevice9 * This) ;
+    // #42
     HRESULT (__stdcall * EndScene)(IDirect3DDevice9 * This) ;
     HRESULT (__stdcall * Clear)(IDirect3DDevice9 * This, DWORD Count,const D3DRECT* pRects,DWORD Flags,D3DCOLOR Color,float Z,DWORD Stencil) ;
     HRESULT (__stdcall * SetTransform)(IDirect3DDevice9 * This, D3DTRANSFORMSTATETYPE State,const D3DMATRIX* pMatrix) ;

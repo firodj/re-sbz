@@ -5,6 +5,10 @@
 #include "console.hpp"
 #include "shared.hpp"
 #include "hnh_hook.hpp"
+#include "hnh_intern.hpp"
+
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_win32.h"
 
 // === EXPERIMENT 1: render the otoko hero body ===
 //
@@ -68,14 +72,6 @@ static CSekBody *s_pHeroBody = NULL;
 static float s_fCamYaw = 0.0f;          // radians, 0 = eye on the -Z side
 static float s_fCamPitch = 0.37f;       // eye above the target, aiming down
 static float s_fCamDist = 25.0f;        // eye ~ (0, 1.1, 1.8)
-
-// the device our actor assets were created on; D3DInitBuffers re-assigns
-// g_pD3DDevice_4D6C78 on every D3DInit (RecoverLostDevice's WRONGMODE path),
-// which invalidates ALL device objects (hero vertex buffers, sprite textures)
-// and builds a brand-new g_pSceneFrame - orphaning anything attached to the
-// old tree. The stock game survives this by re-entering scenes (full asset
-// reload); a persistent custom scene must watch and reload by itself.
-static LPDIRECT3DDEVICE7 s_pDevAtLoad = NULL;
 
 static CHanaFrameT3EC_S354 *HeroFrame(void)
 {
@@ -144,9 +140,6 @@ static BOOL GameCustomSetup(void)
   FrameTimer_BeginFrame();
   RestartInputThread(2);
 
-  // arm the device-reinit watch (checked every frame in the loop)
-  s_pDevAtLoad = g_pD3DDevice_4D6C78;
-  DebugLog("[HNH][Custom] hero loaded on device 0x%p, entering loop\n", s_pDevAtLoad);
   return TRUE;
 }
 
@@ -270,40 +263,22 @@ void GameCustomLoop(void)
   if ( !s_pHeroBody && !GameCustomSetup() )
     return;
 
+  bool bEscPress = false;
+  int mouseX = 0, mouseY = 0;
+
   while ( 1 )
   {
-    int mouseX, mouseY;
-
     DoPeekMessages();
+
+    if (bEscPress) break;
 
     float fDeltaTime = (float)GetFrameTime();
     if ( fDeltaTime > 5.0f )
       fDeltaTime = 5.0f;
     FrameTimer_EndFrame();
 
-    if ( IsMenuKeyPressed_481170() )                  // ESC exits the experiment
-      break;
+    CHanaSpriteT3F6_S1FC* pMouseCursor = MouseCursor();
 
-    // device re-created underneath us? -> every device object we hold is dead;
-    // drop the hero + cursor and rebuild them on the new device / new tree
-    if ( g_pD3DDevice_4D6C78 != s_pDevAtLoad )
-    {
-      DebugLog("[HNH][Custom] device re-created 0x%p -> 0x%p, reloading actors\n",
-               s_pDevAtLoad, g_pD3DDevice_4D6C78);
-      s_pHeroBody = NULL;
-      s_pMouseSprite = NULL;
-      if ( !GameCustomSetup() )
-        break;
-    }
-
-    CHanaSpriteT3F6_S1FC *pMouseCursor = MouseCursor();
-
-    GetMouseXY_45A4D8((DWORD *)&mouseX, (DWORD *)&mouseY);
-
-    BOOL bDown = (GetAsyncKeyState('C') & 0x8000) != 0;
-
-    HandleOrbitInput(fDeltaTime);
-    HandlePoseInput();
     UpdateOrbitCamera();
 
     // advance the hero timeline (writes matLocal_138), then rebuild world mats
@@ -334,6 +309,54 @@ void GameCustomLoop(void)
       g_pD3DDevice_4D6C78->EndScene();
     }
 
+    if (ImGuiBlockBegin()) {
+      ImGuiIO& io = ImGui::GetIO();
+      io.MouseDrawCursor = true;
+      io.ConfigFlags &= ~(ImGuiConfigFlags_NoMouse | ImGuiConfigFlags_NoKeyboard | ImGuiConfigFlags_NoMouseCursorChange);
+      
+      if (!io.WantCaptureKeyboard) {
+        bEscPress = IsMenuKeyPressed_481170();                 // ESC exits the experiment
+        BOOL bDown = (GetAsyncKeyState('C') & 0x8000) != 0;
+        HandlePoseInput();
+      }
+
+      if (!io.WantCaptureMouse) {
+        GetMouseXY_45A4D8((DWORD*)&mouseX, (DWORD*)&mouseY);
+        HandleOrbitInput(fDeltaTime);
+      }
+
+      static bool bMenuOpen = true;
+      ImGui::NewFrame();
+     
+      ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
+      ImGui::SetNextWindowSize(ImVec2(450, 600), ImGuiCond_FirstUseEver);
+      ImGui::SetNextWindowPos(ImVec2(25, 25), ImGuiCond_FirstUseEver);
+
+      if (ImGui::Begin("ImGui Menu", &bMenuOpen, flags)) {
+        if (ImGui::CollapsingHeader("MENU")) {
+          if (ImGui::TreeNode("SUB MENU")) {
+            ImGui::Text("Text Test");
+            if (ImGui::Button("Button Test")) {
+              DebugLog("[menu] Button Test clicked.\n");
+            }
+            /*if (ImGui::Checkbox("No Title Bar", &noTitleBar)) {
+              DebugLog("[menu] Checkbox No Title Bar toggled. flags=0x%X\n", flags);
+            }
+            ImGui::SliderFloat("Slider Test", &test, 1.0f, 100.0f);
+            ImGui::Text("Slider value=%.2f", test);*/
+            ImGui::TreePop();
+          }
+        }
+      }
+      ImGui::End();
+
+
+      ImGui::EndFrame();
+      ImGui::Render();
+
+
+      ImGuiBlockEnd();
+    }
     PresentFrame();
     HanaVert_DrawBatch(0);
   }

@@ -264,5 +264,11 @@ void Init() {
 	DebugLog("[HNH] Hooked GetAsyncKeyState; %s\n", MH_StatusToString(res));
 }
 
+void InitPeekMessageOnly() {
+	MH_STATUS res = MH_CreateHook(PeekMessageA, reinterpret_cast<LPVOID>(user32hook::hookPeekMessageA), reinterpret_cast<LPVOID*>(&user32hook::oPeekMessageA));
+	if (res == MH_OK) res = MH_EnableHook(PeekMessageA);
+	DebugLog("[HNH] Hooked PeekMessageA; %s\n", MH_StatusToString(res));
+
+}
 ///////////////////////////////////////////////////////////////// user32hook //
 }

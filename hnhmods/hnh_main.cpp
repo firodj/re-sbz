@@ -24,6 +24,7 @@ namespace py = pybind11;
 #include "src/shared.hpp"
 #undef HNHMAIN
 
+
 bool IsGameInputOn() {
 	if (!menu::isOpen) {
 		return true;
@@ -481,3 +482,42 @@ int WINAPI hookWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmd
 	return ret;
 }
 
+void SetupDX9Hook()
+{
+	// Initialize MinHook
+	{
+		MH_STATUS mhStatus = MH_Initialize();
+		if (mhStatus != MH_OK) {
+			DebugLog("[DllMain] MinHook initialization failed: %s\n",
+				MH_StatusToString(mhStatus));	
+			return;
+		}
+		DebugLog("[DllMain] MinHook initialized.\n");
+	}
+
+	user32hook::InitPeekMessageOnly();
+	d3d9hook::Init(1);
+}
+
+void FinishDX9Hook() {
+	d3d9hook::UnInit();
+
+	MH_DisableHook(MH_ALL_HOOKS);
+	MH_RemoveHook(MH_ALL_HOOKS);
+	MH_Uninitialize();
+}
+
+bool ImGuiBlockBegin() {
+	if (!d3d9hook::IsInitialized()) return false;
+
+	ImGui_ImplDX9_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+
+	return true;
+}
+
+void ImGuiBlockEnd() {
+	if (!d3d9hook::IsInitialized()) return;
+
+	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+}

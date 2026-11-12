@@ -8,4 +8,5 @@
 namespace user32hook {
 
 	void Init();
+	void InitPeekMessageOnly();
 }

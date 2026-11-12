@@ -6,6 +6,11 @@ namespace hnh {
 	
 };
 
+void SetupDX9Hook();
+void FinishDX9Hook();
+bool ImGuiBlockBegin();
+void ImGuiBlockEnd();
+bool IsGameInputOn();
 
 void AssertHanaStructSize();
 

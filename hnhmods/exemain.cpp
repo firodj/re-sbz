@@ -52,10 +52,12 @@ void DirectHookHNH() {
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	console::Alloc();
+	SetupDX9Hook();
 	DirectHookHNH();
 	
 	int ret = WinMain_485CE0(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
+	FinishDX9Hook();
 	console::Free();
   return ret;
 }
