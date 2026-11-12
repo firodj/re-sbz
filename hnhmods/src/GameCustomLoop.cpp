@@ -68,7 +68,32 @@ static CSekBody *s_pHeroBody = NULL;
 // placement constants (world units; the ~16-unit body hangs BELOW the frame
 // origin, cf. g_fHitY_4C6F48, so the orbit target is at negative Y)
 #define CUSTOM_HERO_Z   25.0f
-#define CUSTOM_TARGET_Y 0.0f           // hero mid-body (origin = top of rig)
+static float s_fTargetY = 0.0f;        // orbit target height (UI slider)
+
+// === EXPERIMENT 5: character chooser ===
+// Loadable body pairs (dir 1005): the hero, the 12 duel foes (arrDuelEntries)
+// and the 10 assault-mode girls (arrModeBodyNames). Foe/girl SEKs carry the
+// duel/act timelines, so the ANIMATION browser shows each one's real items.
+static const struct
+{
+  const char *szName;
+  const char *szPair;                   // base path: %s.sek + %s.odf
+} s_arrChars[] = {
+  { "otoko (hero)", "otoko\\otoko" },
+  { "foe o2a",      "run\\o2\\o2a" }, { "foe o2b", "run\\o2\\o2b" },
+  { "foe o5a",      "run\\o5\\o5a" }, { "foe o5b", "run\\o5\\o5b" },
+  { "foe o4a",      "run\\o4\\o4a" }, { "foe o4b", "run\\o4\\o4b" },
+  { "foe o3a",      "run\\o3\\o3a" }, { "foe o3b", "run\\o3\\o3b" },
+  { "foe o3c",      "run\\o3\\o3c" },
+  { "foe o1a",      "run\\o1\\o1a" }, { "foe o1b", "run\\o1\\o1b" },
+  { "foe o1c",      "run\\o1\\o1c" },
+  { "girl hh02_01", "h\\h02\\hh02_01" }, { "girl hh02_02", "h\\h02\\hh02_02" },
+  { "girl hh05_01", "h\\h05\\hh05_01" }, { "girl hh05_02", "h\\h05\\hh05_02" },
+  { "girl hh04_01", "h\\h04\\hh04_01" }, { "girl hh04_02", "h\\h04\\hh04_02" },
+  { "girl hh03_01", "h\\h03\\hh03_01" }, { "girl hh03_02", "h\\h03\\hh03_02" },
+  { "girl hh01_01", "h\\h01\\hh01_01" }, { "girl hh01_02", "h\\h01\\hh01_02" },
+};
+static int s_nCharSel = 0;
 
 // orbit state (spherical around the target at (0, CUSTOM_TARGET_Y, CUSTOM_HERO_Z))
 static float s_fCamYaw = 0.0f;          // radians, 0 = eye on the -Z side
@@ -84,7 +109,7 @@ static CHanaFrameT3EC_S354 *HeroFrame(void)
 static void UpdateOrbitCamera(void)
 {
   const float fTx = 0.0f;
-  const float fTy = CUSTOM_TARGET_Y;
+  const float fTy = s_fTargetY;
   const float fTz = CUSTOM_HERO_Z;
 
   float fCosPitch = cosf(s_fCamPitch);
@@ -110,14 +135,14 @@ static BOOL GameCustomSetup(void)
   char szSekPath[256];
   char szOdfPath[256];
 
-  // hero body pair, resolved through the ODF dir (path code 1005)
-  wsprintfA(szSekPath, "otoko\\otoko.sek");
+  // character body pair (see s_arrChars), resolved through the ODF dir (1005)
+  wsprintfA(szSekPath, "%s.sek", s_arrChars[s_nCharSel].szPair);
   CHanaObj__GetRealPath_486D9A(szSekPath, 1005);
-  wsprintfA(szOdfPath, "otoko\\otoko.odf");
+  wsprintfA(szOdfPath, "%s.odf", s_arrChars[s_nCharSel].szPair);
   CHanaObj__GetRealPath_486D9A(szOdfPath, 1005);
   if ( !LoadSekAndOdf_4445DD(szSekPath, szOdfPath, &s_pHeroBody) )
   {
-    DebugLog("[HNH][Custom] error LoadSekAndOdf otoko\n");
+    DebugLog("[HNH][Custom] error LoadSekAndOdf %s\n", s_arrChars[s_nCharSel].szPair);
     return FALSE;
   }
 
@@ -200,30 +225,6 @@ static void HandleOrbitInput(float fDeltaTime)
     s_fCamDist = 80.0f;
 }
 
-// experiment 3 input: number keys 0..9 hard-cut the hero timeline item
-static void HandlePoseInput(void)
-{
-  static BOOL s_abPrevKey[10] = { FALSE };
-
-  for ( int i = 0; i < 10; ++i )
-  {
-    BOOL bDown = (GetAsyncKeyState('0' + i) & 0x8000) != 0;
-    if ( bDown && !s_abPrevKey[i] )
-    {
-      // skip empty slots: their zero step count NaNs the play-rate recompute
-      if ( s_pHeroBody->items_250[i].nEndStep_50 == 0 )
-      {
-        DebugLog("[HNH][Custom] timeline item %d empty - skipped\n", i);
-      }
-      else
-      {
-        SekBody__UpdateTo_4014E4(s_pHeroBody, i);
-        DebugLog("[HNH][Custom] timeline item %d\n", i);
-      }
-    }
-    s_abPrevKey[i] = bDown;
-  }
-}
 
 // === EXPERIMENT 4: scene-frame hierarchy in ImGui ===
 //
@@ -423,6 +424,53 @@ static void DrawAnimationUI(void)
   ImGui::EndChild();
 }
 
+// swap the loaded character: full teardown of the old body (CSekBody__Release
+// frees the SEK body, its header, the frame tree and the animset via the
+// engine's own refcount chain), then rebuild through the normal setup
+static BOOL LoadCharacter(int nSel)
+{
+  if ( s_pHeroBody )
+  {
+    CSekBody__Release_4012FE(s_pHeroBody);
+    s_pHeroBody = NULL;
+  }
+  s_nCharSel = nSel;
+  return GameCustomSetup();
+}
+
+// character chooser + framing tweak: the orbit-target height is a slider
+// because rigs hang differently (the hero origin sits at the top of the body,
+// the girls/foes differ)
+static void DrawCharacterUI(void)
+{
+  static int s_nPending = -1;          // deferred: load after the combo closes
+
+  if ( ImGui::BeginCombo("character", s_arrChars[s_nCharSel].szName) )
+  {
+    for ( int i = 0;
+          i < (int)(sizeof(s_arrChars) / sizeof(s_arrChars[0])); ++i )
+    {
+      bool bSelected = i == s_nCharSel;
+      if ( ImGui::Selectable(s_arrChars[i].szName, bSelected) && i != s_nCharSel )
+        s_nPending = i;
+      if ( bSelected )
+        ImGui::SetItemDefaultFocus();
+    }
+    ImGui::EndCombo();
+  }
+  ImGui::TextDisabled("dir: %s.sek / %s.odf", s_arrChars[s_nCharSel].szPair,
+                      s_arrChars[s_nCharSel].szPair);
+  ImGui::SliderFloat("orbit target Y", &s_fTargetY, -20.0f, 20.0f);
+
+  if ( s_nPending >= 0 )
+  {
+    int n = s_nPending;
+    s_nPending = -1;
+    if ( !LoadCharacter(n) )
+      DebugLog("[HNH][Custom] LoadCharacter(%d) failed\n", n);
+  }
+}
+
 void ResetGameData(void) {
   // reset the UI-effect DirectSound buffers and both footstep-sound tables
   memset(g_arrUIEffectDSBuffer_52F168, 0, sizeof(g_arrUIEffectDSBuffer_52F168));
@@ -525,7 +573,6 @@ void GameCustomLoop(void)
       if (!io.WantCaptureKeyboard) {
         bEscPress = IsMenuKeyPressed_481170();                 // ESC exits the experiment
         BOOL bDown = (GetAsyncKeyState('C') & 0x8000) != 0;
-        HandlePoseInput();
       }
 
       if (!io.WantCaptureMouse) {
@@ -541,7 +588,10 @@ void GameCustomLoop(void)
       ImGui::SetNextWindowPos(ImVec2(25, 25), ImGuiCond_FirstUseEver);
 
       if (ImGui::Begin("ImGui Menu", &bMenuOpen, flags)) {
-  
+
+        if ( ImGui::CollapsingHeader("CHARACTER", ImGuiTreeNodeFlags_DefaultOpen) )
+          DrawCharacterUI();
+
         if ( ImGui::CollapsingHeader("SCENE TREE") )
         {
           ImGui::BeginChild("##scenetree", ImVec2(0.0f, 250.0f), true);
