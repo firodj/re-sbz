@@ -919,8 +919,8 @@ void __cdecl hook_CHanaObj__FreeSceneT458(CHanaSceneT458_S504 *pScene)
 
   if ( pScene->nCount_12C <= 1 )
   {
-    if ( pScene->pUnk_47C )
-      pScene->pUnk_47C->Release();
+    if ( pScene->pSurface2_47C )
+      pScene->pSurface2_47C->Release();
     if ( pScene->pSurface_468 )
       pScene->pSurface_468->Release();
     if ( pScene->pSndBuf_46C )

@@ -260,16 +260,20 @@ HRESULT __cdecl hook_D3DInit_40A894(CD3DInitParam *pDevParam)
 
   g_nMemCnt_4D6CF0 = 0;
 
-  *&g_pM2.m[3][1] = 0;
-  *&g_pM2.m[2][3] = 0;
-  *&g_pM2.m[2][0] = 0;
-  *&g_pM2.m[1][2] = 0;
-  *&g_pM2.m[0][3] = 0;
-  *&g_pM2.m[0][1] = 0;
+#if 1
+  MatIdentity(&g_pM2);
+#else
+  *(_QWORD *)&g_pM2.m[3][1] = 0;
+  *(_QWORD *)&g_pM2.m[2][3] = 0;
+  *(_QWORD *)&g_pM2.m[2][0] = 0;
+  *(_QWORD *)&g_pM2.m[1][2] = 0;
+  *(_QWORD *)&g_pM2.m[0][3] = 0;
+  *(_QWORD *)&g_pM2.m[0][1] = 0;
   g_pM2._44 = 1.0;
   g_pM2._33 = 1.0;
   g_pM2._22 = 1.0;
   g_pM2._11 = 1.0;
+#endif
 
   if ( pDevParam != &g_D3DDevParams )
     qmemcpy(&g_D3DDevParams, pDevParam, sizeof(g_D3DDevParams));

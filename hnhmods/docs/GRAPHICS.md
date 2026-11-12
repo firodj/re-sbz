@@ -51,7 +51,7 @@ Scene loops branch on `pScene->pSurface_468` (a still-image background):
 
 - **Background-surface path**: `ANTIALIAS` off, `FlushD3DAndTouchSurface`, `Blt` the
   image to the back buffer - during a background change, `Surface_AlphaBlendRect_41A039`
-  crossfades from the old image (`pUnk_47C`) with alpha stepping at
+  crossfades from the old image (`pSurface2_47C`) with alpha stepping at
   `fFrameTime/25` - then `Clear(2)`: **z-buffer only**, the target already holds the
   image. `Surface_AlphaBlendRect` is a manual per-pixel loop (integer percent 0-100,
   per-channel with `g_dwRBitMask`/`g_dwGBitMask`, depth-dispatched 16/24/32, optional

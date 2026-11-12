@@ -432,7 +432,7 @@ int __cdecl hook_ShowTitleMenuWnd_428927(HINSTANCE hInstance)
   if ( RegisterClassA(&WndClass) )
   {
     g_hWnd = CreateWindowExA(
-      0,
+      WS_EX_TOPMOST ,
       " メニュー ",
       " メニュー ",
       WS_POPUP,
@@ -1111,7 +1111,6 @@ HRESULT __cdecl hook_MatrixLookAtLH(D3DXMATRIX *pMat, const D3DXVECTOR3 *pEye, c
 
   return S_OK;
 }
-
 
 D3DXMATRIX *__cdecl hook_MatIdentity(D3DXMATRIX *pOut)
 {

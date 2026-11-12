@@ -67,7 +67,7 @@ HWND   g_hwndWaitScreen;
 // arrSceneRemap[20] = {0,5,6,4,2, 5,6,4,1, 5,6,4,3, 5,6,4,0, 12,13,14});
 // odd: 5-button mode select (RunModeSelectScreen, arrModeRemap[5]={7..11}).
 // A finished selection persists bit 1<<(remap[sel]+10) into the 64-bit
-// g_sceneState_52F7E0.sceneItemBits_98[group] unlock mask (qwSelMask_C8 gates
+// g_sceneState_52F7E0.girlsStateBits_98[group] unlock mask (qwSelMask_C8 gates
 // the buttons; defaulted to 2 on entry, cleared to 0 on exit).
 // iMenuTab: system-menu tab while in-scene (0 -> tab 0, nonzero -> tab 2).
 //
@@ -129,7 +129,7 @@ HWND   g_hwndWaitScreen;
 //   are normalized to "" here (the Tears loop returns -1 on a failed load,
 //   so at runtime they must terminate the loops exactly like empty rows).
 // - The persist writes flag bits 10..24, so the dword-pair writes collapse
-//   into one QWORD |= on sceneItemBits_98[group] (high dword always ORs 0).
+//   into one QWORD |= on girlsStateBits_98[group] (high dword always ORs 0).
 // - The select screens sat in do/while wrappers whose back-edges are
 //   unreachable (piSelected < 0 only as -1, which breaks); single calls.
 // - Two dead .data-copied scratch buffers (40 and 100 bytes, only memset)
@@ -597,10 +597,10 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
 
     // persist the auto-selected first scene's unlock bit
     if (iModeId % 2)
-        g_sceneState_52F7E0.sceneItemBits_98[iModeId / 2] |=
+        g_sceneState_52F7E0.girlsStateBits_98[iModeId / 2] |=
             (unsigned __int64)1 << (arrModeRemap[piSelected] + 10);
     else
-        g_sceneState_52F7E0.sceneItemBits_98[iModeId / 2] |=
+        g_sceneState_52F7E0.girlsStateBits_98[iModeId / 2] |=
             (unsigned __int64)1 << (arrSceneRemap[piSelected] + 10);
     ToggleWaitScreen(0);
 
@@ -622,7 +622,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
                         arrBMPMouses, &piSelected, iModeId / 2,
                         &g_sceneState_52F7E0.qwSelMask_C8, iMenuTab);
                 if (nResult < 1 && piSelected >= 0)
-                    g_sceneState_52F7E0.sceneItemBits_98[iModeId / 2] |=
+                    g_sceneState_52F7E0.girlsStateBits_98[iModeId / 2] |=
                         (unsigned __int64)1 << (arrSceneRemap[piSelected] + 10);
             }
             else
@@ -631,7 +631,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
                         arrBMPMouses, &piSelected, iModeId,
                         &g_sceneState_52F7E0.qwSelMask_C8, iMenuTab);
                 if (nResult < 1 && piSelected >= 0)
-                    g_sceneState_52F7E0.sceneItemBits_98[iModeId / 2] |=
+                    g_sceneState_52F7E0.girlsStateBits_98[iModeId / 2] |=
                         (unsigned __int64)1 << (arrModeRemap[piSelected] + 10);
             }
             if (nResult >= 1)

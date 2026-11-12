@@ -186,7 +186,7 @@ click, or a `SELECT=` choice pending.
 | command | effect |
 |---------|--------|
 | `TEXT=<..>;` | render dialogue text, park until click (x1000 rush on click) |
-| `HITEMGET<n>;` | OR an item bit into `sceneItemBits_98` **and** the persistent `g_sysDataSave` copy |
+| `HITEMGET<n>;` | OR an item bit into `girlsStateBits_98` **and** the persistent `g_sysDataSave` copy |
 | `GETBOOK<n>;` | set a book-reading flag, unlock save-slot bit |
 | `KUTI<...>;` / `ME<...>;` | apply mouth / eye animation params to a scene frame |
 | `M+<v>;` / `M-<v>;` / `M=<v>;` | text/scene alpha multiplier (sign via atof) |

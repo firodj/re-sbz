@@ -104,6 +104,12 @@ void __cdecl hook_GameMainLoop_47F013(void)
   {
     SetRect(&rc, 0, 0, ConvertFrom640AsInt(640), ConvertFrom640AsInt(480));
     g_pPrimaryBuffer_4D6C88->Blt(&rc, pWarSurface, NULL, DDBLT_WAIT, NULL);
+#if 0
+    const DWORD dwWarningTime = 5000;
+#else
+    const DWORD dwWarningTime = 100;
+#endif
+    Sleep(dwWarningTime);
     pWarSurface->Release();
   }
 
@@ -123,7 +129,7 @@ void __cdecl hook_GameMainLoop_47F013(void)
   if (IsFileExists_47E8EE(szPathBuf))
     ReadFileToBuffer(szPathBuf, &g_sysDataSave_530170, sizeof(g_sysDataSave_530170));
 
-  RestartInputThread(0);                          // twice, as in the original
+  RestartInputThread(1);                          // twice, as in the original
   RestartInputThread(0);
   ReleaseSoundEffects();
   PlayVideoWith3DAudio_4791A3("op.avi", 0);         // aOpAvi @0x4C730C

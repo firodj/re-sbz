@@ -20,8 +20,8 @@
 //
 // CHUNKS:
 //   TEXT=...;         ParseStrChunkText + by_461=by_460=1 (show dialogue)
-//   HITEMGET<n>;      set bit n of sceneItemBits_98[bMaxSubStage] AND of
-//                     g_sceneItemBits[2*substage] (the persistent copy @0x530238,
+//   HITEMGET<n>;      set bit n of girlsStateBits_98[bMaxSubStage] AND of
+//                     g_girlStateBits[2*substage] (the persistent copy @0x530238,
 //                     IDA type CSceneFlag_28 -- same storage). Cursor +=2
 //                     (assumes single digit + ';').
 //   GETBOOK<n>;       g_byData0Dat_530170[n]=1; save-slot mask |= 1<<n
@@ -37,8 +37,8 @@
 //   G<NN>;            gallery background switch: load aG00Gp[NN] ("GNN.GP",
 //                     String 50[100] @0x4C9FB0, GRP dir); pictures 30/92/71/
 //                     51/11 also set bMaxSubStage=bCurrentSubStage=0..4
-//                     (the five girls); flt_480=0.1 restarts the crossfade;
-//                     pUnk_47C = old bg (released; NULL if NN > 95);
+//                     (the five girls); fAplhaCrossfade_480=0.1 restarts the crossfade;
+//                     pSurface2_47C = old bg (released; NULL if NN > 95);
 //                     g_arrGalleryUnlocked_5301A2[NN]=1 (gallery unlock!)
 //   #<snd>,<vol>;     scene BGM: stop/release old pSndBuf_46C, LoadWav
 //                     (WAV dir), field_470 = vol/2 (the volume offset
@@ -163,10 +163,6 @@ void CompareByte(CHanaSceneT458_S504 *pScene, char bValue, bool *bOut) {
 
 BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExecTime)
 {
-  int v2; // eax
-  int bMaxSubStage; // ecx
-  int v4; // eax
-  int v5; // ecx
   __int16 nBookIdx; // ax
   DWORD nBgLoadW; // eax
   const char *pszColR; // [esp-4h] [ebp-274h]
@@ -188,7 +184,6 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
   int nMeStart; // [esp+50h] [ebp-220h]
   int nKutiKw2; // [esp+54h] [ebp-21Ch]
   int nKutiKw1; // [esp+58h] [ebp-218h]
-  __int16 nItemBit; // [esp+5Ch] [ebp-214h]
   __int16 nKutiIdx; // [esp+5Ch] [ebp-214h]
   __int16 nMeIdx; // [esp+5Ch] [ebp-214h]
   _BOOL2 bisGo; // [esp+5Ch] [ebp-214h]
@@ -270,18 +265,35 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
     }
     if ( !memcmp(&pScene->ptrStrData_260[pScene->dwPtrCurrent_448], "HITEMGET", 8u) ) {
       pScene->dwPtrCurrent_448 += 8;// chunk == 'HITEMGET'
-      nItemBit = 1 << atoi(&pScene->ptrStrData_260[pScene->dwPtrCurrent_448]);
+
+#if 1
+      __int16 nItemBit = (__int16)atoi(&pScene->ptrStrData_260[pScene->dwPtrCurrent_448]);
+      nItemBit = (__int16)(1 << nItemBit);          // 32-bit shl, truncated to 16 bits (game's own bug)
+      const __int64 mask = nItemBit;                 // movsx + cdq = SIGN extension 16¨64
+      g_sceneState_52F7E0.girlsStateBits_98[g_sceneState_52F7E0.bMaxSubStage] |= mask;
+      g_sysDataSave_530170.g_girlStateBits[g_sceneState_52F7E0.bMaxSubStage] |= mask;
+#else
+      int v2; // eax
+      int bMaxSubStage; // ecx
+      int v4; // eax
+      int v5; // ecx
+
+
+      __int16 nItemBit = 1 << atoi(&pScene->ptrStrData_260[pScene->dwPtrCurrent_448]);
       v2 = ((unsigned __int64)nItemBit >> 32)
-        | g_sceneState_52F7E0.sceneItemBits_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage
+        | g_sceneState_52F7E0.girlsStateBits_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage
         + 1];
       bMaxSubStage = (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage;
-      g_sceneState_52F7E0.sceneItemBits_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
-      g_sceneState_52F7E0.sceneItemBits_98[2 * bMaxSubStage + 1] = v2;
-      v4 = ((unsigned __int64)nItemBit >> 32)
-        | g_sysDataSave_530170.g_sceneItemBits[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage + 1];
+
+      g_sceneState_52F7E0.girlsStateBits_98[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
+      g_sceneState_52F7E0.girlsStateBits_98[2 * bMaxSubStage + 1] = v2;
+
+      v4 = ((unsigned __int64)nItemBit >> 32) | g_sysDataSave_530170.g_girlStateBits[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage + 1];
       v5 = (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage;
-      g_sysDataSave_530170.g_sceneItemBits[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
-      g_sysDataSave_530170.g_sceneItemBits[2 * v5 + 1] = v4;
+
+      g_sysDataSave_530170.g_girlStateBits[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage] |= nItemBit;
+      g_sysDataSave_530170.g_girlStateBits[2 * (unsigned __int8)g_sceneState_52F7E0.bMaxSubStage + 1] = v4;
+#endif
       pScene->dwPtrCurrent_448 += 2;
       continue;
     }
@@ -468,13 +480,13 @@ BOOL __cdecl hook_ParseExecStr_487D89(CHanaSceneT458_S504 *pScene, float *pfExec
         g_sceneState_52F7E0.bCurrentSubStage = 4;
         break;
       }
-      pScene->flt_480 = 0.1;
-      if (pScene->pUnk_47C)
-        pScene->pUnk_47C->Release();
+      pScene->fAplhaCrossfade_480 = 0.1;
+      if (pScene->pSurface2_47C)
+        pScene->pSurface2_47C->Release();
       if (nGpIndex <= 95)
-        pScene->pUnk_47C = (IUnknown*)pScene->pSurface_468;
+        pScene->pSurface2_47C = pScene->pSurface_468;
       else
-        pScene->pUnk_47C = 0;
+        pScene->pSurface2_47C = 0;
       g_sysDataSave_530170.g_arrGalleryUnlocked_5301A2[nGpIndex] = 1;
       nBgLoadH = ConvertFrom640AsInt(480);
       nBgLoadW = ConvertFrom640AsInt(640);

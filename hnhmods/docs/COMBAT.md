@@ -224,7 +224,7 @@ into `arrScenes[30]` via `LoadOdsEx` (reusing live frames); the first sub-scene
 auto-plays as an intro. The session loop is the dialogue scene skeleton plus: right-
 click toggles UI skip, both buttons held run 5x, clicking GO enters the interactive
 cut-in, and a finished script **rewinds the scene** (cursor reset) back to selection.
-Each finished selection ORs an unlock bit into `sceneItemBits_98[group]` (bits 10-24
+Each finished selection ORs an unlock bit into `girlsStateBits_98[group]` (bits 10-24
 via the remap tables); `qwSelMask_C8` accumulates the chosen buttons and is cleared on
 exit. Heavy loads show the WAIT-screen thread (Part II). BGM: `s012.wav` (grid) /
 `s013.wav` (buttons).
@@ -234,7 +234,7 @@ exit. Heavy loads show the WAIT-screen thread (Part II). BGM: `s012.wav` (grid) 
 `InGameMenu` option 999 -> `MainMenu_47DF0D` runs a three-screen chain by state code:
 -3 = `MenuCharSelect`, -2 = `MenuGallery`, -1 = `MenuMusicSelect`; the top bars return
 -(i+1) so -1 advances, -4 exits. Persistent unlocks are copied in from
-`g_sysDataSave.g_sceneItemBits` on entry.
+`g_sysDataSave.g_girlStateBits` on entry.
 
 - **MenuCharSelect** (`ss00.bmp` + five portraits `ss01..ss05`): portrait 2 is only
   selectable while `g_sceneProgressFlag_530269 == 1` (backdrop seen). Clicking plays

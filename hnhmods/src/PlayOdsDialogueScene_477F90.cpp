@@ -91,9 +91,9 @@ float g_fFrameTime_52F1B4;
 // frame time x5 while held; a left-click while text is still scrolling
 // (by_461 && !by_460) completes the line, and otherwise speeds the script
 // x1000 for that frame. Scene advance: UpdateSceneTimer + UpdateSceneAtTime
-// (0 = scene over) + ParseExecStr (0 = over). Background: while flt_480
-// < 1 a crossfade from pUnk_47C toward pSurface_468 via
-// Surface_AlphaBlendRect(alpha = flt_480*100, advancing /25 per frame),
+// (0 = scene over) + ParseExecStr (0 = over). Background: while fAplhaCrossfade_480
+// < 1 a crossfade from pSurface2_47C toward pSurface_468 via
+// Surface_AlphaBlendRect(alpha = fAplhaCrossfade_480*100, advancing /25 per frame),
 // else a plain Blt; Lock/Unlock around blits (DDRAW sync quirk); D3DX
 // Clear(2) with a bg / Clear(3) without; 3D pass with ALPHABLEND off
 // around HanaFrame_Draw. Dialogue window + cursor drawn only when not
@@ -236,25 +236,25 @@ int __cdecl hook_PlayOdsDialogueScene_477F90(int nOdsIndex)
             g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, 0);
             Sleep(1);
             FlushD3DAndTouchSurface(g_pBackBuffer_4D6C90);
-            if (pHanaScene->flt_480 < 1.0f && pHanaScene->pUnk_47C)
+            if (pHanaScene->fAplhaCrossfade_480 < 1.0f && pHanaScene->pSurface2_47C)
             {
-                // crossfade pUnk_47C -> pSurface_468 (alpha = flt_480*100)
+                // crossfade pSurface2_47C -> pSurface_468 (alpha = fAplhaCrossfade_480*100)
                 SetRect(&rc, 0, 0, ConvertFrom640AsInt(640), ConvertFrom640AsInt(480));
                 g_pBackBuffer_4D6C90->Lock(NULL, &ddsd, DDLOCK_WAIT, 0);
                 g_pBackBuffer_4D6C90->Unlock(NULL);
-                g_pBackBuffer_4D6C90->Blt(NULL, (LPDIRECTDRAWSURFACE7)pHanaScene->pUnk_47C,
+                g_pBackBuffer_4D6C90->Blt(NULL, (LPDIRECTDRAWSURFACE7)pHanaScene->pSurface2_47C,
                                           NULL, DDBLT_WAIT, NULL);
-                if (pHanaScene->flt_480 != 0.0f)
+                if (pHanaScene->fAplhaCrossfade_480 != 0.0f)
                     Surface_AlphaBlendRect(g_pBackBuffer_4D6C90, 0, 0,
                                            pHanaScene->pSurface_468, &rc,
-                                           (int)(pHanaScene->flt_480 * 100.0f), 0);
-                pHanaScene->flt_480 = fFrameTime / 25.0f + pHanaScene->flt_480;
+                                           (int)(pHanaScene->fAplhaCrossfade_480 * 100.0f), 0);
+                pHanaScene->fAplhaCrossfade_480 = fFrameTime / 25.0f + pHanaScene->fAplhaCrossfade_480;
                 g_pBackBuffer_4D6C90->Lock(NULL, &ddsd, DDLOCK_WAIT, 0);
                 g_pBackBuffer_4D6C90->Unlock(NULL);
             }
             else
             {
-                pHanaScene->flt_480 = 1.0f;
+                pHanaScene->fAplhaCrossfade_480 = 1.0f;
                 g_pBackBuffer_4D6C90->Lock(NULL, &ddsd, DDLOCK_WAIT, 0);
                 g_pBackBuffer_4D6C90->Unlock(NULL);
                 g_pBackBuffer_4D6C90->Blt(NULL, pHanaScene->pSurface_468, NULL, DDBLT_WAIT, NULL);

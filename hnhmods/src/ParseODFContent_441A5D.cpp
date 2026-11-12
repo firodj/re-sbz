@@ -1745,7 +1745,62 @@ void __cdecl hook_CHanaAnimSetT3F1__SetTime_403D61(CHanaAnimSetT3F1_S150 *pHanaT
   }
 }
 
+// ApplyMateAnimMaterial(pMateAnim, fTime) - evaluate a 'manm' material animation at fTime
+// and push the resulting D3DMATERIAL7 to its mate object (ApplyMaterial on pMateT3EE).
+// Called per-frame from CHanaAnimSetT3F1::SetTime_403D61 for every secondary manm set.
+// fTime past fLoopEnd_134 wraps by integer modulo into [0, loopEnd]. Then:
+//   exact key hit     -> that key's material is applied verbatim;
+//   between two keys  -> diffuse.rgb, diffuse.a, emissive.rgb, specular.rgb lerped between
+//                        the surrounding keys; ambient forced to (1,1,1,1);
+//   past the last key -> same lerp but against the HEAD key, i.e. the tail blends back
+//                        into the first keyframe so a loop restart stays continuous.
+// Needs nKeyCount_138 >= 2 keys, otherwise no-op.
+// NOTE: only the channels above are written - emissive.a, specular.a and dwPower of the
+// lerped material stay uninitialized stack garbage in the original (the exact-hit path
+// applies the key's full material, so it's unaffected).
 void __cdecl hook_ApplyMateAnimMaterial(CHanaMateAnimT3F7_S148 *pMateAnim, float fTime)
+#if 1
+{
+  if ( pMateAnim->nKeyCount_138 < 2 )
+    return;
+
+  ONCELOG("[HNH:SUB] ApplyMateAnimMaterial_40E969\n");
+
+
+  // wrap the clock into the loop range
+  if ( pMateAnim->fLoopEnd_134 >= 1.0f && pMateAnim->fLoopEnd_134 <= fTime )
+    fTime = (float)((int)fTime % ((int)pMateAnim->fLoopEnd_134 + 1));
+
+  CHanaMateAnimKeyT3F7_S50 *pKeyStart; // key at / immediately before fTime
+  CHanaMateAnimKeyT3F7_S50 *pKeyEnd;   // key immediately after fTime (NULL -> past tail)
+  if ( FindMateAnimKeyframeBounds(pMateAnim, fTime, &pKeyStart, &pKeyEnd) )
+  {
+    ApplyMaterial(pMateAnim->pMateT3EE, &pKeyStart->d3dMat7_4); // exact hit: use as-is
+    return;
+  }
+  if ( !pKeyEnd )
+    pKeyEnd = pMateAnim->pKeyHead_13C; // past the last key: wrap the blend to the first
+
+  const float fT = (fTime - pKeyStart->fTime) / (pKeyEnd->fTime - pKeyStart->fTime);
+  const D3DMATERIAL7 &mA = pKeyStart->d3dMat7_4;
+  const D3DMATERIAL7 &mB = pKeyEnd->d3dMat7_4;
+
+  D3DMATERIAL7 mat;
+  mat.diffuse.r = mA.diffuse.r + (mB.diffuse.r - mA.diffuse.r) * fT;
+  mat.diffuse.g = mA.diffuse.g + (mB.diffuse.g - mA.diffuse.g) * fT;
+  mat.diffuse.b = mA.diffuse.b + (mB.diffuse.b - mA.diffuse.b) * fT;
+  mat.emissive.r = mA.emissive.r + (mB.emissive.r - mA.emissive.r) * fT;
+  mat.emissive.g = mA.emissive.g + (mB.emissive.g - mA.emissive.g) * fT;
+  mat.emissive.b = mA.emissive.b + (mB.emissive.b - mA.emissive.b) * fT;
+  mat.specular.r = mA.specular.r + (mB.specular.r - mA.specular.r) * fT;
+  mat.specular.g = mA.specular.g + (mB.specular.g - mA.specular.g) * fT;
+  mat.specular.b = mA.specular.b + (mB.specular.b - mA.specular.b) * fT;
+  mat.ambient.r = mat.ambient.g = mat.ambient.b = mat.ambient.a = 1.0f;
+  mat.diffuse.a = mA.diffuse.a + (mB.diffuse.a - mA.diffuse.a) * fT;
+
+  ApplyMaterial(pMateAnim->pMateT3EE, &mat);
+}
+#else
 {
   float fT_alpha; // [esp+8h] [ebp-94h]
   float fT_specular; // [esp+Ch] [ebp-90h]
@@ -1766,8 +1821,6 @@ void __cdecl hook_ApplyMateAnimMaterial(CHanaMateAnimT3F7_S148 *pMateAnim, float
   float fStartR; // [esp+90h] [ebp-Ch]
   float fStartG; // [esp+94h] [ebp-8h]
   float fStartB; // [esp+98h] [ebp-4h]
-
-  ONCELOG("[HNH:SUB] ApplyMateAnimMaterial_40E969\n");
 
   pKeyStart = 0;
   pKeyEnd = 0;
@@ -1888,6 +1941,7 @@ void __cdecl hook_ApplyMateAnimMaterial(CHanaMateAnimT3F7_S148 *pMateAnim, float
     }
   }
 }
+#endif
 
 BOOL __cdecl hook_FindMateAnimKeyframeBounds(
   CHanaMateAnimT3F7_S148 *pMateAnim,

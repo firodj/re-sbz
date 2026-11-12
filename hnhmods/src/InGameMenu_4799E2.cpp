@@ -100,7 +100,7 @@ void __cdecl hook_MainMenu_47DF0D(void)
     }
 
     // carry the persistent scene flags into the scene state block
-    memcpy(g_sceneState_52F7E0.sceneItemBits_98, g_sysDataSave_530170.g_sceneItemBits, 0x28);
+    memcpy(g_sceneState_52F7E0.girlsStateBits_98, g_sysDataSave_530170.g_girlStateBits, sizeof(g_sceneState_52F7E0.girlsStateBits_98));
 
     // dispatch until a sub-menu answers with a non-negative state; the mouse
     // is pumped each round (the previous-button read in the original is dead)
@@ -136,7 +136,7 @@ void __cdecl hook_MainMenu_47DF0D(void)
         }
     }
     g_sceneState_52F7E0.bActiveSceneStep = 0;
-    memset(g_sceneState_52F7E0.sceneItemBits_98, 0, 0x28);
+    memset(g_sceneState_52F7E0.girlsStateBits_98, 0, sizeof(g_sceneState_52F7E0.girlsStateBits_98));
     if (nMenuState < 0)                                     // exited via sub-menu
         PlayScreenFade(0, 0, g_pPrimaryBuffer_4D6C88, 25.0f, 0);
 }

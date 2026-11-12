@@ -525,8 +525,8 @@ struct CHanaSceneT458_S504: public CHanaBase_S130
   char by_474;
   char gap475[3];
   CHanaFrameT3EC_S354 *pCamFrame_478;
-  IUnknown *pUnk_47C;
-  float flt_480;
+  LPDIRECTDRAWSURFACE7 pSurface2_47C;
+  float fAplhaCrossfade_480;
   int gap484[9];
   int field_4A8[23];
 };
@@ -603,7 +603,7 @@ struct CSystemDataSave // <- g_sysDataSave_530170
 {
   char g_byData0Dat_530170[50]; // g_arrVariables_530170
   char g_arrGalleryUnlocked_5301A2[150];
-  int g_sceneItemBits[10];
+  QWORD g_girlStateBits[5]; // girls status Bits, girl = foe
   int g_dwUnlockedSaveSlots_530260;
   char g_nHSceneBackground_530264;
   char g_nHSceneMale_530265;
@@ -627,7 +627,7 @@ struct CSceneState
   char byte_32;
   char ary33[100];
   char bMaxSubStage;
-  QWORD sceneItemBits_98[5];
+  QWORD girlsStateBits_98[5]; // girls status Bits, girl = foe
   float protCurrentHP_C0;
   float protMaximumHP_C4;
   QWORD qwSelMask_C8;

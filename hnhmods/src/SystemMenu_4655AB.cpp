@@ -59,7 +59,7 @@ int (__cdecl*ShowYesNoDialog_461A9E)(CHanaSpriteT3F6_S1FC *pCursor,
 // Tabs are 79-wide hit bands across a 30-high top strip:
 //   0 Save (SysMenu_SaveMenu_462135), 1 Load (SysMenu_LoadMenu_462851),
 //   2 girl status (SysMenu_GirlStatusCheck_464919 -- receives fCurHP/
-//     fMaxHP and sceneState.sceneItemBits_98), 3 Options (SysMenu_Options_
+//     fMaxHP and sceneState.girlsStateBits_98), 3 Options (SysMenu_Options_
 //     462FE9), 4 Graphics (SysMenu_Graphics_46380D), 5 back (result 0),
 //   6 quit: the previous tab is first re-rendered once with the mouse
 //     parked at (-100,-100), then ShowYesNoDialog "ÉQÅ[ÉÄÇèIóπÇµÇ‹Ç∑Ç©ÅH"
@@ -238,7 +238,7 @@ int __cdecl hook_SystemMenu_4655AB(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int
     case 2:                               // girl status
       SysMenu_GirlStatusCheck_464919(arrSurf, pCursor, pYesNo, nMouseX, nMouseY,
         bPressed, &pnSceneStep, fCurHP, fMaxHP,
-        sceneState.sceneItemBits_98);
+        sceneState.girlsStateBits_98);
       break;
     case 3:                               // Options
       SysMenu_Options_462FE9(SceneStates, arrSurf, pCursor, pYesNo,
@@ -274,7 +274,7 @@ int __cdecl hook_SystemMenu_4655AB(LPDIRECTSOUNDBUFFER pBgm, int nVolOffset, int
         if (nPrevTab == 2)
           SysMenu_GirlStatusCheck_464919(arrSurf, pCursor, pYesNo, -100, -100, 0,
             &pnSceneStep, fCurHP, fMaxHP,
-            sceneState.sceneItemBits_98);
+            sceneState.girlsStateBits_98);
         if (nPrevTab == 3)
           SysMenu_Options_462FE9(SceneStates, arrSurf, pCursor, pYesNo,
             -100, -100, 0);

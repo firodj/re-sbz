@@ -206,6 +206,7 @@ extern HRESULT(__cdecl* D3DInitBuffers_40AF60)(void);
 extern double (__cdecl*DegreesToRadians)(float deg);
 extern HRESULT (__cdecl*MatrixPerspectiveFovLH)(D3DXMATRIX* pMat, float fovy, float aspect, float zn, float zf);
 extern HRESULT (__cdecl*MatrixLookAtLH)(D3DXMATRIX* pMat, const D3DXVECTOR3* pEye, const D3DXVECTOR3* pAt, const D3DXVECTOR3* pUp);
+extern D3DXMATRIX* (__cdecl* MatIdentity)(D3DXMATRIX* pOut);
 
 // === DEFINED ShowTitleMenu.cpp ===
 

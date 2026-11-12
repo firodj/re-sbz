@@ -285,7 +285,7 @@ texture) - covered in Part IV.
   dialogue-window sprites, and the 4x29 text-sprite grid. `LoadOds_4843CF` /
   `LoadOdsEx_48564B` are the only creators; each scene player frees the previous scene.
 - `g_sceneState_52F7E0` (`CSceneState`, 0x190) carries the playthrough: `bActiveSceneStep`
-  (the chapter index - there is no separate "current scene" global), `sceneItemBits_98`,
+  (the chapter index - there is no separate "current scene" global), `girlsStateBits_98`,
   the heroine HP pair `protCurrentHP_C0` / `protMaximumHP_C4` (default 66600.0),
   `qwSelMask_C8` (assault selection). `frameTimeMultiplied_180` is not a clock - it is a
   by-value argument carrier that each scene reuses differently (text rush delta, text

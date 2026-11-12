@@ -388,11 +388,11 @@ bool DrawHNH(const char *window_name) {
 
 			sviewer.fields.emplace_back(offsetof(CSceneState, bMaxSubStage), "bMaxSubStage", ImGuiDataType_S8, &g_sceneState_52F7E0.bMaxSubStage);
 
-			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneItemBits_98[0]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneItemBits_98[0]);
-			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneItemBits_98[1]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneItemBits_98[1]);
-			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneItemBits_98[2]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneItemBits_98[2]);
-			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneItemBits_98[3]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneItemBits_98[3]);
-			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "sceneItemBits_98[4]", ImGuiDataType_S64, &g_sceneState_52F7E0.sceneItemBits_98[4]);
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "girlsStateBits_98[0]", ImGuiDataType_S64, &g_sceneState_52F7E0.girlsStateBits_98[0]);
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "girlsStateBits_98[1]", ImGuiDataType_S64, &g_sceneState_52F7E0.girlsStateBits_98[1]);
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "girlsStateBits_98[2]", ImGuiDataType_S64, &g_sceneState_52F7E0.girlsStateBits_98[2]);
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "girlsStateBits_98[3]", ImGuiDataType_S64, &g_sceneState_52F7E0.girlsStateBits_98[3]);
+			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "girlsStateBits_98[4]", ImGuiDataType_S64, &g_sceneState_52F7E0.girlsStateBits_98[4]);
 
 			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "protCurrentHP_C0", ImGuiDataType_Float, &g_sceneState_52F7E0.protCurrentHP_C0);
 			sviewer.fields.emplace_back(offsetof(CSceneState, qwSelMask_C8), "protMaximumHP_C4", ImGuiDataType_Float, &g_sceneState_52F7E0.protMaximumHP_C4);
