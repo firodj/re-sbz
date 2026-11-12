@@ -775,7 +775,7 @@ BOOL __cdecl hook_HitOverheadSurface_442C1C(CHanaFrameT3EC_S354 *pBodyFrame, CHa
           }
         }
       }
-      CHanaObj__UnlockVrxBufT3EA_41858E(pMesh->refsVertT3EA[iVtxBuf]);
+      CHanaObj__UnlockVtxBufT3EA_41858E(pMesh->refsVertT3EA[iVtxBuf]);
     }
   }
   return bHit;
@@ -919,7 +919,7 @@ int __cdecl hook_HitSupportSurface_4423B0(CHanaFrameT3EC_S354 *pBodyFrame, CHana
         }
       }
     }
-    CHanaObj__UnlockVrxBufT3EA_41858E(pMesh->refsVertT3EA[iVtxBuf]);
+    CHanaObj__UnlockVtxBufT3EA_41858E(pMesh->refsVertT3EA[iVtxBuf]);
     if ( nSurfaceHit )
       break;
   }
@@ -1054,7 +1054,7 @@ bool __cdecl hook_TestBodyMoveHit_443EC4(
           }
         }
       }
-      CHanaObj__UnlockVrxBufT3EA_41858E(pMesh->refsVertT3EA[iVtxBuf]);
+      CHanaObj__UnlockVtxBufT3EA_41858E(pMesh->refsVertT3EA[iVtxBuf]);
     }
   }
   return bBlocked;

@@ -114,7 +114,7 @@ void __cdecl hook_GameMainLoop_47F013(void)
   }
 
   // reset the UI-effect DirectSound buffers and both footstep-sound tables
-  memset(g_arrUIEffectDSBuffer_52F168, 0, 0x14);
+  memset(g_arrUIEffectDSBuffer_52F168, 0, sizeof(g_arrUIEffectDSBuffer_52F168));
   memset(g_arrFootstepSound_52F18C, 0, sizeof(g_arrFootstepSound_52F18C));
   memset(g_arrFootstepSound_52F17C, 0, sizeof(g_arrFootstepSound_52F17C));
 

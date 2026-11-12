@@ -250,12 +250,12 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
                     // ambient (-1) light child: recurse under its ambient
                     ApplyLightSettings(pChild->pHanaLight_210);
                     g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_AMBIENT, &dwAmbientCur);
-                    hook_ProcessFrame(pChild, (int)dwAmbientCur, qwBitLightEnables);
+                    ProcessFrame(pChild, (int)dwAmbientCur, qwBitLightEnables);
                     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_AMBIENT, (DWORD)nAmbient);
                 }
                 else
                 {
-                    hook_ProcessFrame(pChild, nAmbient, qwBitLightEnables);
+                    ProcessFrame(pChild, nAmbient, qwBitLightEnables);
                 }
                 pNode = pNode->pNext;
             }
@@ -615,7 +615,7 @@ void __cdecl hook_HanaVertT3EA_Draw(CHanaVertT3EA_S1FC *pVert)
     }
     else
     {
-      g_pD3DDevice_4D6C78->DrawIndexedPrimitiveVB(
+      HRESULT hr = g_pD3DDevice_4D6C78->DrawIndexedPrimitiveVB(
         D3DPT_TRIANGLELIST,
         pVert->pD3DVtxBuf_130,
         0,
@@ -623,6 +623,9 @@ void __cdecl hook_HanaVertT3EA_Draw(CHanaVertT3EA_S1FC *pVert)
         pVert->pVtxIndices,
         pVert->dwNumIndices_140,
         0);
+      if (FAILED(hr)) {
+        DebugLog("{HanaVertT3EA_Draw} DrawIndexedPrimitiveVB error: 0x%x, name: %s, num: %d\n", hr, pVert->szName_8, pVert->dwNumVertices_134);
+      }
     }
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_LIGHTING, 1);
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);

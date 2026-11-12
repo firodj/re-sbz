@@ -1400,7 +1400,7 @@ void __cdecl hook_CalcFrameBound_404B80(CHanaFrameT3EC_S354 *pFrame, CHanaMorpT4
       if ( pData[i].z > (double)pFrame->vertBoundMin_22C.z )
         pFrame->vertBoundMin_22C.z = pData[i].z;
     }
-    CHanaObj__UnlockVrxBufT3EA_41858E(pVert_v3);
+    CHanaObj__UnlockVtxBufT3EA_41858E(pVert_v3);
   }
   else if ( CHanaObj__GetType_40BBF4(pVertOrMeshOrMorp) == 0x3F5 )
   {
@@ -1434,7 +1434,7 @@ void __cdecl hook_CalcFrameBound_404B80(CHanaFrameT3EC_S354 *pFrame, CHanaMorpT4
         if ( ppData[j].z > (double)pFrame->vertBoundMin_22C.z )
           pFrame->vertBoundMin_22C.z = ppData[j].z;
       }
-      CHanaObj__UnlockVrxBufT3EA_41858E(pVert_v2);
+      CHanaObj__UnlockVtxBufT3EA_41858E(pVert_v2);
       CHanaObj__Free_40C1E4(pVert_v2);
     }
   }
@@ -1471,7 +1471,7 @@ void __cdecl hook_CalcFrameBound_404B80(CHanaFrameT3EC_S354 *pFrame, CHanaMorpT4
         if ( pData_1[m].z > (double)pFrame->vertBoundMin_22C.z )
           pFrame->vertBoundMin_22C.z = pData_1[m].z;
       }
-      CHanaObj__UnlockVrxBufT3EA_41858E(pVert);
+      CHanaObj__UnlockVtxBufT3EA_41858E(pVert);
       CHanaObj__Free_40C1E4(pVert);
     }
   }
@@ -2246,10 +2246,17 @@ HRESULT __cdecl hook_CHanaObj__FillVertexBufferT3EA(
   ONCELOG("[HNH:SUB] CHanaObj__FillVertexBufferT3EA_416E65\n")
 
   hr = pHanaT3EA->pD3DVtxBuf_130->Lock(0x801, &pData, 0);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
+    DebugLog("{CHanaObj__FillVertexBufferT3EA} error Lock: 0x%x, name: %s, num: %d\n", hr, pHanaT3EA->szName_8, pHanaT3EA->dwNumVertices_134);
     return hr;
+  }
   qmemcpy(pData, pBufVertices, pHanaT3EA->dwVertexSize * dwNumVertices);
-  pHanaT3EA->pD3DVtxBuf_130->Unlock();
+  hr = pHanaT3EA->pD3DVtxBuf_130->Unlock();
+  if (FAILED(hr)) {
+    DebugLog("{CHanaObj__FillVertexBufferT3EA} error Unlock: 0x%x, name: %s, num: %d\n", hr, pHanaT3EA->szName_8, pHanaT3EA->dwNumVertices_134);
+    return hr;
+  }
+
   pHanaT3EA->dwNumVertices_134 = dwNumVertices;
   pHanaT3EA->dwNumIndices_140 = dwNumIndices;
   pHanaT3EA->pVtxIndices = (WORD *)MemAlloc_40DEF7(2 * dwNumIndices + 128);
@@ -2280,8 +2287,11 @@ HRESULT __cdecl hook_CHanaObj__NewVertT3EA(CHanaVertT3EA_S1FC **ppOut, DWORD fvf
   dwCaps = d3dVtxBufDesc.dwCaps;
   BYTE1(dwCaps) = BYTE1(d3dVtxBufDesc.dwCaps) | 8;
   d3dVtxBufDesc.dwCaps = dwCaps;
-  if ( g_pD3D_4D6C84->CreateVertexBuffer(&d3dVtxBufDesc, &pVert->pD3DVtxBuf_130, 0) < 0 )
+  HRESULT hr = g_pD3D_4D6C84->CreateVertexBuffer(&d3dVtxBufDesc, &pVert->pD3DVtxBuf_130, 0);
+  if (FAILED(hr)) {
+    DebugLog("{CHanaObj__NewVertT3EA} error CreateVertexBuffer: 0x%x, num: %d\n", hr, dwNumVertices);
     return E_FAIL;
+  }
   d3dVtxBufDesc.dwNumVertices = 8;
   pVert->dwVertexSize = CalculateVertexSize(fvf);
   pVert->pTexT3EB = 0;

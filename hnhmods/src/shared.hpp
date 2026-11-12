@@ -479,7 +479,7 @@ extern void   (__cdecl * HanaFrame_GetRelPosition)( CHanaFrameT3EC_S354 *pFrame,
 extern void   (__cdecl*SelfBltDC)(LPDIRECTDRAWSURFACE7 pDDSurf);
 extern void   (* HanaFrame_BuildMatrixStack)();
 extern void   (__cdecl * CHanaObj__LockVtxBufT3EA_418544)(CHanaVertT3EA_S1FC *pVert, DWORD *pNumVertices, LPVOID *ppData);
-extern void   (__cdecl * CHanaObj__UnlockVrxBufT3EA_41858E)(CHanaVertT3EA_S1FC *pVert);
+extern void   (__cdecl * CHanaObj__UnlockVtxBufT3EA_41858E)(CHanaVertT3EA_S1FC *pVert);
 extern unsigned int (* CalculateVertexSize)(DWORD fvf);
 extern void  (__cdecl* HanaFrame_PushNode)(CHanaFrameT3EC_S354* pFrame);
 extern void   (__cdecl * HanaMorpT457_Animate)(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim);

@@ -42,7 +42,7 @@ void (__cdecl * HanaFrame_GetRelPosition)( CHanaFrameT3EC_S354 *pFrame, CHanaFra
 void (__cdecl*SelfBltDC)(LPDIRECTDRAWSURFACE7 pDDSurf) = reinterpret_cast<void (__cdecl*)(LPDIRECTDRAWSURFACE7 pDDSurf)>(0x43F3F7);
 void (* HanaFrame_BuildMatrixStack)() = reinterpret_cast<void(*)()>(0x40773F);
 void (__cdecl * CHanaObj__LockVtxBufT3EA_418544)(CHanaVertT3EA_S1FC *pVert, DWORD *pNumVertices, LPVOID *ppData) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert, DWORD *pNumVertices, LPVOID *ppData)>(0x418544);
-void (__cdecl * CHanaObj__UnlockVrxBufT3EA_41858E)(CHanaVertT3EA_S1FC *pVert) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert)>(0x41858E);
+void (__cdecl * CHanaObj__UnlockVtxBufT3EA_41858E)(CHanaVertT3EA_S1FC *pVert) = reinterpret_cast<void(__cdecl*)(CHanaVertT3EA_S1FC *pVert)>(0x41858E);
 unsigned int (* CalculateVertexSize)(DWORD fvf) = reinterpret_cast<unsigned int(*)(DWORD fvf)>(0x417F88); 
 void(__cdecl* HanaFrame_PushNode)(CHanaFrameT3EC_S354* pFrame) =
   reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354* pFrame)>(0x407800);
@@ -489,16 +489,21 @@ void __cdecl hook_HanaMorpT457_Animate(CHanaFrameT3EC_S354 *pFrame, float fValue
 void __cdecl hook_CHanaObj__LockVtxBufT3EA_418544(CHanaVertT3EA_S1FC *pVert, DWORD *pNumVertices, LPVOID *ppData)
 {
   ONCELOG("[HNH:SUB] CHanaObj__LockVtxBufT3EA_418544\n");
-
-  if ( pVert->pD3DVtxBuf_130->Lock(DDLOCK_NOSYSLOCK | DDLOCK_WAIT, ppData, 0) >= 0 )
+  HRESULT hr = pVert->pD3DVtxBuf_130->Lock(DDLOCK_NOSYSLOCK | DDLOCK_WAIT, ppData, 0);
+  if ( SUCCEEDED(hr) )
     *pNumVertices = pVert->dwNumVertices_134;
+  else
+    DebugLog("{CHanaObj__LockVtxBufT3EA_418544} error Lock: 0x%x, name: %s, num: %d\n", hr, pVert->szName_8, pVert->dwNumVertices_134);
+
 }
 
-void __cdecl hook_CHanaObj__UnlockVrxBufT3EA_41858E(CHanaVertT3EA_S1FC *pVert)
+void __cdecl hook_CHanaObj__UnlockVtxBufT3EA_41858E(CHanaVertT3EA_S1FC *pVert)
 {
-  ONCELOG("[HNH:SUB] CHanaObj__UnlockVrxBufT3EA_41858E\n");
+  ONCELOG("[HNH:SUB] CHanaObj__UnlockVtxBufT3EA_41858E\n");
 
-  pVert->pD3DVtxBuf_130->Unlock();
+  HRESULT hr = pVert->pD3DVtxBuf_130->Unlock();
+  if (FAILED(hr))
+    DebugLog("{CHanaObj__UnlockVtxBufT3EA_41858E} error Unlock: 0x%x, name: %s, num: %d\n", hr, pVert->szName_8, pVert->dwNumVertices_134);
 }
 
 unsigned int hook_CalculateVertexSize(DWORD fvf)
@@ -935,7 +940,7 @@ void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
           }
           if ( pChildFrame->pHanaLight_210
             && g_nLightningEnabled
-            && pChildFrame->pHanaLight_210->d3dLight_134.dltType != (D3DLIGHT_FORCE_DWORD|0x80000000) )
+            && pChildFrame->pHanaLight_210->d3dLight_134.dltType != -1 )
           {
             qmemcpy(&posX, &pChildFrame->matWorld_178, sizeof(posX));
             ConfigureLight(pChildFrame->pHanaLight_210, posX._41, posX._42, posX._43, posX._13, posX._23, posX._33);
@@ -947,7 +952,7 @@ void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
             g_pD3DDevice_4D6C78->GetRenderState(D3DRENDERSTATE_AMBIENT, &nAmbient);
             ProcessFrame(pChildFrame, nAmbient, qwBitLightEnables);
             g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_AMBIENT, dwAmbientSaved);
-            if ( pChildFrame->pHanaLight_210->d3dLight_134.dltType != (D3DLIGHT_FORCE_DWORD|0x80000000) )// != -1
+            if ( pChildFrame->pHanaLight_210->d3dLight_134.dltType != -1 )// != -1 or D3DLIGHT_FORCE_DWORD|0x80000000
               g_pD3DDevice_4D6C78->LightEnable(
                 pChildFrame->pHanaLight_210->dwLightIndex_130,
                 0);
@@ -1086,7 +1091,7 @@ void __cdecl hook_HanaMorpT457_Interp(CHanaMorpT457_S40C *pMorpT457, float fMorp
         for ( nSrcIdx = 0; nSrcIdx < nBufs; ++nSrcIdx )
         {
           if ( pVtxObjs[nSrcIdx] )
-            CHanaObj__UnlockVrxBufT3EA_41858E(pVtxObjs[nSrcIdx]);
+            CHanaObj__UnlockVtxBufT3EA_41858E(pVtxObjs[nSrcIdx]);
         }
         break;
       }
@@ -1248,12 +1253,12 @@ void __cdecl hook_HanaMorpT457_ApplySubs(CHanaFrameT3EC_S354 *pFrame)
 
     if ( pTgtVert == pSrcVert )
     {
-      CHanaObj__UnlockVrxBufT3EA_41858E(pTgtVert);
+      CHanaObj__UnlockVtxBufT3EA_41858E(pTgtVert);
     }
     else
     {
-      CHanaObj__UnlockVrxBufT3EA_41858E(pSrcVert);
-      CHanaObj__UnlockVrxBufT3EA_41858E(pTgtVert);
+      CHanaObj__UnlockVtxBufT3EA_41858E(pSrcVert);
+      CHanaObj__UnlockVtxBufT3EA_41858E(pTgtVert);
     }
   }
 }
@@ -1304,7 +1309,7 @@ void register_PlayScreenFade_4874DE(int cfg)
     SelfBltDC = hook_SelfBltDC;
     HanaFrame_BuildMatrixStack = hook_HanaFrame_BuildMatrixStack;
     CHanaObj__LockVtxBufT3EA_418544 = hook_CHanaObj__LockVtxBufT3EA_418544;
-    CHanaObj__UnlockVrxBufT3EA_41858E = hook_CHanaObj__UnlockVrxBufT3EA_41858E;
+    CHanaObj__UnlockVtxBufT3EA_41858E = hook_CHanaObj__UnlockVtxBufT3EA_41858E;
     CalculateVertexSize = hook_CalculateVertexSize;
     HanaFrame_PushNode = hook_HanaFrame_PushNode;
     HanaMorpT457_Animate = hook_HanaMorpT457_Animate;
@@ -1343,7 +1348,7 @@ void register_PlayScreenFade_4874DE(int cfg)
   hnh_Hook(0x40BBF4, hook_CHanaObj__GetType_40BBF4,      "CHanaObj__GetType_40BBF4"); // [OK] 
   hnh_Hook(0x433569, hook_HanaMorpT457_Animate,          "HanaMorpT457_Animate_433569"); // [OK] 
   hnh_Hook(0x418544, hook_CHanaObj__LockVtxBufT3EA_418544,   "CHanaObj__LockVtxBufT3EA_418544"); // [OK] 
-  hnh_Hook(0x41858E, hook_CHanaObj__UnlockVrxBufT3EA_41858E, "CHanaObj__UnlockVrxBufT3EA_41858E"); // [OK] 
+  hnh_Hook(0x41858E, hook_CHanaObj__UnlockVtxBufT3EA_41858E, "CHanaObj__UnlockVtxBufT3EA_41858E"); // [OK] 
   hnh_Hook(0x417F88, hook_CalculateVertexSize, "CalculateVertexSize_417F88"); // [OK] 
   hnh_Hook(0x47E79A, hook_GetFrameTime, "GetFrameTime_47E79A"); // [OK] 
   hnh_Hook(0x407800, hook_HanaFrame_PushNode,     "HanaFrame_PushNode_407800"); // [OK] 

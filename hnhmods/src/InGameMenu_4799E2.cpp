@@ -205,12 +205,14 @@ int __cdecl hook_InGameMenu_4799E2(void)
         BltSurface(pTitleSurface, ConvertFrom1024AsInt(600), ConvertFrom1024AsInt(470),
                    ConvertFrom1024AsInt(960), ConvertFrom1024AsInt(525), 0);
 
+    // mouse cursor
     wsprintfA(szFileName, "mouse.bmp");                     // aMouseBmp_2 @0x4C6CBC
     CHanaObj__GetRealPath_486D9A(szFileName, 1003);         // 1003 = SPR dir
     DebugLog("[HNH:InGameMenu] LoadBmpWithMask_413A5E %s\n", szFileName);
     LoadBmpWithMask_413A5E(&pMouseSprite, szFileName, szFileName);
     DebugLog("[HNH:InGameMenu] loaded mouse.bmp\n");
 
+    // title bgm
     wsprintfA(szFileName, "s001.wav");                      // aS001Wav @0x4C6CC8
     CHanaObj__GetRealPath_486D9A(szFileName, 1006);         // 1006 = WAV dir
     pBgmBuffer = LoadWav_422E7B(szFileName);

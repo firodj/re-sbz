@@ -116,7 +116,7 @@ void __cdecl hook_CHanaObj__RemoveFromGlobalRef(CHanaBase_S130 *pObj)
 
 void __cdecl hook_CHanaObj__FreeVertT3EA(CHanaVertT3EA_S1FC *pVert)
 {
-  int v1; // [esp+0h] [ebp-4h]
+  HRESULT hr; // [esp+0h] [ebp-4h]
 
   ONCELOG("[HNH:SUB] CHanaObj__FreeVertT3EA_417A0C\n");
 
@@ -137,9 +137,9 @@ void __cdecl hook_CHanaObj__FreeVertT3EA(CHanaVertT3EA_S1FC *pVert)
       MemFree_40DF64(pVert->pVtxIndices);
       pVert->pVtxIndices = 0;
     }
-    v1 = pVert->pD3DVtxBuf_130->Release();
-    if ( v1 < 0 )
-      PrintDebugError(v1);
+    hr = pVert->pD3DVtxBuf_130->Release();
+    if ( FAILED(hr) )
+      PrintDebugError(hr);
     if ( pVert->pUnk_164 )
       pVert->pUnk_164->Release();
     CHanaObj__RemoveFromGlobalRef(pVert);
@@ -658,7 +658,7 @@ void __cdecl hook_ApplyLightSettings(CHanaLightT3EF_S1A0 *pLight)
   
   if ( g_nLightningEnabled )
   {
-    if ( pLight->d3dLight_134.dltType == (D3DLIGHT_FORCE_DWORD|0x80000000) )
+    if ( pLight->d3dLight_134.dltType == -1 ) //  (D3DLIGHT_FORCE_DWORD|0x80000000)
     {
       g_pD3DDevice_4D6C78->SetRenderState(
         D3DRENDERSTATE_AMBIENT,

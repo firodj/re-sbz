@@ -499,7 +499,7 @@ BOOL __cdecl hook_ParseODFFile_441F19(
       pBuf1 = (char *)pBuf1 + 4;
       rgbDiffuse = *(INT*)pBuf1;
       memset(&d3dLight, 0, sizeof(d3dLight));
-      d3dLight.dltType = (D3DLIGHTTYPE)(D3DLIGHT_FORCE_DWORD|0x80000000);
+      d3dLight.dltType = (D3DLIGHTTYPE)-1; // (D3DLIGHT_FORCE_DWORD|0x80000000)
       d3dLight.dcvDiffuse.b = (double)(unsigned __int8)rgbDiffuse / 255.0;
       d3dLight.dcvDiffuse.g = (double)BYTE1(rgbDiffuse) / 255.0;
       d3dLight.dcvDiffuse.r = (double)BYTE2(rgbDiffuse) / 255.0;

@@ -1149,7 +1149,7 @@ double __cdecl hook_Vec3LengthSq(const D3DXVECTOR3 *pV)
 
 void __fastcall hook_Vec3Set(D3DXVECTOR3 *This, int unused_edx, float x, float y, float z)
 {
-  ONCELOG("[HNH:SUB] hook_Vec3Set_40E420\n");
+  ONCELOG("[HNH:SUB] Vec3Set_40E420\n");
   This->Vec3Set(x, y, z);
 }
 

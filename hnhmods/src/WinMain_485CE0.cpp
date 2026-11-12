@@ -129,10 +129,10 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
 
             // Create main application window
             g_hwndParent = CreateWindowExA(
-                             WS_EX_TOPMOST,
+                             0, //WS_EX_TOPMOST,
                             "‰Ø‚Ì”ß–Â",
                             "‰Ø‚Ì”ß–Â",
-                             WS_POPUP,
+              WS_CAPTION|WS_POPUP,
                              0,
                              0,
                              desktopRect.right - desktopRect.left,
