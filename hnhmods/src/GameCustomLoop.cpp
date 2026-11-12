@@ -100,14 +100,51 @@ static float s_fCamYaw = 0.0f;          // radians, 0 = eye on the -Z side
 static float s_fCamPitch = 0.37f;       // eye above the target, aiming down
 static float s_fCamDist = 25.0f;        // eye ~ (0, 1.1, 1.8)
 
+// input plumbing: ImGui capture state + wheel from the previous frame, so the
+// pre-render input pass can gate itself against the menu overlay
+static bool  s_bWantMouse = false;
+static bool  s_bWantKbd   = false;
+static float s_fWheelDelta = 0.0f;
+
+// manual camera mode: free eye / look-at / up driven by the UI. While in
+// orbit mode these are refreshed every frame from the orbit state, so
+// switching to manual starts exactly where the camera currently is.
+static bool  s_bManualCam = false;
+static float s_fEye[3] = { 0.0f, 1.1f, 1.8f };
+static float s_fAt[3]  = { 0.0f, 0.0f, 25.0f };
+static float s_fUp[3]  = { 0.0f, 1.0f, 0.0f };
+
 static CHanaFrameT3EC_S354 *HeroFrame(void)
 {
   return s_pHeroBody ? s_pHeroBody->pSekHeader_220->pFrameT3EC : NULL;
 }
 
-// re-place the camera from the current spherical orbit state
+// re-place the camera: orbit (spherical around the target) or manual
+// (free eye / look-at / up from the UI). The orbit branch keeps the manual
+// values in sync, so a mode switch is seamless.
 static void UpdateOrbitCamera(void)
 {
+  if ( s_bManualCam )
+  {
+    float fDx = s_fAt[0] - s_fEye[0];
+    float fDy = s_fAt[1] - s_fEye[1];
+    float fDz = s_fAt[2] - s_fEye[2];
+    float fLen = sqrtf(fDx * fDx + fDy * fDy + fDz * fDz);
+    float fUpLen = sqrtf(s_fUp[0] * s_fUp[0] + s_fUp[1] * s_fUp[1]
+                         + s_fUp[2] * s_fUp[2]);
+
+    SetFramePosRel_4069DD(g_pCameraFrame,
+                          (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+                          s_fEye[0], s_fEye[1], s_fEye[2]);
+    if ( fLen >= 0.0001f && fUpLen >= 0.0001f )
+      UpdateBoneLookAtTransform(g_pCameraFrame,
+                                (CHanaFrameT3EC_S354 *)g_pSceneFrame,
+                                fDx / fLen, fDy / fLen, fDz / fLen,
+                                s_fUp[0] / fUpLen, s_fUp[1] / fUpLen,
+                                s_fUp[2] / fUpLen);
+    return;
+  }
+
   const float fTx = 0.0f;
   const float fTy = s_fTargetY;
   const float fTz = CUSTOM_HERO_Z;
@@ -122,6 +159,10 @@ static void UpdateOrbitCamera(void)
   float fLen = sqrtf(fDx * fDx + fDy * fDy + fDz * fDz);
   if ( fLen < 0.0001f )
     return;
+
+  // keep the manual-mode sliders in sync with the live orbit camera
+  s_fEye[0] = fX;  s_fEye[1] = fY;  s_fEye[2] = fZ;
+  s_fAt[0] = fTx;  s_fAt[1] = fTy;  s_fAt[2] = fTz;
 
   SetFramePosRel_4069DD(g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame,
                         fX, fY, fZ);
@@ -163,6 +204,9 @@ static BOOL GameCustomSetup(void)
   SetProjectionFov_40DCA3(0.9f);
 
   // idle timeline (the duel round-start pose) + sane time base + menu cursor
+  CHanaFrameT3EC_S354 *pMosaic = FindFrameByName_47E999(s_pHeroBody->pSekHeader_220->pFrameT3EC, "NULL_MOSAIC");
+  if (pMosaic) pMosaic->bAlphaDeferred_130 = 1;
+
   CSekBody__PlayAnim_40179D(s_pHeroBody, 1);
   FrameTimer_BeginFrame();
   RestartInputThread(2);
@@ -205,10 +249,12 @@ static void HandleOrbitInput(float fDeltaTime)
 
     s_fCamYaw += ((float)(LONG)dwX - (LONG)s_dwPrevX) * 0.005f;
     s_fCamPitch -= ((float)(LONG)dwY - (LONG)s_dwPrevY) * 0.005f;
-    if ( s_fCamPitch > 1.3f )
-      s_fCamPitch = 1.3f;                              // near top-down
-    if ( s_fCamPitch < -0.1f )
-      s_fCamPitch = -0.1f;                             // stay above ground level
+    // full sphere around the body: top and under views. Capped short of
+    // +-90 deg because the look-at up-vector cross degenerates at the pole.
+    if ( s_fCamPitch > 1.45f )
+      s_fCamPitch = 1.45f;                             // ~83 deg above: top view
+    if ( s_fCamPitch < -1.45f )
+      s_fCamPitch = -1.45f;                            // ~83 deg below: under view
 
   }
   s_dwPrevX = dwX;
@@ -216,9 +262,14 @@ static void HandleOrbitInput(float fDeltaTime)
   s_bHavePrev = TRUE;
 
   if ( GetAsyncKeyState(VK_UP) & 0x8000 )              // zoom in/out
-    s_fCamDist -= 20.0f * fDeltaTime;
+    s_fCamDist -= 1.0f * fDeltaTime;
   if ( GetAsyncKeyState(VK_DOWN) & 0x8000 )
-    s_fCamDist += 20.0f * fDeltaTime;
+    s_fCamDist += 1.0f * fDeltaTime;
+  if ( s_fWheelDelta != 0.0f )                         // mouse wheel zoom
+  {
+    s_fCamDist -= s_fWheelDelta * 4.0f;
+    s_fWheelDelta = 0.0f;
+  }
   if ( s_fCamDist < 12.0f )
     s_fCamDist = 12.0f;
   if ( s_fCamDist > 80.0f )
@@ -471,6 +522,46 @@ static void DrawCharacterUI(void)
   }
 }
 
+// camera panel: orbit parameters as sliders, or full manual placement
+// (eye / look-at / up). The mode checkbox switches seamlessly because the
+// orbit branch syncs the manual values to the live camera every frame.
+static void DrawCameraUI(void)
+{
+  if ( ImGui::Checkbox("manual (free camera)", &s_bManualCam) )
+    DebugLog("[HNH][Custom] camera mode: %s\n", s_bManualCam ? "manual" : "orbit");
+
+  if ( !s_bManualCam )
+  {
+    ImGui::SliderFloat("yaw", &s_fCamYaw, -3.1416f, 3.1416f, "%.2f rad");
+    ImGui::SliderFloat("pitch", &s_fCamPitch, -1.45f, 1.45f, "%.2f rad");
+    ImGui::SliderFloat("distance", &s_fCamDist, 12.0f, 80.0f);
+    ImGui::SliderFloat("target Y", &s_fTargetY, -20.0f, 20.0f);
+  }
+  else
+  {
+    ImGui::DragFloat3("eye", s_fEye, 0.25f);
+    ImGui::DragFloat3("look at", s_fAt, 0.25f);
+    ImGui::DragFloat3("up", s_fUp, 0.05f);
+    if ( ImGui::Button("reset up") )
+    {
+      s_fUp[0] = 0.0f;
+      s_fUp[1] = 1.0f;
+      s_fUp[2] = 0.0f;
+    }
+    ImGui::SameLine();
+    if ( ImGui::Button("aim at body") )
+    {
+      s_fAt[0] = 0.0f;
+      s_fAt[1] = s_fTargetY;
+      s_fAt[2] = CUSTOM_HERO_Z;
+    }
+  }
+
+  ImGui::TextDisabled("eye (%.1f, %.1f, %.1f)   at (%.1f, %.1f, %.1f)",
+                      s_fEye[0], s_fEye[1], s_fEye[2],
+                      s_fAt[0], s_fAt[1], s_fAt[2]);
+}
+
 void ResetGameData(void) {
   // reset the UI-effect DirectSound buffers and both footstep-sound tables
   memset(g_arrUIEffectDSBuffer_52F168, 0, sizeof(g_arrUIEffectDSBuffer_52F168));
@@ -533,6 +624,22 @@ void GameCustomLoop(void)
       fDeltaTime = 5.0f;
     FrameTimer_EndFrame();
 
+    // input FIRST (gated by last frame's ImGui capture state), so the camera
+    // reacts in the same frame it is dragged - then place camera, simulate,
+    // render. Orbiting is blocked only while the pointer is over the menu.
+    if ( !s_bWantMouse )
+    {
+      GetMouseXY_45A4D8((DWORD *)&mouseX, (DWORD *)&mouseY);
+      if ( !s_bManualCam )                            // orbit input only
+        HandleOrbitInput(fDeltaTime);
+    }
+    if ( !s_bWantKbd )
+    {
+      bEscPress = IsMenuKeyPressed_481170();           // ESC exits
+    }
+    if ( bEscPress )
+      break;
+
     CHanaSpriteT3F6_S1FC* pMouseCursor = MouseCursor();
 
     UpdateOrbitCamera();
@@ -569,16 +676,12 @@ void GameCustomLoop(void)
       ImGuiIO& io = ImGui::GetIO();
       io.MouseDrawCursor = true;
       io.ConfigFlags &= ~(ImGuiConfigFlags_NoMouse | ImGuiConfigFlags_NoKeyboard | ImGuiConfigFlags_NoMouseCursorChange);
-      
-      if (!io.WantCaptureKeyboard) {
-        bEscPress = IsMenuKeyPressed_481170();                 // ESC exits the experiment
-        BOOL bDown = (GetAsyncKeyState('C') & 0x8000) != 0;
-      }
 
-      if (!io.WantCaptureMouse) {
-        GetMouseXY_45A4D8((DWORD*)&mouseX, (DWORD*)&mouseY);
-        HandleOrbitInput(fDeltaTime);
-      }
+      // stash capture state + wheel for the next frame's pre-render input pass
+      s_bWantMouse = io.WantCaptureMouse;
+      s_bWantKbd   = io.WantCaptureKeyboard;
+      if ( !io.WantCaptureMouse )
+        s_fWheelDelta = io.MouseWheel;
 
       static bool bMenuOpen = true;
       ImGui::NewFrame();
@@ -591,6 +694,9 @@ void GameCustomLoop(void)
 
         if ( ImGui::CollapsingHeader("CHARACTER", ImGuiTreeNodeFlags_DefaultOpen) )
           DrawCharacterUI();
+
+        if ( ImGui::CollapsingHeader("CAMERA", ImGuiTreeNodeFlags_DefaultOpen) )
+          DrawCameraUI();
 
         if ( ImGui::CollapsingHeader("SCENE TREE") )
         {

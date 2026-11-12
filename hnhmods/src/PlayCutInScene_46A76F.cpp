@@ -407,6 +407,10 @@ int __cdecl hook_PlayCutInScene_46A76F(CHanaSceneT458_S504 *pScene,
     SetAnimSetTime(pModeBody->pSekHeader_220->pAnimSetT3F1, fAnimTime);
     if ( g_pds3DListener )
         pFrameKutiFu = FindFrameByName_47E999(pModeBody->pSekHeader_220->pFrameT3EC, "_kuti_fu1");
+     
+    CHanaFrameT3EC_S354 *pMosaic = FindFrameByName_47E999(pModeBody->pSekHeader_220->pFrameT3EC, "NULL_MOSAIC");
+    if (pMosaic) pMosaic->bAlphaDeferred_130 = 1;
+
     for ( k = 0; k < 6; ++k )
     {
         CHanaObj__NewAnimSetT3F1_S150(&arrAnimSets1[k]);
