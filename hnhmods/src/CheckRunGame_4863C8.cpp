@@ -42,6 +42,8 @@ int  s_nRenderHALMode_518CA0;
 int  s_nWidth2;
 int  s_nWidth3;
 
+BOOL g_bCustomGame;
+
 #ifdef _USRDLL
 D3DXMATRIX &g_mat4x4View_4D4780       = *(D3DXMATRIX *)0x4D4780; // WRITABLE
 D3DXMATRIX &g_mat4x4Projection_4CE870 = *(D3DXMATRIX *)0x4CE870; // WRITABLE

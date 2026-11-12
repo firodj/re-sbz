@@ -150,22 +150,6 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     CHanaSpriteT3F6_S1FC *arrBMPMouses[10]; // cursor + face overlays
     CHanaSpriteT3F6_S1FC *arrBMPModos[30];  // modo / vai sprite pages
     CHanaSpriteT3F6_S1FC *arrBMPNunes[30];  // body-part mask pairs
-    String20 arrBgmWavs[2];             // s012 / s013.wav
-    String20 arrSceneNames[20][30];     // h\hXX\hXX? .Ods sub-scene names
-    String20 arrModeBodyNames[10];      // h\hXX\hhXX_0N mode bodies
-    String20 arrTearsOdfs[5][10];       // h\Tears\hXX[_sl/_sr]
-    String20 arrTearsSeks[10];          // h\Tears\h[_sl/_sr]
-    String20 arrGoBmpNames[5][2];
-    String20 arrMouseBmpNames[10];
-    String20 arrMuneBmpNames[10][2];
-    String20 arrModoNames[2][20];       // even mode: A/B name columns
-    String20 arrModoNamesOdd[40];       // odd mode: A rows 0..6, B at row+20 str[4]
-    String20 arrVaiNames[6][5];         // group -> overlay page names
-    String20 arrVaibNames[6][5];
-    String20 arrAhWavNames[180];        // 5 groups x 30 (ah??_00..20 + ch??_00)
-    String20 arrSeWavNames[10];         // hSE01a..hSE03c
-    DWORD arrSceneRemap[20];            // selection -> flags bit index (+10)
-    DWORD arrModeRemap[5];
     CHAR pszFileName[256];
     CHAR String[256];
     DWORD dwAntialiasSave;
@@ -194,8 +178,104 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     pModeBody = 0;
 
     // --- BGM names (even -> s012, odd -> s013)
+#if 1
+    static const char arrBgmWavs[2][20] = {
+      "s012.wav", "s013.wav"
+    };
+#else
+    String20 arrBgmWavs[2];             // s012 / s013.wav
+
     strcpy(arrBgmWavs[0].str, "s012.wav");
     strcpy(arrBgmWavs[1].str, "s013.wav");
+#endif
+
+#if 1
+    static const char arrSceneNames[20][30][20] = {
+      {
+        "h\\h02\\h02a", "h\\h02\\h02e",
+        "h\\h02\\h02f", "h\\h02\\h02g",
+        "h\\h02\\h02b", "h\\h02\\h02h",
+        "h\\h02\\h02i", "h\\h02\\h02j",
+        "h\\h02\\h02c", "h\\h02\\h02k",
+        "h\\h02\\h02l", "h\\h02\\h02m",
+        "h\\h02\\h02d", "h\\h02\\h02n",
+      },
+      {
+        "h\\h02\\h02o", "h\\h02\\h02p",
+        "h\\h02\\h02q", "h\\h02\\h02r",
+        "h\\h02\\h02s",
+      },
+      {
+        "h\\h05\\h05a", "h\\h05\\h05e",
+        "h\\h05\\h05f", "h\\h05\\h05g",
+        "h\\h05\\h05b", "h\\h05\\h05h",
+        "h\\h05\\h05i", "h\\h05\\h05j",
+        "h\\h05\\h05c", "h\\h05\\h05k",
+        "h\\h05\\h05l", "h\\h05\\h05m",
+        "h\\h05\\h05d", "h\\h05\\h05n",
+        "", "",
+        "", "h\\h05\\h05w",
+        "h\\h05\\h05x"
+      },
+      {
+        "h\\h05\\h05o", "h\\h05\\h05p",
+        "h\\h05\\h05q", "h\\h05\\h05r",
+        "h\\h05\\h05s",
+      },
+      {
+        "h\\h04\\h04a", "h\\h04\\h04e",
+        "h\\h04\\h04f", "h\\h04\\h04g",
+        "h\\h04\\h04b", "h\\h04\\h04h",
+        "h\\h04\\h04i", "h\\h04\\h04j",
+        "h\\h04\\h04c", "h\\h04\\h04k",
+        "h\\h04\\h04l", "h\\h04\\h04m",
+        "h\\h04\\h04d", "h\\h04\\h04n",
+        "", "",
+        "", "h\\h04\\h04v",
+        "h\\h04\\h04w",
+      },
+      {
+        "h\\h04\\h04o", "h\\h04\\h04p",
+        "h\\h04\\h04q", "h\\h04\\h04r",
+        "h\\h04\\h04s",
+      },
+      {
+        "h\\h03\\h03a", "h\\h03\\h03e",
+        "h\\h03\\h03f", "h\\h03\\h03g",
+        "h\\h03\\h03b", "h\\h03\\h03h",
+        "h\\h03\\h03i", "h\\h03\\h03j",
+        "h\\h03\\h03c", "h\\h03\\h03k",
+        "h\\h03\\h03l", "h\\h03\\h03m",
+        "h\\h03\\h03d", "h\\h03\\h03n",
+        "", "",
+        "", "h\\h03\\h03t",
+        "h\\h03\\h03v", "h\\h03\\h03u",
+      },
+      {
+        "h\\h03\\h03o", "h\\h03\\h03p",
+        "h\\h03\\h03q", "h\\h03\\h03r",
+        "h\\h03\\h03s",
+      },
+      {
+        "h\\h01\\h01a", "h\\h01\\h01e",
+        "h\\h01\\h01f", "h\\h01\\h01g",
+        "h\\h01\\h01b", "h\\h01\\h01h",
+        "h\\h01\\h01i", "h\\h01\\h01j",
+        "h\\h01\\h01c", "h\\h01\\h01k",
+        "h\\h01\\h01l", "h\\h01\\h01m",
+        "h\\h01\\h01d", "h\\h01\\h01n",
+        "", "",
+        "", "h\\h01\\h01t",
+        "h\\h01\\h01v", "h\\h01\\h01u",
+      },
+      {
+        "h\\h01\\h01o", "h\\h01\\h01p",
+        "h\\h01\\h01q", "h\\h01\\h01r",
+        "h\\h01\\h01s",
+      },
+    };
+#else
+    String20 arrSceneNames[20][30];     // h\hXX\hXX? .Ods sub-scene names
 
     // --- .Ods sub-scene names per (mode row, selection). Rows 0..9 are the
     // even/odd variant pairs of the 5 groups (h02, h05, h04, h03, h01); the
@@ -270,7 +350,9 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     strcpy(arrSceneNames[9][2].str,  "h\\h01\\h01q");   strcpy(arrSceneNames[9][3].str,  "h\\h01\\h01r");
     strcpy(arrSceneNames[9][4].str,  "h\\h01\\h01s");
     // [9][5] runtime-empty; [10][0] and rows 11..19 dead
+#endif
 
+    String20 arrModeBodyNames[10];      // h\hXX\hhXX_0N mode bodies
     // --- mode body per iModeId (group A/B variant)
     strcpy(arrModeBodyNames[0].str, "h\\h02\\hh02_01");
     strcpy(arrModeBodyNames[1].str, "h\\h02\\hh02_02");
@@ -282,6 +364,9 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     strcpy(arrModeBodyNames[7].str, "h\\h03\\hh03_02");
     strcpy(arrModeBodyNames[8].str, "h\\h01\\hh01_01");
     strcpy(arrModeBodyNames[9].str, "h\\h01\\hh01_02");
+
+    String20 arrTearsOdfs[5][10];       // h\Tears\hXX[_sl/_sr]
+
 
     // --- Tears odf names per group (h05's hands use h04's, sic)
     memset(arrTearsOdfs, 0, sizeof(arrTearsOdfs));
@@ -302,12 +387,18 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     strcpy(arrTearsOdfs[4][2].str, "h\\Tears\\h01_sr");
     // [g][3] runtime-empty
 
+    String20 arrTearsSeks[10];          // h\Tears\h[_sl/_sr]
+
+
     // --- Tears sek names (row index shared across groups)
     memset(arrTearsSeks, 0, sizeof(arrTearsSeks));
     strcpy(arrTearsSeks[0].str, "h\\Tears\\h");
     strcpy(arrTearsSeks[1].str, "h\\Tears\\h_sl");
     strcpy(arrTearsSeks[2].str, "h\\Tears\\h_sr");
     // [3] runtime-empty
+
+    String20 arrGoBmpNames[5][2];
+
 
     // --- Go stance sprite pairs
     memset(arrGoBmpNames, 0, sizeof(arrGoBmpNames));
@@ -319,6 +410,9 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     strcpy(arrGoBmpNames[2][1].str, "h\\Go3b.bmp");
     // [3][0] runtime-empty
 
+    String20 arrMouseBmpNames[10];
+
+
     // --- cursor / face overlay BMPs
     memset(arrMouseBmpNames, 0, sizeof(arrMouseBmpNames));
     strcpy(arrMouseBmpNames[0].str, "mouse.bmp");
@@ -327,6 +421,8 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     strcpy(arrMouseBmpNames[3].str, "h\\Eye3.bmp");
     strcpy(arrMouseBmpNames[4].str, "h\\En.bmp");
     // [5] runtime-empty
+
+    String20 arrMuneBmpNames[10][2];
 
     // --- body-part mask pairs (rnune/lnune/rsiri/lsiri/momo/asoko)
     memset(arrMuneBmpNames, 0, sizeof(arrMuneBmpNames));
@@ -337,6 +433,10 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     strcpy(arrMuneBmpNames[4][0].str, "momoA");    strcpy(arrMuneBmpNames[4][1].str, "momoB");
     strcpy(arrMuneBmpNames[5][0].str, "asokoA");   strcpy(arrMuneBmpNames[5][1].str, "asokoB");
     // [6][0] runtime-empty
+
+    String20 arrModoNames[2][20];       // even mode: A/B name columns
+
+
 
     // --- modo sprite names, even variant: [0] A column, [1] B column.
     // Slot 9 of the B column is "taii" x5 in the original (kept).
@@ -360,6 +460,8 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     strcpy(arrModoNames[0][16].str, "aiA");        strcpy(arrModoNames[1][16].str, "aiB");
     // [.][17..19] runtime-empty / zero
 
+    String20 arrModoNamesOdd[40];       // odd mode: A rows 0..6, B at row+20 str[4]
+
     // --- modo sprite names, odd variant: A names in rows 0..6, B names at
     // .str[4] of rows 20..26 (bytes 0..3 of those rows stay zero)
     memset(arrModoNamesOdd, 0, sizeof(arrModoNamesOdd));
@@ -371,6 +473,10 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     strcpy(arrModoNamesOdd[5].str, "zaiA");        strcpy(&arrModoNamesOdd[25].str[4], "zaiB");
     strcpy(arrModoNamesOdd[6].str, "taiA");        strcpy(&arrModoNamesOdd[26].str[4], "taiB");
     // row 7 / row 27 .str[4] runtime-empty; rows 8..19 / 28..39 dead
+
+    String20 arrVaiNames[6][5];         // group -> overlay page names
+    String20 arrVaibNames[6][5];
+
 
     // --- overlay page names per group ([k][0] A, [k][1] B); row 0 unused.
     // arrVaibNames[4][2] is "edaA" in the original (sic).
@@ -387,6 +493,8 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     strcpy(arrVaiNames[4][1].str, "nasA");         strcpy(arrVaibNames[4][1].str, "nasB");
     strcpy(arrVaiNames[4][2].str, "edaA");         strcpy(arrVaibNames[4][2].str, "edaA"); // (sic)
     // [5][*], [1][2], [2][2] runtime-empty
+
+    String20 arrAhWavNames[180];        // 5 groups x 30 (ah??_00..20 + ch??_00)
 
     // --- voice wav names: 5 group blocks of 30 slots = ah??_00..20 plus
     // ch??_00 at slot 21 (group tags 00, 05, 04, 03, 01; blocks 5..6 dead)
@@ -407,6 +515,8 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
         wsprintfA(arrAhWavNames[120 + j].str, "ah01_%02d", j);
     wsprintfA(arrAhWavNames[141].str, "ch01_00");
 
+    String20 arrSeWavNames[10];         // hSE01a..hSE03c
+
     // --- SE wav names
     memset(arrSeWavNames, 0, sizeof(arrSeWavNames));
     strcpy(arrSeWavNames[0].str, "hSE01a");       strcpy(arrSeWavNames[1].str, "hSE01b");
@@ -416,6 +526,8 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     strcpy(arrSeWavNames[8].str, "hSE03c");
     // [9] runtime-empty
 
+    DWORD arrSceneRemap[20];            // selection -> flags bit index (+10)
+
     // --- selection -> unlock-bit remaps (bit index is value + 10)
     arrSceneRemap[0] = 0;    arrSceneRemap[1] = 5;    arrSceneRemap[2] = 6;
     arrSceneRemap[3] = 4;    arrSceneRemap[4] = 2;    arrSceneRemap[5] = 5;
@@ -424,6 +536,9 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
     arrSceneRemap[12] = 3;   arrSceneRemap[13] = 5;   arrSceneRemap[14] = 6;
     arrSceneRemap[15] = 4;   arrSceneRemap[16] = 0;   arrSceneRemap[17] = 12;
     arrSceneRemap[18] = 13;  arrSceneRemap[19] = 14;
+
+    DWORD arrModeRemap[5];
+
     arrModeRemap[0] = 7;     arrModeRemap[1] = 8;     arrModeRemap[2] = 9;
     arrModeRemap[3] = 10;    arrModeRemap[4] = 11;
 
@@ -566,7 +681,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
 
     // BGM (even -> s012, odd -> s013), looped at AVI volume - 1000 dB
     i = (iModeId % 2) != 0;
-    wsprintfA(pszFileName, "%s", arrBgmWavs[i].str);
+    wsprintfA(pszFileName, "%s", arrBgmWavs[i]);
     CHanaObj__GetRealPath_486D9A(pszFileName, 1006);          // WAV dir
     g_pDSBufAssault_52EFD0 = LoadWav_422E7B(pszFileName);
     if (g_pDSBufAssault_52EFD0)
@@ -650,7 +765,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
                 break;
             }
         }
-        if (!arrSceneNames[iModeId][piSelected].str[0])
+        if (!arrSceneNames[iModeId][piSelected][0])
         {
             // dead slot: drop every loaded scene and pick again
             for (i = 0; i < 30; ++i)
@@ -664,7 +779,7 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
             continue;
         }
         ToggleWaitScreen(1);
-        wsprintfA(pszFileName, "%s.Ods", arrSceneNames[iModeId][piSelected].str);
+        wsprintfA(pszFileName, "%s.Ods", arrSceneNames[iModeId][piSelected]);
         CHanaObj__GetRealPath_486D9A(pszFileName, 1002);      // ODS dir
         if (pSceneAny)
         {

@@ -180,6 +180,7 @@ extern int      &g_nObjectTableCapacity_4B009C;
 
 extern HWND      &g_hWnd;
 extern BOOL      &g_bRunGame;
+extern BOOL      g_bCustomGame;
 extern D3DXMATRIX &g_mat4x4View_4D4780;
 extern D3DXMATRIX &g_mat4x4Projection_4CE870;
 

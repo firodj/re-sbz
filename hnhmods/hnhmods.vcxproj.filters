@@ -112,6 +112,9 @@
     <ClCompile Include="src\hnh_hook.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameCustomLoop.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

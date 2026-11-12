@@ -13,6 +13,8 @@
 
 // === GLOBAL VARIABLES ===
 
+void GameCustomLoop(void);
+
 static HINSTANCE s_hInstance;
 static HWND      s_hwndParent;
 
@@ -49,6 +51,10 @@ BOOL(__cdecl* DInputInit_43AD67)(HINSTANCE hinst, HWND hWnd) = reinterpret_cast<
   BOOL (__cdecl*)(HINSTANCE hinst, HWND hWnd)>(0x43AD67);
 
 // === FUNCTION IMPLEMENTATIONS ===
+
+#ifndef IDC_ARROWA
+#define IDC_ARROWA          MAKEINTRESOURCEA(32512)
+#endif
 
 int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
@@ -98,7 +104,7 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
                 windowClass.cbWndExtra = 0;
                 windowClass.hInstance = g_hInstance;
                 windowClass.hIcon = LoadIconA(g_hInstance, MAKEINTRESOURCEA(0x69));
-                windowClass.hCursor = LoadCursorA(0, MAKEINTRESOURCEA(0x7F00));
+                windowClass.hCursor = LoadCursorA(0, IDC_ARROWA);
                 windowClass.hbrBackground = (HBRUSH)GetStockObject(4);
                 windowClass.lpszMenuName = 0;
                 windowClass.lpszClassName = "‰Ø‚Ì”ß–Â";
@@ -169,7 +175,10 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
                 
                 // Cleanup
                 InvalidateRect(g_hwndParent, 0, 1);
-                GameMainLoop_47F013();
+                if (g_bCustomGame)
+                  GameCustomLoop();
+                else
+                  GameMainLoop_47F013();
                 DestroyWindow(g_hwndParent);
                 
                 // Final cleanup checks

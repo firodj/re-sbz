@@ -21,11 +21,12 @@ int      &g_nBMPCounts_518388 = *(int*)0x518388;
 #else
 
 CBMPFile *g_pbmpDd;
+CBMPFile *g_pbmpDdx;
 CBMPFile *g_pbmpDdBt;
 CBMPFile *g_pbmpDd2;
 CBMPFile *g_pbmpDdBt3;
 HGDIOBJ  g_hFontTitleMenu_518CCC;
-int      g_nTitleMenuHotId_4B348C = 0xFFFFFFFF;
+int      g_nTitleMenuHotId_4B348C = -1;
 BOOL     g_bLMouseClick;
 BOOL     g_bTitleMenuConfigScreen_518CC4;
 int      g_nTitleMenuHotToggleRow_4B3490;
@@ -169,10 +170,13 @@ static void FreeTitleMenuBitmaps()
     FreeBmp_4211ED(g_pbmpDd2);
   if ( g_pbmpDdBt3 )
     FreeBmp_4211ED(g_pbmpDdBt3);
+  if ( g_pbmpDdx)
+    FreeBmp_4211ED(g_pbmpDdx);
   g_pbmpDdBt3 = 0;
   g_pbmpDd2 = 0;
   g_pbmpDdBt = 0;
   g_pbmpDd = 0;
+  g_pbmpDdx = nullptr;
 }
 
 // Blits a whole bitmap with its origin at (x, y).
@@ -422,6 +426,12 @@ static bool UpdateMainMenuInput(HWND hWnd, const RECT *pRect, const POINT &Point
       break;
     }
   }
+  if (nMainMenuItem == -1) {
+    if (PtInBox(Point, nImgOffX + 150, nImgOffY + 60, nImgOffX + 240, nImgOffY + 450)) {
+      nMainMenuItem = 3;
+    }
+  }
+  
 
   switch ( nMainMenuItem )
   {
@@ -452,6 +462,14 @@ static bool UpdateMainMenuInput(HWND hWnd, const RECT *pRect, const POINT &Point
       return true;
     }
     break;
+  case 3:
+    g_nTitleMenuHotId_4B348C = 3;
+    if ( bMouseClicked == 1 )
+    {
+      g_bCustomGame = true;
+      StartGame(hWnd);
+      return true;
+    }
   }
   return false;
 }
@@ -663,7 +681,10 @@ static void PaintMainMenu(HDC hDC, const RECT *pRect)
     { 1, 424, 96 }, // quit
   };
 
+
   BlitBmp(hDC, nImgOffX, nImgOffY, g_pbmpDd);
+  if (g_nTitleMenuHotId_4B348C == 3 && g_pbmpDdx)
+    BlitBmp(hDC, nImgOffX, nImgOffY, g_pbmpDdx);
   if ( !g_pbmpDdBt3 )
     return;
   for ( int i = 0; i < sizeof(s_buttons) / sizeof(s_buttons[0]); ++i )
@@ -713,17 +734,18 @@ static int TitleMenu_OnCreate(HWND hWnd)
   {
     LPCSTR pszFile;
     CBMPFile **ppBmp;
-  } bitmaps[4] = {
+  } bitmaps[] = {
     { "DD.bmp", &g_pbmpDd },
     { "DD_BT.bmp", &g_pbmpDdBt },
     { "DD2.bmp", &g_pbmpDd2 },
     { "DD_BT3.bmp", &g_pbmpDdBt3 },
+    { "DDX.bmp", &g_pbmpDdx },
   };
 
   g_hFontTitleMenu_518CCC = CreateFontA(14, 7, 0, 0, 400, 0, 0, 0, 0x80u, 0, 0, 2u, 0x30u,
     "‚l‚r –¾’©");
   SetTimer(hWnd, 0x113u, 0x32u, 0);
-  for ( int i = 0; i < 4; ++i )
+  for ( int i = 0; i < ARRAYSIZE(bitmaps); ++i )
   {
     wsprintfA(String, bitmaps[i].pszFile);
     CHanaObj__GetRealPath_486D9A(String, 1007);
