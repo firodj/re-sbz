@@ -29,18 +29,45 @@
 // Caution: item slots that are empty in otoko.sek zero the step count, so the
 // play-rate recompute divides by zero - the clock NaNs and the pose freezes.
 
+/**
+ THE ISSUE ON RELATED VERTEX BUFFER ERROR AND DXWRAPPER
+
+ In a DX7-to-DX9 wrapper using D3DXContext (from the legacy DirectX 7 utility library d3dx.h), a vertex buffer error occurs if the primary buffer is never blitted before UpdateFrame
+ because the wrapper relies on the primary surface blit or flip call to lazily initialize, bind, or synchronize the underlying Direct3D 9 device state and swap chain.
+ Without that initial blit, UpdateFrame attempts to lock, draw, or flush vertex buffers against an uninitialized or out-of-sync rendering pipeline.
+
+ Root Causes in DX7-to-DX9 Wrappers
+
+ * Lazy Device and Swap Chain Initialization. Many DX7 wrappers (such as dgVoodoo2 or dxwrapper) defer creating or resetting the underlying IDirect3DDevice9 until the application attempts to present a frame. 
+   When IDirectDrawSurface7::Blt or Flip is skipped on the primary surface, the D3D9 device remains unready when ID3DXContext::UpdateFrame executes.
+ * Implicit BeginScene and EndScene Tracking. In DirectX 7, D3DXContext manages the frame lifecycle internally. Wrappers often hook primary surface blits to trigger IDirect3DDevice9::EndScene() and Present(),
+   then reset state for the next BeginScene(). Skipping the blit breaks this state machine, causing subsequent vertex buffer operations (Lock or DrawPrimitive) to fail with invalid call errors (D3DERR_INVALIDCALL).
+ * Surface-to-Texture Synchronization. DX7 games frequently render 2D elements via DirectDraw blits to the primary or back buffer before 3D geometry is drawn.
+   Wrappers intercept the primary blit to upload system-memory surface changes into D3D9 textures and set up stream sources. If the blit never happens, the wrapper's internal vertex buffer used for screen-space quads
+   or transformed vertices may remain unallocated or locked.
+ * Viewport and Render Target Binding. ID3DXContext::UpdateFrame expects a valid render target matching the primary surface dimensions.
+   Wrappers typically bind the D3D9 back buffer as the active render target during the first primary surface operation.
+
+ How to Fix or Work Around It
+
+ * Trigger a Dummy Primary Blit. Perform a 1x1 transparent or color-keyed Blt (or BltFast) to the primary surface during initialization before entering your UpdateFrame loop.
+   This forces the wrapper to complete its D3D9 device setup.
+ * Call Clear Before UpdateFrame. Explicitly call ID3DXContext::Clear before your first UpdateFrame. This often forces the wrapper to validate the render target and initialize internal state buffers.
+ * Verify Wrapper Configuration. If you are using an existing wrapper rather than writing your own, check its configuration file (such as dxwrapper.ini or dgVoodoo.conf) for options like ForceDirect3D9On12, 
+   DdrawUseNativeResolution, or forced flip/blit emulation modes that bypass lazy initialization.
+
+*/
 static CSekBody *s_pHeroBody = NULL;
 
 // placement constants (world units; the ~16-unit body hangs BELOW the frame
 // origin, cf. g_fHitY_4C6F48, so the orbit target is at negative Y)
 #define CUSTOM_HERO_Z   25.0f
-#define CUSTOM_TARGET_Y -8.0f           // hero mid-body (origin = top of rig)
+#define CUSTOM_TARGET_Y 0.0f           // hero mid-body (origin = top of rig)
 
 // orbit state (spherical around the target at (0, CUSTOM_TARGET_Y, CUSTOM_HERO_Z))
 static float s_fCamYaw = 0.0f;          // radians, 0 = eye on the -Z side
 static float s_fCamPitch = 0.37f;       // eye above the target, aiming down
 static float s_fCamDist = 25.0f;        // eye ~ (0, 1.1, 1.8)
-static DWORD s_dwFrame = 0;            // heartbeat counter
 
 // the device our actor assets were created on; D3DInitBuffers re-assigns
 // g_pD3DDevice_4D6C78 on every D3DInit (RecoverLostDevice's WRONGMODE path),
@@ -137,7 +164,6 @@ static void ShowWarning() {
     RECT rc;
     SetRect(&rc, 0, 0, ConvertFrom640AsInt(640), ConvertFrom640AsInt(480));
     g_pPrimaryBuffer_4D6C88->Blt(&rc, pWarSurface, NULL, DDBLT_WAIT, NULL);
-    Sleep(100);
     pWarSurface->Release();
   }
 }
@@ -310,18 +336,6 @@ void GameCustomLoop(void)
 
     PresentFrame();
     HanaVert_DrawBatch(0);
-
-    // heartbeat once per ~60 frames: which of the three links is live?
-    // dt (timer), cam world pos (matrix chain), t (hero anim clock), hrs
-    ++s_dwFrame;
-    if ( (s_dwFrame % 60) == 1 )
-      DebugLog("[HNH][Custom] f=%lu dt=%.3f yaw=%.2f pit=%.2f dist=%.1f "
-               "cam=(%.1f,%.1f,%.1f) t=%.1f\n",
-               s_dwFrame, fDeltaTime, s_fCamYaw, s_fCamPitch, s_fCamDist,
-               g_pCameraFrame->matWorld_178._41,
-               g_pCameraFrame->matWorld_178._42,
-               g_pCameraFrame->matWorld_178._43,
-               s_pHeroBody->items_250[s_pHeroBody->nCurItem_200].fCurTime_60);
   }
 
   RestartInputThread(0);
