@@ -23,8 +23,8 @@ HRESULT(__stdcall* D3DXCreateContext)(unsigned int devIndex, unsigned int flags,
 HRESULT(__stdcall* D3DXGetSurfaceFormat)(int devIndex, D3DX_VIDMODEDESC* pVidMode, unsigned int surfClassFlags, unsigned int which, D3DX_SURFACEFORMAT* pFormat)
 = reinterpret_cast<HRESULT (__stdcall*)(int devIndex, D3DX_VIDMODEDESC *pVidMode, unsigned int surfClassFlags, unsigned int which, D3DX_SURFACEFORMAT *pFormat)>(0x48C09A);
 
-DWORD(__stdcall* D3DXGetMaxSurfaceFormats)(int devIndex, _DWORD* pVidMode, int surfClassFlags)
-= reinterpret_cast<DWORD (__stdcall*)(int devIndex, _DWORD *pVidMode, int surfClassFlags)>(0x48BF99);
+HRESULT(__stdcall* D3DXGetMaxSurfaceFormats)(int devIndex,   D3DX_VIDMODEDESC* pDesc, int surfClassFlags)
+= reinterpret_cast<HRESULT (__stdcall*)(int devIndex, D3DX_VIDMODEDESC* pDesc, int surfClassFlags)>(0x48BF99);
 
 D3DXVECTOR3 * (__stdcall * D3DXVec3Normalize)(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV) = reinterpret_cast<D3DXVECTOR3 *(__stdcall*)(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV)>(0x48A1EC);
 D3DXMATRIX * (__stdcall * D3DXMatrixRotationAxis)(D3DXMATRIX *pOut, const D3DXVECTOR3 *pV, float angle) = reinterpret_cast<D3DXMATRIX *(__stdcall*)(D3DXMATRIX *pOut, const D3DXVECTOR3 *pV, float angle)>(0x48ABB3);

@@ -1539,20 +1539,20 @@ void __cdecl hook_UpdateCutInSceneCameraFollow(
 
 void __cdecl hook_Character_UpdateAnimationState(CSekBody *pModeBody, float nTargetState, float *pCurrentState)
 {
-  _DWORD stateToAnimGroup[10]; // [esp+8h] [ebp-FCh]
+  DWORD stateToAnimGroup[10]; // [esp+8h] [ebp-FCh]
   float fCurrentState; // [esp+30h] [ebp-D4h]
   int easeInFrameStart; // [esp+34h] [ebp-D0h]
   int easeInFrameEnd; // [esp+38h] [ebp-CCh]
   int easeInDuration; // [esp+3Ch] [ebp-C8h]
-  _DWORD easeInKeyframes[17]; // [esp+40h] [ebp-C4h] BYREF
+  DWORD easeInKeyframes[17]; // [esp+40h] [ebp-C4h] BYREF
   int timeFrameStart; // [esp+84h] [ebp-80h]
   int timeFrameEnd; // [esp+88h] [ebp-7Ch]
   int timeDuration; // [esp+8Ch] [ebp-78h]
-  _DWORD timeKeyframes[17]; // [esp+90h] [ebp-74h] BYREF
+  DWORD timeKeyframes[17]; // [esp+90h] [ebp-74h] BYREF
   CHanaFrameT3EC_S354 *pFrame; // [esp+D4h] [ebp-30h]
   int bAnimationPlaying; // [esp+D8h] [ebp-2Ch]
   int easeOutFrameStart; // [esp+DCh] [ebp-28h]
-  _DWORD easeOutKeyframes[9]; // [esp+E0h] [ebp-24h]
+  DWORD easeOutKeyframes[9]; // [esp+E0h] [ebp-24h]
   ONCELOG("[HNH:SUB] Character_UpdateAnimationState_469EB6\n");
  
   stateToAnimGroup[0] = 0;
@@ -1713,7 +1713,7 @@ void __cdecl hook_SoundAH_ManageEffectsAndAnimate(
   LONG nVol; // [esp+4Ch] [ebp-58h]
   int soundGroupRanges[10]; // [esp+50h] [ebp-54h]
   int nActiveSoundIdx; // [esp+78h] [ebp-2Ch]
-  _BYTE bSoundPlaying[32]; // [esp+7Ch] [ebp-28h] BYREF
+  BYTE bSoundPlaying[32]; // [esp+7Ch] [ebp-28h] BYREF
   D3DVALUE posY; // [esp+9Ch] [ebp-8h] BYREF
   float nSoundGroupIdx; // [esp+A0h] [ebp-4h]
   ONCELOG("[HNH:SUB] SoundAH_ManageEffectsAndAnimate_4690AB\n");

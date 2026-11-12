@@ -439,7 +439,12 @@ void __cdecl hook_CHanaObj__NewSceneT458_S504(CHanaSceneT458_S504 **ppOut)
   (*ppOut)->flt_464 = 0.0;
 }
 
-// Post-load body init: for each CHanaScene body (refsSekBody_13C[i], guarded by arrSizes_144[i]) cut it to its designated start SEK item (arrSekItemProps_140[i].index), clear the pending blend weights (float_21C/float_224 = 0), and step one frame via UpdateAnim(1.0). Establishes the neutral 'rest' pose before playback.
+/*
+ * ResetSceneBodies_4857CA -- Post-load body init, for each CHanaScene body (refsSekBody_13C[i],
+ * guarded by arrSizes_144[i]) cut it to its designated start SEK item (arrSekItemProps_140[i].index),
+ * clear the pending blend weights (fBlendReq_21C/fBlendWeight_224 = 0), and step one frame via UpdateAnim(1.0). 
+ * Establishes the neutral 'rest' pose before playback.
+ */
 void __cdecl hook_ResetSceneBodies_4857CA(CHanaSceneT458_S504 *pScene)
 {
   unsigned int i; // [esp+0h] [ebp-4h]
@@ -460,10 +465,12 @@ void __cdecl hook_ResetSceneBodies_4857CA(CHanaSceneT458_S504 *pScene)
   }
 }
 
-// CSekBody::CutToAnim(pSekBody, nItemIndex) - hard-cut (NO blend) switch to animation item nItemIndex.
-// Same item prep as PlayAnim_40179D (set field_200, reset field_44/6C/64, recompute float_5C speed,
-// start at float_54) but forces float_21C = float_224 = 0.0 so there is no crossfade. This is the
-// target UpdateAnim_4019E1 chains to when the current item's field_74 (next-item) transition fires.
+/*
+ * CSekBody::CutToAnim(pSekBody, nItemIndex) - hard-cut (NO blend) switch to animation item nItemIndex.
+ * Same item prep as PlayAnim_40179D (set nCurItem_200, reset nCurStep_44/field_6C/nLoopCount_64, recompute fPlayRate_5C,
+ * start at fStartTime_54) but forces fBlendReq_21C = fBlendWeight_224 = 0.0 so there is no crossfade, and does NOT touch
+ * nReqItem_208. This is the target UpdateAnim_4019E1 chains to when the current item's nNextItem_74 transition fires.
+ */
 void __cdecl hook_CSekBody__CutToAnim_4018E1(CSekBody *pSekBody, int nItemIndex)
 {
   ONCELOG("[HNH:SUB] CSekBody__CutToAnim_4018E1\n");
@@ -481,16 +488,18 @@ void __cdecl hook_CSekBody__CutToAnim_4018E1(CSekBody *pSekBody, int nItemIndex)
   pSekBody->fBlendWeight_224 = 0.0;
 }
 
-// CSekBody::UpdateAnim(pSekBody, fDelta) - per-frame animation state machine (returns 1 when the
-// current item reaches its end this frame, else 0). No-op if pSekBody/field_24C absent, or the header's
-// anim set (pAnimSetT3F1) is missing. Selects the active item g_pSekItem = &items_250[field_200] and
-// advances its playback time: float_60 += fDelta * float_5C. On reaching the end (float_58<=float_60):
-//  flag_0==0 (one-shot) -> either snap to end (field_70 case) or crossfade to the next item via
-//  sub_4018E1(body, field_74); flag_0==1 (looping) -> ++field_64 loop counter, restart at float_54 while
-//  under the loop limit (gap78), else crossfade. Then, if a blend is pending (float_21C!=0) flush it
-//  (sub_43A371) and set blend factor float_224=1; applies the pose with sub_403D61(animSet, float_60) and
-//  advances the blend via sub_43A643(animSet, &float_224, fDelta). Callers use the ==1 return to call
-//  PlayAnim_40179D.
+/*
+ * CSekBody__UpdateAnim(pSekBody, fDelta) - per-frame animation state machine (returns 1 when the
+ * current item reaches its end this frame, else 0). No-op if pSekBody/bDisabled_24C set, or the header's
+ * anim set (pAnimSetT3F1) is missing. Selects the active item g_pSekItem = &items_250[nCurItem_200] and
+ * advances its playback time: fCurTime_60 += fDelta * fPlayRate_5C. On reaching the end (fEndTime_58<=fCurTime_60):
+ * nMode_0==0 (one-shot) -> either snap to end (when bAutoNext_70 clear) or cut to the next item via
+ * CutToAnim_4018E1(body, nNextItem_74); nMode_0==1 (looping) -> ++nLoopCount_64, restart at fStartTime_54 while
+ * under the loop limit (nMaxLoops_78), else cut to nNextItem_74. Then, if a blend is pending (fBlendReq_21C!=0) flush it
+ * (BeginBlend) and set blend factor fBlendWeight_224=1; applies the pose with SetTime_403D61(animSet, fCurTime_60) and
+ * advances the blend via BlendStep_43A643(animSet, &fBlendWeight_224, fDelta). Callers use the ==1 return to call
+ * PlayAnim_40179D. bStepAdvanced_244/bLooped_248 are write-only signal flags (step moved / loop wrapped).
+ */
 BOOL __cdecl hook_CSekBody__UpdateAnim_4019E1(CSekBody *pSekBody, float fDelta)
 {
   BOOL bCompleted; // [esp+4h] [ebp-4h]
@@ -550,11 +559,13 @@ LABEL_15:
   return bCompleted;
 }
 
-// CHanaAnimSetT3F1::BeginBlend(pAnimSet) - capture the target pose so a crossfade can start.
-// For each sub-anim ref (nAnimCount_134) with nCount_138 and a valid pHanaFram_130: set float_23C = 1.0
-// and memcpy objS78_1C4 <- objS78_14C (snap the target pose into the blend-source buffer); otherwise set
-// float_23C = 0.0. Called by UpdateAnim_4019E1 when a blend weight (float_21C) is pending, just before
-// BlendStep_43A643 starts interpolating. Returns the last index+1 (unused).
+/*
+ * CHanaAnimSetT3F1::BeginBlend(pAnimSet) - capture the target pose so a crossfade can start.
+ * For each sub-anim ref (nAnimCount_134) with nCount_138 and a valid pHanaFram_130: set float_23C = 1.0
+ * and memcpy objS78_1C4 <- objS78_14C (snap the target pose into the blend-source buffer); otherwise set
+ * float_23C = 0.0. Called by UpdateAnim_4019E1 when a blend weight (fBlendReq_21C) is pending, just before
+ * BlendStep_43A643 starts interpolating. Returns the last index+1 (unused).
+ */
 void __cdecl hook_CHanaAnimSetT3F1__BeginBlend_43A371(CHanaAnimSetT3F1_S150 *pAnimSet)
 {
   int i; // [esp+0h] [ebp-4h]
@@ -579,10 +590,12 @@ void __cdecl hook_CHanaAnimSetT3F1__BeginBlend_43A371(CHanaAnimSetT3F1_S150 *pAn
   }
 }
 
-// CHanaAnimSetT3F1::BlendStep(pAnimSet, pfWeight, fDelta) - advance one crossfade step.
-// Decays the blend weight *pfWeight -= 0.1*fDelta (clamped to [0,1]). While *pfWeight > 0 it interpolates
-// every sub-anim ref's pose toward its target via sub_43A43F(ref, *pfWeight) and returns 1 (still blending);
-// when the weight hits 0 it returns 0 (blend complete). pfWeight is pSekBody->float_224 in UpdateAnim_4019E1.
+/*
+ * CHanaAnimSetT3F1::BlendStep(pAnimSet, pfWeight, fDelta) - advance one crossfade step.
+ * Decays the blend weight *pfWeight -= 0.1*fDelta (clamped to [0,1]). While *pfWeight > 0 it interpolates
+ * every sub-anim ref's pose toward its target via sub_43A43F(ref, *pfWeight) and returns 1 (still blending);
+ * when the weight hits 0 it returns 0 (blend complete). pfWeight is pSekBody->fBlendWeight_224 in UpdateAnim_4019E1.
+ */
 bool __cdecl hook_CHanaAnimSetT3F1__BlendStep_43A643(CHanaAnimSetT3F1_S150 *pAnimSet, float *pfWeight, float fDelta)
 {
   int i; // [esp+0h] [ebp-8h]
@@ -1418,7 +1431,6 @@ void register_PlayOdsDialogueScene_477F90(int cfg) {
     hnh_Hook(0x4843cf, hook_LoadOds_4843CF, "LoadOds_4843CF"); // [OK]
     hnh_Hook(0x47fa84, hook_DrawAdvanceDialogueText_47FA84, "DrawAdvanceDialogueText_47FA84");
     hnh_Hook(0x4019e1, hook_CSekBody__UpdateAnim_4019E1, "CSekBody__UpdateAnim_4019E1"); // [OK]
-
 
     hnh_Hook(0x4018e1, hook_CSekBody__CutToAnim_4018E1, "CSekBody__CutToAnim_4018E1"); // [OK]
    

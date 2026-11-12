@@ -497,7 +497,7 @@ BOOL __cdecl hook_ParseODFFile_441F19(
     if ( !memcmp(pBuf1, "AMBI", 4u) )
     {
       pBuf1 = (char *)pBuf1 + 4;
-      rgbDiffuse = *(_DWORD *)pBuf1;
+      rgbDiffuse = *(INT*)pBuf1;
       memset(&d3dLight, 0, sizeof(d3dLight));
       d3dLight.dltType = (D3DLIGHTTYPE)(D3DLIGHT_FORCE_DWORD|0x80000000);
       d3dLight.dcvDiffuse.b = (double)(unsigned __int8)rgbDiffuse / 255.0;
@@ -510,7 +510,7 @@ BOOL __cdecl hook_ParseODFFile_441F19(
     {
       (*pOutRootFrame)->bHasFog = 1;
       pBuf1 = (char *)pBuf1 + 4;
-      (*pOutRootFrame)->dwFogColor = *(_DWORD *)pBuf1;
+      (*pOutRootFrame)->dwFogColor = *(DWORD*)pBuf1;
       pBuf1 = (char *)pBuf1 + 4;
       g_pD3DDevice_4D6C78->SetRenderState(
         D3DRENDERSTATE_FOGCOLOR,
@@ -787,12 +787,14 @@ CSekHeader *__cdecl hook_SekHeader_CloneClean(const CSekHeader *pSrc)
   return pDst;
 }
 
-// CSekBody::PlayAnim(pSekBody, nItemIndex) - select & start animation item nItemIndex on the body.
-// Sets field_200/field_208 = nItemIndex, resets that item's field_44/field_6C/field_64 (loop counter) to 0,
-// computes its per-unit speed float_5C = (float_58 - float_54)/field_50, and starts playback at float_54
-// (float_60). Clears the body's field_244/field_248 flags; if the item's field_7C (blend) flag is set,
-// starts a crossfade (float_21C = 1.0). Note: the trailing `return 156 * nItemIndex` is just the item's
-// byte offset left in eax - callers ignore it. items_250 is a 0x9C-byte-per-entry SEK item array.
+/*
+ * CSekBody::PlayAnim(pSekBody, nItemIndex) - select & start animation item nItemIndex on the body.
+ * Sets nCurItem_200/nReqItem_208 = nItemIndex, resets that item's nCurStep_44/field_6C/nLoopCount_64 (loop counter) to 0,
+ * computes its per-unit speed fPlayRate_5C = (fEndTime_58 - fStartTime_54)/nEndStep_50, and starts playback at
+ * fStartTime_54 (fCurTime_60). Clears the body's bStepAdvanced_244/bLooped_248 flags; unless the item's bNoBlend_7C
+ * is set, starts a crossfade (fBlendReq_21C = 1.0). Note: the trailing `156 * nItemIndex` is just the item's byte offset
+ * left in eax - callers ignore it. items_250 is a 0x9C-byte-per-entry SEK item array.
+ */
 void __cdecl hook_CSekBody__PlayAnim_40179D(CSekBody *pSekBody, int nItemIndex)
 {
   ONCELOG("[HNH:SUB] CSekBody__PlayAnim_40179D\n");
@@ -832,7 +834,7 @@ void __cdecl hook_ParseOds3DON_483704(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAni
   if ( !pAnimSet->nCount_148 )
   {
     pBuf += 4;
-    pAnimSet->nCount_148 = *(_DWORD *)pBuf;
+    pAnimSet->nCount_148 = *(DWORD*)pBuf;
     pBuf += 4;
     pAnimSet->arroS118_14C = (CHanaObj_S118 *)MemAlloc_40DEF7(280 * pAnimSet->nCount_148 + 128);
     for ( i = 0; i < pAnimSet->nCount_148; ++i )
@@ -841,7 +843,7 @@ void __cdecl hook_ParseOds3DON_483704(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAni
       pBuf += 4;
       pAnimSet->arroS118_14C[i].flt_108 = *(float *)pBuf;
       pBuf += 4;
-      pAnimSet->arroS118_14C[i].field_10C = *(_DWORD *)pBuf;
+      pAnimSet->arroS118_14C[i].field_10C = *(DWORD*)pBuf;
       pBuf += 4;
       len_name1a = lstrlenA(pBuf);
       memcpy(pAnimSet->arroS118_14C[i].sz_name_4, pBuf, len_name1a + 1);
@@ -1016,7 +1018,7 @@ void __cdecl hook_ParseOdsEx_484A38(
   }
   lpBuffer += 4;
   nSlot = 0;
-  nCount = *(_DWORD *)lpBuffer;
+  nCount = *(INT*)lpBuffer;
   pScene->dwCount_130 = nCount;
   pScene->refsFrames_134 = (CHanaFrameT3EC_S354 **)MemAlloc_40DEF7(4 * nCount + 64);
   pScene->refsAnimeSets_138 = (CHanaAnimSetT3F1_S150 **)MemAlloc_40DEF7(4 * nCount + 64);
@@ -1079,13 +1081,13 @@ void __cdecl hook_ParseOdsEx_484A38(
         lpBuffer += v9 + 1;
         if ( pScene->refsSekBody_13C )
         {
-          pScene->arrSizes_144[nSlot - 1] = *(_DWORD *)lpBuffer;
+          pScene->arrSizes_144[nSlot - 1] = *(DWORD*)lpBuffer;
           lpBuffer += 4;
           pScene->arrSekItemProps_140[nSlot - 1] = (CSekItemProp *)MemAlloc_40DEF7(8 * pScene->arrSizes_144[nSlot - 1] + 256);
           for ( jItem = 0; jItem < pScene->arrSizes_144[nSlot - 1]; ++jItem )
           {
             pScene->arrSekItemProps_140[nSlot - 1][jItem].flt_0 = *(float *)lpBuffer;
-            pScene->arrSekItemProps_140[nSlot - 1][jItem].index = *((_DWORD *)lpBuffer + 1);
+            pScene->arrSekItemProps_140[nSlot - 1][jItem].index = *((DWORD*)lpBuffer + 1);
             lpBuffer += 8;
           }
           pScene->refsSekBody_13C[nSlot - 1]->pSekHeader_220->pAnimSetT3F1 = pScene->refsAnimeSets_138[nSlot - 1];

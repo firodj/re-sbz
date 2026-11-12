@@ -71,7 +71,7 @@ void __cdecl hook_PlayVideoWith3DAudio_4791A3(const char* szMoviePath, int bLoop
   int nMouseX; // [esp+110h] [ebp-34h] BYREF
   LPDIRECTDRAWCLIPPER pOldClipper = nullptr; // [esp+114h] [ebp-30h] BYREF
   __int16 wBtnMask; // [esp+118h] [ebp-2Ch] BYREF
-  _DWORD arrVolSteps[10]; // [esp+11Ch] [ebp-28h] BYREF
+  DWORD arrVolSteps[10]; // [esp+11Ch] [ebp-28h] BYREF
 
   arrVolSteps[0] = 0;
   arrVolSteps[1] = 125;

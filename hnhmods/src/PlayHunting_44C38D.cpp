@@ -175,7 +175,7 @@ float g_fFoeSpinDir;
 // alpha-deferred for it, dead ones stay hidden) and grants a 120-unit action
 // timer; otherwise: hero action-intro timer (x3/2 speed while it lasts) or
 // UpdateHeroBody (bActing), toggle-C camera (UpdateCameraFollow_44C028 while
-// hero field_200 <= 6, else the free 445525 follow), UpdateFoeAI (returns an
+// hero nCurItem_200 <= 6, else the free 445525 follow), UpdateFoeAI (returns an
 // action-timer increment; a non-zero return triggers the foe-attack SE),
 // UpdateVoicePlayback on the face frame, one of four wana attack functions
 // per wana (Close/Knockback/Charged/Projectile, type arrWanaAtkTypes, param
@@ -187,9 +187,9 @@ float g_fFoeSpinDir;
 // frame fades in instead of presenting (dwClockBase2 skips the menu time).
 //
 // The round ends when the clock hits 0, the foe aggro <= 0, the hero HP <= 0,
-// or hero field_200 in {10,11,13,16}. Defeat/timeout: GameOver SE at -500 dB,
+// or hero nCurItem_200 in {10,11,13,16}. Defeat/timeout: GameOver SE at -500 dB,
 // PlayResultsCutscene, ShowMouseSelectDialog (choose "keep going" -> reveal
-// the next live wana (field_24C = 1, alpha-deferred) and restart the round at
+// the next live wana (bDisabled_24C = 1, alpha-deferred) and restart the round at
 // LABEL_154/LABEL_68; quit -> nSysMenuResult = 1); the persisted current HP
 // is raised by 15% of max (clamped). Victory (aggro <= 0): persist HP/max,
 // PlayVictoryCutscene, fade. Finally: stop/release the SFX, 3D-hit, BGM and
@@ -1312,7 +1312,7 @@ int __cdecl hook_PlayHunting_44C38D(int nDuelIndex)
 //       blend toward hero: two CalculateLocalRotationMatrix passes around
 //       HanaMatrix_BuildLookAtAndTransform, dirForwardX/Z = lerp(fwd->-fwd, 0.3*fBlendFactor)
 //       UpdateBoneLookAtTransform (face the hero)
-//       anim dispatch by pFoeBody->field_200: 6 = strafe (fZNudge, reversed duels 4/5),
+//       anim dispatch by pFoeBody->nCurItem_200: 6 = strafe (fZNudge, reversed duels 4/5),
 //         20 = tackle (lunge [3]; if within [4] -> hero anim 9, -2000*[1] HP,
 //                      g_dwBattleMode = -1, fHitImpact = 122), else anim 6
 //       anim rate fAnimRateA = 2f - f*fAggroSpeedMul; on finish of 21/3 -> anim 2
@@ -2075,9 +2075,9 @@ bool __cdecl hook_IsFoeWithinHeroRange_448B78(CSekBody *pHeroBody, CSekBody *pFo
 //   state machine keyed off g_dwBattleMode:
 // 
 //   Phase 1 -- trigger check (idle, g_dwBattleMode != -1):
-//   - Bails out if the wana is disabled (pWanaBody->field_24C == 1).
+//   - Bails out if the wana is disabled (pWanaBody->bDisabled_24C == 1).
 //   - Skips the hit if the hero is invulnerable: its anim set's field_130 is in the 1600-1645 family, or its current anim
-//   item (field_200, confirmed via CutToAnim_4018E1 which assigns it) is 13 -- or simply out of range (fDist >= 5.0 or ==
+//   item (nCurItem_200, confirmed via CutToAnim_4018E1 which assigns it) is 13 -- or simply out of range (fDist >= 5.0 or ==
 //   0).
 //   - On hit: sets g_dwBattleMode = -1 (locks out other attacks), wana -> anim item 1 (attack), hero -> anim item 7
 //   (knockback reaction -- Close uses 8 instead), subtracts fAmount from hero HP (clamped at 0), returns 33.0 -- a non-zero
@@ -3041,7 +3041,7 @@ void __cdecl hook_DrawSprite3D(CHanaSpriteT3F6_S1FC *pSprite, D3DXVECTOR3 *parrP
 
 // Two-body cutscene compositor (only caller: PlayHunting - composites the duel's hero+foe bodies into an ODS cutscene scene). Swaps LIVE bodies into STAND-IN slots:
 // finds the scene frame whose world position exactly equals the body frame's (float == match over pScene->refsFrames_134[0..dwCount_130)),
-// reparents the body frame under it (AttachChild + MtxMult 0 + look-at identity). pStandInA/B = the scene's own CSekBody at that slot; its field_200
+// reparents the body frame under it (AttachChild + MtxMult 0 + look-at identity). pStandInA/B = the scene's own CSekBody at that slot; its nCurItem_200
 // (current anim item) is copied onto the live body EVERY FRAME, so the scene animation drives the live bodies' anims.
 // Playback loop: mouse button held = 5x speed (GetCursorPos 3rd out; X/Y unused); advances pfExecTime to pAnimSet_148->fRes_13C under a cinematic 0.4 FOV.
 // Fade choreography vs remaining time: pSprites[0] expanding box at (320,350) +/- 32*fBoxExpand grows in while >150 left, fades out after (fBoxAlpha);
@@ -3739,16 +3739,15 @@ void __cdecl hook_PlayVictoryCutscene_455183(
 }
 
 /**
+ * PlayResultsCutscene_455BE2 -- results pose loop
 
-PlayResultsCutscene_455BE2 -- results pose loop
-
-Victory-pose showcase cycling 3 phases (arrPhaseDurations {10, 10, 900}, sentinel 99999): each phase rotates the hero
-by arrPhaseAngles {-90, 45, 180} degrees around vecRotAxis (Y) to re-face the camera, cuts hero/foe/wana anims (foe back to
-saved nFoeAnimItem/float_224), and after phase 2 all anims run at 3x (fAnimTimeScale = 3). Camera chases a point 18
-above the hero's head (fHeroRaisedY), drifts up (fCameraDrift -10->5) then widens FOV to 1.2 (fFovWide). During t=30-90
-the hero advances toward the foe at (t-30)/5 with map-collision response (fColPushBackZ/fColNudgeZ/fColPushFwdZ); the
-foe (anim 5) is pushed to >=8 units from the camera (fFoeCamDist). Holding the mouse button after one release
-(bBtnLatch) fast-forwards x5. Ends at t > 280, restores FOV/time scale, HanaSurface_CreateAndFade.
+ * Victory-pose showcase cycling 3 phases (arrPhaseDurations {10, 10, 900}, sentinel 99999): each phase rotates the hero
+ * by arrPhaseAngles {-90, 45, 180} degrees around vecRotAxis (Y) to re-face the camera, cuts hero/foe/wana anims (foe back to
+ * saved nFoeAnimItem/fBlendWeight_224), and after phase 2 all anims run at 3x (fAnimTimeScale = 3). Camera chases a point 18
+ * above the hero's head (fHeroRaisedY), drifts up (fCameraDrift -10->5) then widens FOV to 1.2 (fFovWide). During t=30-90
+ * the hero advances toward the foe at (t-30)/5 with map-collision response (fColPushBackZ/fColNudgeZ/fColPushFwdZ); the
+ * foe (anim 5) is pushed to >=8 units from the camera (fFoeCamDist). Holding the mouse button after one release
+ * (bBtnLatch) fast-forwards x5. Ends at t > 280, restores FOV/time scale, HanaSurface_CreateAndFade.
 */
 void __cdecl hook_PlayResultsCutscene_455BE2(
   CSekBody *pHeroBody,

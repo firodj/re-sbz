@@ -479,9 +479,9 @@ BOOL __cdecl hook_CheckRunGame_4863C8(HWND hWnd, BOOL bFullScreen)
   //auto fn = (BOOL(__cdecl*)(HWND, BOOL))pfnCheckRunGame_4863C8;
   // return fn(hWnd, bFullScreen);
 
-  CHAR szTeaEx[256]; // [esp+0h] [ebp-204h] BYREF
-  int bRunGame; // [esp+100h] [ebp-104h]
-  _DWORD szTeaConfigData[64]; // [esp+104h] [ebp-100h] BYREF
+  CHAR  szTeaEx[256]; // [esp+0h] [ebp-204h] BYREF
+  int   bRunGame; // [esp+100h] [ebp-104h]
+  DWORD szTeaConfigData[64]; // [esp+104h] [ebp-100h] BYREF
 
   ONCELOG("[HNH:SUB] CheckRunGame_4863C8\n");
 

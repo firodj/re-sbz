@@ -2077,7 +2077,7 @@ void __cdecl hook_ParseVERT_440288(
   CHanaVertT3EA_S1FC *pVertT3EA; // [esp+Ch] [ebp-220h] BYREF
   CHAR szVertName2[256]; // [esp+10h] [ebp-21Ch] BYREF
   CHAR szVertName[256]; // [esp+110h] [ebp-11Ch] BYREF
-  WORD *pBuf_v12; // [esp+210h] [ebp-1Ch]
+  WORD *pVtxIndices_v12; // [esp+210h] [ebp-1Ch]
   int nIndex_v13; // [esp+214h] [ebp-18h]
   int bFound; // [esp+218h] [ebp-14h]
   char *pBuf; // [esp+21Ch] [ebp-10h] BYREF
@@ -2091,18 +2091,18 @@ void __cdecl hook_ParseVERT_440288(
   v17 = 0;
   pVertT3EA = *ppVert;
   memset(szVertName, 0, 0xFFu);
-  name_len_v17 = *(_DWORD *)pBuf;
+  name_len_v17 = *(DWORD*)pBuf;
   pBuf += 4;
   wsprintfA(szVertName, "%s", pBuf);
   name_len_v4 = lstrlenA(pBuf);
   pBuf += name_len_v4 + 1;
-  dwNumVertices_v8 = *(_DWORD *)pBuf;
+  dwNumVertices_v8 = *(DWORD*)pBuf;
   pBuf += 4;
   pBuf_v7 = pBuf;
   pBuf += 32 * dwNumVertices_v8;
-  dwNumIndices_v16 = *(_DWORD *)pBuf;
+  dwNumIndices_v16 = *(DWORD*)pBuf;
   pBuf += 4;
-  pBuf_v12 = (WORD *)pBuf;
+  pVtxIndices_v12 = (WORD *)pBuf;
   pBuf += 2 * dwNumIndices_v16;
   nIndex_v13 = 1;
   bFound = 0;
@@ -2130,7 +2130,7 @@ void __cdecl hook_ParseVERT_440288(
       pVertT3EA = 0;
     }
     CHanaObj__NewVertT3EA(&pVertT3EA, D3DFVF_VERTEX, dwNumVertices_v8);// vertices format hardcoded to 0x112
-    CHanaObj__FillVertexBufferT3EA(pVertT3EA, pBuf_v7, dwNumVertices_v8, pBuf_v12, dwNumIndices_v16);
+    CHanaObj__FillVertexBufferT3EA(pVertT3EA, pBuf_v7, dwNumVertices_v8, pVtxIndices_v12, dwNumIndices_v16);
     AttachHanaObj_40BAB8(pVertT3EA, szVertName);
   }
   while ( 1 )
@@ -2437,7 +2437,7 @@ void __cdecl hook_ParseOdfMeshMANM_43FBD1(char **ppBuf, CHanaVertT3EA_S1FC *pVer
   v7 = 0;
   nCount_v10 = 0;
   pBuf = (BYTE *)*ppBuf;
-  nCount_v10 = *(_DWORD *)pBuf;
+  nCount_v10 = *(INT*)pBuf;
   pBuf += 4;
   if ( pVertT3EA->pMateT3EE )
   {
@@ -2584,12 +2584,12 @@ void __cdecl hook_ParseOdfMeshTEXT_43F460(char **ppBuf, CHanaVertT3EA_S1FC *pVer
   LPBYTE pBuf; // [esp+220h] [ebp-248h]
   CHAR maskBmp[512]; // [esp+224h] [ebp-244h] BYREF
   CHAR origName[64]; // [esp+424h] [ebp-44h] BYREF
-  int unk_v16; // [esp+464h] [ebp-4h]
+  //int unk_v16; // [esp+464h] [ebp-4h]
 
   ONCELOG("[HNH:SUB] ParseOdfMeshTEXT_43F460\n");
 
   pBuf = (LPBYTE)*ppBuf;
-  unk_v16 = 0;
+  //unk_v16 = 0;
   bSelfBlitImage = 0;
   bSelfBlitMask = 0;
   pDDImageSurf = 0;
@@ -2597,7 +2597,7 @@ void __cdecl hook_ParseOdfMeshTEXT_43F460(char **ppBuf, CHanaVertT3EA_S1FC *pVer
   pDDFinalSurf = 0;
   memset(imageBmp, 0, 0x100u);
   memset(maskBmp, 0, 0x100u);
-  unk_v16 = *(_DWORD *)pBuf;
+  //unk_v16 = *(DWORD*)pBuf;
   pBuf += 4;
   wsprintfA(imageBmp, "%s", (const char *)pBuf);
   wsprintfA(origName, "%s", (const char *)pBuf);

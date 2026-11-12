@@ -186,7 +186,7 @@ void __cdecl hook_SetupHeroEntry_4593E0(CHanaSceneT458_S504 *pScene, CHanaFrameT
 //   index).
 // 
 //   4. Footstep audio: when standing on material nHitMode -- position the two g_arrFootstepSound_52F17C/52F18C 3D buffers
-//   at the hero, and Play/Stop them gated on the current animation's pAnimData->float_60 frame number falling inside
+//   at the hero, and Play/Stop them gated on the current animation's pAnimData->fCurTime_60 frame number falling inside
 //   hardcoded footstep-frame ranges (303-310, 403-410, 500-504, ... for one foot; 313-320, 413-420, 507-511, ... for the other
 //   -- left/right step windows); all other materials' buffers get stopped and rewound.
 bool __cdecl hook_UpdateHeroBody_44474E(
@@ -1481,9 +1481,9 @@ void __cdecl hook_UpdateVoicePlayback_458B3A(
 {
   int Volume_423C65; // esi
   int nVolTmp2; // esi
-  _WORD arrSndIdx6[4]; // [esp+8h] [ebp-9Ch]
+  WORD arrSndIdx6[4]; // [esp+8h] [ebp-9Ch]
   BOOL bAlreadyPlaying; // [esp+10h] [ebp-94h]
-  _WORD arrSndIdxRand[6]; // [esp+14h] [ebp-90h]
+  WORD arrSndIdxRand[6]; // [esp+14h] [ebp-90h]
   D3DVALUE px; // [esp+20h] [ebp-84h] BYREF
   int nVoiceSel; // [esp+24h] [ebp-80h]
   int nSpeakerState; // [esp+28h] [ebp-7Ch]
@@ -1491,7 +1491,7 @@ void __cdecl hook_UpdateVoicePlayback_458B3A(
   D3DVALUE pz; // [esp+30h] [ebp-74h] BYREF
   int nFadeVol; // [esp+34h] [ebp-70h]
   int bAnyPlaying; // [esp+38h] [ebp-6Ch]
-  _DWORD arrIsPlaying[25]; // [esp+3Ch] [ebp-68h]
+  DWORD arrIsPlaying[25]; // [esp+3Ch] [ebp-68h]
   D3DVALUE py; // [esp+A0h] [ebp-4h] BYREF
   ONCELOG("[HNH:SUB] UpdateVoicePlayback_458B3A\n");
  

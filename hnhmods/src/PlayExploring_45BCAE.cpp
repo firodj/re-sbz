@@ -1457,23 +1457,27 @@ CHanaSpriteT3F6_S1FC *__cdecl hook_InitHudResources_4490A7(
   int nMode)
 {
   CHanaSpriteT3F6_S1FC *result; // eax
-  String25 arrBmpModes_v5[30]; // [esp+4h] [ebp-DC8h] BYREF
-  String25 arrBmpTimes_v32[15]; // [esp+2F4h] [ebp-AD8h] BYREF
-  _BYTE v7[250]; // [esp+46Bh] [ebp-961h] BYREF
-  String25 arrBmpNumbers_v49[15]; // [esp+568h] [ebp-864h] BYREF
+ 
   CHAR FileName[256]; // [esp+6E0h] [ebp-6ECh] BYREF
   int i; // [esp+7E0h] [ebp-5ECh]
   CHanaSpriteT3F6_S1FC *pSprite_v63; // [esp+7E4h] [ebp-5E8h] BYREF
   CHAR szPath[256]; // [esp+7E8h] [ebp-5E4h] BYREF
-  String25 szOfaBMP_v66[32]; // [esp+8E8h] [ebp-4E4h] BYREF
-  _BYTE v14[448]; // [esp+C08h] [ebp-1C4h] BYREF
-  __int16 v15; // [esp+DC8h] [ebp-4h]
   CHanaSpriteT3F6_S1FC **arrSprTimes_a2a; // [esp+DD8h] [ebp+Ch]
   CHanaSpriteT3F6_S1FC **arrSprLifes_v99; // [esp+DD8h] [ebp+Ch]
 
   ONCELOG("[HNH:SUB] InitHudResources_4490A7\n");
   
   pSprite_v63 = 0;
+
+#if 1
+  static const char *arrBmpNumbers_v49[15] = {
+    "0.BMP", "1.BMP", "2.BMP", "3.BMP", "4.BMP", "5.BMP", "6.BMP", "7.BMP", "8.BMP", "9.BMP",
+    "c.BMP",                                         // clock 'c' digit
+    "ef01.bmp", "ef02.bmp", "ef03.bmp", "ef03.bmp",  // NOTE: [14] dup of [13] - ef03 masks itself
+  };
+#else
+  String25 arrBmpNumbers_v49[15]; // [esp+568h] [ebp-864h] BYREF
+
   strcpy((char *)arrBmpNumbers_v49[0].str, "0.BMP");
   *(_DWORD *)&arrBmpNumbers_v49[0].str[6] = 0;
   *(_DWORD *)&arrBmpNumbers_v49[0].str[10] = 0;
@@ -1571,6 +1575,22 @@ CHanaSpriteT3F6_S1FC *__cdecl hook_InitHudResources_4490A7(
   *(_DWORD *)&arrBmpNumbers_v49[14].str[13] = 0;
   *(_DWORD *)&arrBmpNumbers_v49[14].str[17] = 0;
   *(_DWORD *)&arrBmpNumbers_v49[14].str[21] = 0;
+#endif
+
+#if 1
+  static const char *arrBmpTimes_v32[15] = {
+    "run\\timeA.BMP",  "run\\timeB.BMP",   // clock body/mask
+    "run\\lifeA.BMP",  "run\\lifeB.BMP",   // life gauge body/mask
+    "run\\Ber.BMP",                          // plain texture, no mask
+    "run\\rendaA.bmp", "run\\rendaB.bmp",  // combo (renda) body/mask
+    "run\\button01.bmp", "run\\button03.bmp",
+    "run\\button05.bmp", "run\\button06.bmp",
+    "run\\button02.bmp", "run\\button04.bmp",
+    "run\\button05.bmp", "run\\button06.bmp",  // [13]/[14] repeat [9]/[10] - 3rd button pair reuses 05/06
+  };
+#else
+  String25 arrBmpTimes_v32[15]; // [esp+2F4h] [ebp-AD8h] BYREF
+
   strcpy((char *)arrBmpTimes_v32[0].str, "run\\timeA.BMP");
   *(_DWORD *)&arrBmpTimes_v32[0].str[14] = 0;
   *(_DWORD *)&arrBmpTimes_v32[0].str[18] = 0;
@@ -1628,7 +1648,27 @@ CHanaSpriteT3F6_S1FC *__cdecl hook_InitHudResources_4490A7(
   strcpy((char *)arrBmpTimes_v32[14].str, "run\\button06.bmp");
   *(_DWORD *)&arrBmpTimes_v32[14].str[17] = 0;
   *(_DWORD *)&arrBmpTimes_v32[14].str[21] = 0;
+#endif
+
+#if 1
+  static const char *arrBmpModes_v5[28] = {
+    "mode03.bmp", "mode04.bmp",
+    "hunt01.bmp", "hunt02.bmp", "hunt03.bmp", "hunt04.bmp",
+    "hunt05.bmp", "hunt06.bmp", "hunt07.bmp", "hunt08.bmp",
+    "hunt09.bmp", "hunt10.bmp",
+    "mode01.bmp", "mode02.bmp",
+    "huntXX2.bmp", "huntXX1.bmp",
+    "run\\cont01.bmp", "run\\cont02.bmp",
+    "run\\yes01.bmp", "run\\yes02.bmp", "run\\no01.bmp", "run\\no02.bmp",
+    "run\\yes03.bmp", "run\\yes04.bmp", "run\\no03.bmp", "run\\no04.bmp",
+    "", "",                                   // NOTE: empty 14th pair - table slots 26..29 were zero-filled
+  };
+#else
+  String25 arrBmpModes_v5[30]; // [esp+4h] [ebp-DC8h] BYREF
+  _BYTE v7[250]; // [esp+46Bh] [ebp-961h] BYREF
+
   memset(v7, 0, sizeof(v7));
+
   strcpy((char *)arrBmpModes_v5[0].str, "mode03.bmp");
   *(_DWORD *)&arrBmpModes_v5[0].str[11] = 0;
   *(_DWORD *)&arrBmpModes_v5[0].str[15] = 0;
@@ -1754,6 +1794,26 @@ CHanaSpriteT3F6_S1FC *__cdecl hook_InitHudResources_4490A7(
   *(_DWORD *)&arrBmpModes_v5[25].str[17] = 0;
   *(_DWORD *)&arrBmpModes_v5[25].str[21] = 0;
   memset(&arrBmpModes_v5[26], 0, 100u);
+#endif
+
+
+#if 1
+  // [0]=ofa body, [1]=lifeC mask, then five 3-face gauge groups (saf/maf/tsf/mif/tof),
+  // every face paired with the shared timeC mask; nMode 0..4 selects the group.
+  static const char *szOfaBMP_v66[32] = {
+    "run\\ofa.bmp",  "run\\lifeC.BMP",
+    "run\\safa.bmp", "run\\timeC.BMP", "run\\safb.bmp", "run\\timeC.BMP", "run\\safc.bmp", "run\\timeC.BMP",
+    "run\\mafa.bmp", "run\\timeC.BMP", "run\\mafb.bmp", "run\\timeC.BMP", "run\\mafc.bmp", "run\\timeC.BMP",
+    "run\\tsfa.bmp", "run\\timeC.BMP", "run\\tsfb.bmp", "run\\timeC.BMP", "run\\tsfc.bmp", "run\\timeC.BMP",
+    "run\\mifa.bmp", "run\\timeC.BMP", "run\\mifb.bmp", "run\\timeC.BMP", "run\\mifc.bmp", "run\\timeC.BMP",
+    "run\\tofa.bmp", "run\\timeC.BMP", "run\\tofb.bmp", "run\\timeC.BMP", "run\\tofc.bmp", "run\\timeC.BMP",
+  };
+#else
+  String25 szOfaBMP_v66[32]; // [esp+8E8h] [ebp-4E4h] BYREF
+
+  _BYTE v14[448]; // [esp+C08h] [ebp-1C4h] BYREF
+  __int16 v15; // [esp+DC8h] [ebp-4h]
+
   strcpy((char *)szOfaBMP_v66[0].str, "run\\ofa.bmp");
   *(_DWORD *)&szOfaBMP_v66[0].str[12] = 0;
   *(_DWORD *)&szOfaBMP_v66[0].str[16] = 0;
@@ -1901,48 +1961,51 @@ CHanaSpriteT3F6_S1FC *__cdecl hook_InitHudResources_4490A7(
   szOfaBMP_v66[31].str[24] = 0;
   memset(v14, 0, sizeof(v14));
   v15 = 0;
+#endif
+
+
   for ( i = 0; i < 11; ++i )
   {
-    wsprintfA(FileName, "%s", arrBmpNumbers_v49[i].str);
+    wsprintfA(FileName, "%s", arrBmpNumbers_v49[i]);
     CHanaObj__GetRealPath_486D9A(FileName, 1003);// get g_szSPRPath
     LoadBmpWithMask_413A5E(&pSprite_v63, FileName, FileName);
     *arrSprNumbers++ = pSprite_v63;
   }
   for ( i = 11; i <= 13; i += 2 )
   {
-    wsprintfA(FileName, "%s", arrBmpNumbers_v49[i].str);
+    wsprintfA(FileName, "%s", arrBmpNumbers_v49[i]);
     CHanaObj__GetRealPath_486D9A(FileName, 1003);// get g_szSPRPath
-    wsprintfA(szPath, "%s", arrBmpNumbers_v49[i + 1].str);
+    wsprintfA(szPath, "%s", arrBmpNumbers_v49[i + 1]);
     CHanaObj__GetRealPath_486D9A(szPath, 1003); // get g_szSPRPath
     LoadBmpWithMask_413A5E(&pSprite_v63, FileName, szPath);
     *arrSprNumbers++ = pSprite_v63;
   }
   for ( i = 0; i <= 1; ++i )
   {
-    wsprintfA(FileName, "%s", arrBmpTimes_v32[2 * i].str);
+    wsprintfA(FileName, "%s", arrBmpTimes_v32[2 * i]);
     CHanaObj__GetRealPath_486D9A(FileName, 1003);// get g_szSPRPath
-    wsprintfA(szPath, "%s", arrBmpTimes_v32[2 * i + 1].str);
+    wsprintfA(szPath, "%s", arrBmpTimes_v32[2 * i + 1]);
     CHanaObj__GetRealPath_486D9A(szPath, 1003); // get g_szSPRPath
     LoadBmpWithMask_413A5E(&pSprite_v63, FileName, szPath);
     *arrSprTimes++ = pSprite_v63;
   }
-  wsprintfA(FileName, "%s", arrBmpTimes_v32[4].str);
+  wsprintfA(FileName, "%s", arrBmpTimes_v32[4]);
   CHanaObj__GetRealPath_486D9A(FileName, 1003); // get g_szSPRPath
   HanaTexture_CreateFromFile(&pSprite_v63, FileName);
   *arrSprTimes = pSprite_v63;
   arrSprTimes_a2a = arrSprTimes + 1;
   for ( i = 0; i < 10; i += 2 )
   {
-    wsprintfA(FileName, "%s", arrBmpTimes_v32[i + 5].str);
+    wsprintfA(FileName, "%s", arrBmpTimes_v32[i + 5]);
     CHanaObj__GetRealPath_486D9A(FileName, 1003);// get g_szSPRPath
-    wsprintfA(szPath, "%s", arrBmpTimes_v32[i + 6].str);
+    wsprintfA(szPath, "%s", arrBmpTimes_v32[i + 6]);
     CHanaObj__GetRealPath_486D9A(szPath, 1003); // get g_szSPRPath
     LoadBmpWithMask_413A5E(&pSprite_v63, FileName, szPath);
     *arrSprTimes_a2a++ = pSprite_v63;
   }
-  wsprintfA(FileName, "%s", szOfaBMP_v66[0].str);
+  wsprintfA(FileName, "%s", szOfaBMP_v66[0]);
   CHanaObj__GetRealPath_486D9A(FileName, 1003); // get g_szSPRPath
-  wsprintfA(szPath, "%s", szOfaBMP_v66[1].str);
+  wsprintfA(szPath, "%s", szOfaBMP_v66[1]);
   CHanaObj__GetRealPath_486D9A(szPath, 1003);   // get g_szSPRPath
   LoadBmpWithMask_413A5E(&pSprite_v63, FileName, szPath);
   *arrSprTimes_a2a = pSprite_v63;
@@ -1950,9 +2013,9 @@ CHanaSpriteT3F6_S1FC *__cdecl hook_InitHudResources_4490A7(
   arrSprLifes_v99 = arrSprTimes_a2a + 1;
   for ( i = 0; i < 6; i += 2 )
   {
-    wsprintfA(FileName, "%s", szOfaBMP_v66[6 * nMode + 2 + i].str);
+    wsprintfA(FileName, "%s", szOfaBMP_v66[6 * nMode + 2 + i]);
     CHanaObj__GetRealPath_486D9A(FileName, 1003);// get g_szSPRPath
-    wsprintfA(szPath, "%s", szOfaBMP_v66[6 * nMode + 3 + i].str);
+    wsprintfA(szPath, "%s", szOfaBMP_v66[6 * nMode + 3 + i]);
     CHanaObj__GetRealPath_486D9A(szPath, 1003); // get g_szSPRPath
     LoadBmpWithMask_413A5E(&pSprite_v63, FileName, szPath);
     result = pSprite_v63;
@@ -1960,9 +2023,9 @@ CHanaSpriteT3F6_S1FC *__cdecl hook_InitHudResources_4490A7(
   }
   for ( i = 0; i < 28; i += 2 )
   {
-    wsprintfA(FileName, "%s", arrBmpModes_v5[i].str);
+    wsprintfA(FileName, "%s", arrBmpModes_v5[i]);
     CHanaObj__GetRealPath_486D9A(FileName, 1003);// get g_szSPRPath
-    wsprintfA(szPath, "%s", arrBmpModes_v5[i + 1].str);
+    wsprintfA(szPath, "%s", arrBmpModes_v5[i + 1]);
     CHanaObj__GetRealPath_486D9A(szPath, 1003); // get g_szSPRPath
     LoadBmpWithMask_413A5E(&pSprite_v63, FileName, szPath);
     result = pSprite_v63;
@@ -1975,9 +2038,9 @@ void __cdecl hook_HanaTexture_CreateFromFile(CHanaSpriteT3F6_S1FC **ppOutSprite,
 {
   DWORD dwFlags; // [esp+8h] [ebp-14h] BYREF
   CHanaSpriteT3F6_S1FC *pSprite; // [esp+Ch] [ebp-10h]
-  int v5; // [esp+10h] [ebp-Ch]
+  //int v5; // [esp+10h] [ebp-Ch]
   HRESULT hr; // [esp+14h] [ebp-8h]
-  int v7; // [esp+18h] [ebp-4h]
+  //int v7; // [esp+18h] [ebp-4h]
 
   ONCELOG("[HNH:SUB] HanaTexture_CreateFromFile_4135ED\n");
  
@@ -1985,8 +2048,8 @@ void __cdecl hook_HanaTexture_CreateFromFile(CHanaSpriteT3F6_S1FC **ppOutSprite,
   pSprite = (CHanaSpriteT3F6_S1FC *)MemAlloc_40DEF7(0x1FCu);
   memset(pSprite, 0, sizeof(CHanaSpriteT3F6_S1FC));
   pSprite->dwType = 0x3F6;
-  v5 = -1;
-  v7 = -1;
+  // v5 = -1;
+  // v7 = -1;
   hr = D3DXCreateTextureFromFile(g_pD3DDevice_4D6C78, &dwFlags, 0, 0, 0, 0, &pSprite->pTexture_134, 0, szFileName, D3DX_FT_DEFAULT);
   if ( hr >= 0 )
   {
@@ -2627,14 +2690,14 @@ int __cdecl hook_CheckSceneTransition_459768(
   int nStageIndex)
 {
   int nTargetSub; // [esp+4h] [ebp-778h]
-  _DWORD engageMapTable[450]; // [esp+8h] [ebp-774h] BYREF
+  DWORD engageMapTable[450]; // [esp+8h] [ebp-774h] BYREF
   float fRelZ; // [esp+710h] [ebp-6Ch] BYREF
   float fRelY; // [esp+714h] [ebp-68h] BYREF
   float fRelX; // [esp+718h] [ebp-64h] BYREF
   unsigned int i; // [esp+71Ch] [ebp-60h]
   int nResult; // [esp+720h] [ebp-5Ch]
   float pZXrot; // [esp+724h] [ebp-58h] BYREF
-  _DWORD finalMapTable[15]; // [esp+728h] [ebp-54h] BYREF
+  DWORD finalMapTable[15]; // [esp+728h] [ebp-54h] BYREF
   float pZpos; // [esp+764h] [ebp-18h] BYREF
   float pYXrot; // [esp+768h] [ebp-14h] BYREF
   float pYpos; // [esp+76Ch] [ebp-10h] BYREF
@@ -2956,14 +3019,19 @@ void __cdecl hook_UpdateHudGauge_44BC36(CHanaSpriteT3F6_S1FC **pHudRes, int fHpP
   }
 }
 
-// Target-select INTRO: the camera sweep played before ShowMouseSelectDialog. A timed shot list drives it - arrShotAngles/arrShotDurations =
-// [(-90,10),(45,10),(180,900),(99999,sentinel)]: two 10s profile shots of the hero (yaw -90 then +45), then a long 180 rear shot ended only by
-// the global 280s timeout. Per frame the hero frame is yawed to the shot angle (hero frame as scratch, restored after), the chase cam is snapped
-// twice (bSnap=1) - once from hero+18up (look-at hero), once from hero - fCrane - 13 (fCrane rises -10 -> +5 at delta/13: a crane-down) - then
-// the head node ('head', FindFrameByName) frames the shot: camera pushed out to a 5u minimum XZ distance from the head and BuildLookAt at it.
-// After the crane bottoms out the FOV creeps 0.8 -> 1.2 (delta/80, zoom-out). Hero plays anim item 15 (select pose, skipped if already in 8/9)
-// until done; the 8 target bodies (pSpriteNames) animate at delta/fAnimRate, go idle (item 0) after t>30, are hard re-cut to their current item
-// (float_224=1) on each shot change, and
+/*
+ * Target-select INTRO: the camera sweep played before ShowMouseSelectDialog.
+ A timed shot list drives it - arrShotAngles/arrShotDurations = [(-90,10),(45,10),(180,900),(99999,sentinel)]:
+ two 10s profile shots of the hero (yaw -90 then +45), then a long 180 rear shot ended only by the global 280s timeout.
+ Per frame the hero frame is yawed to the shot angle (hero frame as scratch, restored after),
+ the chase cam is snapped twice (bSnap=1) - once from hero+18up (look-at hero),
+ once from hero - fCrane - 13 (fCrane rises -10 -> +5 at delta/13: a crane-down) -
+ then the head node ('head', FindFrameByName) frames the shot: camera pushed out to a 5u minimum XZ distance from
+ the head and BuildLookAt at it. After the crane bottoms out the FOV creeps 0.8 -> 1.2 (delta/80, zoom-out).
+ Hero plays anim item 15 (select pose, skipped if already in 8/9) until done; the 8 target bodies (pSpriteNames)
+ animate at delta/fAnimRate, go idle (item 0) after t>30, are hard re-cut to their current item (fBlendWeight_224=1)
+ on each shot chan
+ */
 void __cdecl hook_PrepareTargetSelect_45B5BD(
   CSekBody *pHeroBody,
   CSekBody **pItemBodies,

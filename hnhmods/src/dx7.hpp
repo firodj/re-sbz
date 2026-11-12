@@ -376,7 +376,7 @@ extern D3DXMATRIX* (__stdcall*D3DXMatrixInverse)(D3DXMATRIX* pOut, float* pfDete
 extern HRESULT(__stdcall* D3DXCreateContextEx)(unsigned int devIndex, unsigned int flags, HWND hwnd, HWND focusWnd, int nNumColorBits, int nNumAlphaBits, int nNumDepthBits, int nNumStencilBits, int nNumBackBuffers, int nWidth, int nHeight, int nRefreshRate, LPD3DXCONTEXT* ppCtx);
 extern HRESULT(__stdcall* D3DXCreateContext)(unsigned int devIndex, unsigned int flags, HWND hWnd, int width, int height, LPD3DXCONTEXT* ppCtx);
 extern HRESULT(__stdcall* D3DXGetSurfaceFormat)(int devIndex, D3DX_VIDMODEDESC* pVidMode, unsigned int surfClassFlags, unsigned int which, D3DX_SURFACEFORMAT* pFormat);
-extern DWORD(__stdcall* D3DXGetMaxSurfaceFormats)(int devIndex, _DWORD* pVidMode, int surfClassFlags);
+extern HRESULT(__stdcall* D3DXGetMaxSurfaceFormats)(int devIndex, D3DX_VIDMODEDESC* pDesc, int surfClassFlags);
 extern HRESULT(__stdcall* D3DXCreateMatrixStack)(DWORD flags, LPD3DXMATRIXSTACK* ppStack);
 extern HRESULT(__stdcall* D3DXCreateTexture)(LPDIRECT3DDEVICE7 pd3dDevice, LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight, _D3DX_SURFACEFORMAT* pPixelFormat, LPDIRECTDRAWPALETTE pDDPal, LPDIRECTDRAWSURFACE7* ppDDSurf, LPDWORD pNumMipMaps);
 extern HRESULT(__stdcall* D3DXCheckTextureRequirements)(LPDIRECT3DDEVICE7 pd3dDevice, LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight, _D3DX_SURFACEFORMAT* pPixelFormat);
@@ -425,7 +425,7 @@ D3DXMATRIX*  WINAPI D3DXMatrixInverse(D3DXMATRIX* pOut, float* pfDeterminant, co
 HRESULT WINAPI  D3DXCreateContextEx(unsigned int devIndex, unsigned int flags, HWND hwnd, HWND focusWnd, int nNumColorBits, int nNumAlphaBits, int nNumDepthBits, int nNumStencilBits, int nNumBackBuffers, int nWidth, int nHeight, int nRefreshRate, LPD3DXCONTEXT* ppCtx);
 HRESULT WINAPI  D3DXCreateContext(unsigned int devIndex, unsigned int flags, HWND hWnd, int width, int height, LPD3DXCONTEXT* ppCtx);
 HRESULT WINAPI  D3DXGetSurfaceFormat(int devIndex, D3DX_VIDMODEDESC* pVidMode, unsigned int surfClassFlags, unsigned int which, D3DX_SURFACEFORMAT* pFormat);
-DWORD WINAPI  D3DXGetMaxSurfaceFormats(int devIndex, _DWORD* pVidMode, int surfClassFlags);
+HRESULT WINAPI  D3DXGetMaxSurfaceFormats(int devIndex, D3DX_VIDMODEDESC* pDesc, int surfClassFlags);
 HRESULT WINAPI  D3DXCreateMatrixStack(DWORD flags, LPD3DXMATRIXSTACK* ppStack);
 HRESULT WINAPI  D3DXCreateTexture(LPDIRECT3DDEVICE7 pd3dDevice, LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight, _D3DX_SURFACEFORMAT* pPixelFormat, LPDIRECTDRAWPALETTE pDDPal, LPDIRECTDRAWSURFACE7* ppDDSurf, LPDWORD pNumMipMaps);
 HRESULT WINAPI  D3DXCheckTextureRequirements(LPDIRECT3DDEVICE7 pd3dDevice, LPDWORD pFlags, LPDWORD pWidth, LPDWORD pHeight, _D3DX_SURFACEFORMAT* pPixelFormat);

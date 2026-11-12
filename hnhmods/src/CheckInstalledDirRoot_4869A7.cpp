@@ -318,9 +318,9 @@ void __cdecl hook_ParseStrChunkText_47FF01(CHanaSceneT458_S504 *pScene)
     g_dwFontRenderFlag = 0;
     for ( i = pScene->dwPtrCurrent_448;
       i < pScene->dwPtrSize_44C
-      && *((_BYTE *)pScene->ptrStrData_260 + i) != ';'
-      && *((_BYTE *)pScene->ptrStrData_260 + i) != '*'
-      && (*((char *)pScene->ptrStrData_260 + i) < 'A' || *((char *)pScene->ptrStrData_260 + i) > 'z');
+      && pScene->ptrStrData_260[i] != ';'
+      && pScene->ptrStrData_260[i] != '*'
+      && (pScene->ptrStrData_260[i] < 'A' || pScene->ptrStrData_260[i] > 'z');
       i += 2 )
     {
       ;
@@ -333,7 +333,7 @@ void __cdecl hook_ParseStrChunkText_47FF01(CHanaSceneT458_S504 *pScene)
       BltSurface(pTextureWholeText, 0, 0, 640, 200, 0);
       DrawText_43BCAE(
         pTextureWholeText,
-        (char *)pScene->ptrStrData_260 + pScene->dwPtrPos_444,
+        &pScene->ptrStrData_260[pScene->dwPtrPos_444],
         rc.left,
         rc.top,
         rc.right,
@@ -414,22 +414,22 @@ void __cdecl hook_Scene_CreateFontTextureFromStringData(CHanaSceneT458_S504 *pSc
     nSrcIndex = 0;
     for ( i = pScene->dwPtrCurrent_448; i < pScene->dwPtrSize_44C; i += 2 )
     {
-      if ( *((_BYTE *)pScene->ptrStrData_260 + i) == ',' )
+      if ( pScene->ptrStrData_260[i] == ',' )
       {
         nSrcIndex += 54 - nSrcIndex % 54;
         --i;
       }
       else
       {
-        if ( *((_BYTE *)pScene->ptrStrData_260 + i) == ';'
-          || *((_BYTE *)pScene->ptrStrData_260 + i) == '*'
-          || *((char *)pScene->ptrStrData_260 + i) >= 'A' && *((char *)pScene->ptrStrData_260 + i) <= 'z' )
+        if ( pScene->ptrStrData_260[i] == ';'
+          || pScene->ptrStrData_260[i] == '*'
+          || pScene->ptrStrData_260[i] >= 'A' && pScene->ptrStrData_260[i] <= 'z' )
         {
           break;
         }
-        szTextBuffer[nSrcIndex] = *((_BYTE *)pScene->ptrStrData_260 + i);
+        szTextBuffer[nSrcIndex] = pScene->ptrStrData_260[i];
         nCharIndex = nSrcIndex + 1;
-        szTextBuffer[nCharIndex] = *((_BYTE *)pScene->ptrStrData_260 + i + 1);
+        szTextBuffer[nCharIndex] = pScene->ptrStrData_260[i + 1];
         nSrcIndex = nCharIndex + 1;
       }
     }

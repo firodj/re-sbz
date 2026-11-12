@@ -393,7 +393,7 @@ void __cdecl hook_BMP_Convert24bitTo16bitWithDither(CBMPFile *pBMPFile)
   int x; // [esp+Ch] [ebp-14h]
   LONG nHeight; // [esp+10h] [ebp-10h]
   LONG nWidth; // [esp+18h] [ebp-8h]
-  LPBYTE pDstPixel; // [esp+1Ch] [ebp-4h]
+  LPWORD pDstPixel; // [esp+1Ch] [ebp-4h]
 
   ONCELOG("[HNH:SUB] %s\n", "BMP_Convert24bitTo16bitWithDither_421FF4");
 
@@ -409,17 +409,12 @@ void __cdecl hook_BMP_Convert24bitTo16bitWithDither(CBMPFile *pBMPFile)
     pBMPFile->pBitmapInfoHeader->biClrUsed = 0;
     pBMPFile->pBitmapInfoHeader->biClrImportant = 0;
     pSrcPixel = (char *)pBMPFile->pData;
-    pDstPixel = (LPBYTE)pSrcPixel;
+    pDstPixel = (LPWORD)pSrcPixel;
     for ( y = 0; y < nHeight; ++y )
     {
       for ( x = 0; x < nWidth; ++x )
       {
-        *(_WORD *)&pDstPixel[2 * x + 2 * nWidth * y] = BMP_DitherRGB24ToRGB565(
-          *pSrcPixel,
-          pSrcPixel[1],
-          pSrcPixel[2],
-          x,
-          y);
+        pDstPixel[x + nWidth * y] = BMP_DitherRGB24ToRGB565(*pSrcPixel, pSrcPixel[1], pSrcPixel[2], x, y);
         pSrcPixel += 3;
       }
     }
