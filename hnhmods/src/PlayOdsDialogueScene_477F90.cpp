@@ -776,7 +776,9 @@ void __cdecl hook_UpdateSceneTimer_4827FE(CHanaSceneT458_S504 *pScene, float *pf
   *pfExecTime = fDelta + *pfExecTime;
 }
 
-// Pause/resume the scene's DirectSound. bPause=1: stop every anim-set sound (pAnimSet_148->arroS118_14C[i].pSnd_0->pDSBuffer_0->lpVtbl->Stop) and mark field_110=9999 (skipped). bPause=0: reset field_110=0 across all refsAnimeSets_138 so playback can restart.
+// Pause/resume the scene's DirectSound.
+// bPause=1: stop every anim-set sound (pAnimSet_148->arrSounds_14C[i].pSnd_0->pDSBuffer_0->lpVtbl->Stop) and mark nCurPlayCnt_110=9999 (skipped).
+// bPause=0: reset nCurPlayCnt_110=0 across all refsAnimeSets_138 so playback can restart.
 void __cdecl hook_PauseSceneAudio_46A2A0(CHanaSceneT458_S504 *pScene, int bPause)
 {
   unsigned int j; // [esp+0h] [ebp-8h]
@@ -791,10 +793,10 @@ void __cdecl hook_PauseSceneAudio_46A2A0(CHanaSceneT458_S504 *pScene, int bPause
     {
       for ( i = 0; i < pScene->pAnimSet_148->nCount_148; ++i )
       {
-        if ( pScene->pAnimSet_148->arroS118_14C[i].pSnd_0 )
+        if ( pScene->pAnimSet_148->arrSounds_14C[i].pSnd_0 )
         {
-          pScene->pAnimSet_148->arroS118_14C[i].pSnd_0->pDSBuffer_0->Stop();
-          pScene->pAnimSet_148->arroS118_14C[i].field_110 = 9999;
+          pScene->pAnimSet_148->arrSounds_14C[i].pSnd_0->pDSBuffer_0->Stop();
+          pScene->pAnimSet_148->arrSounds_14C[i].nCurPlayCnt_110 = 9999;
         }
       }
     }
@@ -803,7 +805,7 @@ void __cdecl hook_PauseSceneAudio_46A2A0(CHanaSceneT458_S504 *pScene, int bPause
       for ( j = 0; j < pScene->dwCount_130; ++j )
       {
         for ( k = 0; k < pScene->refsAnimeSets_138[j]->nCount_148; ++k )
-          pScene->refsAnimeSets_138[j]->arroS118_14C[k].field_110 = 0;
+          pScene->refsAnimeSets_138[j]->arrSounds_14C[k].nCurPlayCnt_110 = 0;
       }
     }
   }
@@ -949,7 +951,7 @@ void __cdecl hook_DrawDialogueWindow_480B2D(
 // DrawAdvanceDialogueText(pScene, xMouse, yMouse, wBtn)
 // Static (non-scrolling) dialogue renderer + click-to-advance. Walks pScene->textSprites_264[4][29],
 // drawing each glyph in a fixed 3-line layout (row i at y~32*i+270) with the window's current alpha;
-// stops at the first glyph flagged field_10C (end of line). Then, if the mouse Y (yMouse) is within one of
+// stops at the first glyph flagged nMaxPlayCnt_10C (end of line). Then, if the mouse Y (yMouse) is within one of
 // the 3 line bands, highlights that row with pSprWindow7bmp; on left-click (wBtn==1) it advances
 // dwPtrCurrent_448 (skipping up to 200 chars across '*' chunk markers, counting rows crossed) and, on a
 // row change, sets by_463=0, flt_454=0, flt_458=0.05 and returns to end the static display.

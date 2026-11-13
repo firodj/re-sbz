@@ -820,7 +820,7 @@ void AssertHanaStructSize() {
   static_assert(sizeof(CHanaFrameArrayT3ED_S138) == 0x138, "CHanaFrameArrayT3ED_S138");
   static_assert(sizeof(CHanaAnimSetT3F1_S150) == 0x150, "CHanaAnimSetT3F1_S150");
   static_assert(sizeof(CHanaSubObj_S38) == 0x38, "CHanaSubObj_S38");
-  static_assert(sizeof(CHanaObj_S118) == 0x118, "CHanaObj_S118");
+  static_assert(sizeof(CHanaAnimSound_S118) == 0x118, "CHanaAnimSound_S118");
   static_assert(sizeof(CSoundStruct_8) == 0x8, "CSoundStruct_8");
   static_assert(sizeof(CHanaTextureCoordsT3F2_S140) == 0x140, "CHanaTextureCoordsT3F2_S140");
   static_assert(sizeof(CHanaTextureAnimT3F3_S16C) == 0x16C, "CHanaTextureAnimT3F3_S16C");

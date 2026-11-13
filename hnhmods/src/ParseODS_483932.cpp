@@ -836,27 +836,27 @@ void __cdecl hook_ParseOds3DON_483704(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAni
     pBuf += 4;
     pAnimSet->nCount_148 = *(DWORD*)pBuf;
     pBuf += 4;
-    pAnimSet->arroS118_14C = (CHanaObj_S118 *)MemAlloc_40DEF7(280 * pAnimSet->nCount_148 + 128);
+    pAnimSet->arrSounds_14C = (CHanaAnimSound_S118 *)MemAlloc_40DEF7(280 * pAnimSet->nCount_148 + 128);
     for ( i = 0; i < pAnimSet->nCount_148; ++i )
     {
-      pAnimSet->arroS118_14C[i].flt_104 = *(float *)pBuf;
+      pAnimSet->arrSounds_14C[i].fPlayStart_104 = *(float *)pBuf;
       pBuf += 4;
-      pAnimSet->arroS118_14C[i].flt_108 = *(float *)pBuf;
+      pAnimSet->arrSounds_14C[i].fPlayEnd_108 = *(float *)pBuf;
       pBuf += 4;
-      pAnimSet->arroS118_14C[i].field_10C = *(DWORD*)pBuf;
+      pAnimSet->arrSounds_14C[i].nMaxPlayCnt_10C = *(DWORD*)pBuf;
       pBuf += 4;
       len_name1a = lstrlenA(pBuf);
-      memcpy(pAnimSet->arroS118_14C[i].sz_name_4, pBuf, len_name1a + 1);
+      memcpy(pAnimSet->arrSounds_14C[i].szName_4, pBuf, len_name1a + 1);
       wsprintfA(pszFileName, "%s", pBuf);
       len_name1b = lstrlenA(pBuf);
       pBuf += len_name1b + 1;
       CHanaObj__GetRealPath_486D9A(pszFileName, 1009);
       pSound = LoadWavToDS3DBuffer_42277E(pszFileName);
-      pAnimSet->arroS118_14C[i].pSnd_0 = pSound;
+      pAnimSet->arrSounds_14C[i].pSnd_0 = pSound;
       pTheFrame = CHanaFrameT3EC__FindByName_483650(pFrame, pBuf);
-      pAnimSet->arroS118_14C[i].pFrame_114 = pTheFrame;
-      if ( pAnimSet->arroS118_14C[i].pFrame_114 )
-        CHanaObj__AddRef_40BFC3(pAnimSet->arroS118_14C[i].pFrame_114);
+      pAnimSet->arrSounds_14C[i].pFrame_114 = pTheFrame;
+      if ( pAnimSet->arrSounds_14C[i].pFrame_114 )
+        CHanaObj__AddRef_40BFC3(pAnimSet->arrSounds_14C[i].pFrame_114);
       len_name2 = lstrlenA(pBuf);
       pBuf += len_name2 + 1;
     }

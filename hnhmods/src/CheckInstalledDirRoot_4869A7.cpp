@@ -277,7 +277,7 @@ BOOL __cdecl hook_IsFileExists_47E8EE(CHAR *pszFilePath)
 // or end), rasterizes it onto a 640x200 offscreen surface via DrawText_43BCAE, then rebuilds
 // each of the 4x29 text-glyph sprites' textures from 26x26 tiles of that surface (BltFast +
 // CreateTextureFromSurfaceWithAlphaMask + ReplaceTexture3F6). Marks the final glyph's
-// field_10C when the chunk is <120 chars. Temporarily disables D3D antialiasing.
+// nMaxPlayCnt_10C when the chunk is <120 chars. Temporarily disables D3D antialiasing.
 void __cdecl hook_ParseStrChunkText_47FF01(CHanaSceneT458_S504 *pScene)
 {
   int n; // [esp+0h] [ebp-4Ch]

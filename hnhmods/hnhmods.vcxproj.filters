@@ -143,11 +143,44 @@
     <Filter Include="src">
       <UniqueIdentifier>{50b8c6ba-2670-44e9-a993-6c9c95b5e735}</UniqueIdentifier>
     </Filter>
+    <Filter Include="docs">
+      <UniqueIdentifier>{b8e847b3-4635-411d-a4a1-b373497bc5b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="CURRENT.md" />
     <None Include="GOALS.md" />
     <None Include="README.md" />
+    <None Include="docs\APPENDIX.md">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="docs\ARCHITECTURE.md">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="docs\BOOTSEQUENCE.md">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="docs\CHARACTER.md">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="docs\COMBAT.md">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="docs\FORMATS.md">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="docs\GRAPHICS.md">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="docs\RUNTIME.md">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="docs\SUBSYSTEMS.md">
+      <Filter>docs</Filter>
+    </None>
+    <None Include="docs\TEXTUI.md">
+      <Filter>docs</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="hnhmods.rc" />

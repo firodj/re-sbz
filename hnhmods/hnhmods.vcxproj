@@ -397,6 +397,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CURRENT.md" />
+    <None Include="docs\APPENDIX.md" />
+    <None Include="docs\ARCHITECTURE.md" />
+    <None Include="docs\BOOTSEQUENCE.md" />
+    <None Include="docs\CHARACTER.md" />
+    <None Include="docs\COMBAT.md" />
+    <None Include="docs\FORMATS.md" />
+    <None Include="docs\GRAPHICS.md" />
+    <None Include="docs\RUNTIME.md" />
+    <None Include="docs\SUBSYSTEMS.md" />
+    <None Include="docs\TEXTUI.md" />
     <None Include="GOALS.md" />
     <None Include="README.md" />
   </ItemGroup>

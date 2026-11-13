@@ -319,14 +319,14 @@ struct CSoundStruct_8
   LPDIRECTSOUND3DBUFFER pDS3DBuffer_4;
 };
 
-struct CHanaObj_S118
+struct CHanaAnimSound_S118
 {
   CSoundStruct_8 *pSnd_0;
-  char sz_name_4[256];
-  float flt_104;
-  float flt_108;
-  int field_10C;
-  int field_110;
+  char szName_4[256];    
+  float fPlayStart_104;  
+  float fPlayEnd_108;    
+  int nMaxPlayCnt_10C;   
+  int nCurPlayCnt_110;   
   CHanaFrameT3EC_S354 *pFrame_114;
 };
 
@@ -339,7 +339,7 @@ struct CHanaAnimSetT3F1_S150: public CHanaBase_S130
   unsigned int nManmCount_140;
   CHanaMateAnimT3F7_S148 **pRefsManmT3F7;
   unsigned int nCount_148;
-  CHanaObj_S118 *arroS118_14C;
+  CHanaAnimSound_S118 *arrSounds_14C;
 };
 
 struct CHanaTextureCoordsT3F2_S140: public CHanaBase_S130

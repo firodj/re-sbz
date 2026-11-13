@@ -779,9 +779,9 @@ int __cdecl hook_ParseOdfMORP_440896(LPBYTE *ppBuf, CHanaMorpT457_S40C **ppOut,
 // sound emitters; only xref is the 3DON dispatch in hook_ParseODFContent_
 // 441A5D above. Layout:
 //   [DWORD skipped -- tag size][DWORD nCount]
-//   nCount x { float flt_104, float flt_108, DWORD field_10C,
+//   nCount x { float fPlayStart_104, float fPlayEnd_108, DWORD nMaxPlayCnt_10C,
 //              ASCIIZ wavName, ASCIIZ frameName }
-// The array lands in pHanaT3F1->arroS118_14C (CHanaObj_S118 = 280 bytes each,
+// The array lands in pHanaT3F1->arrSounds_14C (CHanaAnimSound_S118 = 280 bytes each,
 // allocated with +128 slack): each entry loads its wav through the 3D loader
 // LoadWavToDS3DBuffer_42277E -- NOTE with no GetRealPath resolution, the name
 // is used as-is (relative to the process cwd, which the game points at the
@@ -799,26 +799,26 @@ int __cdecl hook_ParseOdf3DON_44189C(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pHana
   pBuf = *ppBuf + 4;                      // skip the tag-size dword
   pHanaT3F1->nCount_148 = *(int *)pBuf;
   pBuf += 4;
-  pHanaT3F1->arroS118_14C = (CHanaObj_S118 *)MemAlloc_40DEF7(
+  pHanaT3F1->arrSounds_14C = (CHanaAnimSound_S118 *)MemAlloc_40DEF7(
     280 * pHanaT3F1->nCount_148 + 128);
 
   for (i = 0; i < (unsigned int)pHanaT3F1->nCount_148; ++i)
   {
-    pHanaT3F1->arroS118_14C[i].flt_104  = *(float *)pBuf;
+    pHanaT3F1->arrSounds_14C[i].fPlayStart_104  = *(float *)pBuf;
     pBuf += 4;
-    pHanaT3F1->arroS118_14C[i].flt_108  = *(float *)pBuf;
+    pHanaT3F1->arrSounds_14C[i].fPlayEnd_108  = *(float *)pBuf;
     pBuf += 4;
-    pHanaT3F1->arroS118_14C[i].field_10C = *(int *)pBuf;
+    pHanaT3F1->arrSounds_14C[i].nMaxPlayCnt_10C = *(int *)pBuf;
     pBuf += 4;
 
     pWavName = pBuf;                    // ASCIIZ wav name
-    memcpy(pHanaT3F1->arroS118_14C[i].sz_name_4, pWavName,
+    memcpy(pHanaT3F1->arrSounds_14C[i].szName_4, pWavName,
       lstrlenA((LPCSTR)pWavName) + 1);
     pFrameName = pWavName + lstrlenA((LPCSTR)pWavName) + 1;   // ASCIIZ frame name
 
-    pHanaT3F1->arroS118_14C[i].pSnd_0 =
-      LoadWavToDS3DBuffer_42277E(pHanaT3F1->arroS118_14C[i].sz_name_4);
-    pHanaT3F1->arroS118_14C[i].pFrame_114 =
+    pHanaT3F1->arrSounds_14C[i].pSnd_0 =
+      LoadWavToDS3DBuffer_42277E(pHanaT3F1->arrSounds_14C[i].szName_4);
+    pHanaT3F1->arrSounds_14C[i].pFrame_114 =
       HanaFrame_FindByName((LPCSTR)pFrameName, pHanaRootT3EC_v1);
 
     pBuf = pFrameName + lstrlenA((LPCSTR)pFrameName) + 1;
@@ -1142,7 +1142,7 @@ void __cdecl hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(CHanaAnimT3F0_S240 *pH
 void __cdecl hook_HanaFrame_GetFrameName(CHanaFrameT3EC_S354 *pFrame, char *pOutName)
 {
   ONCELOG("[HNH:SUB] HanaFrame_GetFrameName_40BA89\n");
- 
+
 
   if ( pFrame )
   {
@@ -1154,7 +1154,7 @@ void __cdecl hook_HanaFrame_GetFrameName(CHanaFrameT3EC_S354 *pFrame, char *pOut
 void __cdecl hook_HanaAnim_LinkFrame(CHanaAnimT3F0_S240 *pAnim, CHanaFrameT3EC_S354 *pFrame)
 {
   ONCELOG("[HNH:SUB] HanaAnim_LinkFrame_401FBD\n");
- 
+
 
   if ( pFrame )
   {
@@ -1178,7 +1178,7 @@ void __cdecl hook_ApplyQTS_4035B1(
   D3DXMATRIX pM3; // [esp+80h] [ebp-40h] BYREF
 
   ONCELOG("[HNH:SUB] ApplyQTS_4035B1\n");
- 
+
   D3DXMatrixRotationQuaternion(&pM2, pQ);
   D3DXMatrixTranslation(&pM3, x, y, z);
   D3DXMatrixScaling(&pM1, sx, sy, sz);
@@ -1219,11 +1219,11 @@ bool __cdecl hook_CHanaAnimSetT3F1__AddAnimT3F0_403C15(CHanaAnimSetT3F1_S150 *pA
 
 // HanaFrame_GetCenterPosition - returns pFrame's vertCenter_2B4 expressed in pRelFrame's space. If pRelFrame is g_pSceneFrame: out = Translate(center)*matWorld_178. Otherwise also premultiplies by the inverse of pRelFrame->matWorld_178. Writes x/y/z into px/py/pz; zeroes them when pFrame is NULL.
 void __cdecl hook_HanaFrame_GetCenterPosition_408C3E(
-        CHanaFrameRootT3EC_S2D4 *pFrame,
-        CHanaFrameRootT3EC_S2D4 *pRelFrame,
-        float *pOutX,
-        float *pOutY,
-        float *pOutZ)
+  CHanaFrameRootT3EC_S2D4 *pFrame,
+  CHanaFrameRootT3EC_S2D4 *pRelFrame,
+  float *pOutX,
+  float *pOutY,
+  float *pOutZ)
 {
   D3DXMATRIX pOut; // [esp+0h] [ebp-80h] BYREF
   D3DXMATRIX pM1; // [esp+40h] [ebp-40h] BYREF
@@ -1582,12 +1582,12 @@ void __cdecl hook_InterpolateHanaAnimFrame(CHanaAnimT3F0_S240 *pAnim, float fTim
 }
 
 /**
- * HanaAnim_FindInterpolationFrame_40344A - binary-searches the key array by fTime:
- * - t2 > fDuration -> clamp: out1 = last key, out2 = NULL, return 0
- * - Exact hit -> out1 = &keys[i], out2 = &keys[i+1] (bracketing pair), return 1
- * - Miss -> out1 = first key >= t2, out2 = last key <= t2 (maintained during descent), return 0 - the caller slerps/lerps
- * between out2 -> out1
- */
+* HanaAnim_FindInterpolationFrame_40344A - binary-searches the key array by fTime:
+* - t2 > fDuration -> clamp: out1 = last key, out2 = NULL, return 0
+* - Exact hit -> out1 = &keys[i], out2 = &keys[i+1] (bracketing pair), return 1
+* - Miss -> out1 = first key >= t2, out2 = last key <= t2 (maintained during descent), return 0 - the caller slerps/lerps
+* between out2 -> out1
+*/
 BOOL __cdecl hook_HanaAnim_FindInterpolationFrame(
   CHanaAnimT3F0_S240 *pHanaAnimT3F0,
   float t2,
@@ -1648,12 +1648,12 @@ BOOL __cdecl hook_HanaAnim_FindInterpolationFrame(
 
 // CHanaAnimSetT3F1::SetTime(pAnimSet, fTime) - drive the whole anim-set to pose time fTime and sync
 // its DirectSound effects. Stores pAnimSet->field_130 = fTime. For each of nCount_14C sound/morph entries
-// (arroS118_14C): if fTime is outside the entry's active window [flt_104, flt_108] stop + rewind its DS
-// buffer; otherwise accumulate the play offset (sub_4248F2 -> fPosAcc) - and animates the entry's morph
+// (arrSounds_14C): if fTime is outside the entry's active window [fPlayStart_104, fPlayEnd_108] stop + rewind its DS
+// buffer; otherwise accumulate the play offset (GetSoundBufferAverageLevel -> fPosAcc) - and animates the entry's morph
 // frame via HanaMorpT457_Animate(pFrame_114, fTime, fPosAcc, -1). Then advances every sub-anim ref
-// (refsAnimT3F0_138: sub_40283C + HanaMorpT457_Animate) and every secondary 'manm' set (pRefsManmT3F7:
-// sub_40E969). A final reverse pass re-arms in-window sounds (Play + SetPosition to the frame's 3D
-// position via sub_408C3E), respecting the repeat limit field_10C vs field_110. Returns pAnimSet.
+// (refsAnimT3F0_138: InterpolateHanaAnimFrame + HanaMorpT457_Animate) and every secondary 'manm' set (pRefsManmT3F7:
+// ApplyMateAnimMaterial). A final reverse pass re-arms in-window sounds (Play + SetPosition to the frame's 3D
+// position via HanaFrame_GetCenterPosition_408C3E), respecting the repeat limit nMaxPlayCnt_10C vs nCurPlayCnt_110. Returns pAnimSet.
 void __cdecl hook_CHanaAnimSetT3F1__SetTime_403D61(CHanaAnimSetT3F1_S150 *pHanaT3F1, float t2)
 {
   BOOL bOk; // [esp+4h] [ebp-20h]
@@ -1677,21 +1677,21 @@ void __cdecl hook_CHanaAnimSetT3F1__SetTime_403D61(CHanaAnimSetT3F1_S150 *pHanaT
     fPosAcc = -0.000099999997;
     for ( i = 0; i < (signed int)pHanaT3F1->nCount_148; ++i )
     {
-      if ( pHanaT3F1->arroS118_14C[i].pSnd_0 )
+      if ( pHanaT3F1->arrSounds_14C[i].pSnd_0 )
       {
-        if ( pHanaT3F1->arroS118_14C[i].flt_104 > (double)t2 || t2 > (double)pHanaT3F1->arroS118_14C[i].flt_108 )
+        if ( pHanaT3F1->arrSounds_14C[i].fPlayStart_104 > (double)t2 || t2 > (double)pHanaT3F1->arrSounds_14C[i].fPlayEnd_108 )
         {
-          pHanaT3F1->arroS118_14C[i].field_110 = 0;
-          pHanaT3F1->arroS118_14C[i].pSnd_0->pDSBuffer_0->Stop();
-          pHanaT3F1->arroS118_14C[i].pSnd_0->pDSBuffer_0->SetCurrentPosition(
+          pHanaT3F1->arrSounds_14C[i].nCurPlayCnt_110 = 0;
+          pHanaT3F1->arrSounds_14C[i].pSnd_0->pDSBuffer_0->Stop();
+          pHanaT3F1->arrSounds_14C[i].pSnd_0->pDSBuffer_0->SetCurrentPosition(
             0);
         }
-        else if ( GetSoundBufferAverageLevel(pHanaT3F1->arroS118_14C[i].pSnd_0->pDSBuffer_0, &pfAvgLevel) )
+        else if ( GetSoundBufferAverageLevel(pHanaT3F1->arrSounds_14C[i].pSnd_0->pDSBuffer_0, &pfAvgLevel) )
         {
           fPosAcc = fPosAcc + pfAvgLevel;
         }
       }
-      HanaMorpT457_Animate(pHanaT3F1->arroS118_14C[i].pFrame_114, t2, fPosAcc, -1);
+      HanaMorpT457_Animate(pHanaT3F1->arrSounds_14C[i].pFrame_114, t2, fPosAcc, -1);
     }
   }
   if ( !(rand() % 31) )
@@ -1708,29 +1708,29 @@ void __cdecl hook_CHanaAnimSetT3F1__SetTime_403D61(CHanaAnimSetT3F1_S150 *pHanaT
     MtxStackStartMultLocal_4074EF();
     for ( m = pHanaT3F1->nCount_148 - 1; m >= 0; --m )
     {
-      if ( pHanaT3F1->arroS118_14C[m].pSnd_0 )
+      if ( pHanaT3F1->arrSounds_14C[m].pSnd_0 )
       {
-        if ( pHanaT3F1->arroS118_14C[m].pFrame_114 )
+        if ( pHanaT3F1->arrSounds_14C[m].pFrame_114 )
         {
-          if ( pHanaT3F1->arroS118_14C[m].flt_104 <= (double)t2 && t2 <= (double)pHanaT3F1->arroS118_14C[m].flt_108 )
+          if ( pHanaT3F1->arrSounds_14C[m].fPlayStart_104 <= (double)t2 && t2 <= (double)pHanaT3F1->arrSounds_14C[m].fPlayEnd_108 )
           {
-            bOk = pHanaT3F1->arroS118_14C[m].pSnd_0->pDSBuffer_0
-              && !pHanaT3F1->arroS118_14C[m].pSnd_0->pDSBuffer_0->GetStatus(
+            bOk = pHanaT3F1->arrSounds_14C[m].pSnd_0->pDSBuffer_0
+              && !pHanaT3F1->arrSounds_14C[m].pSnd_0->pDSBuffer_0->GetStatus(
                 &g_dwDSStatus_5185C8)
               && (g_dwDSStatus_5185C8 & 1) != 0;
             if ( !bOk
-              && (pHanaT3F1->arroS118_14C[m].field_110 < pHanaT3F1->arroS118_14C[m].field_10C
-                || pHanaT3F1->arroS118_14C[m].field_10C < 0) )
+              && (pHanaT3F1->arrSounds_14C[m].nCurPlayCnt_110 < pHanaT3F1->arrSounds_14C[m].nMaxPlayCnt_10C
+                || pHanaT3F1->arrSounds_14C[m].nMaxPlayCnt_10C < 0) )
             {
-              pHanaT3F1->arroS118_14C[m].pSnd_0->pDSBuffer_0->Play(
+              pHanaT3F1->arrSounds_14C[m].pSnd_0->pDSBuffer_0->Play(
                 0,
                 0,
                 0);
-              ++pHanaT3F1->arroS118_14C[m].field_110;
+              ++pHanaT3F1->arrSounds_14C[m].nCurPlayCnt_110;
             }
           }
-          HanaFrame_GetCenterPosition_408C3E(pHanaT3F1->arroS118_14C[m].pFrame_114, g_pSceneFrame, &px, &py, &pz);
-          pHanaT3F1->arroS118_14C[m].pSnd_0->pDS3DBuffer_4->SetPosition(
+          HanaFrame_GetCenterPosition_408C3E(pHanaT3F1->arrSounds_14C[m].pFrame_114, g_pSceneFrame, &px, &py, &pz);
+          pHanaT3F1->arrSounds_14C[m].pSnd_0->pDS3DBuffer_4->SetPosition(
             px,
             py,
             pz,
@@ -1738,7 +1738,7 @@ void __cdecl hook_CHanaAnimSetT3F1__SetTime_403D61(CHanaAnimSetT3F1_S150 *pHanaT
         }
         else
         {
-          pHanaT3F1->arroS118_14C[m].pSnd_0->pDSBuffer_0->Stop();
+          pHanaT3F1->arrSounds_14C[m].pSnd_0->pDSBuffer_0->Stop();
         }
       }
     }

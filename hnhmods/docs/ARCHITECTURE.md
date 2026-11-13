@@ -166,7 +166,7 @@ flowchart TD
     MORP["CHanaMorpT457_S40C"]
     LIGHT["CHanaLightT3EF_S1A0"]
     ANIM["CHanaAnimT3F0_S240"]
-    ANIMSET["CHanaAnimSetT3F1_S150<br/>+ CHanaObj_S118 sounds"]
+    ANIMSET["CHanaAnimSetT3F1_S150<br/>+ CHanaAnimSound_S118 sounds"]
     MESH["CHanaMeshT3F5_S138"]
     VERT["CHanaVertT3EA_S1FC<br/>D3D vertex buffer + indices"]
     MATE["CHanaMateT3EE_S184"]

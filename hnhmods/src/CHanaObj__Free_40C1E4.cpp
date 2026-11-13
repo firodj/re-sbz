@@ -418,16 +418,16 @@ void __cdecl hook_CHanaObj__FreeAnimSetT3F1(CHanaAnimSetT3F1_S150 *pAnimSet)
 
   if ( pAnimSet->nCount_12C <= 1 )
   {
-    if ( pAnimSet->arroS118_14C )
+    if ( pAnimSet->arrSounds_14C )
     {
       for ( i = 0; i < pAnimSet->nCount_148; ++i )
       {
-        if ( pAnimSet->arroS118_14C[i].pFrame_114 )
-          CHanaObj__Free_40C1E4(pAnimSet->arroS118_14C[i].pFrame_114);
-        if ( pAnimSet->arroS118_14C[i].pSnd_0 )
-          FreeSoundStruct_422C72(pAnimSet->arroS118_14C[i].pSnd_0);
+        if ( pAnimSet->arrSounds_14C[i].pFrame_114 )
+          CHanaObj__Free_40C1E4(pAnimSet->arrSounds_14C[i].pFrame_114);
+        if ( pAnimSet->arrSounds_14C[i].pSnd_0 )
+          FreeSoundStruct_422C72(pAnimSet->arrSounds_14C[i].pSnd_0);
       }
-      MemFree_40DF64(pAnimSet->arroS118_14C);
+      MemFree_40DF64(pAnimSet->arrSounds_14C);
     }
     if ( pAnimSet->refsAnimT3F0_138 )
     {
@@ -893,7 +893,8 @@ void __cdecl hook_FreeSekHeader(CSekHeader *pSekHeader)
   }
 }
 
-// CSekBody::Release - refcounted release of a CSekBody. Decrement count_5050; when it hits 0, free the header (sub_40D8F6 on pSekHeader_220) and GlobalFree the body. Returns the body pointer.
+// CSekBody::Release - refcounted release of a CSekBody. Decrement count_5050; when it hits 0, 
+// free the header (FreeSekHeader on pSekHeader_220) and GlobalFree the body. Returns the body pointer.
 void __cdecl hook_CSekBody__Release_4012FE(CSekBody *pSekBody)
 {
   ONCELOG("[HNH:SUB] CSekBody__Release_4012FE\n");

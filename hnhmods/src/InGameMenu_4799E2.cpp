@@ -992,24 +992,25 @@ void __cdecl hook_FlushD3DAndTouchSurface(LPDIRECTDRAWSURFACE7 pSurface)
 }
 
 // DrawSprite2D - Draw a CHanaSpriteT3F6 in screen space at its own size
-// // Uses sub_4900CA (vendored D3DXDrawSpriteSimple; 2D counterpart of D3DXDrawSprite3D_4902CF)
-// // 
-// // Arguments:
-// //   pSprite: sprite; reads pTexture_134, destWHZ_138 (w/h/z), fAlpha_144,
-// //            fScale_148, fRotation_14C, pCenter_158, pRect_16C (src rect)
-// // 
-// // Behavior:
-// //   1. SetTexture(stage 0, pSprite->pTexture_134)
-// //   2. Texture stage: COLOROP/ALPHAOP = BLEND on DIFFUSE (plain textured quad)
-// //   3. Lighting off, fog off (restored afterwards)
-// //   4. sub_4900CA(pTexture, device, {w,h,0}, fAlpha, fScale, fRotation,
-// //                 pCenter, pSrcRect) -> textured 4-vertex triangle fan
-// //   5. Clear dword_4D6CA4 (write-only D3D bookkeeping flag, also cleared
-// //      by sibling helpers sub_413F78/sub_414344/DrawSpriteLTRB/DrawSpriteAtRect)
-// //   6. Lighting back on; returns D3D result
-// // 
-// // Size setters: sub_414A5D (-> destWHZ_138), scale setter: sub_414B09 (-> fScale_148)
-// // Sibling: sub_413F78 = same draw but centered on the viewport; sub_414344 = 3D version
+//   Uses D3DXDrawSpriteSimple (2D counterpart of D3DXDrawSprite3D_4902CF)
+//   
+//   Arguments:
+//     pSprite: sprite; reads pTexture_134, destWHZ_138 (w/h/z), fAlpha_144,
+//              fScale_148, fRotation_14C, pCenter_158, pRect_16C (src rect)
+//   
+//   Behavior:
+//     1. SetTexture(stage 0, pSprite->pTexture_134)
+//     2. Texture stage: COLOROP/ALPHAOP = BLEND on DIFFUSE (plain textured quad)
+//     3. Lighting off, fog off (restored afterwards)
+//     4. D3DXDrawSpriteSimple(pTexture, device, {w,h,0}, fAlpha, fScale, fRotation,
+//                   pCenter, pSrcRect) -> textured 4-vertex triangle fan
+//     5. Clear g_pCurMatObj (write-only D3D bookkeeping flag, also cleared
+//        by sibling helpers DrawSprite2DCenter/DrawSprite3D/DrawSpriteLTRB/DrawSpriteAtRect)
+//     6. Lighting back on; returns D3D result
+//   
+//   Size setters: CHanaSpriteT3F6__SetPos_414A5D (-> destWHZ_138), 
+//   scale setter: CHanaSpriteT3F6__SetScale_414B09 (-> fScale_148)
+//   Sibling: DrawSprite2DCenter = same draw but centered on the viewport; DrawSprite3D = 3D version
 void __cdecl hook_DrawSprite2D(CHanaSpriteT3F6_S1FC *pSprite)
 {
   DWORD dwSavedFog; // [esp+0h] [ebp-14h] BYREF
@@ -1074,7 +1075,7 @@ LPDIRECTDRAWSURFACE7 __cdecl hook_CreateSurfaceWH(DWORD width, DWORD height)
 //       DDERR_EXCLUSIVEMODEALREADYSET -> spin Sleep(0) re-testing until the
 //                                        exclusive owner (OS / screensaver) releases,
 //                                        then restore; re-init instead if wrong mode
-//   - re-init: sub_40AC7C() teardown (release D3D/DDraw/buffers/frames, D3DXUninitialize)
+//   - re-init: D3DDeinit() teardown (release D3D/DDraw/buffers/frames, D3DXUninitialize)
 //              + D3DInit(&g_D3DDevParams)
 void hook_RecoverLostDevice()
 {
@@ -1107,12 +1108,12 @@ void hook_RecoverLostDevice()
 }
 
 // PresentFrame(): end-of-frame commit, called at the end of every scene/menu.
-//   - if g_nObjCount: sub_40CEEC(0) -> reset the CHana object batch
-//     (g_nObjCount=0, clear cached g_pCurMatObj / g_pCurTexObj, dword_4D6CD8=0)
+//   - if g_nObjCount: HanaVert_DrawBatch(0) -> reset the CHana object batch
+//     (g_nObjCount=0, clear cached g_pCurMatObj / g_pCurTexObj, g_bObjBatchActive=0)
 //   - g_pRenderCtx->lpVtbl->UpdateFrame(g_pRenderCtx, 1): present/commit the frame
-//   - if DDERR_SURFACELOST / DDERR_SURFACEBUSY: sub_40BE03() device-loss recovery
+//   - if DDERR_SURFACELOST / DDERR_SURFACEBUSY: RecoverLostDevice() device-loss recovery
 //     (TestCooperativeLevel -> RestoreAllSurfaces; exclusive-mode spin;
-//      wrong-mode -> sub_40AC7C + D3DInit re-init)
+//      wrong-mode -> D3DDeinit + D3DInit re-init)
 void hook_PresentFrame()
 {
   HRESULT hr; // [esp+0h] [ebp-4h]
@@ -1180,12 +1181,12 @@ void __cdecl hook_DrawSpriteAtRect(CHanaSpriteT3F6_S1FC *pSprite, D2D_RECT_F *rc
 //   on both cull faces; fNeedsDraw_48 is cleared after an object is drawn so later
 //   passes skip it:
 //     PASS 1 opaque:    material.a==1 / no blend / !flg_1E8 / no tex mask;
-//                       blend OFF, ZWRITE on        -> sub_40C54C
+//                       blend OFF, ZWRITE on        -> HanaVert_DrawByType
 //     PASS 2 translucent: remaining !flg_1E8;
-//                       SRCALPHA/INVSRCALPHA, ZWRITE off -> sub_40C54C
-//     PASS 3 glow/mask:  flg_1E8; white ambient, no fog/lights -> sub_439D48
+//                       SRCALPHA/INVSRCALPHA, ZWRITE off -> HanaVert_DrawByType
+//     PASS 3 glow/mask:  flg_1E8; white ambient, no fog/lights -> UpdateVertTextureFromFrame
 //     per object: SetTransform(WORLD,&obj); ambient=nAmbient;
-//       lights via sub_40CE4E(bitLightEnables); fog from pFrame
+//       lights via SetLightEnableMask(bitLightEnables); fog from pFrame
 //       (flag_134 / fFogStart / fFogEnd / dwFogColor); skip if pFrame->flag_130
 //   bDraw==0: g_bObjBatchActive=0, g_nObjCount=0, g_pCurMatObj=g_pCurTexObj=0
 //   restore: g_bObjBatchActive=0, g_nObjCount=0, Z/ZWRITE/FOG on, CULL=BACK, ambient=saved
