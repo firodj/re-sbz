@@ -2046,7 +2046,7 @@ void __cdecl hook_HanaTexture_CreateFromFile(CHanaSpriteT3F6_S1FC **ppOutSprite,
   ONCELOG("[HNH:SUB] HanaTexture_CreateFromFile_4135ED\n");
  
   dwFlags = 256;
-  pSprite = (CHanaSpriteT3F6_S1FC *)MemAlloc_40DEF7(0x1FCu);
+  pSprite = (CHanaSpriteT3F6_S1FC *)MemAlloc_40DEF7(sizeof(CHanaSpriteT3F6_S1FC));
   memset(pSprite, 0, sizeof(CHanaSpriteT3F6_S1FC));
   pSprite->dwType = 0x3F6;
   // v5 = -1;

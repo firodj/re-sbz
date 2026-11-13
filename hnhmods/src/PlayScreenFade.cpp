@@ -1056,10 +1056,10 @@ void __cdecl hook_HanaMorp_ApplySubTree(CHanaFrameT3EC_S354 *pFrame)
 }
 
 // HanaMorpT457_Interp - per-object morph keyframe resolver + blender. Called from HanaMorp_ApplyTree with fParam = the object's current morph parameter.
-// For each vertex-slot i in the object's mesh (pMorp->pMeshT3F5_138, 0..nCountVertT3EA_130):
+// For each vertex-slot i in the object's mesh (pMorp->pMeshT3F5_134, 0..nCountVertT3EA_130):
 //   - scan that slot's keyframe list arrMKeyT3EA_34C[i] (count arrMKeyT3EASize_348[i]) to find the two keyframes bracketing fParam: key[j-1].x <= fParam < key[j].x. Each key = {x=param, y=source-vertex index}.
 //   - lock the two source vertex buffers pMorp->refsVertT3EA_13C[key.y] via LockVtxBufT3EA, stashing their params into fParams[1]/fParams[2] and their data pointers into the buf array.
-//   - [gated on bBlendGate0 && bBlendGate1] lock the target buffer pMorp->pMeshT3F5_138->refsVertT3EA[i], set fParams[0]=fParam, and call HanaVert_BlendMorph to lerp the target between the two source buffers.
+//   - [gated on bBlendGate0 && bBlendGate1] lock the target buffer pMorp->pMeshT3F5_134->refsVertT3EA[i], set fParams[0]=fParam, and call HanaVert_BlendMorph to lerp the target between the two source buffers.
 //   - unlock all locked source vertex objects (UnlockVrxBufT3EA).
 // NOTE (this build): bBlendGate0/bBlendGate1 (var_1B8/var_1B4) are written 0 exactly once and never set otherwise, so the HanaVert_BlendMorph call is DEAD - the keyframe search and lock/unlock run, but the actual per-vertex lerp into the target buffer is disabled. Returns the last i (vestigial).
 void __cdecl hook_HanaMorpT457_Interp(CHanaMorpT457_S40C *pMorpT457, float fMorpParam)
@@ -1078,7 +1078,7 @@ void __cdecl hook_HanaMorpT457_Interp(CHanaMorpT457_S40C *pMorpT457, float fMorp
 
   ONCELOG("[HNH:SUB] HanaMorpT457_Interp_43315F\n");
 
-  for ( i = 0; i < pMorpT457->pMeshT3F5_138->nCountVertT3EA_130; ++i )
+  for ( i = 0; i < pMorpT457->pMeshT3F5_134->nCountVertT3EA_130; ++i )
   {
     nBufs = 1;
     
@@ -1102,10 +1102,10 @@ void __cdecl hook_HanaMorpT457_Interp(CHanaMorpT457_S40C *pMorpT457, float fMorp
         pVtxObjs[nBufs++] = pMorpT457->refsVertT3EA_13C[nSrcIdx];
         if ( pVtxObjs[1] && pVtxObjs[2] )
         {
-          CHanaObj__LockVtxBufT3EA_418544(pMorpT457->pMeshT3F5_138->refsVertT3EA[i], &dwNumVerts, (LPVOID *)&pVtxBuf);
+          CHanaObj__LockVtxBufT3EA_418544(pMorpT457->pMeshT3F5_134->refsVertT3EA[i], &dwNumVerts, (LPVOID *)&pVtxBuf);
           fParams[0] = fMorpParam;
           pVtxBufs[0] = pVtxBuf;
-          pVtxObjs[0] = pMorpT457->pMeshT3F5_138->refsVertT3EA[i];
+          pVtxObjs[0] = pMorpT457->pMeshT3F5_134->refsVertT3EA[i];
           HanaVert_BlendMorph(pVtxBufs, nBufs, dwNumVerts, 0, fParams);
         }
         for ( nSrcIdx = 0; nSrcIdx < nBufs; ++nSrcIdx )
@@ -1241,7 +1241,7 @@ void __cdecl hook_HanaMorpT457_ApplySubs(CHanaFrameT3EC_S354 *pFrame)
     nMatOff = pMorp->arrSubObj_144[i].pSubObj_0->pFrame_118;
     D3DXMatrixInverse(&pTgtMat, 0, &pFrame->matWorld_178);
     D3DXMatrixMultiply(&pTgtMat, &pAxisRot, &pTgtMat);
-    pTgtVert = pMorp->pMeshT3F5_138->refsVertT3EA[pMorp->arrSubObj_144[i].pSubObj_0->n1];
+    pTgtVert = pMorp->pMeshT3F5_134->refsVertT3EA[pMorp->arrSubObj_144[i].pSubObj_0->n1];
     pSrcVert = pMorp->arrSubObj_144[i].pSubObj_0->pVert_14;
     pSubObjArr = pMorp->arrSubObj_144[i].pSubObj_0->parrS2C;
 

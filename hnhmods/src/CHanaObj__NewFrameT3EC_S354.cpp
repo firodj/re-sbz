@@ -28,8 +28,8 @@ void __cdecl hook_CHanaObj__NewFrameT3EC_S354(CHanaFrameT3EC_S354 *pParent, CHan
 
     // Allocate memory (0x354 bytes = 852 decimal)
     // Note: memset only clears 0x2D4 bytes (same as FrameRoot size), leaving extra 0x80 bytes uninitialized
-    pNewFrame = (CHanaFrameT3EC_S354*)MemAlloc_40DEF7(0x354u);
-    memset(pNewFrame, 0, 0x2D4u);
+    pNewFrame = (CHanaFrameT3EC_S354*)MemAlloc_40DEF7(sizeof(CHanaFrameT3EC_S354));
+    memset(pNewFrame, 0, sizeof(CHanaFrameRootT3EC_S2D4)); // 0x2D4u
 
     // Set type identifier (same as FrameRoot: 0x3EC = 1004)
     pNewFrame->dwType = 0x3EC;
@@ -97,8 +97,7 @@ void __cdecl hook_MtxStackRecursiveMulLocal_4075B0(CHanaFrameT3EC_S354 *pFrame)
     g_pMatrixStack_4CD77C->GetTop(),
     sizeof(pFrame->matWorld_178));
 
-  // Mark as processed/root (though this seems odd for non-root frames)
-  pFrame->bIsRoot_1F8 = 1;
+  pFrame->field_1F8 = 1;
 
   // Recursively process all children
   if (pFrame->nCountChild > 0)
@@ -125,7 +124,7 @@ void __cdecl hook_CHanaObj__NewFrameRootT3EC_S2D4(CHanaFrameRootT3EC_S2D4 **ppOu
   ONCELOG("[HNH:SUB] CHanaObj__NewFrameRootT3EC_S2D4_404908\n");
 
   // Allocate memory (0x2D4 bytes = 724 decimal)
-  pFrameRoot = (CHanaFrameRootT3EC_S2D4*) MemAlloc_40DEF7(0x2D4u);
+  pFrameRoot = (CHanaFrameRootT3EC_S2D4*) MemAlloc_40DEF7(sizeof(CHanaFrameRootT3EC_S2D4));
   memset(pFrameRoot, 0, sizeof(CHanaFrameRootT3EC_S2D4));
 
   // Set type identifier
@@ -153,7 +152,7 @@ void __cdecl hook_CHanaObj__NewFrameRootT3EC_S2D4(CHanaFrameRootT3EC_S2D4 **ppOu
   pFrameRoot->matParentWorld_1B8._44 = 1.0f;
 
   // Initialize root frame flags
-  pFrameRoot->bIsRoot_1F8 = 1;      // This is a root frame
+  pFrameRoot->field_1F8 = 1;
   pFrameRoot->nCountChild = 0;      // No children initially
   pFrameRoot->nCount_12C++;         // Increment reference/instance count
 

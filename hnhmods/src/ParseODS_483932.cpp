@@ -588,7 +588,7 @@ void __cdecl hook_CHanaObj__NewMeshT3F5(CHanaMeshT3F5_S138 **pOut)
 
   ONCELOG("[HNH:SUB] CHanaObj__NewMeshT3F5_40FCA0\n");
 
-  pMesh = (CHanaMeshT3F5_S138 *)MemAlloc_40DEF7(0x138u);
+  pMesh = (CHanaMeshT3F5_S138 *)MemAlloc_40DEF7(sizeof(CHanaMeshT3F5_S138));
   memset(pMesh, 0, sizeof(CHanaMeshT3F5_S138));
   pMesh->dwType = 0x3F5;
   CHanaObj__AddRef_40BFC3(pMesh);
@@ -618,8 +618,8 @@ CHanaMeshT3F5_S138 *__cdecl hook_GetMeshT3F5FromObj_434FE0(CHanaMorpT457_S40C *p
   }
   else if ( CHanaObj__GetType_40BBF4(pVerOrMeshOrMorp) == 0x457 )
   {
-    CHanaObj__AddRef_40BFC3(pVerOrMeshOrMorp->pMeshT3F5_138);
-    return pVerOrMeshOrMorp->pMeshT3F5_138;
+    CHanaObj__AddRef_40BFC3(pVerOrMeshOrMorp->pMeshT3F5_134);
+    return pVerOrMeshOrMorp->pMeshT3F5_134;
   }
   else
   {
@@ -699,7 +699,7 @@ int __cdecl hook_HanaMorpT457_SetupFuns(CHanaMorpT457_S40C *pMorpT457, CHanaFram
   {
     if ( pMorpT457->arrSubObj_144[i].pSubObj_0 )
     {
-      for ( j = 0; j < pMorpT457->pMeshT3F5_138->nCountVertT3EA_130; ++j )
+      for ( j = 0; j < pMorpT457->pMeshT3F5_134->nCountVertT3EA_130; ++j )
       {
         if ( pMorpT457->arrSubObj_144[i].pSubObj_0 )
         {

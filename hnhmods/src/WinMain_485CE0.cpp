@@ -175,9 +175,11 @@ int __stdcall WinMain_485CE0(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
                 
                 // Cleanup
                 InvalidateRect(g_hwndParent, 0, 1);
+#ifndef _USRDLL
                 if (g_bCustomGame)
                   GameCustomLoop();
                 else
+#endif
                   GameMainLoop_47F013();
                 DestroyWindow(g_hwndParent);
                 

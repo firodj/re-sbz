@@ -13,7 +13,7 @@
 //      direction = Z column (_13,_23,_33) -- and its index bit is OR-ed into
 //      the passed 64-bit light mask and a local "lights I enabled" mask
 //   2. bUpdateBone_218 frames get a bone-transform update against camera + scene
-//   3. world transform set, bIsRoot_1F8 = 1; g_bCurFrameIsScene latches to 1
+//   3. world transform set, field_1F8 = 1; g_bCurFrameIsScene latches to 1
 //      once the traversal reaches g_pCurFrame
 //   4. frames passing the render gate (!bAlphaDeferred_130 && cur-frame reached
 //      && !g_bRendering && AlwaysTrue()) get:
@@ -162,8 +162,11 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
 
     if (pChildFrame->bUpdateBone_218)
         UpdateBoneTransform(pChildFrame, g_pCameraFrame, (CHanaFrameT3EC_S354 *)g_pSceneFrame);
+
     g_pD3DDevice_4D6C78->SetTransform(D3DTRANSFORMSTATE_WORLD, (LPD3DMATRIX) & pChildFrame->matWorld_178);
-    pChildFrame->bIsRoot_1F8 = 1;
+
+    pChildFrame->field_1F8 = 1;
+
     if (pChildFrame == g_pCurFrame)
         g_bCurFrameIsScene = 1;
 
@@ -206,7 +209,7 @@ void __cdecl hook_ProcessFrame(CHanaFrameT3EC_S354 *pChildFrame, int nAmbient, D
                 case 0x457:                       // morp (MP-N): verts of the inner mesh
                     {
                         CHanaMorpT457_S40C* pMorp = (CHanaMorpT457_S40C*)pMesh;
-                        CHanaMeshT3F5_S138 *pInnerMesh = pMorp->pMeshT3F5_138;
+                        CHanaMeshT3F5_S138 *pInnerMesh = pMorp->pMeshT3F5_134;
                         nVertCount = CHanaObj__GetChildCountT3F5_40FF0F(pInnerMesh);
                         for (iVert = 0; iVert < nVertCount; ++iVert)
                         {
@@ -1006,7 +1009,7 @@ void __cdecl hook_HanaMeshT3F5_Draw(CHanaMeshT3F5_S138 *pMesh)
 }
 
 // HanaMorpT457_Draw(pMorp): dwType 0x457 geometry draw. A CHanaMorpT457 wraps a
-// CHanaMeshT3F5 (pMorp->pMeshT3F5_138); drawing it is a pure delegation to
+// CHanaMeshT3F5 (pMorp->pMeshT3F5_134); drawing it is a pure delegation to
 // HanaMeshT3F5_Draw (which draws the child-vert array).
 // Confirms the morph geometry shares the 0x3F5 mesh child-vert layout.
 // Polymorphic target of HanaVert_DrawByType (dwType 0x457).
@@ -1014,7 +1017,7 @@ void __cdecl hook_HanaMorpT457_Draw(CHanaMorpT457_S40C *pMorp)
 {
   ONCELOG("[HNH:SUB] HanaMorpT457_Draw_434FC9\n");
 
-  HanaMeshT3F5_Draw(pMorp->pMeshT3F5_138);
+  HanaMeshT3F5_Draw(pMorp->pMeshT3F5_134);
 }
 
 // HanaVert_DrawByType(pVert): dispatch a CHana geometry object to its

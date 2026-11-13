@@ -810,7 +810,7 @@ void __cdecl hook_CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130 *
   int j; // [esp+8h] [ebp-Ch]
   int k; // [esp+8h] [ebp-Ch]
   int i; // [esp+Ch] [ebp-8h]
-  CObjItemRef_S208 *pStruct208; // [esp+10h] [ebp-4h]
+  CObjItemRef_S208 *pItemRef; // [esp+10h] [ebp-4h]
   CObjItemRef_S208 *pDestItemRef; // [esp+10h] [ebp-4h]
 
   ONCELOG("[HNH:SUB] %s\n", "CHanaObj__AddObjItemRef_40B848");
@@ -822,15 +822,15 @@ void __cdecl hook_CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130 *
     {
       if ( !g_pObjectTable[i].szName_0[0] )
       {
-        pStruct208 = &g_pObjectTable[i];
-        strcpy(pStruct208->szName_0, szName);
+        pItemRef = &g_pObjectTable[i];
+        strcpy(pItemRef->szName_0, szName);
         for ( j = 0; j < len; ++j )
         {
           if ( szName[j] == ' ')
-            strcpy(pStruct208->szName_100, &szName[j + 1]);
+            strcpy(pItemRef->szName_100, &szName[j + 1]);
         }
-        pStruct208->pObj_200 = pObj;
-        pStruct208->dwObjType_204 = pObj->dwType;
+        pItemRef->pObj_200 = pObj;
+        pItemRef->dwObjType_204 = pObj->dwType;
         pObj->nIndex_108 = i;
         return;
       }
@@ -848,7 +848,7 @@ void __cdecl hook_CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130 *
     if ( g_nObjectTableCount >= g_nObjectTableCapacity_4B009C )// If above capacity, do Realloc
     {
       pObjItemRef = g_pObjectTable;
-      g_pObjectTable = (CObjItemRef_S208*) MemAlloc_40DEF7(520 * (g_nObjectTableCapacity_4B009C + 256));
+      g_pObjectTable = (CObjItemRef_S208*) MemAlloc_40DEF7(sizeof(CObjItemRef_S208) * (g_nObjectTableCapacity_4B009C + 256));
       memset(g_pObjectTable, 0, sizeof(CObjItemRef_S208) * (g_nObjectTableCapacity_4B009C + 256));
       memcpy(g_pObjectTable, pObjItemRef, sizeof(CObjItemRef_S208) * g_nObjectTableCapacity_4B009C);
       g_nObjectTableCapacity_4B009C += 256;
@@ -857,42 +857,42 @@ void __cdecl hook_CHanaObj__AddObjItemRef_40B848(LPCSTR szName, CHanaBase_S130 *
   }
 }
 
-void __cdecl hook_AttachHanaObj_40BAB8(CHanaBase_S130 *pParent, LPCSTR szName)
+void __cdecl hook_AttachHanaObj_40BAB8(CHanaBase_S130 *pObj, LPCSTR szName)
 {
   int len; // [esp+0h] [ebp-14h]
   int j; // [esp+4h] [ebp-10h]
-  CObjItemRef_S208 *pStruct208; // [esp+8h] [ebp-Ch]
+  CObjItemRef_S208 *pItemRef; // [esp+8h] [ebp-Ch]
   int i; // [esp+Ch] [ebp-8h]
 
   ONCELOG("[HNH:SUB] AttachHanaObj_40BAB8\n");
 
-  if ( pParent && szName && *szName )
+  if ( pObj && szName && *szName )
   {
     len = lstrlenA(szName);
     if ( len > 63 )
       len = 63;
-    pStruct208 = g_pObjectTable;
+    pItemRef = g_pObjectTable;
     for ( i = 0; ; ++i )
     {
       if ( i >= g_nObjectTableCount )
       {
-        strcpy_s(pParent->szName_8, sizeof(pParent->szName_8), szName);
-        CHanaObj__AddObjItemRef_40B848(szName, pParent);
+        strcpy_s(pObj->szName_8, sizeof(pObj->szName_8), szName);
+        CHanaObj__AddObjItemRef_40B848(szName, pObj);
         return;
       }
-      if ( pParent == pStruct208->pObj_200 )
+      if ( pObj == pItemRef->pObj_200 )
         break;
-      ++pStruct208;
+      ++pItemRef;
     }
-    strcpy(pStruct208->szName_0, szName);
-    strcpy(pParent->szName_8, szName);
+    strcpy(pItemRef->szName_0, szName);
+    strcpy(pObj->szName_8, szName);
     for ( j = 0; j < len; ++j )
     {
       if ( szName[j] == ' ' )
-        strcpy(pStruct208->szName_100, &szName[j + 1]);
+        strcpy(pItemRef->szName_100, &szName[j + 1]);
     }
-    pStruct208->dwObjType_204 = pParent->dwType;
-    pParent->nIndex_108 = i;
+    pItemRef->dwObjType_204 = pObj->dwType;
+    pObj->nIndex_108 = i;
   }
 }
 

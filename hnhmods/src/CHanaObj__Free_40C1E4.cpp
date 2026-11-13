@@ -768,7 +768,7 @@ void __cdecl hook_CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
     {
       if ( pMorp->pArrObjs_140 )
       {
-        for ( i = 0; i < pMorp->pMeshT3F5_138->nCountVertT3EA_130; ++i )
+        for ( i = 0; i < pMorp->pMeshT3F5_134->nCountVertT3EA_130; ++i )
         {
           if ( pMorp->pArrObjs_140[i] )
           {
@@ -793,7 +793,7 @@ void __cdecl hook_CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
         }
         if ( pMorp->arrMKeyT3EA_34C )
         {
-          for ( j = 0; j < pMorp->pMeshT3F5_138->nCountVertT3EA_130; ++j )
+          for ( j = 0; j < pMorp->pMeshT3F5_134->nCountVertT3EA_130; ++j )
           {
             if ( pMorp->arrMKeyT3EA_34C[j] )
             {
@@ -856,10 +856,10 @@ void __cdecl hook_CHanaObj__FreeMorpT457(CHanaMorpT457_S40C *pMorp)
           }
         }
       }
-      if ( pMorp->pMeshT3F5_138 )
+      if ( pMorp->pMeshT3F5_134 )
       {
-        CHanaObj__RemoveFromGlobalRef(pMorp->pMeshT3F5_138);
-        CHanaObj__Free_40C1E4(pMorp->pMeshT3F5_138);
+        CHanaObj__RemoveFromGlobalRef(pMorp->pMeshT3F5_134);
+        CHanaObj__Free_40C1E4(pMorp->pMeshT3F5_134);
       }
       CHanaObj__RemoveFromGlobalRef(pMorp);
       MemFree_40DF64(pMorp);

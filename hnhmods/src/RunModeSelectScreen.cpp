@@ -878,7 +878,7 @@ void __cdecl hook_FrameObject_SetAlpha(CHanaFrameT3EC_S354 *pFrame, float alpha)
   }
   else if ( CHanaObj__GetType_40BBF4(pFrame->pAttachedObj_20C) == 0x457 )// Set alpha on sprite's sub-mesh materials
   {
-    pMesh = pFrame->pAttachedObj_20C->pMeshT3F5_138;
+    pMesh = pFrame->pAttachedObj_20C->pMeshT3F5_134;
     childCount = CHanaObj__GetChildCountT3F5_40FF0F(pMesh);
     for ( j = 0; j < childCount; ++j )
       pMesh->refsVertT3EA[j]->pMateT3EE->d3dMaterial_130.diffuse.a = alpha;

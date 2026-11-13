@@ -64,7 +64,7 @@ struct CHanaFrameRootT3EC_S2D4: public CHanaBase_S130
     D3DXMATRIX matLocal_138;
     D3DXMATRIX matWorld_178;
     D3DXMATRIX matParentWorld_1B8;
-    int bIsRoot_1F8;
+    int field_1F8;
     CHanaFrameT3EC_S354 *pParent;
     CHanaNode *pFirstChildNode;
     CHanaNode *pLastChildNode;
@@ -127,7 +127,7 @@ struct CHanaSubObj_S8
 struct  CHanaMorpT457_S40C : public CHanaBase_S130
 {
     float fMorpParam_130;
-    CHanaMeshT3F5_S138 *pMeshT3F5_138;
+    CHanaMeshT3F5_S138 *pMeshT3F5_134; //134
     unsigned int nCountVertT3EA_138;
     CHanaVertT3EA_S1FC **refsVertT3EA_13C;
     void **pArrObjs_140;

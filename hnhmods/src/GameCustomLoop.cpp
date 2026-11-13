@@ -1,5 +1,6 @@
 #include "dx7.hpp"
 
+#include <ctype.h>
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -394,12 +395,6 @@ static void DrawFrameNode(CHanaFrameT3EC_S354 *pFrame)
   if ( ImGui::IsItemClicked() )
     s_pSelectedFrame = pFrame;
 
-  // show/hide toggle on the node row (recursive - hides the subtree)
-  ImGui::SameLine();
-  bool bVisible = pFrame->bAlphaDeferred_130 == 0;
-  if ( ImGui::Checkbox("show", &bVisible) )
-    SetFrameHiddenRecursive(pFrame, bVisible ? 0 : 1);
-
   if ( bOpen )
   {
     CHanaNode *pNode = pFrame->pFirstChildNode;
@@ -460,8 +455,8 @@ static void DrawFrameInspector(void)
                       pFrame->bAlphaDeferred_130 ? " HIDE" : "",
                       pFrame->bUpdateBone_218    ? " BONE" : "",
                       pFrame->bHasLight_214      ? " HASLIGHT" : "",
-                      pFrame->bDisableFog_134    ? " NOFOG" : "",
-                      pFrame->bIsRoot_1F8        ? " ROOT" : "");
+                      pFrame->bDisableFog_134    ? " NOFOG" : ""
+  );
   ImGui::Separator();
 
   DrawAttachedObject((CHanaBase_S130 *)pFrame->pAttachedObj_20C);

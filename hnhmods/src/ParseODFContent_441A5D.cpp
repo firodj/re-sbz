@@ -6,9 +6,14 @@
 #include "hnh_hook.hpp"
 
 // === PINNED GAME FUNCTIONS ===
+
+BOOL __cdecl hook_ParseODFContent_441A5D(LPBYTE pBuf1, CHanaFrameT3EC_S354* pRootFrameT3EC, CHanaAnimSetT3F1_S150* pAnimSetT3F1);
 BOOL (__cdecl*ParseODFContent_441A5D)(LPBYTE pBuf1, CHanaFrameT3EC_S354 *pRootFrameT3EC,
     CHanaAnimSetT3F1_S150 *pAnimSetT3F1) =
     reinterpret_cast<BOOL(__cdecl*)(LPBYTE, CHanaFrameT3EC_S354 *, CHanaAnimSetT3F1_S150 *)>(0x441A5D);
+
+CHanaFrameT3EC_S354* __cdecl hook_ParseOdfFRAM_44106A(LPBYTE* ppBuf,
+  CHanaFrameT3EC_S354* pRootFrameT3EC, void** ppParentList, int nIndex);
 CHanaFrameT3EC_S354 *(__cdecl*ParseOdfFRAM_44106A)(LPBYTE *ppBuf,
     CHanaFrameT3EC_S354 *pRootFrameT3EC, void **ppParentList, int nIndex) =
     reinterpret_cast<CHanaFrameT3EC_S354 *(__cdecl*)(LPBYTE *, CHanaFrameT3EC_S354 *,
@@ -17,6 +22,9 @@ int (__cdecl*ParseOdfMESH_44068C)(LPBYTE *ppBuf, CHanaMeshT3F5_S138 **ppOut,
     CHanaAnimSetT3F1_S150 *pAnimSetT3F1, CHanaFrameT3EC_S354 *pRootFrameT3EC) =
     reinterpret_cast<int(__cdecl*)(LPBYTE *, CHanaMeshT3F5_S138 **,
       CHanaAnimSetT3F1_S150 *, CHanaFrameT3EC_S354 *)>(0x44068C);
+int __cdecl hook_ParseOdfMORP_440896(LPBYTE* ppBuf, CHanaMorpT457_S40C** ppOut,
+  CHanaAnimSetT3F1_S150* pAnimSetT3F1,
+  CHanaFrameT3EC_S354* pRootFrameT3EC);
 int (__cdecl*ParseOdfMORP_440896)(LPBYTE *ppBuf, CHanaMorpT457_S40C **ppOut,
     CHanaAnimSetT3F1_S150 *pAnimSetT3F1, CHanaFrameT3EC_S354 *pRootFrameT3EC) =
     reinterpret_cast<int(__cdecl*)(LPBYTE *, CHanaMorpT457_S40C **,
@@ -535,7 +543,7 @@ int __cdecl hook_ParseOdfMESH_44068C(LPBYTE *ppBuf, CHanaMeshT3F5_S138 **ppOut,
       if (!memcmp(pBuf, "ANIM", 4) || !memcmp(pBuf, "FRAM", 4)
         || !memcmp(pBuf, "MESH", 4) || !memcmp(pBuf, "MORP", 4)
         // Shift-JIS @0x4B416C: "ファイルは終了" ("file ends")
-        || !memcmp(pBuf, "\x83\x74\x83\x40\x83\x43\x83\x8B\x82\xCD\x8F\x49\x97\xB9", 14))
+        || !memcmp(pBuf, "ファイルは終了", 14))
       {
         bStopped = TRUE;
         break;
@@ -690,7 +698,7 @@ int __cdecl hook_ParseOdfMORP_440896(LPBYTE *ppBuf, CHanaMorpT457_S40C **ppOut,
 
   // Mkey tracks: one per mesh vertex (scan window 50 bytes each)
   pScan = pBuf;
-  for (idx = 0; idx < pMorpT457->pMeshT3F5_138->nCountVertT3EA_130; ++idx)
+  for (idx = 0; idx < pMorpT457->pMeshT3F5_134->nCountVertT3EA_130; ++idx)
   {
     for (k = 0; k < 50 && memcmp("Mkey", pScan, 4); ++k)
       ++pScan;
@@ -1437,7 +1445,7 @@ void __cdecl hook_CalcFrameBound_404B80(CHanaFrameT3EC_S354 *pFrame, CHanaMorpT4
   else if ( CHanaObj__GetType_40BBF4(pVertOrMeshOrMorp) == 0x457 )
   {
     pMorp = pVertOrMeshOrMorp;
-    pMesh = pVertOrMeshOrMorp->pMeshT3F5_138;
+    pMesh = pVertOrMeshOrMorp->pMeshT3F5_134;
     dwNumChild = CHanaObj__GetChildCountT3F5_40FF0F(pMesh);
     for ( k = 0; k < dwNumChild; ++k )
     {
@@ -2100,15 +2108,15 @@ BOOL __cdecl hook_CHanaObj__NewMorpT457(CHanaMorpT457_S40C **ppOut, CHanaMeshT3F
 
   ONCELOG("[HNH:SUB] CHanaObj__NewMorpT457_433DA7\n");
 
-  pMorp = (CHanaMorpT457_S40C *)MemAlloc_40DEF7(0x40Cu);
+  pMorp = (CHanaMorpT457_S40C *)MemAlloc_40DEF7(sizeof(CHanaMorpT457_S40C));
   memset(pMorp, 0, 0x138u);
   pMorp->dwType = 1111;
   CHanaObj__AddRef_40BFC3(pMorp);
-  pMorp->pMeshT3F5_138 = pMesh;
+  pMorp->pMeshT3F5_134 = pMesh;
   CHanaObj__AddRef_40BFC3(pMesh);
   pMorp->pArrObjs_140 = 0;
-  pMorp->arrMKeyT3EA_34C = (CHanaMKey_S8 **)MemAlloc_40DEF7(4 * pMorp->pMeshT3F5_138->nCountVertT3EA_130 + 128);
-  pMorp->arrMKeyT3EASize_348 = (int *)MemAlloc_40DEF7(4 * pMorp->pMeshT3F5_138->nCountVertT3EA_130 + 128);
+  pMorp->arrMKeyT3EA_34C = (CHanaMKey_S8 **)MemAlloc_40DEF7(4 * pMorp->pMeshT3F5_134->nCountVertT3EA_130 + 128);
+  pMorp->arrMKeyT3EASize_348 = (int *)MemAlloc_40DEF7(4 * pMorp->pMeshT3F5_134->nCountVertT3EA_130 + 128);
   pMorp->fEaseRate_388 = 2.0;
   *ppOut = pMorp;
   return 1;
