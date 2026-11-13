@@ -408,11 +408,17 @@ int __cdecl hook_CHanaObj__GetType_40BBF4(CHanaBase_S130 *pObj)
     return -1;
 }
 
-// HanaMorpT457_Animate - computes the current morph parameter (fMorpParam_130) of the T457 object on a frame from up to three sources. Only acts if pFrame->pMorpT457_20C is a T457 (GetType==0x457==1111). fTimeScale=sub_47E78F() (global animation time scale).
+// HanaMorpT457_Animate - computes the current morph parameter (fMorpParam_130) of the T457 object on a frame from up to three sources.
+// Only acts if pFrame->pMorpT457_20C is a T457 (GetType==0x457==1111). fTimeScale=GetTimerScaleFactor() (global animation time scale).
 //  (a) IMMEDIATE: if no eased (dwEaseEnabled_358) and no time (nTimeState_36C) anim and fValue>=0 -> fMorpParam_130 = fValue.
-//  (b) EASED: if fEase>=0 and dwEaseEnabled_358: fEase==0 -> snap to fEaseProgress_384 and decay it (/2); else fProgress=clamp(fEase*fEaseRate_388,<=1) and lerp fMorpParam_130 between fEaseFrom_35C..fEaseTo_360 by (fProgress+fEaseProgress_384)/2, storing fProgress back.
-//  (c) TIME: if nTimeAnim>=0: a wall-clock tween from fTimeFrom_370 to fTimeTo_374 driven by timeGetTime()-dwClockStart_380 (times fTimeScale/1000). nTimeState_36C is the lifecycle: 1&nTimeAnim==1 -> arm (dwClockStart=timeGetTime); running (==2 or arm) -> advance and set state 3 (done, param=fTimeTo) or 2 (running); otherwise (queued) -> prime state 1, set param=fTimeTo, and load next keyframe from fNextFrom_378/fNextTo_37C.
-// Called from HanaMorp_ApplyTree (per-frame) and via the tree-propagator sub_481BE0.
+//  (b) EASED: if fEase>=0 and dwEaseEnabled_358: fEase==0 -> snap to fEaseProgress_384 and decay it (/2);
+// else fProgress=clamp(fEase*fEaseRate_388,<=1) and lerp fMorpParam_130 between fEaseFrom_35C..fEaseTo_360
+// by (fProgress+fEaseProgress_384)/2, storing fProgress back.
+//  (c) TIME: if nTimeAnim>=0: a wall-clock tween from fTimeFrom_370 to fTimeTo_374 driven by timeGetTime()-dwClockStart_380 (times fTimeScale/1000).
+// nTimeState_36C is the lifecycle: 1&nTimeAnim==1 -> arm (dwClockStart=timeGetTime);
+// running (==2 or arm) -> advance and set state 3 (done, param=fTimeTo) or 2 (running);
+// otherwise (queued) -> prime state 1, set param=fTimeTo, and load next keyframe from fNextFrom_378/fNextTo_37C.
+// Called from HanaMorp_ApplyTree (per-frame) and via the tree-propagator HanaMorp_AnimateAndPropagate.
 void __cdecl hook_HanaMorpT457_Animate(CHanaFrameT3EC_S354 *pFrame, float fValue, float fEase, int nTimeAnim)
 {
   double dElapsed; // st7
@@ -846,15 +852,16 @@ void __cdecl hook_PlayScreenFade(int bFadeOut, COLORREF colorref,
     g_pD3DDevice_4D6C78->SetRenderState(D3DRENDERSTATE_ANTIALIAS, dwAntiAliasSaved);
 }
 
-// HanaFrame_Draw - per-frame render/dispatch entry (thin wrapper sub_405BE1 sets g_bRendering=1 around it).
+// HanaFrame_Draw - per-frame render/dispatch entry.
 // 1) DS3D listener: CommitDeferredSettings; orient/position it to the camera relative to the scene (CalculateLocalRotationMatrix->SetOrientation, HanaFrame_GetRelPosition->SetPosition).
-// 2) g_pCurFrame = pFrame; g_bCurFrameIsScene = (pFrame==g_pSceneFrame). sub_40773F() builds/pushes the world-matrix stack for all scene children.
-// 3) If the frame's skip-draw flag (*(pFrame+304)) is 0: prep the frame (sub_4339B2), save D3DRS_AMBIENT, then for each scene child frame:
+// 2) g_pCurFrame = pFrame; g_bCurFrameIsScene = (pFrame==g_pSceneFrame). HanaFrame_BuildMatrixStack() builds/pushes the world-matrix stack for all scene children.
+// 3) If the frame's skip-draw flag (*(pFrame+304)) is 0: prep the frame (HanaFrame_PreDraw), save D3DRS_AMBIENT, then for each scene child frame:
 //    - reset the light mask; when g_dwLightningState, disable all 0x40 lights;
 //    - set per-frame fog (FOGENABLE/COLOR/START/END from bHasFog/dwFogColor/fFogStart/fFogEnd) or disable fog;
-//    - position & enable the frame's CHanaLight (sub_409510 positions by dltType, sub_40929C does SetLight+LightEnable / ambient), set its bit in bitLightEnables;
-//    - run the object updater sub_40600C(child, {bitLightEnables, ambient}) and restore ambient.
-// Returns ambient-restore HRESULT. g_pCurFrame/g_bCurFrameIsScene/g_bRendering are read by sub_40600C.
+//    - position & enable the frame's CHanaLight (ConfigureLight positions by dltType, ApplyLightSettings does SetLight+LightEnable / ambient), 
+//      set its bit in bitLightEnables;
+//    - run the object updater ProcessFrame(child, {bitLightEnables, ambient}) and restore ambient.
+// Returns ambient-restore HRESULT. g_pCurFrame/g_bCurFrameIsScene/g_bRendering are read by ProcessFrame.
 void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
 {
   DWORD nAmbient; // [esp+8h] [ebp-7Ch] BYREF
@@ -969,19 +976,27 @@ void __cdecl hook_HanaFrame_Draw(CHanaFrameT3EC_S354 *pFrame)
   }
 }
 
-// HanaFrame_PreDraw - pre-draw prep for a frame subtree; called from HanaFrame_Draw just before the child-draw loop. Runs the two morph passes in sequence: (1) HanaMorp_ApplyTree - apply + advance each T457 morph at its current param, recursively; (2) HanaMorp_ApplySubTree (sub_433916) - for each T457 frame run sub_4365B9, which applies the morph's secondary/sub-object vertex transformations. No return value.
+// HanaFrame_PreDraw - pre-draw prep for a frame subtree; called from HanaFrame_Draw just before the child-draw loop. 
+// Runs the two morph passes in sequence:
+// (1) HanaMorp_ApplyTree - apply + advance each T457 morph at its current param, recursively;
+// (2) HanaMorp_ApplySubTree -- for each T457 frame run HanaMorpT457_ApplySubs,
+// which applies the morph's secondary/sub-object vertex transformations. No return value.
 void __cdecl hook_HanaFrame_PreDraw(CHanaFrameT3EC_S354 *pFrame)
 {
   if ( !pFrame ) return;
 
   ONCELOG("[HNH:SUB] HanaFrame_PreDraw_4339B2\n")
-  
-  HanaMorp_ApplyTree(pFrame);
+
+    HanaMorp_ApplyTree(pFrame);
   HanaMorp_ApplySubTree(pFrame);
 }
 
-// HanaMorp_ApplyTree - recursive walk of the frame tree that applies each T457 morph (vertex-animation) at its current parameter. First pass of sub_4339B2 (called from HanaFrame_Draw); sibling sub_433916 is the second pass.
-// For each frame: if pMorpT457_20C is a T457 object (CHanaObj::GetType == 0x457 == 1111), apply the morph-target blend at the frame's current param via sub_43315F (interpolates each vertex between the two bracketing keyframes in arrMKeyT3EA_34C), then read that param back into fMorpParam (default -1.0 when no morph). Recurse into every child frame, then advance/decay the param with sub_433569(frame, fMorpParam, 0.0, 0).
+// HanaMorp_ApplyTree - recursive walk of the frame tree that applies each T457 morph (vertex-animation) at its current parameter
+// First pass of HanaFrame_PreDraw (called from HanaFrame_Draw); sibling HanaMorp_ApplySubTree is the second pass.
+// For each frame: if pMorpT457_20C is a T457 object (CHanaObj::GetType == 0x457 == 1111), apply the morph-target blend at the frame's current
+// param via HanaMorpT457_Interp (interpolates each vertex between the two bracketing keyframes in arrMKeyT3EA_34C),
+// then read that param back into fMorpParam (default -1.0 when no morph). Recurse into every child frame,
+// then advance/decay the param with HanaMorpT457_Animate(frame, fMorpParam, 0.0, 0).
 void __cdecl hook_HanaMorp_ApplyTree(CHanaFrameT3EC_S354 *pFrame)
 {
   CHanaMorpT457_S40C *pMorpT457; // [esp+4h] [ebp-18h]
@@ -1012,7 +1027,12 @@ void __cdecl hook_HanaMorp_ApplyTree(CHanaFrameT3EC_S354 *pFrame)
   HanaMorpT457_Animate(pFrame, fMorpParam, 0.0, 0);
 }
 
-// HanaMorp_ApplySubTree - second recursive pass of the frame-tree prep (from HanaFrame_PreDraw). For each frame whose pMorpT457_20C is a T457 object (CHanaObj::GetType==0x457==1111), run sub_4365B9(frame): it walks the morph's arrS8_144 sub-object list and, for each entry with a target vertex set, transforms the affected vertices between frame space (inverse of matWorld_178, times a fixed axis rotation) and the subobject's local space, applying per-subobject position/normal offsets (pos/norm) and an arrFun_4 callback, writing back into the mesh vertex buffer. Then recurse into every child frame (self-before-children).
+// HanaMorp_ApplySubTree - second recursive pass of the frame-tree prep (from HanaFrame_PreDraw).
+// For each frame whose pMorpT457_20C is a T457 object (CHanaObj::GetType==0x457==1111), run HanaMorpT457_ApplySubs(frame):
+// it walks the morph's arrS8_144 sub-object list and, for each entry with a target vertex set, transforms the affected vertices
+// between frame space (inverse of matWorld_178, times a fixed axis rotation) and the subobject's local space,
+// applying per-subobject position/normal offsets (pos/norm) and an arrFun_4 callback, writing back into the mesh vertex buffer.
+// Then recurse into every child frame (self-before-children).
 void __cdecl hook_HanaMorp_ApplySubTree(CHanaFrameT3EC_S354 *pFrame)
 {
   unsigned int i; // [esp+4h] [ebp-10h]
@@ -1099,7 +1119,8 @@ void __cdecl hook_HanaMorpT457_Interp(CHanaMorpT457_S40C *pMorpT457, float fMorp
   }
 }
 
-// HanaVert_BlendMorph - low-level morph-target vertex blender (leaf of the T457 morph pipeline; called only from sub_43315F). Blends the target vertex buffer between two morph-keyframe source buffers at the current param.
+// HanaVert_BlendMorph - low-level morph-target vertex blender (leaf of the T457 morph pipeline; called only from HanaMorpT457_Interp).
+// Blends the target vertex buffer between two morph-keyframe source buffers at the current param.
 // pVertexBufs = array of vertex-buffer pointers: pVertexBufs[0]=target(out), pVertexBufs[1]=keyA, pVertexBufs[2]=keyB. dwNumVerts = vertex count. fParams = { [0] current param, [1] keyA param, [2] keyB param }. (nBufs and nFlags are part of the calling signature but unused in the body.)
 // Vertex stride = 32 bytes (8 floats); only components 0..5 (position xyz + normal xyz) are blended - texcoords (6,7) are left as-is.
 //  If keyA == keyB (degenerate): copy keyA -> target for all 6 components.
@@ -1160,11 +1181,16 @@ void __cdecl hook_HanaVert_BlendMorph(
   }
 }
 
-// HanaMorpT457_ApplySubs - apply the T457 morph's secondary/sub-object vertex transforms. For the frame's T457 object, walk pMorp->arrS8_144 (each entry has pS120 = {n1 target vertex index, pVert_14 source vertex, parrS2C per-vertex mapping, nCountS2C_0 count, field_118 matrix offset} and arrFun_4 = per-vertex callback array). For each such entry: build pTgtMat = inverse(frame->matWorld_178) * pAxisRot; lock target vertex buffer pTgtBuf (mesh refsVertT3EA[n1]) and source pSrcBuf (pVert_14); then for each of nCountSubObjs vertices (pSubObjArr[j]):
-//   vtxTgt = HanaVert_Transform(target vert, frame matrix); vtxSrc = HanaVert_Transform(source vert, matrix at (nMatOff+376));
-//   arrFun_4[j](vtxTgt, vtxSrc, flt_8)  // per-vertex custom blend/deform callback
-//   writeback = HanaVert_Transform(vtxTgt, pTgtMat); store into target buffer; then subtract the subobject's pos (x,y,z) and norm (x,y,z) offsets.
-//   Unlock buffers. Shared by 5 callers (HanaMorp_ApplySubTree + sub_436BC0/sub_43768D/sub_43827C/sub_438DCF).
+// HanaMorpT457_ApplySubs - apply the T457 morph's secondary/sub-object vertex transforms. 
+// For the frame's T457 object, walk pMorp->arrS8_144 (each entry has pS120 = {n1 target vertex index, pVert_14 source vertex, parrS2C per-vertex mapping,
+// nCountS2C_0 count, field_118 matrix offset} and arrFun_4 = per-vertex callback array).
+// For each such entry: build pTgtMat = inverse(frame->matWorld_178) * pAxisRot; lock target vertex buffer pTgtBuf (mesh refsVertT3EA[n1]) and 
+// source pSrcBuf (pVert_14); then for each of nCountSubObjs vertices (pSubObjArr[j]):
+// vtxTgt = HanaVert_Transform(target vert, frame matrix); vtxSrc = HanaVert_Transform(source vert, matrix at (nMatOff+376));
+// arrFun_4[j](vtxTgt, vtxSrc, flt_8)  // per-vertex custom blend/deform callback
+// writeback = HanaVert_Transform(vtxTgt, pTgtMat); store into target buffer; then subtract the subobject's pos (x,y,z) and norm (x,y,z) offsets.
+// Unlock buffers. Shared by 5 callers (HanaMorp_ApplySubTree + HanaMorpT457_ApplySubsFixed_436BC0/
+// HanaMorpT457_AddSubWeighted_43768D/HanaMorpT457_AddSubRigid_43827C/HanaMorpT457_AddSubSmooth_438DCF).
 void __cdecl hook_HanaMorpT457_ApplySubs(CHanaFrameT3EC_S354 *pFrame)
 {
   D3DVERTEX *pVtx; // esi

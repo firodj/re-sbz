@@ -31,7 +31,7 @@ struct CHanaBase_S130
     float flt_110;
     int field_114;
     int field_118;
-    int field_11C;
+    int field_11C; // root anim frame ?
     int iAlpha1000_120;
     int iAlpha1000_124;
     int field_128;

@@ -833,8 +833,8 @@ void __cdecl hook_UpdateBoneLookAtTransform(
  *    / m[3][3] kept.
  * 4. matLocal_138 (0x138) = matWorld_178 x inv(matParentWorld_1B8 (0x1B8)); returns
  *    &pCameraFrame->matLocal_138 (all callers ignore the return).
- * Callers: sub_408283 (mode -1 wrapper), sub_466BDA (camera move-to-target,
- * mode -1 x3), sub_4686F8 (camera follow/physics), sub_46D9AF/sub_46F37E
+ * Callers: UpdateBoneTransform (mode -1 wrapper), CameraController_UpdateCutscene (camera move-to-target,
+ * mode -1 x3), UpdateCutInSceneCameraFollow (camera follow/physics), RunSceneSelectScreen/RunModeSelectScreen
  * (pause loop: look at the scene's "mune" frame when present).
  */
 void __cdecl hook_CameraLookAtFrame(
@@ -989,7 +989,7 @@ DWORD __cdecl hook_CHanaObj__GetChildCountT3F5_40FF0F(CHanaMeshT3F5_S138 *pHanaT
 //   (nPrimType_154[1] is the primitive type used inside HanaVert_Draw; [0]
 //    doubles as a per-child skip flag here.)
 //   Polymorphic target of HanaVert_DrawByType (dwType 0x3F5); also called from
-//   sub_434FC9 (the 0x457 morph draw, which shares this child-vert layout).
+//   HanaMorpT457_Draw (the 0x457 morph draw, which shares this child-vert layout).
 void __cdecl hook_HanaMeshT3F5_Draw(CHanaMeshT3F5_S138 *pMesh)
 {
   unsigned int i; // [esp+0h] [ebp-8h]
@@ -1006,10 +1006,10 @@ void __cdecl hook_HanaMeshT3F5_Draw(CHanaMeshT3F5_S138 *pMesh)
 }
 
 // HanaMorpT457_Draw(pMorp): dwType 0x457 geometry draw. A CHanaMorpT457 wraps a
-//   CHanaMeshT3F5 (pMorp->pMeshT3F5_138); drawing it is a pure delegation to
-//   HanaMeshT3F5_Draw (which draws the child-vert array).
-//   Confirms the morph geometry shares the 0x3F5 mesh child-vert layout.
-//   Polymorphic target of HanaVert_DrawByType (dwType 0x457).
+// CHanaMeshT3F5 (pMorp->pMeshT3F5_138); drawing it is a pure delegation to
+// HanaMeshT3F5_Draw (which draws the child-vert array).
+// Confirms the morph geometry shares the 0x3F5 mesh child-vert layout.
+// Polymorphic target of HanaVert_DrawByType (dwType 0x457).
 void __cdecl hook_HanaMorpT457_Draw(CHanaMorpT457_S40C *pMorp)
 {
   ONCELOG("[HNH:SUB] HanaMorpT457_Draw_434FC9\n");
@@ -1019,13 +1019,13 @@ void __cdecl hook_HanaMorpT457_Draw(CHanaMorpT457_S40C *pMorp)
 
 // HanaVert_DrawByType(pVert): dispatch a CHana geometry object to its
 //   type-specific D3D draw routine, selected by pVert->dwType:
-//     0x3EA  HanaVert_Draw   (CHanaVertT3EA_S1FC)
-//     0x3F5  sub_40FE8E      (CHanaMeshT3F5_S138)   mesh
-//     0x3FB  HanaMesh_Draw   (CHana3FB_S160)
-//     0x457  sub_434FC9      (CHanaMorpT457_S40C)   morph
+//     0x3EA  HanaVert_Draw        (CHanaVertT3EA_S1FC)
+//     0x3F5  HanaMeshT3F5_Draw    (CHanaMeshT3F5_S138)   mesh
+//     0x3FB  HanaMesh_Draw        (CHana3FB_S160)
+//     0x457  HanaMorpT457_Draw    (CHanaMorpT457_S40C)   morph
 //     else   no-op (return 0)
 //   The 'T####' suffix in each CHana* struct name == this dwType tag.
-//   Called from HanaVert_DrawBatch (opaque + translucent passes) and sub_40600C.
+//   Called from HanaVert_DrawBatch (opaque + translucent passes) and ProcessFrame.
 void __cdecl hook_HanaVert_DrawByType(CHanaVertT3EA_S1FC *pObj)
 {
   ONCELOG("[HNH:SUB] HanaVert_DrawByType_40C54C\n");

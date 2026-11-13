@@ -1096,23 +1096,23 @@ int __cdecl hook_PlayAssault_4703AE(int iModeId, int iMenuTab)
 }
 
 // ToggleWaitScreen - Start or stop the blinking WAIT-screen thread
-// // Called only from Scene4_4703AE (push 1 = show, push 0 = hide)
-// // 
-// // Arguments:
-// //   bShow: 1 = start the wait screen (only when no thread is running),
-// //          0 = stop it (also taken when a thread is already running)
-// // 
-// // Show path:
-// //   1. g_bWaitScreenOn = 1 (loop condition of the thread)
-// //   2. g_hwndWaitScreen = g_hwndParent; invalidate both windows
-// //   3. Blit 640x480 black to primary + back buffer, UpdateFrame + FlipToGDISurface x2
-// //   4. hWaitScreenThread = CreateThread(WaitScreenThreadProc), priority ABOVE_NORMAL
-// // 
-// // Hide path:
-// //   1. g_bWaitScreenOn = 0; thread notices on its next 10ms tick
-// //   2. Poll GetExitCodeThread up to 1000 x 5ms (5s); if still STILL_ACTIVE (259)
-// //      -> TerminateThread(hWaitScreenThread, 1)
-// //   3. CloseHandle + primary buffer Lock/Unlock
+//   Called only from PlayAssault_4703AE (push 1 = show, push 0 = hide)
+//   
+//   Arguments:
+//     bShow: 1 = start the wait screen (only when no thread is running),
+//            0 = stop it (also taken when a thread is already running)
+//   
+//   Show path:
+//     1. g_bWaitScreenOn = 1 (loop condition of the thread)
+//     2. g_hwndWaitScreen = g_hwndParent; invalidate both windows
+//     3. Blit 640x480 black to primary + back buffer, UpdateFrame + FlipToGDISurface x2
+//     4. hWaitScreenThread = CreateThread(WaitScreenThreadProc), priority ABOVE_NORMAL
+//   
+//   Hide path:
+//     1. g_bWaitScreenOn = 0; thread notices on its next 10ms tick
+//     2. Poll GetExitCodeThread up to 1000 x 5ms (5s); if still STILL_ACTIVE (259)
+//        -> TerminateThread(hWaitScreenThread, 1)
+//     3. CloseHandle + primary buffer Lock/Unlock
 void __cdecl hook_ToggleWaitScreen(BOOL bShow)
 {
   int v1; // eax

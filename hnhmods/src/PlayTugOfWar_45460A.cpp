@@ -34,18 +34,11 @@ void (__cdecl *DrawHudSpriteNumber_44B97B)(CHanaSpriteT3F6_S1FC **pDigitSprites,
 // PlayTugOfWar(pCtrl, pBodyA, pBodyB, pCamFrame, a5..a14, pHudSprite)
 // Timed cinematic/cutscene player (~3.75s budget, v43=3750ms). Renders two CSekBody models
 // under an animated camera (g_pCameraFrame + cube-map face matrices) with a countdown HUD.
-// Per frame: bone/anim update (sub_458B3A), body render (sub_4542E0), camera follow,
-// sound pos (sub_44B23B), HUD text (sub_44AF5B), progress bar (sub_4532D0), and the
+// Per frame: bone/anim update (UpdateVoicePlayback), body render (UpdateBodiesInput_4542E0), camera follow,
+// sound pos (DrawDuelHealthHud_44B23B), HUD text (DrawClockHud_44AF5B),
+// progress bar (DrawCountdownFlash_4532D0), and the
 // transition flash (DrawTransitionFlash_453FAC). Loops until elapsed>3750ms, the pCtrl
 // timeline (a11/derived v48) reaches 0, or a pause-timeout; returns 1.
-/*
-void (__cdecl*PlayTugOfWar_45460A)(CHanaSceneT458_S504 *pOdsScene, 
-CSekBody *pHeroBody, CSekBody *pFoeBody, CHanaFrameT3EC_S354 *pMapFrame, 
-CHanaSpriteT3F6_S1FC **pArrHudMeters, CHanaSpriteT3F6_S1FC **pArrSprites, 
-float *pfHeroHpCur, float fHeroHpMax, float *pfFoeHpCur, float fFoeHpMax, 
-int *pnClockBase, unsigned int *pdwElapsedMs, int dwClockBase2, 
-CSoundStruct_8 **pArrVoiceBufs, CHanaSpriteT3F6_S1FC *pMaskBmp)
-*/
 void __cdecl hook_PlayTugOfWar_45460A(
   CHanaSceneT458_S504 *pOdsScene,
   CSekBody *pHeroBody,

@@ -1304,7 +1304,8 @@ void __cdecl hook_CHanaAnimSetT3F1__RemoveAnimT3F0_404349(CHanaAnimSetT3F1_S150 
   }
 }
 
-// Rebind/reset camera-linked objects after an ODS scene load. Walks g_pObjTable; for each object of dwType_204==1009, calls sub_404349 on the sub-objects
+// Rebind/reset camera-linked objects after an ODS scene load. Walks g_pObjTable; for each object of dwType_204==1009, 
+// calls CHanaAnimSetT3F1__RemoveAnimT3F0_404349 on the sub-objects
 // whose [304] slot equals nCameraId (the freshly loaded camera frame).
 void __cdecl hook_UpdateCameraLinkedObjects_44451F(CHanaFrameT3EC_S354 *nCameraId)
 {
@@ -1331,7 +1332,7 @@ void __cdecl hook_UpdateCameraLinkedObjects_44451F(CHanaFrameT3EC_S354 *nCameraI
   }
 }
 
-// Recursively expand a parsed ODF map frame into child frame nodes: marks [0]=1, normalizes via sub_407E5B, builds the T3ED representation
+// Recursively expand a parsed ODF map frame into child frame nodes: marks [0]=1, normalizes via Frame_ComputeWorldAABB, builds the T3ED representation
 // (CHanaObj::NewT3EDFromChildT3EC), and for each frame recurses then frees the temp T3ED. Called right after ParseODFFile on the map frame.
 void __cdecl hook_BuildMapSubFrames_443DD5(CHanaFrameT3EC_S354 *pFrame)
 {

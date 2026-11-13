@@ -31,8 +31,8 @@ void (__cdecl*AssignLigthtToFrame_40539D)(CHanaFrameT3EC_S354 *pHanaT3EC, CHanaL
     reinterpret_cast<void(__cdecl*)(CHanaFrameT3EC_S354 *, CHanaLightT3EF_S1A0 *)>(0x40539D);
 int (__cdecl*CHanaObj__NewAnimT3F0)(CHanaAnimT3F0_S240 **ppOut) =
     reinterpret_cast<int(__cdecl*)(CHanaAnimT3F0_S240 **)>(0x401CD0);
-int (__cdecl*HanaAnim_GetDuration)(CHanaAnimT3F0_S240 *pHanaAnimT3F0) =
-    reinterpret_cast<int(__cdecl*)(CHanaAnimT3F0_S240 *)>(0x4039C9);
+void (__cdecl*HanaAnim_GetDuration)(CHanaAnimT3F0_S240 *pHanaAnimT3F0) =
+    reinterpret_cast<void(__cdecl*)(CHanaAnimT3F0_S240 *)>(0x4039C9);
 void (__cdecl*CHanaAnimT3F0__BakeKeyframesT3F0_402D0E)(CHanaAnimT3F0_S240 *pHanaAnimT3F0) =
     reinterpret_cast<void(__cdecl*)(CHanaAnimT3F0_S240 *)>(0x402D0E);
 void (__cdecl*HanaFrame_GetFrameName)(CHanaFrameT3EC_S354 *pHanaFramT3EC, char *pOutFrameName) =
@@ -441,7 +441,7 @@ BOOL __cdecl hook_ParseOdfANIM_4414EB(LPBYTE *ppBuf, CHanaAnimSetT3F1_S150 *pAni
 
   CHanaObj__NewAnimT3F0(&pAnimT3F0);
   MemFree_40DF64(pAnimT3F0->arrKeys_13C);  // drop the default key array
-  pAnimT3F0->arrKeys_13C = (CHanaAnimKeyT3F0_S78 *)MemAlloc_40DEF7(120 * (nCount + 1)); // +1 sentinel
+  pAnimT3F0->arrKeys_13C = (CHanaAnimKeyT3F0_S78 *)MemAlloc_40DEF7(sizeof(CHanaAnimKeyT3F0_S78) * (nCount + 1)); // +1 sentinel
   pAnimT3F0->fDuration_134 = 100000000.0f;
   pAnimT3F0->nKeyCount_138 = nCount;
 
@@ -890,7 +890,7 @@ int __cdecl hook_CHanaObj__NewAnimT3F0(CHanaAnimT3F0_S240 **ppOut)
   memset(pOut, 0, sizeof(CHanaAnimT3F0_S240));
   pOut->dwType = 0x3F0;
   pOut->nKeyCount_138 = 1;
-  pOut->arrKeys_13C = (CHanaAnimKeyT3F0_S78 *)MemAlloc_40DEF7(0x78u);
+  pOut->arrKeys_13C = (CHanaAnimKeyT3F0_S78 *)MemAlloc_40DEF7(sizeof(CHanaAnimKeyT3F0_S78));
   pOut->arrKeys_13C->bKeyRot = 1;
   arrKeys_13C = pOut->arrKeys_13C;
   arrKeys_13C->quatRot.z = 0.0;
@@ -919,13 +919,9 @@ int __cdecl hook_CHanaObj__NewAnimT3F0(CHanaAnimT3F0_S240 **ppOut)
   return 0;
 }
 
-int __cdecl hook_HanaAnim_GetDuration(CHanaAnimT3F0_S240 *pHanaAnimT3F0)
+void __cdecl hook_HanaAnim_GetDuration(CHanaAnimT3F0_S240 *pHanaAnimT3F0)
 {
-  int result; // eax
-  ONCELOG("[HNH:SUB] HanaAnim_GetDuration_004039C9\n");
-  result = LODWORD(pHanaAnimT3F0->arrKeys_13C[pHanaAnimT3F0->nKeyCount_138 - 1].fTime);
-  LODWORD(pHanaAnimT3F0->fDuration_134) = result;
-  return result;
+  pHanaAnimT3F0->fDuration_134 = pHanaAnimT3F0->arrKeys_13C[pHanaAnimT3F0->nKeyCount_138 - 1].fTime;
 }
 
 void __cdecl hook_CHanaAnimT3F0__BakeKeyframesT3F0_402D0E(CHanaAnimT3F0_S240 *pHanaAnimT3F0)

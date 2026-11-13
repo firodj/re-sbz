@@ -65,6 +65,10 @@
 */
 static CSekBody *s_pHeroBody = NULL;
 
+// frame selected in the SCENE TREE, shown in the Frame Inspector window.
+// Cleared on every (re)load - the old frame tree is freed on a swap.
+static CHanaFrameT3EC_S354 *s_pSelectedFrame = NULL;
+
 // placement constants (world units; the ~16-unit body hangs BELOW the frame
 // origin, cf. g_fHitY_4C6F48, so the orbit target is at negative Y)
 #define CUSTOM_HERO_Z   25.0f
@@ -210,6 +214,9 @@ static BOOL GameCustomSetup(void)
   CSekBody__PlayAnim_40179D(s_pHeroBody, 1);
   FrameTimer_BeginFrame();
   RestartInputThread(2);
+
+  // the previous tree is gone after a swap/reload - drop the stale selection
+  s_pSelectedFrame = NULL;
 
   return TRUE;
 }
@@ -375,38 +382,26 @@ static void DrawFrameNode(CHanaFrameT3EC_S354 *pFrame)
   else if ( pFrame == g_pLightFrame )
     szTag = "LIGHT";
 
-  if ( ImGui::TreeNode("frame", "%s [%s] +%d ch", szName, szTag,
-                       pFrame->nCountChild) )
+  // click on the row selects the frame for the inspector; the arrow (or a
+  // double click) expands - single clicks on the label never toggle
+  ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow
+                               | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+  if ( pFrame == s_pSelectedFrame )
+    nodeFlags |= ImGuiTreeNodeFlags_Selected;
+
+  bool bOpen = ImGui::TreeNodeEx("frame", nodeFlags, "%s [%s] +%d ch",
+                                 szName, szTag, pFrame->nCountChild) != 0;
+  if ( ImGui::IsItemClicked() )
+    s_pSelectedFrame = pFrame;
+
+  // show/hide toggle on the node row (recursive - hides the subtree)
+  ImGui::SameLine();
+  bool bVisible = pFrame->bAlphaDeferred_130 == 0;
+  if ( ImGui::Checkbox("show", &bVisible) )
+    SetFrameHiddenRecursive(pFrame, bVisible ? 0 : 1);
+
+  if ( bOpen )
   {
-    // show/hide toggle on the node row (recursive - hides the subtree)
-    bool bVisible = pFrame->bAlphaDeferred_130 == 0;
-    if ( ImGui::Checkbox("show", &bVisible) )
-      SetFrameHiddenRecursive(pFrame, bVisible ? 0 : 1);
-
-    ImGui::Text("local (%.2f, %.2f, %.2f)  world (%.2f, %.2f, %.2f)",
-                pFrame->matLocal_138._41, pFrame->matLocal_138._42,
-                pFrame->matLocal_138._43,
-                pFrame->matWorld_178._41, pFrame->matWorld_178._42,
-                pFrame->matWorld_178._43);
-    ImGui::TextDisabled("flags:%s%s%s%s%s",
-                        pFrame->bAlphaDeferred_130 ? " HIDE" : "",
-                        pFrame->bUpdateBone_218    ? " BONE" : "",
-                        pFrame->bHasLight_214      ? " HASLIGHT" : "",
-                        pFrame->bDisableFog_134    ? " NOFOG" : "",
-                        pFrame->bIsRoot_1F8        ? " ROOT" : "");
-
-    DrawAttachedObject((CHanaBase_S130 *)pFrame->pAttachedObj_20C);
-
-    if ( pFrame->pHanaLight_210 )
-      ImGui::TextDisabled("light idx=%d type=%d",
-                          pFrame->pHanaLight_210->dwLightIndex_130,
-                          (int)pFrame->pHanaLight_210->d3dLight_134.dltType);
-    if ( pFrame->pHanaAnim_2C0 )
-      ImGui::TextDisabled("anim: %s",
-                          ((CHanaBase_S130 *)pFrame->pHanaAnim_2C0)->szName_8[0]
-                              ? ((CHanaBase_S130 *)pFrame->pHanaAnim_2C0)->szName_8
-                              : "(unnamed)");
-
     CHanaNode *pNode = pFrame->pFirstChildNode;
     for ( unsigned int i = 0; i < pFrame->nCountChild && pNode; ++i )
     {
@@ -416,6 +411,72 @@ static void DrawFrameNode(CHanaFrameT3EC_S354 *pFrame)
     ImGui::TreePop();
   }
   ImGui::PopID();
+}
+
+// frame inspector - separate window on the right side of the screen, fed by
+// the SCENE TREE selection. Holds the per-frame details that used to render
+// inline in the tree nodes.
+static void DrawFrameInspector(void)
+{
+  ImGuiIO &io = ImGui::GetIO();
+  ImGui::SetNextWindowSize(ImVec2(400.0f, 500.0f), ImGuiCond_FirstUseEver);
+  ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x - 410.0f, 25.0f),
+                          ImGuiCond_FirstUseEver);
+
+  if ( !ImGui::Begin("Frame Inspector") )
+  {
+    ImGui::End();
+    return;
+  }
+
+  CHanaFrameT3EC_S354 *pFrame = s_pSelectedFrame;
+  if ( !pFrame )
+  {
+    ImGui::TextDisabled("(click a frame row in SCENE TREE)");
+    ImGui::End();
+    return;
+  }
+
+  const char *szName = pFrame->szName_8[0] ? pFrame->szName_8 : "(unnamed)";
+  const char *szTag = "Frame";
+  if ( pFrame == g_pCameraFrame )
+    szTag = "CAMERA";
+  else if ( pFrame == g_pLightFrame )
+    szTag = "LIGHT";
+
+  ImGui::Text("%s  [%s]  +%d children", szName, szTag, pFrame->nCountChild);
+  ImGui::Separator();
+
+  // show/hide toggle (same recursive hide as the tree row checkbox)
+  bool bVisible = pFrame->bAlphaDeferred_130 == 0;
+  if ( ImGui::Checkbox("show (subtree)", &bVisible) )
+    SetFrameHiddenRecursive(pFrame, bVisible ? 0 : 1);
+
+  ImGui::Text("local (%.2f, %.2f, %.2f)", pFrame->matLocal_138._41,
+              pFrame->matLocal_138._42, pFrame->matLocal_138._43);
+  ImGui::Text("world (%.2f, %.2f, %.2f)", pFrame->matWorld_178._41,
+              pFrame->matWorld_178._42, pFrame->matWorld_178._43);
+  ImGui::TextDisabled("flags:%s%s%s%s%s",
+                      pFrame->bAlphaDeferred_130 ? " HIDE" : "",
+                      pFrame->bUpdateBone_218    ? " BONE" : "",
+                      pFrame->bHasLight_214      ? " HASLIGHT" : "",
+                      pFrame->bDisableFog_134    ? " NOFOG" : "",
+                      pFrame->bIsRoot_1F8        ? " ROOT" : "");
+  ImGui::Separator();
+
+  DrawAttachedObject((CHanaBase_S130 *)pFrame->pAttachedObj_20C);
+
+  if ( pFrame->pHanaLight_210 )
+    ImGui::TextDisabled("light idx=%d type=%d",
+                        pFrame->pHanaLight_210->dwLightIndex_130,
+                        (int)pFrame->pHanaLight_210->d3dLight_134.dltType);
+  if ( pFrame->pHanaAnim_2C0 )
+    ImGui::TextDisabled("anim: %s",
+                        ((CHanaBase_S130 *)pFrame->pHanaAnim_2C0)->szName_8[0]
+                            ? ((CHanaBase_S130 *)pFrame->pHanaAnim_2C0)->szName_8
+                            : "(unnamed)");
+
+  ImGui::End();
 }
 
 static void DrawSceneTree(void)
@@ -712,6 +773,8 @@ void GameCustomLoop(void)
       }
       ImGui::End();
 
+      // frame details in their own window, docked to the right edge
+      DrawFrameInspector();
 
       ImGui::EndFrame();
       ImGui::Render();

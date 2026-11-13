@@ -542,7 +542,11 @@ BOOL __cdecl hook_ParseODFFile_441F19(
   return 1;
 }
 
-// // HanaMorpT457_SetupFunsSubtree - recursively rebuild the per-vertex morph-function tables for every T457 morph in the frame subtree rooted at pFrame (pre-order: node, then children). For each frame it calls HanaMorpT457_SetupFuns(frame->pMorpT457_20C, pRootFrame); pRootFrame is the constant starting point for HanaFrame_FindByName when a sub-object's source frame has not yet been resolved. Children are enumerated via CHanaObj::NewT3EDFromChildT3EC (child T3ED list), iterated with GetFrameAtIndexT3ED; each child is recursed into then released, and the T3ED list itself is freed at the end. Both call sites (ParseODFFile_441F19 and HanaScene_LoadFile/sub_42AE94) pass the same root frame as both pFrame and pRootFrame.
+// HanaMorpT457_SetupFunsSubtree - recursively rebuild the per-vertex morph-function tables for every T457 morph in the
+// frame subtree rooted at pFrame (pre-order: node, then children). For each frame it calls HanaMorpT457_SetupFuns(frame->pMorpT457_20C, pRootFrame);
+// pRootFrame is the constant starting point for HanaFrame_FindByName when a sub-object's source frame has not yet been resolved. Children are enumerated via 
+// CHanaObj::NewT3EDFromChildT3EC (child T3ED list), iterated with GetFrameAtIndexT3ED; each child is recursed into then released, and the T3ED list itself is
+// freed at the end. Both call sites (ParseODFFile_441F19 and unref HanaScene_LoadFile_42AE94) pass the same root frame as both pFrame and pRootFrame.
 void __cdecl hook_HanaMorpT457_SetupFunsSubtree(CHanaFrameT3EC_S354 *pFrame, CHanaFrameT3EC_S354 *pRootFrame)
 {
   unsigned int nChildIndex; // [esp+4h] [ebp-10h]
@@ -655,7 +659,10 @@ void __cdecl hook_HanaVert_CopyMorph(float *Target, float *pSource, float fWeigh
   Target[5] = pSource[5];
 }
 
-// HanaVert_LerpMorph - per-vertex BLENDED morph callback (the weight != 1.0 case). Linearly interpolates the target's 6 vertex components toward the source's by fWeight: pTarget[i] += (pSource[i] - pTarget[i]) * fWeight, for i in 0..5 (position xyz + normal xyz; texcoords untouched). This is the arrFun_4 entry HanaMorpT457_SetupFuns installs for blended sub-object correspondences, and is invoked from HanaMorpT457_ApplySubs / ApplySubsFixed as (pTarget, pSource, flt_8). Returns pTarget.
+// HanaVert_LerpMorph - per-vertex BLENDED morph callback (the weight != 1.0 case). 
+// Linearly interpolates the target's 6 vertex components toward the source's by fWeight: pTarget[i] += (pSource[i] - pTarget[i]) * fWeight, 
+// for i in 0..5 (position xyz + normal xyz; texcoords untouched). This is the arrFun_4 entry HanaMorpT457_SetupFuns installs for 
+// blended sub-object correspondences, and is invoked from HanaMorpT457_ApplySubs / ApplySubsFixed as (pTarget, pSource, flt_8). Returns pTarget.
 void __cdecl hook_HanaVert_LerpMorph(float *pTarget, float *pSource, float fWeight)
 {
   ONCELOG("[HNH:SUB] HanaVert_LerpMorph_436300\n");
@@ -667,7 +674,10 @@ void __cdecl hook_HanaVert_LerpMorph(float *pTarget, float *pSource, float fWeig
   pTarget[5] = (pSource[5] - pTarget[5]) * fWeight + pTarget[5];
 }
 
-// HanaMorpT457_SetupFuns - resolve each subobject's source vertex object and (re)build the per-vertex morph-function table. For every pMorp->arrS8_144[i]: if the subobject's source is not yet resolved, resolve it from its source name (sub_4417EB) and GetT3F5FromObj, setting pVert_14 to the referenced vertex object. Then reallocate arrS8_144[i].arrFun_4 and fill each entry with HanaVert_CopyMorph (weight==1.0, rigid) or HanaVert_LerpMorph (blended). Returns 0 when all resolved, -1 on null/wrong-type morph. Called after a sub-object binding is registered.
+// HanaMorpT457_SetupFuns - resolve each subobject's source vertex object and (re)build the per-vertex morph-function table. 
+// For every pMorp->arrS8_144[i]: if the subobject's source is not yet resolved, resolve it from its source name (HanaFrame_FindByName) and GetT3F5FromObj,
+// setting pVert_14 to the referenced vertex object. Then reallocate arrS8_144[i].arrFun_4 and fill each entry with HanaVert_CopyMorph (weight==1.0, rigid) or 
+// HanaVert_LerpMorph (blended). Returns 0 when all resolved, -1 on null/wrong-type morph. Called after a sub-object binding is registered.
 int __cdecl hook_HanaMorpT457_SetupFuns(CHanaMorpT457_S40C *pMorpT457, CHanaFrameT3EC_S354 *pFrame)
 {
   CHanaSubObj_S2C *parrS2C; // [esp+4h] [ebp-2Ch]

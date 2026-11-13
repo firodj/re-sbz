@@ -711,8 +711,8 @@ int __cdecl hook_RunSceneSelectScreen(CHanaSceneT458_S504 *pScene,
 //    is never touched.
 // 2. Returns the index of the first frame whose name starts with "h\\"
 //    (aHFramePrefix, 2-byte _memicmp), or -1 if none.
-// Callers: sub_46A76F x2 (push 1 = hide world, then push 0 = show world; return
-// value discarded there), sub_46D9AF / sub_46F37E (push 1000 = query only; index
+// Callers: PlayCutInScene_46A76F x2 (push 1 = hide world, then push 0 = show world; return
+// value discarded there), RunSceneSelectScreen / RunModeSelectScreen (push 1000 = query only; index
 // used as pScene->refsFrames_134[i] for FindFrameByName_47E999(aMune)).
 // Related: ApplyFrameEffectOption uses the same "h\\h" root-frame convention.
 int __cdecl hook_SetFrameVisibilityAndGetHIndex(CHanaSceneT458_S504 *pScene, int iVisState)
@@ -741,16 +741,19 @@ int __cdecl hook_SetFrameVisibilityAndGetHIndex(CHanaSceneT458_S504 *pScene, int
 }
 
 // ApplyFrameEffectOption(pScene)
-// Re-applies the user's 5-level effect option (g_nHSceneMale_530265, 0-4, set on the System menu options page - SysMenu_Options_462FE9) to the scene's overlay frames. Returns the last frame left visible (flag_130==0), NULL otherwise; all 6 callers (sub_46D9AF, sub_46F37E, Scene4_4703AE x4) discard it.
+// Re-applies the user's 5-level effect option (g_nHSceneMale_530265, 0-4, set on the System menu options page - SysMenu_Options_462FE9) to the scene's overlay frames.
+// Returns the last frame left visible (flag_130==0), NULL otherwise; all 6 callers (RunSceneSelectScreen, RunModeSelectScreen, PlayAssault_4703AE x4) discard it.
 // pScene: CHanaSceneT458_S504 (NULL -> returns NULL).
 // 1. Root frame: first pScene->refsFrames_134[i] whose szName_8 starts with "h\h" (aHhFramePrefix, 3-char _strnicmp). No root -> NULL.
 // 2. Frames "_h00_all" and "_p00_" (szFrameNames table):
-//    level != 0: flag_130 = 1 (hidden; sub_46739D's flag guard makes it a no-op), iAlpha1000_120/124 = 0
-//    level  == 0: flag_130 = 0, sub_46739D(frame, 1.0) sets material alpha recursively on the subtree, iAlpha1000_120/124 = 1000
+//    level != 0: flag_130 = 1 (hidden; Frame_ApplyFadeRecursive's flag guard makes it a no-op), iAlpha1000_120/124 = 0
+//    level  == 0: flag_130 = 0, Frame_ApplyFadeRecursive(frame, 1.0) sets material alpha recursively on the subtree, iAlpha1000_120/124 = 1000
 // 3. Frame "_d00_all": flag_130 = (level==0 || level==4); alpha = fAlphaByLevel[level] = {0.0, 0.8, 0.5, 0.2, 0.0}[level];
 //    hidden -> iAlpha1000_120/124 = 0; visible -> iAlpha1000_120/124 = alpha*1000
 // iAlpha1000_120/124 (CHanaBase_S130) = frame alpha as int/1000 (1000 = opaque).
-// Called right after the System menu closes (sub_46D9AF/sub_46F37E, after SystemMenu_4655AB returns) and on Scene4_4703AE transitions, re-syncing any option the user changed. Sibling sub_468B99 applies the same option to g_pSceneFrame with a base-alpha factor.
+// Called right after the System menu closes (RunSceneSelectScreen/RunModeSelectScreen, after SystemMenu_4655AB returns) and
+// on PlayAssault_4703AE transitions, re-syncing any option the user changed.
+// Sibling Scene_ApplyFadeToPracticeFrames applies the same option to g_pSceneFrame with a base-alpha factor.
 void __cdecl hook_ApplyFrameEffectOption(CHanaSceneT458_S504 *pScene)
 {
   float alpha[5] = { 0.0, 0.80000001, 0.5, 0.2, 0.0 }; // [esp+4h] [ebp-C0h]
@@ -884,7 +887,7 @@ void __cdecl hook_FrameObject_SetAlpha(CHanaFrameT3EC_S354 *pFrame, float alpha)
 
 // DrawSpritePulse(pSprite, fPhase)
 // Animated pulse/echo of a single sprite. v13 = (|fPhase|*10 % 1000)/1000 drives a 4-frame
-// loop that oscillates scale (base from sub_414B1A +/- per-frame), alpha (0.75 * (1-|v13-0.5|*2)
+// loop that oscillates scale (base from CHanaSpriteT3F6__GetScale_414B1A +/- per-frame), alpha (0.75 * (1-|v13-0.5|*2)
 // * fAlpha), and X position (base + (40 - 120*v13)) via DrawSprite2D each frame; restores
 // alpha/scale/pos at the end.
 void __cdecl hook_DrawSpritePulse_46D7A7(CHanaSpriteT3F6_S1FC *pSprite, float fPhase)
@@ -950,7 +953,7 @@ double __cdecl hook_CHanaSpriteT3F6__GetScale_414B1A(CHanaSpriteT3F6_S1FC *pSpri
 // CHanaSpriteT3F6::GetPos(pSprite, pnX, pnY)
 // Reads the sprite's current screen position into out-params:
 // *pnX = *(pSprite+0x138) (nPosX), *pnY = *(pSprite+0x13C) (nPosY).
-// Inverse of SetPos_414A5D; returns pnY. Callers: sub_45B2FB (fade/echo loop), sub_46D7A7.
+// Inverse of SetPos_414A5D; returns pnY. Callers: DrawSpriteListEcho_45B2FB (fade/echo loop), DrawSpritePulse_46D7A7.
 void __cdecl hook_CHanaSpriteT3F6__GetPos_414A7A(CHanaSpriteT3F6_S1FC *pSprite, float *pOutX, float *pOutY)
 {
   ONCELOG("[HNH:SUB] CHanaSpriteT3F6__GetPos_414A7A\n");

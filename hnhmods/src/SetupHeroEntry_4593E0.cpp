@@ -547,7 +547,9 @@ void __cdecl hook_Frame_RotateMatrixAxis_4070AB(CHanaFrameT3EC_S354 *pFrame, int
   D3DXMatrixMultiply(&pFrame->matWorld_178, &pFrame->matLocal_138, &pFrame->matParentWorld_1B8);
 }
 
-// Recursive collision query of a CHanaFrame body against the map frame tree. Base test picks sub_4423B0 (bTestType=0) or sub_442C1C (bTestType=1); then recurses into every child frame via the T3ED expansion and ORs the hit masks. Returns non-zero when any part of pBodyFrame collides with pMapFrame.
+// Recursive collision query of a CHanaFrame body against the map frame tree. Base test picks HitSupportSurface_4423B0 (bTestType=0)
+// or HitOverheadSurface_442C1C (bTestType=1); then recurses into every child frame via the T3ED expansion and ORs the hit masks.
+// Returns non-zero when any part of pBodyFrame collides with pMapFrame.
 int __cdecl hook_CheckFrameCollision_443CC5(CHanaFrameT3EC_S354 *pBodyFrame, CHanaFrameT3EC_S354 *pMapFrame, int bTestType)
 {
   BOOL nHitMode; // [esp+0h] [ebp-14h]
@@ -1060,7 +1062,8 @@ bool __cdecl hook_TestBodyMoveHit_443EC4(
   return bBlocked;
 }
 
-// Recursive 'would a move to (fNewX,fNewY,fNewZ) collide' test of the body frame against the map. Base test sub_443EC4; recurses into child frames until a hit is found. Returns non-zero if the proposed move is blocked.
+// Recursive 'would a move to (fNewX,fNewY,fNewZ) collide' test of the body frame against the map. Base test TestBodyMoveHit_443EC4;
+// recurses into child frames until a hit is found. Returns non-zero if the proposed move is blocked.
 bool __cdecl hook_TestMoveCollision_4443FC(
   CHanaFrameT3EC_S354 *pBodyFrame,
   CHanaFrameT3EC_S354 *pMapFrame,
@@ -1468,10 +1471,10 @@ int __cdecl hook_DSBufferGetVolume_423C65(LPDIRECTSOUNDBUFFER pDSBuf)
 
 // UpdateVoicePlayback(pSpeaker, pPosFrame, pVoices, fFrameTime)
 // DirectSound voice/line scheduler (uses g_pds3DListener + g_dwDSStatus_5185C8). pVoices is a 20-slot
-// array of positionable sound objects. sub_408C3E gets a 3D position from pPosFrame; each voice is
+// array of positionable sound objects. HanaFrame_GetCenterPosition_408C3E gets a 3D position from pPosFrame; each voice is
 // placed there (vtable slot +76) and its play state probed (slot +36 -> g_dwDSStatus). Based on the
 // speaker state v12 = *(pSpeaker+512) it selects which voice(s) to start (slot +48/+52), stop, or
-// seek to a playback offset (slot +60; sub_423C65 returns the current play position). Case groups:
+// seek to a playback offset (slot +60; DSBufferGetVolume_423C65 returns the current play position). Case groups:
 // state 1/2/4 = random one-shot line; 3/6/9 = timed line with stop-on-finish; 7/8 = alternating pair.
 void __cdecl hook_UpdateVoicePlayback_458B3A(
   CSekBody *pFoeBody,

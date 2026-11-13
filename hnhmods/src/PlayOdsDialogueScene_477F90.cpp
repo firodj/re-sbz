@@ -593,7 +593,7 @@ void __cdecl hook_CHanaAnimSetT3F1__BeginBlend_43A371(CHanaAnimSetT3F1_S150 *pAn
 /*
  * CHanaAnimSetT3F1::BlendStep(pAnimSet, pfWeight, fDelta) - advance one crossfade step.
  * Decays the blend weight *pfWeight -= 0.1*fDelta (clamped to [0,1]). While *pfWeight > 0 it interpolates
- * every sub-anim ref's pose toward its target via sub_43A43F(ref, *pfWeight) and returns 1 (still blending);
+ * every sub-anim ref's pose toward its target via HanaAnim_UpdateBoneTransform(ref, *pfWeight) and returns 1 (still blending);
  * when the weight hits 0 it returns 0 (blend complete). pfWeight is pSekBody->fBlendWeight_224 in UpdateAnim_4019E1.
  */
 bool __cdecl hook_CHanaAnimSetT3F1__BlendStep_43A643(CHanaAnimSetT3F1_S150 *pAnimSet, float *pfWeight, float fDelta)
@@ -829,9 +829,9 @@ void __cdecl hook_SetProjectionFov_40DCA3(float fFov)
 // Dialogue-window renderer. pScene=CHanaSceneT458_S504*. Scales fFrameTime by the speed index
 // (byte_530267) and accumulates the text scroll offset flt_52F1B4; right-click fast-forwards.
 // Static mode (by_463==1, flt_454<=0): fades in pSprWindow6bmp (frame) and dispatches text
-// via sub_47FA84(pScene,x,y,wBtn). Scrolling mode: fades pSprWindow6bmp out, draws
+// via DrawAdvanceDialogueText_47FA84(pScene,x,y,wBtn). Scrolling mode: fades pSprWindow6bmp out, draws
 // pSprWindow2bmp (text tape) in 3 offset passes, then DrawDialogueText_4803B5(pScene,fFrameTime).
-// Called from Scene1Dialog_477F90 / Scene2_45BCAE / Scene4_4703AE.
+// Called from PlayOdsDialogueScene / PlayExploring_45BCAE / PlayAssault_4703AE.
 void __cdecl hook_DrawDialogueWindow_480B2D(
   CHanaSceneT458_S504 *pScene,
   float fDeltaTime,

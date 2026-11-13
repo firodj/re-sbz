@@ -46,7 +46,7 @@ The 26 `[todo]` entries fall into five classes:
   animated lights ride ordinary frame ANIM tracks instead.
 - Primitive-type switching: nothing writes `nPrimType_154[1]`, so every mesh renders
   as indexed TRIANGLELIST (Part IV).
-- `sub_413F78` ("DrawSprite2DCenter") is referenced by comments but unimplemented.
+- DrawSprite2DCenter -- is referenced by comments but unimplemented.
 
 ### Dormant infrastructure
 

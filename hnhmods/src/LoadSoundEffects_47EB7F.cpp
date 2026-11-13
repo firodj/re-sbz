@@ -233,7 +233,7 @@ LPDIRECTSOUNDBUFFER __cdecl hook_LoadWav_422E7B(LPSTR pszFileName)
 }
 
 // LoadWavToDS3DBuffer_42277E -- 3D-positioned variant of hook_LoadWav_422E7B
-// above (9 xrefs: RunDuelBattle, RunPracticeScene, ParseOdf3DON/ParseOds3DON,
+// above (9 xrefs: PlayHunting_44C38D, PlayAssault_4703AE, ParseOdf3DON/ParseOds3DON,
 // LoadSoundEffects). Same mmio WAVE/"fmt "/"data" walk, but:
 //   * mmio opened MMIO_ALLOCBUF with a 512 KB I/O buffer (mmioSetBuffer)
 //   * the 18-byte format block comes from GlobalAlloc(GMEM_FIXED), not AllocMem
