@@ -18,6 +18,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testing", "testing\testing.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Injector2", "SB3ImGuiHook\Injector2\Injector2.vcxproj", "{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XYZmods", "XYZmods\XYZmods.vcxproj", "{A8AB38EB-7927-49DA-9DC0-BBA58E170806}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1C015F7C-647E-46E3-855E-614B434116A6} = {1C015F7C-647E-46E3-855E-614B434116A6}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -100,6 +105,18 @@ Global
 		{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}.Release|x64.Build.0 = Release|x64
 		{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}.Release|x86.ActiveCfg = Release|Win32
 		{30CADE2C-9BFA-4694-86CC-E1D8CE7BD960}.Release|x86.Build.0 = Release|Win32
+		{A8AB38EB-7927-49DA-9DC0-BBA58E170806}.Debug|x64.ActiveCfg = Debug|x64
+		{A8AB38EB-7927-49DA-9DC0-BBA58E170806}.Debug|x64.Build.0 = Debug|x64
+		{A8AB38EB-7927-49DA-9DC0-BBA58E170806}.Debug|x86.ActiveCfg = Debug|Win32
+		{A8AB38EB-7927-49DA-9DC0-BBA58E170806}.Debug|x86.Build.0 = Debug|Win32
+		{A8AB38EB-7927-49DA-9DC0-BBA58E170806}.DebugBinDX7|x64.ActiveCfg = Debug|x64
+		{A8AB38EB-7927-49DA-9DC0-BBA58E170806}.DebugBinDX7|x64.Build.0 = Debug|x64
+		{A8AB38EB-7927-49DA-9DC0-BBA58E170806}.DebugBinDX7|x86.ActiveCfg = Debug|Win32
+		{A8AB38EB-7927-49DA-9DC0-BBA58E170806}.DebugBinDX7|x86.Build.0 = Debug|Win32
+		{A8AB38EB-7927-49DA-9DC0-BBA58E170806}.Release|x64.ActiveCfg = Release|x64
+		{A8AB38EB-7927-49DA-9DC0-BBA58E170806}.Release|x64.Build.0 = Release|x64
+		{A8AB38EB-7927-49DA-9DC0-BBA58E170806}.Release|x86.ActiveCfg = Release|Win32
+		{A8AB38EB-7927-49DA-9DC0-BBA58E170806}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
