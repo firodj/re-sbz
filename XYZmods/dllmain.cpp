@@ -27,8 +27,8 @@ bool CheckIsXYZ() {
 
 	DebugLog("[XYZ] Found Base Module: %p\n", base);
 
-	if (_stricmp(base, "XYZ.exe") == 0) {
-		DebugLog("[XYZ] Detected XYZ, applying specific hooks.\n");
+	if (_stricmp(base, TO_STRING(APPEXE)) == 0) {
+		DebugLog("[XYZ] Detected " TO_STRING(APPEXE) ", applying specific hooks.\n");
 		return true;
 	}
 
@@ -38,7 +38,7 @@ bool CheckIsXYZ() {
 typedef std::add_pointer_t<int WINAPI(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)> WinMainFn;
 static WinMainFn origWinMain = NULL;
 HANDLE g_hStartEvent = NULL;
-LPVOID pfnWinMain = (LPVOID)0x400000;	// <- fill this
+LPVOID pfnWinMain = (LPVOID)0x000000;	// <- fill this
 
 int WINAPI hookWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 	DebugLog("[XYZ] WinMain ! Wait for Start Event...\n");
@@ -55,11 +55,14 @@ void XYZCustomInit() {
 	g_hStartEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	MH_STATUS res;
-	
-	res = MH_CreateHook(pfnWinMain, reinterpret_cast<LPVOID>(hookWinMain), reinterpret_cast<LPVOID*>(&origWinMain));
-	if (res == MH_OK) res = MH_EnableHook(pfnWinMain);
-	DebugLog("[XYZ] Hooked WinMain; %s\n", MH_StatusToString(res));
-
+	if (pfnWinMain == 0x000000) {
+		DebugLog("{yukihota} Please update pfnWinMain into correct address\n");
+	}
+	else {
+		res = MH_CreateHook(pfnWinMain, reinterpret_cast<LPVOID>(hookWinMain), reinterpret_cast<LPVOID*>(&origWinMain));
+		if (res == MH_OK) res = MH_EnableHook(pfnWinMain);
+		DebugLog("[XYZ] Hooked WinMain; %s\n", MH_StatusToString(res));
+	}
 	user32hook::Init();
 
 	DebugLog("[XYZ] All hooking done !\n");

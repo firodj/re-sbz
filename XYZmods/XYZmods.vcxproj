@@ -83,7 +83,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;XYZMODS_EXPORTS;_WINDOWS;_USRDLL;ENABLE_BACKEND_DX9;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;XYZMODS_EXPORTS;_WINDOWS;_USRDLL;ENABLE_BACKEND_DX9;_CRT_SECURE_NO_WARNINGS;APPEXE=$(APPEXE);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
