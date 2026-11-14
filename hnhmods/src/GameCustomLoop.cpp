@@ -70,6 +70,11 @@ static CSekBody *s_pHeroBody = NULL;
 // Cleared on every (re)load - the old frame tree is freed on a swap.
 static CHanaFrameT3EC_S354 *s_pSelectedFrame = NULL;
 
+// animation channel selected in the ANIMATION INSPECTOR window (one
+// CHanaAnimT3F0 per animated frame). Cleared with the frame selection -
+// the channel array is owned by the body's animset, freed on a swap.
+static CHanaAnimT3F0_S240 *s_pSelChannel = NULL;
+
 // placement constants (world units; the ~16-unit body hangs BELOW the frame
 // origin, cf. g_fHitY_4C6F48, so the orbit target is at negative Y)
 #define CUSTOM_HERO_Z   25.0f
@@ -122,6 +127,13 @@ static float s_fUp[3]  = { 0.0f, 1.0f, 0.0f };
 static CHanaFrameT3EC_S354 *HeroFrame(void)
 {
   return s_pHeroBody ? s_pHeroBody->pSekHeader_220->pFrameT3EC : NULL;
+}
+
+// the body's animset: every channel (frame anims, material anims, sound/
+// morph triggers) the SEK timeline drives through SetTime_403D61
+static CHanaAnimSetT3F1_S150 *HeroAnimSet(void)
+{
+  return s_pHeroBody ? s_pHeroBody->pSekHeader_220->pAnimSetT3F1 : NULL;
 }
 
 // re-place the camera: orbit (spherical around the target) or manual
@@ -218,6 +230,7 @@ static BOOL GameCustomSetup(void)
 
   // the previous tree is gone after a swap/reload - drop the stale selection
   s_pSelectedFrame = NULL;
+  s_pSelChannel = NULL;
 
   return TRUE;
 }
@@ -345,10 +358,40 @@ static void DrawAttachedObject(CHanaBase_S130 *pObj)
         ImGui::Text("vert objects=%d",
                     ((CHanaMeshT3F5_S138 *)pObj)->nCountVertT3EA_130);
         break;
-      case 0x457:                                       // morph
-        ImGui::Text("morpParam=%.3f",
-                    ((CHanaMorpT457_S40C *)pObj)->fMorpParam_130);
+      case 0x457:                                       // morph (vertex anim)
+      {
+        CHanaMorpT457_S40C *pMorp = (CHanaMorpT457_S40C *)pObj;
+        // live param: HanaMorp_ApplyTree blends the mesh at fMorpParam_130
+        // (HanaMorpT457_Interp) on every HanaFrame_Draw, and Animate() writes
+        // the same value right back while no ease/time tween is armed - so
+        // dragging steers the morph directly until the SEK timeline drives it.
+        ImGui::DragFloat("morp param", &pMorp->fMorpParam_130, 1.0f, 0.0f,
+                         1000.0f, "%.1f");
+        ImGui::TextDisabled("mesh verts=%u subs=%u ease en=%d %d..%d time state=%d %d..%d",
+                            pMorp->nCountVertT3EA_138, pMorp->nCount_344,
+                            pMorp->dwEaseEnabled_358, pMorp->nEaseFrom_35C,
+                            pMorp->nEaseTo_360, pMorp->nTimeState_36C,
+                            pMorp->nTimeFrom_370, pMorp->nTimeTo_374);
+
+        // sub-objects: each blends a source vert set into this morp's mesh;
+        // click a row to select its target frame (pFrame_118) in the inspector
+        for ( unsigned int i = 0; i < pMorp->nCount_344 && i < 64; ++i )
+        {
+          CHanaSubObj_S120 *pSub = pMorp->arrSubObj_144[i].pSubObj_0;
+          if ( !pSub )
+            continue;
+          const char *szFrame = pSub->pFrame_118 && pSub->pFrame_118->szName_8[0]
+                              ? pSub->pFrame_118->szName_8
+                              : "?";
+          char szSub[160];
+          snprintf(szSub, sizeof(szSub), "sub%02u %-16.16s -> %-12.12s keys=%d",
+                   i, pSub->szName_18[0] ? pSub->szName_18 : "-",
+                   szFrame, pSub->nCountS2C_0);
+          if ( ImGui::Selectable(szSub) && pSub->pFrame_118 )
+            s_pSelectedFrame = pSub->pFrame_118;
+        }
         break;
+      }
       default:
         break;
     }
@@ -368,6 +411,27 @@ static void SetFrameHiddenRecursive(CHanaFrameT3EC_S354 *pFrame, int bHidden)
     SetFrameHiddenRecursive(pNode->pData, bHidden);
     pNode = pNode->pNext;
   }
+}
+
+// reverse lookup: which frame in the scene tree attaches this object directly
+// (pAttachedObj_20C)? Frames themselves are returned by identity instead.
+static CHanaFrameT3EC_S354 *FrameOwningObj(CHanaFrameT3EC_S354 *pRoot, void *pObj)
+{
+  if ( !pRoot )
+    return NULL;
+  if ( (void *)pRoot == pObj )
+    return pRoot;
+  if ( (void *)pRoot->pAttachedObj_20C == pObj )
+    return pRoot;
+  CHanaNode *pNode = pRoot->pFirstChildNode;
+  for ( unsigned int i = 0; i < pRoot->nCountChild && pNode; ++i )
+  {
+    CHanaFrameT3EC_S354 *pHit = FrameOwningObj(pNode->pData, pObj);
+    if ( pHit )
+      return pHit;
+    pNode = pNode->pNext;
+  }
+  return NULL;
 }
 
 static void DrawFrameNode(CHanaFrameT3EC_S354 *pFrame)
@@ -390,8 +454,16 @@ static void DrawFrameNode(CHanaFrameT3EC_S354 *pFrame)
   if ( pFrame == s_pSelectedFrame )
     nodeFlags |= ImGuiTreeNodeFlags_Selected;
 
-  bool bOpen = ImGui::TreeNodeEx("frame", nodeFlags, "%s [%s] +%d ch",
-                                 szName, szTag, pFrame->nCountChild) != 0;
+  // attached-object tag, so frames carrying a Morp/Mesh/Vert stand out in the
+  // tree (the engine's own "has morp" test is dwType == 0x457 on this pointer)
+  char szObjTag[24] = "";
+  if ( pFrame->pAttachedObj_20C )
+    snprintf(szObjTag, sizeof(szObjTag), " obj=%s",
+             TypeNameFromTag(pFrame->pAttachedObj_20C->dwType & 0xFFF));
+
+  bool bOpen = ImGui::TreeNodeEx("frame", nodeFlags, "%s [%s]%s +%d ch",
+                                 szName, szTag, szObjTag,
+                                 pFrame->nCountChild) != 0;
   if ( ImGui::IsItemClicked() )
     s_pSelectedFrame = pFrame;
 
@@ -451,7 +523,7 @@ static void DrawFrameInspector(void)
               pFrame->matLocal_138._42, pFrame->matLocal_138._43);
   ImGui::Text("world (%.2f, %.2f, %.2f)", pFrame->matWorld_178._41,
               pFrame->matWorld_178._42, pFrame->matWorld_178._43);
-  ImGui::TextDisabled("flags:%s%s%s%s%s",
+  ImGui::TextDisabled("flags:%s%s%s%s",
                       pFrame->bAlphaDeferred_130 ? " HIDE" : "",
                       pFrame->bUpdateBone_218    ? " BONE" : "",
                       pFrame->bHasLight_214      ? " HASLIGHT" : "",
@@ -482,6 +554,366 @@ static void DrawSceneTree(void)
     return;
   }
   DrawFrameNode((CHanaFrameT3EC_S354 *)g_pSceneFrame);
+}
+
+// === EXPERIMENT 6: g_pObjectTable browser ===
+//
+// The engine's name-keyed object registry (D3DInit allocates 256-slot pages
+// and grows on demand): every New*/Attach registers { name, obj, dwType }.
+// Freed slots keep their index but blank the name, so empty names are holes.
+// Clicking a row resolves the object to a frame for the Frame Inspector -
+// frames by identity, attached objects (e.g. a Morp) via a scene-tree walk -
+// which is the reverse direction of the tree's "obj=" tags.
+
+// case-insensitive substring match; szFilterLower is a pre-lowercased copy
+static bool NameMatchesFilter(const char *szName, const char *szFilterLower)
+{
+  if ( !szFilterLower[0] )
+    return true;
+  for ( const char *p = szName; *p; ++p )
+  {
+    const char *a = p;
+    const char *b = szFilterLower;
+    while ( *a && *b && tolower((unsigned char)*a) == *b )
+    {
+      ++a;
+      ++b;
+    }
+    if ( !*b )
+      return true;
+  }
+  return false;
+}
+
+static void DrawObjectTableUI(void)
+{
+  static char s_szFilter[64] = "";
+
+  if ( !g_pObjectTable )
+  {
+    ImGui::TextDisabled("(no object table)");
+    return;
+  }
+
+  ImGui::Text("registry: %d / %d slots", g_nObjectTableCount,
+              g_nObjectTableCapacity_4B009C);
+
+  // pre-lowercase the filter once so row matching stays a plain compare
+  char szFilterLower[64];
+  for ( int j = 0; j < (int)sizeof(szFilterLower); ++j )
+    szFilterLower[j] = (char)tolower((unsigned char)s_szFilter[j]);
+  ImGui::InputTextWithHint("##objfilter", "filter by name", s_szFilter,
+                           sizeof(s_szFilter));
+
+  ImGui::BeginChild("##objlist", ImVec2(0.0f, 200.0f), true);
+  for ( int i = 0; i < g_nObjectTableCount; ++i )
+  {
+    CObjItemRef_S208 *pRef = &g_pObjectTable[i];
+    if ( !pRef->szName_0[0] )                       // freed slot
+      continue;
+    if ( !NameMatchesFilter(pRef->szName_0, szFilterLower) )
+      continue;
+
+    char szLabel[96];
+    snprintf(szLabel, sizeof(szLabel), "%3d %-28.28s %-8.8s", i,
+             pRef->szName_0, TypeNameFromTag(pRef->dwObjType_204 & 0xFFF));
+    if ( ImGui::Selectable(szLabel) && pRef->pObj_200 )
+    {
+      CHanaFrameT3EC_S354 *pHit = NULL;
+      if ( (pRef->dwObjType_204 & 0xFFF) == 0x3EC )   // frames select directly
+        pHit = (CHanaFrameT3EC_S354 *)pRef->pObj_200;
+      else
+        pHit = FrameOwningObj((CHanaFrameT3EC_S354 *)g_pSceneFrame,
+                              pRef->pObj_200);
+      if ( pHit )
+        s_pSelectedFrame = pHit;
+    }
+  }
+  ImGui::EndChild();
+}
+
+// === EXPERIMENT 7: animation inspector window ===
+//
+// The hero's whole CHanaAnimSetT3F1 (SEK header -> pAnimSetT3F1) in one
+// window. The SEK timeline drives it through CHanaAnimSetT3F1__SetTime:
+// that call stores the live set time (field_130), advances every channel
+// (refsAnimT3F0_138 via InterpolateHanaAnimFrame, which also refreshes each
+// channel's live interpolated pose in keyCur_14C), applies the material
+// anims, and fires the sound/morph trigger windows.
+//
+// Sections: the channel list (one CHanaAnimT3F0 per animated frame - name,
+// target frame, kind, key count, duration), the raw keyframes of the
+// selected channel (time + pos/scale/quat + per-key channel flags), the
+// material anims (T3F7 linked color keys) and the sound/morph triggers.
+// Clicking a channel or trigger also selects its frame in the inspector.
+
+// one raw keyframe row: time, keyed channels (P/S/R flags), then the values.
+// bCurrent highlights the pair the live interpolator is blending between.
+static void DrawAnimKeyRow(int nIdx, const CHanaAnimKeyT3F0_S78 *pKey,
+                           bool bCurrent)
+{
+  char szCh[4] = "";
+  if ( pKey->bKeyPos )
+    strcat(szCh, "P");
+  if ( pKey->bKeyScale )
+    strcat(szCh, "S");
+  if ( pKey->bKeyRot )
+    strcat(szCh, "R");
+
+  char szRow[160];
+  snprintf(szRow, sizeof(szRow),
+           "%2d t=%7.2f [%s] p(%7.2f,%7.2f,%7.2f) s(%5.2f,%5.2f,%5.2f)"
+           " q(%+.3f,%+.3f,%+.3f,%+.3f)",
+           nIdx, pKey->fTime, szCh,
+           pKey->fPosX, pKey->fPosY, pKey->fPosZ,
+           pKey->fScaleX, pKey->fScaleY, pKey->fScaleZ,
+           pKey->quatRot.x, pKey->quatRot.y,
+           pKey->quatRot.z, pKey->quatRot.w);
+  if ( bCurrent )
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.35f, 1.0f), "%s", szRow);
+  else
+    ImGui::TextUnformatted(szRow);
+}
+
+static void DrawAnimationInspector(void)
+{
+  static char s_szFilter[64] = "";
+  static bool s_bSelFrameOnly = false;
+
+  ImGuiIO &io = ImGui::GetIO();
+  ImGui::SetNextWindowSize(ImVec2(420.0f, 560.0f), ImGuiCond_FirstUseEver);
+  // left of the Frame Inspector, right of the menu - clamped for narrow modes
+  float fX = io.DisplaySize.x - 840.0f;
+  if ( fX < 480.0f )
+    fX = 480.0f;
+  ImGui::SetNextWindowPos(ImVec2(fX, 25.0f), ImGuiCond_FirstUseEver);
+
+  if ( !ImGui::Begin("Animation Inspector") )
+  {
+    ImGui::End();
+    return;
+  }
+
+  CHanaAnimSetT3F1_S150 *pSet = HeroAnimSet();
+  if ( !pSet )
+  {
+    ImGui::TextDisabled("(no body loaded)");
+    ImGui::End();
+    return;
+  }
+
+  // === NOW PLAYING: live state of the SEK item on the clock ===
+  // Re-read every frame: the item clock, the step/loop counters UpdateAnim
+  // advances, the crossfade, and which trigger windows the SetTime pass is
+  // currently inside.
+  CSekItem *pItem = &s_pHeroBody->items_250[s_pHeroBody->nCurItem_200];
+  char szNext[32] = "";
+  if ( pItem->bAutoNext_70 )
+    snprintf(szNext, sizeof(szNext), "  next=%d", pItem->nNextItem_74);
+
+  ImGui::Text("NOW PLAYING  item %d '%s'  %s%s",
+              s_pHeroBody->nCurItem_200,
+              pItem->szName_4[0] ? pItem->szName_4 : "-",
+              pItem->nMode_0 == 1 ? "LOOP" : "1SHT",
+              s_pHeroBody->bDisabled_24C ? "  (body disabled)" : "");
+
+  // progress through the item's [start,end] anim window. Guarded: an empty
+  // slot zeroes the step count and the rate recompute NaNs the clock (cf.
+  // the experiment 3 note at the top of this file)
+  float fLen = pItem->fEndTime_58 - pItem->fStartTime_54;
+  float fProg = fLen > 0.0001f
+              ? (pItem->fCurTime_60 - pItem->fStartTime_54) / fLen
+              : 0.0f;
+  if ( !(fProg >= 0.0f && fProg <= 1.0f) )    // NaN or out of range
+    fProg = 0.0f;
+  char szBar[96];
+  snprintf(szBar, sizeof(szBar), "t=%.2f / %.2f..%.2f", pItem->fCurTime_60,
+           pItem->fStartTime_54, pItem->fEndTime_58);
+  ImGui::ProgressBar(fProg, ImVec2(0.0f, 0.0f), szBar);
+
+  ImGui::TextDisabled("step %d/%d  loops=%d  rate=%.2f  blend=%.2f (req %.2f)"
+                      "%s%s",
+                      pItem->nCurStep_44, pItem->nEndStep_50,
+                      pItem->nLoopCount_64, pItem->fPlayRate_5C,
+                      s_pHeroBody->fBlendWeight_224,
+                      s_pHeroBody->fBlendReq_21C,
+                      pItem->bNoBlend_7C ? "  noblend" : "", szNext);
+
+  // animset side: field_130 is the live clock of the last SetTime pass, and
+  // the trigger count is how many sound/morph windows contain it right now
+  int nTrigOn = 0;
+  for ( unsigned int i = 0; i < pSet->nCount_148; ++i )
+    if ( pSet->field_130 >= pSet->arrSounds_14C[i].fPlayStart_104
+      && pSet->field_130 <= pSet->arrSounds_14C[i].fPlayEnd_108 )
+      ++nTrigOn;
+  ImGui::TextDisabled("set '%s' t=%.2f  channels=%d matAnims=%u"
+                      " snd/morph=%u (on=%d)",
+                      pSet->szName_8[0] ? pSet->szName_8 : "-",
+                      pSet->field_130, pSet->nAnimCount_134,
+                      pSet->nManmCount_140, pSet->nCount_148, nTrigOn);
+  ImGui::Separator();
+
+  // filter matches the anim name OR the target frame name
+  char szFilterLower[64];
+  for ( int j = 0; j < (int)sizeof(szFilterLower); ++j )
+    szFilterLower[j] = (char)tolower((unsigned char)s_szFilter[j]);
+  ImGui::InputTextWithHint("##chanfilter", "filter anim/frame name", s_szFilter,
+                           sizeof(s_szFilter));
+  ImGui::SameLine();
+  ImGui::Checkbox("sel frame", &s_bSelFrameOnly);
+
+  ImGui::BeginChild("##chanlist", ImVec2(0.0f, 170.0f), true);
+  for ( int i = 0; i < pSet->nAnimCount_134; ++i )
+  {
+    CHanaAnimT3F0_S240 *pAnim = pSet->refsAnimT3F0_138[i];
+    if ( !pAnim )
+      continue;
+    const char *szAnim = pAnim->szName_8[0] ? pAnim->szName_8 : "-";
+    const char *szFrame = pAnim->pHanaFram_130
+                              && pAnim->pHanaFram_130->szName_8[0]
+                          ? pAnim->pHanaFram_130->szName_8
+                          : "-";
+    if ( s_bSelFrameOnly && s_pSelectedFrame
+         && pAnim->pHanaFram_130 != s_pSelectedFrame )
+      continue;
+    if ( s_szFilter[0] && !NameMatchesFilter(szAnim, szFilterLower)
+         && !NameMatchesFilter(szFrame, szFilterLower) )
+      continue;
+
+    // keyed-channel union across all keys = "what kind" of anim this is
+    char szKind[4] = "";
+    int bPos = 0, bScl = 0, bRot = 0;
+    for ( int k = 0; k < pAnim->nKeyCount_138 && pAnim->arrKeys_13C; ++k )
+    {
+      bPos |= pAnim->arrKeys_13C[k].bKeyPos;
+      bScl |= pAnim->arrKeys_13C[k].bKeyScale;
+      bRot |= pAnim->arrKeys_13C[k].bKeyRot ;
+    }
+    if ( bPos ) strcat(szKind, "P");
+    if ( bScl ) strcat(szKind, "S");
+    if ( bRot ) strcat(szKind, "R");
+
+    char szLabel[128];
+    snprintf(szLabel, sizeof(szLabel),
+             "%3d [%s] %-16.16s -> %-14.14s %3dk %7.2f%s", i, szKind,
+             szAnim, szFrame, pAnim->nKeyCount_138, pAnim->fDuration_134,
+             pAnim->field_140 ? " loop" : "");
+    if ( ImGui::Selectable(szLabel, pAnim == s_pSelChannel) )
+    {
+      s_pSelChannel = pAnim;
+      if ( pAnim->pHanaFram_130 )
+        s_pSelectedFrame = pAnim->pHanaFram_130;   // sync the frame inspector
+    }
+  }
+  ImGui::EndChild();
+
+  if ( s_pSelChannel )
+  {
+    CHanaAnimT3F0_S240 *pAnim = s_pSelChannel;
+    const char *szAnim = pAnim->szName_8[0] ? pAnim->szName_8 : "-";
+    const char *szFrame = pAnim->pHanaFram_130
+                              && pAnim->pHanaFram_130->szName_8[0]
+                          ? pAnim->pHanaFram_130->szName_8
+                          : "-";
+    ImGui::Separator();
+    ImGui::Text("'%s' -> frame '%s'  %d keys  dur=%.2f%s", szAnim, szFrame,
+                pAnim->nKeyCount_138, pAnim->fDuration_134,
+                pAnim->field_140 ? " loop" : "");
+    // live pose the last InterpolateHanaAnimFrame pass baked (lerp + slerp
+    // of the bracketing keys) - refreshes while the timeline plays
+    ImGui::TextDisabled("cur t=%.2f p(%.2f,%.2f,%.2f) s(%.2f,%.2f,%.2f)"
+                        " q(%.2f,%.2f,%.2f,%.2f)",
+                        pAnim->keyCur_14C.fTime,
+                        pAnim->keyCur_14C.fPosX, pAnim->keyCur_14C.fPosY,
+                        pAnim->keyCur_14C.fPosZ,
+                        pAnim->keyCur_14C.fScaleX, pAnim->keyCur_14C.fScaleY,
+                        pAnim->keyCur_14C.fScaleZ,
+                        pAnim->keyCur_14C.quatRot.x,
+                        pAnim->keyCur_14C.quatRot.y,
+                        pAnim->keyCur_14C.quatRot.z,
+                        pAnim->keyCur_14C.quatRot.w);
+
+    // locate the key pair the live interpolator is blending between (the
+    // same bracketing FindInterpolationFrame resolves by binary search):
+    // last key <= cur time plus the following one - highlighted below
+    int nKeyA = -1, nKeyB = -1;
+    float fT = pAnim->keyCur_14C.fTime;
+    if ( pAnim->arrKeys_13C )
+    {
+      for ( int k = 0; k < pAnim->nKeyCount_138; ++k )
+      {
+        if ( pAnim->arrKeys_13C[k].fTime <= fT )
+          nKeyA = k;
+        else if ( nKeyA >= 0 )
+        {
+          nKeyB = k;
+          break;
+        }
+      }
+    }
+
+    ImGui::BeginChild("##keys", ImVec2(0.0f, 150.0f), true);
+    for ( int k = 0; k < pAnim->nKeyCount_138 && pAnim->arrKeys_13C; ++k )
+      DrawAnimKeyRow(k, &pAnim->arrKeys_13C[k], k == nKeyA || k == nKeyB);
+    ImGui::EndChild();
+  }
+
+  if ( ImGui::CollapsingHeader("MATERIAL ANIMS") )
+  {
+    for ( unsigned int i = 0; i < pSet->nManmCount_140; ++i )
+    {
+      CHanaMateAnimT3F7_S148 *pManm = pSet->pRefsManmT3F7[i];
+      if ( !pManm )
+        continue;
+      ImGui::PushID((const void *)pManm);
+      const char *szMate = pManm->pMateT3EE && pManm->pMateT3EE->szName_8[0]
+                             ? pManm->pMateT3EE->szName_8
+                             : "-";
+      if ( ImGui::TreeNode("manm", "%-18.18s -> mate %-14.14s %dk end=%.1f",
+                           pManm->szName_8[0] ? pManm->szName_8 : "-",
+                           szMate, pManm->nKeyCount_138, pManm->fLoopEnd_134) )
+      {
+        // keys are a linked list (pKeyHead -> pNextKey), diffuse RGBA per key
+        CHanaMateAnimKeyT3F7_S50 *pKey = pManm->pKeyHead_13C;
+        for ( int k = 0; k < pManm->nKeyCount_138 && pKey;
+              ++k, pKey = pKey->pNextKey )
+          ImGui::Text("%2d t=%7.2f  diffuse(%.2f,%.2f,%.2f,%.2f)", k,
+                      pKey->fTime, pKey->d3dMat7_4.diffuse.r,
+                      pKey->d3dMat7_4.diffuse.g, pKey->d3dMat7_4.diffuse.b,
+                      pKey->d3dMat7_4.diffuse.a);
+        ImGui::TreePop();
+      }
+      ImGui::PopID();
+    }
+  }
+
+  if ( ImGui::CollapsingHeader("SOUND / MORPH TRIGGERS") )
+  {
+    // arrSounds doubles as the morph-driver list: SetTime feeds each entry's
+    // pFrame_114 into HanaMorpT457_Animate inside its play window. ">>" marks
+    // the windows the live set clock (field_130) is inside right now
+    for ( unsigned int i = 0; i < pSet->nCount_148; ++i )
+    {
+      CHanaAnimSound_S118 *pSnd = &pSet->arrSounds_14C[i];
+      const char *szFrame = pSnd->pFrame_114
+                                && pSnd->pFrame_114->szName_8[0]
+                            ? pSnd->pFrame_114->szName_8
+                            : "-";
+      bool bOn = pSet->field_130 >= pSnd->fPlayStart_104
+              && pSet->field_130 <= pSnd->fPlayEnd_108;
+      char szLabel[128];
+      snprintf(szLabel, sizeof(szLabel),
+               "%s%3u %-24.24s %7.2f-%-7.2f play %d/%d -> %s",
+               bOn ? ">>" : "  ", i,
+               pSnd->szName_4[0] ? pSnd->szName_4 : "-",
+               pSnd->fPlayStart_104, pSnd->fPlayEnd_108,
+               pSnd->nCurPlayCnt_110, pSnd->nMaxPlayCnt_10C, szFrame);
+      if ( ImGui::Selectable(szLabel) && pSnd->pFrame_114 )
+        s_pSelectedFrame = pSnd->pFrame_114;
+    }
+  }
+
+  ImGui::End();
 }
 
 // SEK timeline browser: all 128 item slots of the hero body, live state.
@@ -761,6 +1193,9 @@ void GameCustomLoop(void)
           ImGui::EndChild();
         }
 
+        if ( ImGui::CollapsingHeader("OBJECT TABLE") )
+          DrawObjectTableUI();
+
         if ( ImGui::CollapsingHeader("ANIMATION") )
         {
           DrawAnimationUI();
@@ -768,8 +1203,10 @@ void GameCustomLoop(void)
       }
       ImGui::End();
 
-      // frame details in their own window, docked to the right edge
+      // frame details in their own window, docked to the right edge;
+      // animset channels/keys in a second one beside it
       DrawFrameInspector();
+      DrawAnimationInspector();
 
       ImGui::EndFrame();
       ImGui::Render();

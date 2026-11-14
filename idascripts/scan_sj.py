@@ -5,10 +5,79 @@ import ida_nalt
 import ida_bytes
 import ida_segment
 
+try:
+    import pykakasi
+    HAS_PYKAKASI = True
+except:
+    HAS_PYKAKASI = False
+  
+
 idaapi.require('lister')
 
 from lister import get_segm_by_name, list_everything, find_nullterminated, maybe_shiftjis, item_end_is_notnull
 
+def apply_jpname(ea):
+    new_type = get_or_create_strtype("Shift-JIS")
+    if new_type == False:
+        return False
+
+    raw_bytes = ida_bytes.get_strlit_contents(ea, -1, new_type)
+    names = []
+    if raw_bytes:
+        text = raw_bytes.decode("utf-8", errors="replace")
+        if HAS_PYKAKASI:
+            kks = pykakasi.kakasi()
+            result = kks.convert(text)
+
+            for item in result:
+                names.append(item['hepburn'])
+                print("{}: kana '{}', hiragana '{}', romaji: '{}'".format(item['orig'], item['kana'], item['hira'], item['hepburn']))
+
+            if len(names) > 0: return names
+
+    return False
+
+def apply_sjis(ea, sz):
+    data_bytes = ida_bytes.get_bytes(ea, sz, ida_bytes.GMB_READALL)
+
+    if not maybe_shiftjis(data_bytes):
+        print("apply_sjis: data_bytes is not shift-jis")
+        return False
+
+    try:
+        us = data_bytes.decode('shift-jis')
+        if us[-1] == '\x00': us = us[:-1]
+        invalid = False
+        for c in us:
+            b = c.encode('shift-jis')
+            if len(b) != 1: continue
+            i = ord(b)
+            if i >= 0x7F:
+                invalid = True
+                break
+            if i < 0x20 and not i in [0x09, 0x0A, 0x0D]:
+                invalid = True
+                break
+        if invalid:
+            print("apply_sjis: invalid byte")
+            return False
+
+    except:
+        print("apply_sjis: excetion in decode")
+        return False
+
+   # Using STRTYPE_C (0) + Shift-JIS
+    new_type = get_or_create_strtype("Shift-JIS")
+    if new_type == False:
+        return False
+
+    #print(f"Processing {hex(ea)}: {name}, size {sz}")
+    if not ida_bytes.create_strlit(ea, sz, new_type):
+        print("apply_sjis: failed to create strlit")
+        return False
+
+    return True
+    
 def get_or_create_encoding(name):
     # Try using add_encoding logic or just listing
     # We don't want to add multiple Shift-JIS
@@ -17,7 +86,7 @@ def get_or_create_encoding(name):
     for i in range(qty):
         enc_name = ida_nalt.get_encoding_name(i)
         if enc_name and name.lower() == enc_name.lower():
-            print(f"Found encoding '{enc_name}' at index {i}")
+            #print(f"Found encoding '{enc_name}' at index {i}")
             return i
 
     # If not found, create
@@ -28,6 +97,16 @@ def get_or_create_encoding(name):
     else:
         print(f"Failed to create encoding '{name}'")
     return enc_idx
+
+def get_or_create_strtype(name):
+    sjis_idx = get_or_create_encoding("Shift-JIS")
+    if sjis_idx < 0:
+        print("apply_sjis: could not get Shift-JIS encoding index.")
+        return False
+
+   # Using STRTYPE_C (0) + Shift-JIS
+    new_type = ida_nalt.make_str_type(idc.STRTYPE_C, sjis_idx)
+    return new_type
 
 def scan_and_set_encoding():
     sjis_idx = get_or_create_encoding("Shift-JIS")

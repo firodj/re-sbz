@@ -907,7 +907,7 @@ def main() -> int:
             with open(otoko_odf, "rb") as f:
                 parser = OdfParser(f)
             
-            parser.save_3d('otoko', texture_path)
+            #parser.save_3d('otoko', texture_path)
 
         case 'ods':
             p01_ods = os.path.join(appdir, 'ODS/P01.ODS')
