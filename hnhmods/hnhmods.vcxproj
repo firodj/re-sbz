@@ -128,7 +128,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>%VULKAN_SDK%\Lib;$(PYTHON_LIBS);$(SolutionDir)\SB3ImGuiHook;$(SolutionDir)\libs\dx7sdk</AdditionalLibraryDirectories>
-      <AdditionalDependencies>python311.lib;dsound.lib;dxguid.lib;winmm.lib;dinput.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;dxguid.lib;winmm.lib;dinput.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugBinDX7|Win32'">
@@ -147,7 +147,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>%VULKAN_SDK%\Lib;$(PYTHON_LIBS);$(SolutionDir)\SB3ImGuiHook;$(SolutionDir)\libs\dx7sdk</AdditionalLibraryDirectories>
-      <AdditionalDependencies>python311.lib;dsound.lib;dxguid.lib;winmm.lib;dinput.lib;vfw32.lib;ddraw.lib;d3dxd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;dxguid.lib;winmm.lib;dinput.lib;vfw32.lib;ddraw.lib;d3dxd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -243,7 +243,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="python_repl.cpp" />
     <ClCompile Include="hnh_main.cpp" />
     <ClCompile Include="src\CDROM_VerifyDiscSignature_485C50.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

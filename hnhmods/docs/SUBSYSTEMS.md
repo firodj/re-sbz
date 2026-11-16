@@ -242,12 +242,6 @@ The rebuild itself is the mod framework (see Part I for the hook mechanism):
   disabled), `GetWindowRect` fakes a 1280x960 desktop so the popup window sizes
   correctly, and `GetAsyncKeyState` returns 0 while the mod menu owns input
   (`IsGameInputOn` - which also freezes the two input threads and the cursor poller).
-- **Embedded Python** ([python_repl.cpp](../python_repl.cpp)): a pybind11 interpreter
-  with exactly two game bindings - `read_mem(address, size)` and
-  `write_mem(address, data)` raw memory access - plus a docked REPL with tab
-  completion and a Jupyter-style cell view (both currently compiled but not
-  rendered). `dynstruct.hpp` provides schema-driven struct inspection/pretty-printing
-  infrastructure, currently dormant.
 - **ImGui windows**: `DrawHNH` renders a World Viewer over `g_sceneState_52F7E0`
   (live scene step, sub-stages, item bits, HP, selection mask) with a static layout
   assert (`sizeof(CSceneState) == 0x190`).

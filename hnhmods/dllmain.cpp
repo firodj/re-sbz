@@ -15,8 +15,6 @@ void HNHCustomInit() {
 }
 
 bool HNHCustomRender(const char *window_name) {
-    //DrawPythonREPL();
-    //DrawJupyterNotebookREPL();
     return DrawHNH(window_name);
 }
 

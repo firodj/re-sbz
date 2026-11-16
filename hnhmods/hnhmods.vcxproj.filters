@@ -3,7 +3,6 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="python_repl.cpp" />
     <ClCompile Include="hnh_main.cpp" />
     <ClCompile Include="user32hook.cpp" />
     <ClCompile Include="src\MemAlloc_40DEF7.cpp">

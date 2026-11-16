@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <APPDIR>D:\HaNaHiMe</APPDIR>
+    <APPDIR>O:\HaNaHiMe</APPDIR>
     <APPEXE>HaNaHiMe.exe</APPEXE>
     <PYTHON_INCLUDES>C:\Python311-32\Include;C:\Python311-32\Lib\site-packages\pybind11\include</PYTHON_INCLUDES>
     <PYTHON_LIBS>C:\Python311-32\libs</PYTHON_LIBS>

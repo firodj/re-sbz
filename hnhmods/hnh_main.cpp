@@ -6,9 +6,7 @@
 #include <sstream>
 #include <iomanip> // Required for setw and setfill
 
-#include <pybind11/embed.h> // Essential header for embedding
-namespace py = pybind11;
-
+#include <cinttypes>
 #include "console.hpp"
 #include "globals.hpp"
 #include "menu.hpp"
@@ -156,11 +154,6 @@ void InitHNH() {
 		SetEvent(g_hStartEvent);
 	}
 }
-
-void FinishHNH() {
-	
-}
-
 
 class StructFielder {
 	DWORD m_offset;
@@ -471,13 +464,7 @@ int WINAPI hookWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmd
 	WaitForSingleObject(g_hStartEvent, INFINITE);
 	DebugLog("[HNH] WinMain continue ...\n");
 
-	py::scoped_interpreter guard{};
-
-	InitializePythonInterpreter();
-
 	int ret = WinMain_485CE0(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
-
-	FinishHNH();
 
 	return ret;
 }
