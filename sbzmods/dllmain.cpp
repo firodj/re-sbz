@@ -5,7 +5,6 @@
 #include "console.hpp"
 #include "sbz_header.hpp"
 
-
 void SBZCustomInit() {
     // Check Executable
     bool isSbz = CheckIsSBZ();
@@ -15,12 +14,6 @@ void SBZCustomInit() {
         // Apply any SBZ-specific hooks here if needed
         InitSBZ();
     }
-}
-
-void SBZCustomRender() {
-    //DrawPythonREPL();
-    DrawJupyterNotebookREPL();
-    DrawSBZ();
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,

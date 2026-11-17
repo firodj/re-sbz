@@ -2,10 +2,7 @@
 
 bool CheckIsSBZ();
 void InitSBZ();
-void FinishSBZ();
+
 LPVOID GetTargetEntryPoint();
 
-void InitializePythonInterpreter();
-void DrawPythonREPL();
-void DrawJupyterNotebookREPL();
-void DrawSBZ();
+bool SBZCustomRender(const char* window_name);

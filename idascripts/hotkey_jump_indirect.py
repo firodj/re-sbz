@@ -246,6 +246,7 @@ def main():
         act_name,                      # Action unique identifier
         'Show Xref Manager',        # Text displayed on the button UI
         ShowXrefManagerAction(),           # Target execution instance
+        "Shift-X"
     )
             
     if ida_kernwin.register_action(action_desc):
@@ -253,7 +254,7 @@ def main():
 
         # Insert the action in the menu
         if ida_kernwin.attach_action_to_menu("Edit/Export data", act_name, ida_kernwin.SETMENU_APP):
-            print("Attached to menu afer Edit/Export data")
+            print("Attached to menu afer Edit/Export data (Shift-X)")
         else:
             print("Failed attaching to menu.")
 

@@ -40,19 +40,7 @@ namespace sbz {
 		char* pszData;
 	};
 
-	typedef LPVOID(__cdecl* MemAllocate_719FA0Fn)(SIZE_T dwBytes);
 
-	LPVOID __cdecl MemAllocate_719FA0(SIZE_T dwBytes);
-
-	typedef char(__fastcall* CPack__GetSubFileFromPP_70C9C0Fn)(
-		CPack* pThis,
-		void* edx,
-		CString* pstrFileName_a2,
-		CPackFormatSecret* pPackFmtSec_a3,
-		char nType,
-		CString* pstrSubName,
-		LPBYTE* ppData,
-		DWORD* pSize);
 
 
 };

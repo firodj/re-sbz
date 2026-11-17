@@ -6,9 +6,12 @@ import ida_idp
 import ida_ua
 import ida_bytes
 import ida_ida
+import ida_segment
+import ida_nalt
 
 skip_func = set([
     "??2@YAPAXI@Z", # new
+    "j_??2@YAPAXI@Z", # new
     "??3@YAXPAX@Z", # free
 ])
 
@@ -20,6 +23,8 @@ def get_callees(func_ea):
     callees = set()
     seen_vtables = set()
    
+    optEnableVTables = False
+
     # Iterate over all items in the function
     for head in idautils.FuncItems(func_ea):
         # Decode instruction
@@ -32,8 +37,20 @@ def get_callees(func_ea):
             
             if target != idc.BADADDR:
                 callee = idaapi.get_func(target)
+                has_name = idaapi.get_name(target)
                 if callee:
                     callees.add(callee.start_ea)
+                elif has_name:  
+                    if has_name:
+                        callees.add(target)
+                else:
+
+                    for xref in idautils.XrefsFrom(head, ida_xref.XREF_FAR):
+                        target = xref.to
+                       
+                        callee = idaapi.get_func(target)
+                        if callee:
+                            callees.add(target)
         else:
             for op in insn.ops:
                 if _is_func_ref(op):
@@ -42,17 +59,19 @@ def get_callees(func_ea):
                         callee = idaapi.get_func(target)
                         if callee:
                             callees.add(callee.start_ea)
-                if op.type == idaapi.o_imm:
-                    addr = op.value
-                    if addr in seen_vtables:
-                        continue
-                    pointer_size = 4 if ida_ida.idainfo_is_32bit() else 8
-                    max_count = 20
-                    if is_vtable(addr, pointer_size, max_count):
-                        seen_vtables.add(addr)
-                        
-                        vcallees = print_vtable(addr, pointer_size, max_count)
-                        callees.update(vcallees)
+
+                if optEnableVTables:
+                    if op.type == idaapi.o_imm:
+                        addr = op.value
+                        if addr in seen_vtables:
+                            continue
+                        pointer_size = 4 if ida_ida.idainfo_is_32bit() else 8
+                        max_count = 20
+                        if is_vtable(addr, pointer_size, max_count):
+                            seen_vtables.add(addr)
+                            
+                            vcallees = print_vtable(addr, pointer_size, max_count)
+                            callees.update(vcallees)
     return list(callees)
 
 
@@ -132,7 +151,92 @@ def _is_func_ref(op):
     # We could also consider memory operands that point to function addresses, but less common for args
     return False
 
-def list_sub_functions(start_ea, visited=None, depth=0, path_last=[], is_last=True):
+def _is_func_indirect(op):
+    indirect_types = (
+        ida_ua.o_reg,     # call eax
+        ida_ua.o_phrase,  # call [edx] / call [edx+eax]
+        ida_ua.o_displ,   # call [edx+10h]
+    )
+    return op.type in indirect_types
+
+class AddLineParam:
+    def __init__(self):
+        self.depth =0
+        self.path_last=[]
+        self.is_last=True
+
+    def advance(self, is_last):
+        new_param = AddLineParam()
+        new_param.depth = self.depth+1
+        new_param.path_last = self.path_last + [self.is_last]
+        new_param.is_last = is_last
+        return new_param
+
+def add_line(param: AddLineParam, target:int, name:str) -> str:
+    if param.depth == 0:
+        line = f"0x{target:x} {name}"
+    else:
+        # Build the prefix for the levels 0 to depth-1
+        prefix = ""
+        for i in range(param.depth):
+            if i < len(param.path_last):
+                if param.path_last[i]:
+                    prefix += "    "
+                else:
+                    prefix += "│   "
+            else:
+                # This should not happen if we are consistent
+                prefix += "    "
+        # Now add the connector for the current depth
+        if param.is_last:
+            prefix += "└──"
+        else:
+            prefix += "├──"
+        line = prefix + f"0x{target:x} {name}"
+    print(f"{line}")
+    return line
+
+def is_import_stub(ea):
+    seg = ida_segment.getseg(ea)
+    if not seg:
+        return False
+    
+    # Check if segment type is 'X' (external) or if segment name contains idata
+    seg_name = ida_segment.get_segm_name(seg)
+    return seg.type == ida_segment.SEG_XTRN or "idata" in seg_name.lower()
+
+addr_to_mod_names = dict()
+
+def get_import_module_by_ea(target_ea: int) -> str | None:
+    global addr_to_mod_names
+    if target_ea in addr_to_mod_names:
+        return addr_to_mod_names[target_ea]
+    
+    qty = ida_nalt.get_import_module_qty()
+
+    for i in range(qty):
+        mod_name = ida_nalt.get_import_module_name(i)
+        if not mod_name:
+            continue
+
+        found = False
+
+        def imp_cb(ea, name, ordinal):
+            nonlocal found
+            if ea == target_ea:
+                found = True
+                return False  # Stop enumerating this module
+            addr_to_mod_names[ea] = mod_name
+            return True  # Continue
+
+        ida_nalt.enum_import_names(i, imp_cb)
+        if found:
+            return mod_name
+
+    return None
+
+
+def list_sub_functions(start_ea, visited=None, param = AddLineParam()):
     global skip_func
 
     """Recursively traverse callees from start_ea, returning functions with 'sub_' prefix as lines."""
@@ -142,54 +246,46 @@ def list_sub_functions(start_ea, visited=None, depth=0, path_last=[], is_last=Tr
         return []
     visited.add(start_ea)
     func = idaapi.get_func(start_ea)
+
     if not func:
-        return []
+        name = idaapi.get_name(start_ea)
+        if name:
+            if (is_import_stub(start_ea)):
+                mod_name = get_import_module_by_ea(start_ea)
+                if mod_name:
+                    name = f"{mod_name}!{name}"
+
+            return [ add_line(param, start_ea, name)]
     name = idaapi.get_func_name(start_ea)
     
-    if name.startswith("_"): return []
+    if name.startswith("_") and name not in ('_WinMain@16'): return []
     if name in skip_func: return []
     if name.startswith("D3DX"): return []
     
     lines = []
+
     # If the function name starts with "sub_", we add it to our lines
     # ok = name.startswith("sub_")
-    ok = True
-    if ok:
-        if depth == 0:
-            line = f"0x{start_ea:x} {name}"
-        else:
-            # Build the prefix for the levels 0 to depth-1
-            prefix = ""
-            for i in range(depth):
-                if i < len(path_last):
-                    if path_last[i]:
-                        prefix += "    "
-                    else:
-                        prefix += "│   "
-                else:
-                    # This should not happen if we are consistent
-                    prefix += "    "
-            # Now add the connector for the current depth
-            if is_last:
-                prefix += "└──"
-            else:
-                prefix += "├──"
-            line = prefix + f"0x{start_ea:x} {name}"
-        lines.append(line)
+    line = add_line(param, start_ea, name)
+    lines.append(line)
     
     # Recurse into callees
     callees = get_callees(start_ea)
     for i, callee in enumerate(callees):
         # Determine if this callee is the last child
         child_is_last = (i == len(callees) - 1)
-        lines.extend(list_sub_functions(callee, visited, depth+1, path_last + [is_last], child_is_last))
+        sub_lines = list_sub_functions(callee, visited, param.advance(child_is_last))
+        # lines.extend(sub_lines)
     return lines
 
 if __name__ == "__main__":
     # Start from the current screen address, or you can specify an address here.
     start_ea = idc.here()  # Current cursor address in IDA view
-    print(f"Starting from 0x{start_ea:x}")
-    lines = list_sub_functions(start_ea)
-    for line in lines:
-        print(line)
-    print(f"Done {len(lines)}")
+    func = idaapi.get_func(start_ea)
+
+    if func:
+        print(f"Starting from 0x{func.start_ea:x}")
+        lines = list_sub_functions(func.start_ea)
+        # for line in lines:
+        #     print(line)
+        print(f"Done {len(lines)}")
