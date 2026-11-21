@@ -11,6 +11,7 @@
 
 #include "sbz_header.hpp"
 #include "sbz_intern.hpp"
+#include "struct.hpp"
 
 // ---
 
@@ -25,12 +26,17 @@ namespace sbz {
 		CString* pstrSubName,
 		LPBYTE* ppData,
 		DWORD* pSize);
+
 	static sbz::CPack__GetSubFileFromPP_70C9C0Fn origCPack__GetSubFileFromPP_70C9C0;
 
 	// ---
 
 	LPVOID(__cdecl*MemAllocate_719FA0)(SIZE_T dwBytes) = reinterpret_cast<LPVOID(__cdecl*)(SIZE_T)>(0x719FA0);
+	char(__cdecl* InitScene_4951A0)(ESBZScene nNextSceneID, unsigned __int8 nStackOp, unsigned __int8 nSceneState, unsigned __int8 nTransition, int nFadeInMs, int nFadeOutMs)
+		= reinterpret_cast<char (__cdecl*)(ESBZScene nNextSceneID, unsigned __int8 nStackOp, unsigned __int8 nSceneState, unsigned __int8 nTransition, int nFadeInMs, int nFadeOutMs)
+		>(0x4951A0);
 
+	// ---
 
 	std::string getPPFolder(std::string path_str) {
 		size_t last_slash_idx = path_str.find_last_of("\\/");
@@ -139,9 +145,17 @@ namespace sbz {
 	}
 
 
+	char __fastcall accessor_2Ch_52C440(void* This, void* edx) {
+		DWORD lpVtbl = *(DWORD*)This;
+		char data = *((char*)This + 0x2C);
+		DebugLog("[SBZ:accessor_2Ch_52C440] This=0x%08x, lpVtbl=0x%08X, data=%d\n", (UINT_PTR)This, lpVtbl, data);
+		return data;
+	}
+
 	void register_Pack()
 	{
-		origCPack__GetSubFileFromPP_70C9C0 = (sbz::CPack__GetSubFileFromPP_70C9C0Fn)util::Hook(0x70C9C0, hookCPack__GetSubFileFromPP_70C9C0, "CPack::GetSubFileFromPP_70C9C0");
+		util::Hook(0x70C9C0, hookCPack__GetSubFileFromPP_70C9C0, "CPack::GetSubFileFromPP_70C9C0", (LPVOID*)&origCPack__GetSubFileFromPP_70C9C0);
+		util::Hook(0x52C440, accessor_2Ch_52C440, "accessor_2Ch_52C440", nullptr);
 	}
 
 }

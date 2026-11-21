@@ -7,12 +7,18 @@
     <ClCompile Include="src\pack.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\struct.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="sbz_header.hpp" />
     <ClInclude Include="sbz_intern.hpp" />
+    <ClInclude Include="src\struct.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

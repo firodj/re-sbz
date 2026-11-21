@@ -1,5 +1,5 @@
 import typing_extensions
-from bonus import mshtml_find_element_obj
+
 import ida_bytes
 import ida_ua
 import idautils

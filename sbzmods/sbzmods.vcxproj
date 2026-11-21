@@ -88,6 +88,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)\SB3ImGuiHook\imgui;$(SolutionDir)\SB3ImGuiHook;$(PYTHON_INCLUDES);$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,6 +152,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="sbz_header.hpp" />
     <ClInclude Include="sbz_intern.hpp" />
+    <ClInclude Include="src\struct.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -162,6 +164,7 @@
     </ClCompile>
     <ClCompile Include="sbz_main.cpp" />
     <ClCompile Include="src\pack.cpp" />
+    <ClCompile Include="src\struct.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SB3ImGuiHook\Universal-ImGui-Hook.vcxproj">
