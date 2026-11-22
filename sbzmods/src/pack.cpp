@@ -65,6 +65,10 @@ namespace sbz {
 			return {};
 		}
 
+#if 1
+		path = path + "../out/";
+#endif
+
 		return path + filename;
 	}
 
@@ -81,8 +85,8 @@ namespace sbz {
 	{
 		auto ppdir_str = getPPFolder(pstrFileName->pszData);
 
-		//DebugLog("[CPack] fileName = %s, subFile = %s, type = %x, type(2) = %x, packmode = %x, getPPFolder = %s\n", 
-		//	pstrFileName->pszData, pstrSubName->pszData, nType, pPackFmtSec->nType_D524, pPackFmtSec->packMode_D500, ppdir_str.c_str());
+		DebugLog("[CPack::GetSubFileFromPP] fileName = %s, subFile = %s, type = %x, type(2) = %x, packmode = %x, getPPFolder = %s\n", 
+			pstrFileName->pszData, pstrSubName->pszData, nType, pPackFmtSec->nType_D524, pPackFmtSec->packMode_D500, ppdir_str.c_str());
 
 		//// ensure subpath only filename
 
@@ -106,13 +110,13 @@ namespace sbz {
 
 			// 1a. Check if the file exists / opened successfully
 			if (!file.is_open()) {
-				DebugLog("[CPack] File does not exist %s, fallback\n", filename.c_str());
+				DebugLog("{CPack::GetSubFileFromPP} File does not exist %s, fallback\n", filename.c_str());
 			}
 			else {
 				// 2. Check file size
 				// Since we opened it with std::ios::ate, tellg() gives us the current position (the end)
 				std::streamsize file_size = file.tellg();
-				DebugLog("[CPack] File %s, size: %d\n", filename.c_str(), file_size);
+				DebugLog("[CPack::GetSubFileFromPP] File %s, size: %d\n", filename.c_str(), file_size);
 
 				// 3. Read file into buffer
 				// Move the file pointer back to the beginning to start reading
@@ -127,14 +131,16 @@ namespace sbz {
 					return 1;
 				}
 				else {
-					DebugLog("[CPack] Error: Could not read the entire file.\n");
+					DebugLog("{CPack::GetSubFileFromPP} Error: Could not read the entire file.\n");
 				}
 			}
 		}
 
+		/// Fallback using default
+
 		globals::IncRefForDisableFileAccessLog();
 
-		DebugLog("[CPack] fileName = %s, subFile = %s, type = %x, packmode = %x\n",
+		DebugLog("[CPack::GetSubFileFromPP] fileName = %s, subFile = %s, type = %x, packmode = %x\n",
 			pstrFileName->pszData, pstrSubName->pszData, nType, pPackFmtSec->packMode_D500);
 
 		char res = origCPack__GetSubFileFromPP_70C9C0(pThis, edx, pstrFileName, pPackFmtSec, nType, pstrSubName, ppData, pSize);
@@ -144,6 +150,74 @@ namespace sbz {
 		return res;
 	}
 
+	void(__cdecl* origLoadOldPPFile_7196F0)(sbz::CString* pstrFileName, sbz::CString* pstrSubName, LPBYTE* ppData, DWORD* pSize) = nullptr;
+
+
+	void __cdecl hookLoadOldPPFile_7196F0(sbz::CString *pstrFileName, sbz::CString *pstrSubName, LPBYTE* ppData, DWORD* pSize) {
+		auto ppdir_str = getPPFolder(pstrFileName->pszData);
+
+		DebugLog("[LoadOldPPFile] fileName = %s, subFile = %s, getPPFolder = %s\n", 
+			pstrFileName->pszData, pstrSubName->pszData, ppdir_str.c_str());
+
+		//// ensure subpath only filename
+
+		auto subpath_str = std::string{ pstrSubName->pszData };
+
+		size_t last_slash_idx = subpath_str.find_last_of("\\/");
+
+		std::string filename;
+		if (std::string::npos != last_slash_idx) {
+			filename = subpath_str.substr(last_slash_idx + 1);
+		}
+		else {
+			filename = subpath_str;
+		}
+
+		filename = ppdir_str + "/" + filename;
+			
+		//// Read file to buffer
+		{
+			std::ifstream file(filename, std::ios::binary | std::ios::ate);
+
+			// 1a. Check if the file exists / opened successfully
+			if (!file.is_open()) {
+				DebugLog("{LoadOldPPFile} File does not exist %s, fallback\n", filename.c_str());
+			}
+			else {
+				// 2. Check file size
+				// Since we opened it with std::ios::ate, tellg() gives us the current position (the end)
+				std::streamsize file_size = file.tellg();
+				DebugLog("[LoadOldPPFile] File %s, size: %d\n", filename.c_str(), file_size);
+
+				// 3. Read file into buffer
+				// Move the file pointer back to the beginning to start reading
+				file.seekg(0, std::ios::beg);
+
+				char* buffer = (char*)sbz::MemAllocate_719FA0(file_size);
+				if (buffer && file.read(buffer, file_size)) {
+					if (ppData)
+						*ppData = (LPBYTE)buffer;
+					if (pSize)
+						*pSize = file_size;
+					return;
+				}
+				else {
+					DebugLog("{LoadOldPPFile} Error: Could not read the entire file.\n");
+				}
+			}
+		}
+
+		/// Fallback using default
+
+		globals::IncRefForDisableFileAccessLog();
+
+		DebugLog("[LoadOldPPFile] fileName = %s, subFile = %s\n",
+			pstrFileName->pszData, pstrSubName->pszData);
+
+		origLoadOldPPFile_7196F0(pstrFileName, pstrSubName, ppData, pSize);
+
+		globals::DecRefForDisableFileAccessLog();
+	}
 
 	char __fastcall accessor_2Ch_52C440(void* This, void* edx) {
 		DWORD lpVtbl = *(DWORD*)This;
@@ -155,6 +229,7 @@ namespace sbz {
 	void register_Pack()
 	{
 		util::Hook(0x70C9C0, hookCPack__GetSubFileFromPP_70C9C0, "CPack::GetSubFileFromPP_70C9C0", (LPVOID*)&origCPack__GetSubFileFromPP_70C9C0);
+		util::Hook(0x7196F0, hookLoadOldPPFile_7196F0, "LoadOldPPFile_7196F0", (LPVOID*)&origLoadOldPPFile_7196F0);
 		util::Hook(0x52C440, accessor_2Ch_52C440, "accessor_2Ch_52C440", nullptr);
 	}
 
