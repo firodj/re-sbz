@@ -17,7 +17,10 @@ namespace py = pybind11;
 #include "console.hpp"
 #include "menu.hpp"
 #include "util.hpp"
+
+#if 0
 #include "user32/user32hook.hpp"
+#endif
 
 bool CheckIsXYZ() {
 	char path[MAX_PATH];
@@ -50,20 +53,22 @@ int WINAPI hookWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmd
 	return ret;
 }
 void XYZCustomInit() {
-    if (!CheckIsXYZ())return;
+  if (!CheckIsXYZ()) return;
 
 	g_hStartEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	MH_STATUS res;
 	if (pfnWinMain == 0x000000) {
-		DebugLog("{yukihota} Please update pfnWinMain into correct address\n");
+		DebugLog("{XYZ} Please update pfnWinMain into correct address\n");
 	}
 	else {
 		res = MH_CreateHook(pfnWinMain, reinterpret_cast<LPVOID>(hookWinMain), reinterpret_cast<LPVOID*>(&origWinMain));
 		if (res == MH_OK) res = MH_EnableHook(pfnWinMain);
 		DebugLog("[XYZ] Hooked WinMain; %s\n", MH_StatusToString(res));
 	}
-	user32hook::Init();
+
+	// Needed for globals::inputHookDisabled, eg. dxwrapper based (DX1-8)
+	//user32hook::Init();
 
 	DebugLog("[XYZ] All hooking done !\n");
 	if (g_hStartEvent)
@@ -86,15 +91,20 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-        globals::inputHookDisabled = true;
-        globals::disableConsoleAutoHide = false;
+				DisableThreadLibraryCalls(hModule);
+        //globals::inputHookDisabled = true;
+        //globals::disableConsoleAutoHide = false;
+				//globals::backendMode = 0;
         globals::SetCustomInit(XYZCustomInit);
         globals::SetCustomRender(XYZCustomRender);
         univhook::Attach(hModule);
         break;
 
     case DLL_PROCESS_DETACH:
-        univhook::Detach();
+				if (lpReserved == NULL)
+				{
+						univhook::Detach();
+				}
         break;        
     }
     return TRUE;

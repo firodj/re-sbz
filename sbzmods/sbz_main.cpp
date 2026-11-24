@@ -99,9 +99,6 @@ bool SBZCustomRender(const char* window_name)
 		ImGui::SetNextWindowPos(ImVec2(25, 25), ImGuiCond_FirstUseEver);
 
 		if (ImGui::Begin(window_name, &isOpen, flags)) {
-
-			ImGui::Text("Press <INSERT> to toggle menu.");
-
 			sbz::CSceneEntry* pSceneEntry;
 			int nChildCount;
 
@@ -112,7 +109,10 @@ bool SBZCustomRender(const char* window_name)
 			}
 			pSceneEntry = &sceneStack.scenes[nTopIdx];
 			nChildCount = pSceneEntry->nChildCount;
-			
+
+
+			ImGui::Text("Press <INSERT> to toggle menu.");
+
 			ImGui::Text("sceneStack.nCount = %d", sceneStack.nCount);
 			ImGui::Text("nTopIdx = %d", nTopIdx);
 			ImGui::Text("nChildCount = %d", nChildCount);
@@ -201,6 +201,25 @@ bool SBZCustomRender(const char* window_name)
 	}
 	if (!strcmp("Scene Preview", window_name)) {
 		return true;
+	}
+	if (!strcmp("Inspector", window_name)) {
+		sbz::CSceneEntry* pSceneEntry;
+		int nChildCount;
+
+		sbz::CSceneStack &sceneStack = g_SBZGlobal.sceneStack_1A8;
+		int nTopIdx = 0;
+		if (sceneStack.nCount > 0) {
+			nTopIdx = sceneStack.nTopIdx;
+		}
+		pSceneEntry = &sceneStack.scenes[nTopIdx];
+
+		ImGui::Begin("Inspector");
+		if (pSceneEntry->cb.nID == sbz::LOGO_SCENE) {
+			if (ImGui::CollapsingHeader("LOGO_SCENE")) {
+
+			}
+		}
+		ImGui::End();
 	}
 
 	return false;

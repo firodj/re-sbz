@@ -153,6 +153,7 @@
     <ClInclude Include="sbz_header.hpp" />
     <ClInclude Include="sbz_intern.hpp" />
     <ClInclude Include="src\struct.hpp" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -165,6 +166,9 @@
     <ClCompile Include="sbz_main.cpp" />
     <ClCompile Include="src\pack.cpp" />
     <ClCompile Include="src\struct.cpp" />
+    <ClCompile Include="stb_image.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SB3ImGuiHook\Universal-ImGui-Hook.vcxproj">

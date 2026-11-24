@@ -179,4 +179,4 @@ def unpack(path, s_dir):
 if __name__ == '__main__':
     appdir = os.getenv('SBZ_APPDIR')
     print(f"SBZ_APPDIR={appdir}")
-    unpack(os.path.join(appdir, 'data', 'sb07_00.pp'), os.path.join(appdir, 'out'))
+    unpack(os.path.join(appdir, 'data', 'sb02_04.pp'), os.path.join(appdir, 'out'))
