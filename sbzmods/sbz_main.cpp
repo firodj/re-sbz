@@ -63,16 +63,22 @@ bool CheckIsSBZ() {
 namespace sbz {
 	void register_Pack();
 }
-
+HANDLE g_hStartEvent = NULL;
 void InitSBZ()
 {
-
+	g_hStartEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	util::Hook(0x403F90, hookWinMain, "WinMain_403F90", (LPVOID*)&origWinMain);
 	util::HookOff();
 	util::Hook(0x7C3320, hook_new, "new_7C3320", (LPVOID*)&orig_new);
 	util::HookOn();
 
 	sbz::register_Pack();
+	DebugLog("[HNH] All hooking done !\n");
+	if (g_hStartEvent)
+	{
+		// Signal the event, waking up the main thread
+		SetEvent(g_hStartEvent);
+	}
 }
 
 void* __cdecl hook_new(size_t Size) {
@@ -217,10 +223,13 @@ std::string getModuleDir()
 
 int WINAPI hookWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	DebugLog("[DllSBZ] WinMain !\n");
+	DebugLog("[SBZ] WinMain ! Wait for Start Event...\n");
+	WaitForSingleObject(g_hStartEvent, INFINITE);
+	DebugLog("[SBZ] WinMain continue ...\n");
 
 	int ret = origWinMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
-
+	console::Enable();
+	DebugLog("[SBZ] Quit ...\n");
 
 	return ret;
 }

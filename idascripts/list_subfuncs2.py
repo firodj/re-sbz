@@ -261,6 +261,9 @@ def list_sub_functions(start_ea, visited=None, param = AddLineParam()):
     if name.startswith("_") and name not in ('_WinMain@16'): return []
     if name in skip_func: return []
     if name.startswith("D3DX"): return []
+    if name.startswith("CString"): return []
+    if name.startswith("CVector"): return []
+    if name.startswith("InitScene"): return []
     
     lines = []
 

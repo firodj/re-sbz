@@ -76474,6 +76474,7 @@ typedef struct IDirect3DDevice9 { struct IDirect3DDevice9Vtbl * lpVtbl; } IDirec
     UINT (__stdcall * GetNumberOfSwapChains)(IDirect3DDevice9 * This) ;
     // #16
     HRESULT (__stdcall * Reset)(IDirect3DDevice9 * This, D3DPRESENT_PARAMETERS* pPresentationParameters) ;
+    // #17
     HRESULT (__stdcall * Present)(IDirect3DDevice9 * This, const RECT* pSourceRect,const RECT* pDestRect,HWND hDestWindowOverride,const RGNDATA* pDirtyRegion) ;
     HRESULT (__stdcall * GetBackBuffer)(IDirect3DDevice9 * This, UINT iSwapChain,UINT iBackBuffer,D3DBACKBUFFER_TYPE Type,IDirect3DSurface9** ppBackBuffer) ;
     HRESULT (__stdcall * GetRasterStatus)(IDirect3DDevice9 * This, UINT iSwapChain,D3DRASTER_STATUS* pRasterStatus) ;

@@ -483,7 +483,9 @@ void SetupDX9Hook()
 	}
 
 	user32hook::InitPeekMessageOnly();
-	d3d9hook::Init(1);
+	globals::inputHookDisabled = true;
+	globals::backendMode = 1;
+	d3d9hook::Init();
 }
 
 void FinishDX9Hook() {

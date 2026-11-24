@@ -13,6 +13,7 @@ void SBZCustomInit() {
         // std::cout << "Detected Sexy Beach Zero. Applying SBZ-specific hooks." << std::endl;
         // Apply any SBZ-specific hooks here if needed
         InitSBZ();
+        globals::backendMode = 2;
     }
 }
 
@@ -24,13 +25,18 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
+        DisableThreadLibraryCalls(hModule);
+
         globals::SetCustomInit(SBZCustomInit);
         globals::SetCustomRender(SBZCustomRender);
         univhook::Attach(hModule);
         break;
 
     case DLL_PROCESS_DETACH:
-        univhook::Detach();
+        if (lpReserved == NULL)
+        {
+           univhook::Detach();
+        }
         break;        
     }
     return TRUE;

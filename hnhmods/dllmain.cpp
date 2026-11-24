@@ -10,6 +10,7 @@ void HNHCustomInit() {
     // Check Executable
     bool isHnh = CheckIsHNH();
     if (isHnh) {
+        globals::backendMode = 0; // TODO: try 2
         InitHNH();
     }
 }
