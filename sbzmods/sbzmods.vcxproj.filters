@@ -11,6 +11,7 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="simplewebp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
@@ -21,6 +22,7 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="simplewebp.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

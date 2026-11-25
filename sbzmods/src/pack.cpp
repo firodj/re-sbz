@@ -13,6 +13,7 @@
 #include "sbz_intern.hpp"
 #include "struct.hpp"
 #include "stb_image.h"
+#include "simplewebp.h"
 
 // Explicitly pack the structure to match the 18-byte TGA file format specification
 #pragma pack(push, 1)
@@ -82,6 +83,59 @@ bool convert_png_to_tga_memory(const char* filename, LPBYTE* ppData, DWORD* pSiz
 
 }
 
+bool convert_webp_to_tga_memory(const char* filename, LPBYTE* ppData, DWORD* pSize) {
+	size_t width, height;
+	simplewebp *swebp;
+	simplewebp_error err;
+
+	if (err = simplewebp_load_from_filename(filename, NULL, &swebp)) {
+		DebugLog("{Pack:PPredirect:WEBP} file to load: %s\n", simplewebp_get_error_text(err));
+		return false;
+	}
+
+	simplewebp_get_dimensions(swebp, &width, &height);
+
+	// Set up TGA file layout properties
+	TGAHeader header;
+	header.width = static_cast<uint16_t>(width);
+	header.height = static_cast<uint16_t>(height);
+	header.pixel_depth = 32; // 4 forced channels * 8 bits = 32bpp
+
+	size_t pixel_data_size = width * height * 4;
+	size_t total_tga_size = sizeof(TGAHeader) + pixel_data_size;
+
+	uint8_t* tga_buffer = (uint8_t*)sbz::MemAllocate_719FA0(total_tga_size);
+
+	std::memcpy(tga_buffer, &header, sizeof(TGAHeader));
+
+
+	uint8_t* destination_pixels = tga_buffer + sizeof(TGAHeader);
+	
+	if (err = simplewebp_decode(swebp, destination_pixels, NULL)) {
+		DebugLog("{Pack:PPredirect:WEBP} file to decode: %s\n", simplewebp_get_error_text(err));
+		return false;
+	}
+
+	simplewebp_unload(swebp); /* Frees the simplewebp instance */
+
+	// 2. Swizzle channels from RGBA to BGRA and write payload
+
+	for (size_t i = 0; i < pixel_data_size; i += 4) {
+		uint8_t r = destination_pixels[i + 0];
+		destination_pixels[i + 0] = destination_pixels[i + 2]; // Blue  <- Red
+		//destination_pixels[i + 1] = destination_pixels[i + 1]; // Green <- Green
+		destination_pixels[i + 2] = r; // Red   <- Blue
+		//destination_pixels[i + 3] = destination_pixels[i + 3]; // Alpha <- Alpha
+	}
+
+	if (ppData)
+		*ppData = (LPBYTE)tga_buffer;
+	if (pSize)
+		*pSize = total_tga_size;
+	return true;
+
+	return true;
+}
 
 // ---
 
@@ -155,7 +209,7 @@ namespace sbz {
 			return path + filename;
 		}
 
-		bool swapFile(CString* pStrSubFile, std::string &filename, std::string &fileext) {
+		int swapFile(CString* pStrSubFile, std::string &filename, std::string &fileext) {
 			std::string try_filename, try_fileext;
 			getSubFile(pStrSubFile, filename, fileext);
 			auto ppdir_str = getPPFolder();
@@ -171,27 +225,30 @@ namespace sbz {
 				try_fileext = ".ogg";
 
 				std::string try_path = ppdir_str + "/" + try_filename + try_fileext;
-				std::ifstream file(try_path, std::ios::binary | std::ios::ate);
-				if (file.is_open()) {
+				if (fileExists(try_path)) {
 					filename = try_filename;
 					fileext = try_fileext;
-					return true;
+					return 1;
 				}
 			}
 
 			if (_stricmp(".bmp", fileext.c_str()) == 0) {
-				try_fileext = ".png";
-
-				std::string try_path = ppdir_str + "/" + try_filename + try_fileext;
-				std::ifstream file(try_path, std::ios::binary | std::ios::ate);
-				if (file.is_open()) {
+				std::string try_path = ppdir_str + "/" + try_filename + ".webp";
+				if (fileExists(try_path)) {
 					filename = try_filename;
 					fileext = ".tga"; // convert on the fly as TGA data
-					return true;
+					return 2;
+				}
+
+				try_path = ppdir_str + "/" + try_filename + ".png";
+				if (fileExists(try_path)) {
+					filename = try_filename;
+					fileext = ".tga"; // convert on the fly as TGA data
+					return 3;
 				}
 			}
 
-			return false;
+			return 0;
 		}
 
 		void getSubFile(CString* pStrSubFile, std::string& filename, std::string& fileext) {
@@ -213,26 +270,33 @@ namespace sbz {
 			}
 		}
 
-		bool subFileReadAsPNG(std::string filename,std::string fileext, LPBYTE* ppData, DWORD* pSize)
+		bool fileExists(std::string filefullpath) {
+			std::ifstream file(filefullpath, std::ios::binary | std::ios::ate);
+			return file.is_open();
+		}
+
+		bool subFileReadToTGA(std::string filename, std::string fileext, LPBYTE* ppData, DWORD* pSize, int swapped)
 		{
 			auto ppdir_str = getPPFolder();
 			
 			if (_stricmp(".tga", fileext.c_str()) != 0) return false;
 
-			fileext = ".png";
-			std::string filefullpath = ppdir_str + "/" + filename + fileext;
-			{
-				std::ifstream file(filefullpath, std::ios::binary | std::ios::ate);
-				// 1a. Check if the file exists / opened successfully
-				if (!file.is_open()) {
-					DebugLog("{CPack::PPRedirect:PNG} File does not exist %s, fallback\n", filefullpath.c_str());
-					return false;
+			std::string filefullpath;
+			
+			if (swapped == 2) {
+				filefullpath = ppdir_str + "/" + filename + ".webp";
+				if (convert_webp_to_tga_memory(filefullpath.c_str(), ppData, pSize)) {
+					DebugLog("[CPack::PPRedirect:WEBP] load into TGA %s, size %d\n", filefullpath.c_str(), *pSize);
+					return true;
 				}
 			}
-
-			if (convert_png_to_tga_memory(filefullpath.c_str(), ppData, pSize)) {
-				DebugLog("[CPack::PPRedirect:PNG] load into TGA %s, size %d\n", filefullpath.c_str(), *pSize);
-				return true;
+			
+			if (swapped == 3) {
+				filefullpath = ppdir_str + "/" + filename + ".png";
+				if (convert_png_to_tga_memory(filefullpath.c_str(), ppData, pSize)) {
+					DebugLog("[CPack::PPRedirect:PNG] load into TGA %s, size %d\n", filefullpath.c_str(), *pSize);
+					return true;
+				}
 			}
 
 			return false;
@@ -242,12 +306,14 @@ namespace sbz {
 		{
 			auto ppdir_str = getPPFolder();
 			std::string filename, fileext;
+			std::string try_filename, try_fileext;
+			getSubFile(pStrSubFile, filename, fileext);
 
-			bool swapped = swapFile(pStrSubFile, filename, fileext);
+			int swapped = swapFile(pStrSubFile, try_filename, try_fileext);
 
-			if (subFileReadAsPNG(filename, fileext, ppData, pSize)) {
+			if (subFileReadToTGA(try_filename, try_fileext, ppData, pSize, swapped)) {
 				if (swapped) {
-					std::string subFileName = filename + fileext;
+					std::string subFileName = try_filename + try_fileext;
 					CString__SetStringOrByResourceID(pStrSubFile, subFileName.c_str());
 				}
 				return true;

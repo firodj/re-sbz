@@ -152,6 +152,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="sbz_header.hpp" />
     <ClInclude Include="sbz_intern.hpp" />
+    <ClInclude Include="simplewebp.h" />
     <ClInclude Include="src\struct.hpp" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
@@ -164,6 +165,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="sbz_main.cpp" />
+    <ClCompile Include="simplewebp.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\pack.cpp" />
     <ClCompile Include="src\struct.cpp" />
     <ClCompile Include="stb_image.cpp">
