@@ -152,7 +152,9 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="sbz_header.hpp" />
     <ClInclude Include="sbz_intern.hpp" />
+    <ClInclude Include="script.hpp" />
     <ClInclude Include="simplewebp.h" />
+    <ClInclude Include="src\pack.hpp" />
     <ClInclude Include="src\struct.hpp" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
@@ -169,6 +171,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\pack.cpp" />
+    <ClCompile Include="src\script.cpp" />
     <ClCompile Include="src\struct.cpp" />
     <ClCompile Include="stb_image.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

@@ -12,6 +12,9 @@
     </ClCompile>
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="simplewebp.cpp" />
+    <ClCompile Include="src\script.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
@@ -23,6 +26,12 @@
     </ClInclude>
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="simplewebp.h" />
+    <ClInclude Include="src\pack.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="script.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

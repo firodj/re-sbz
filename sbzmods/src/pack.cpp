@@ -9,9 +9,12 @@
 #include "globals.hpp"
 #include "util.hpp"
 
+
 #include "sbz_header.hpp"
 #include "sbz_intern.hpp"
 #include "struct.hpp"
+#include "pack.hpp"
+
 #include "stb_image.h"
 #include "simplewebp.h"
 
@@ -162,199 +165,192 @@ namespace sbz {
 		>(0x4951A0);
 
 	// ---
+	PPRedirect::PPRedirect(CString* pStrPPFile) {
+		m_pStrPPFile = pStrPPFile;
+	}
 
-	
+	std::string PPRedirect::getPPFolder() {
+		auto path_str = std::string{ m_pStrPPFile->pszData };
 
-	class PPRedirect {
-	private:
-		CString* m_pStrPPFile;
-	public:
-		PPRedirect(CString* pStrPPFile) {
-			m_pStrPPFile = pStrPPFile;
+		size_t last_slash_idx = path_str.find_last_of("\\/");
+
+		std::string filename;
+		std::string path;
+		if (std::string::npos != last_slash_idx) {
+			filename = path_str.substr(last_slash_idx + 1);
+			path = path_str.substr(0, last_slash_idx + 1);
+		}
+		else {
+			return {};
 		}
 
-		std::string getPPFolder() {
-			auto path_str = std::string{ m_pStrPPFile->pszData };
-
-			size_t last_slash_idx = path_str.find_last_of("\\/");
-
-			std::string filename;
-			std::string path;
-			if (std::string::npos != last_slash_idx) {
-				filename = path_str.substr(last_slash_idx + 1);
-				path = path_str.substr(0, last_slash_idx + 1);
-			}
-			else {
+		std::string ext;
+		size_t last_dot_idx = filename.find_last_of(".");
+		if (std::string::npos != last_dot_idx) {
+			ext = filename.substr(last_dot_idx + 1);
+			if (ext != "pp") {
 				return {};
 			}
 
-			std::string ext;
-			size_t last_dot_idx = filename.find_last_of(".");
-			if (std::string::npos != last_dot_idx) {
-				ext = filename.substr(last_dot_idx + 1);
-				if (ext != "pp") {
-					return {};
-				}
-
-				filename = filename.substr(0, last_dot_idx);
-			}
-			else {
-				return {};
-			}
+			filename = filename.substr(0, last_dot_idx);
+		}
+		else {
+			return {};
+		}
 
 #if 1
-			path = path + "../out/";
+		path = path + "../out/";
 #endif
 
-			return path + filename;
-		}
+		return path + filename;
+	}
 
-		int swapFile(CString* pStrSubFile, std::string &filename, std::string &fileext) {
-			std::string try_filename, try_fileext;
-			getSubFile(pStrSubFile, filename, fileext);
-			auto ppdir_str = getPPFolder();
+	int PPRedirect::swapFile(CString* pStrSubFile, std::string &filename, std::string &fileext) {
+		std::string try_filename, try_fileext;
+		getSubFile(pStrSubFile, filename, fileext);
+		auto ppdir_str = getPPFolder();
 			
-			try_filename = filename;
-			try_fileext = fileext;
+		try_filename = filename;
+		try_fileext = fileext;
 
-			if (_stricmp(".wav", fileext.c_str()) == 0) {
+		if (_stricmp(".wav", fileext.c_str()) == 0) {
 				
-				if (_stricmp("bgm_14_00", filename.c_str()) == 0) { // there is duplicate bgm_14_00.wav and bgm_14_00.ogg, so use it with as bgm_14_01.ogg
-					try_filename = "bgm_14_01";
-				}
-				try_fileext = ".ogg";
-
-				std::string try_path = ppdir_str + "/" + try_filename + try_fileext;
-				if (fileExists(try_path)) {
-					filename = try_filename;
-					fileext = try_fileext;
-					return 1;
-				}
+			if (_stricmp("bgm_14_00", filename.c_str()) == 0) { // there is duplicate bgm_14_00.wav and bgm_14_00.ogg, so use it with as bgm_14_01.ogg
+				try_filename = "bgm_14_01";
 			}
+			try_fileext = ".ogg";
 
-			if (_stricmp(".bmp", fileext.c_str()) == 0) {
-				std::string try_path = ppdir_str + "/" + try_filename + ".webp";
-				if (fileExists(try_path)) {
-					filename = try_filename;
-					fileext = ".tga"; // convert on the fly as TGA data
-					return 2;
-				}
-
-				try_path = ppdir_str + "/" + try_filename + ".png";
-				if (fileExists(try_path)) {
-					filename = try_filename;
-					fileext = ".tga"; // convert on the fly as TGA data
-					return 3;
-				}
-			}
-
-			return 0;
-		}
-
-		void getSubFile(CString* pStrSubFile, std::string& filename, std::string& fileext) {
-			auto subpath_str = std::string{ pStrSubFile->pszData };
-
-			size_t last_slash_idx = subpath_str.find_last_of("\\/");
-			
-			if (std::string::npos != last_slash_idx) {
-				filename = subpath_str.substr(last_slash_idx + 1);
-			}
-			else {
-				filename = subpath_str;
-			}
-
-			size_t last_dot_idx = filename.find_last_of(".");
-			if (std::string::npos != last_dot_idx) {
-				fileext = filename.substr(last_dot_idx);
-				filename = filename.substr(0, last_dot_idx);
+			std::string try_path = ppdir_str + "/" + try_filename + try_fileext;
+			if (fileExists(try_path)) {
+				filename = try_filename;
+				fileext = try_fileext;
+				return 1;
 			}
 		}
 
-		bool fileExists(std::string filefullpath) {
-			std::ifstream file(filefullpath, std::ios::binary | std::ios::ate);
-			return file.is_open();
-		}
-
-		bool subFileReadToTGA(std::string filename, std::string fileext, LPBYTE* ppData, DWORD* pSize, int swapped)
-		{
-			auto ppdir_str = getPPFolder();
-			
-			if (_stricmp(".tga", fileext.c_str()) != 0) return false;
-
-			std::string filefullpath;
-			
-			if (swapped == 2) {
-				filefullpath = ppdir_str + "/" + filename + ".webp";
-				if (convert_webp_to_tga_memory(filefullpath.c_str(), ppData, pSize)) {
-					DebugLog("[CPack::PPRedirect:WEBP] load into TGA %s, size %d\n", filefullpath.c_str(), *pSize);
-					return true;
-				}
-			}
-			
-			if (swapped == 3) {
-				filefullpath = ppdir_str + "/" + filename + ".png";
-				if (convert_png_to_tga_memory(filefullpath.c_str(), ppData, pSize)) {
-					DebugLog("[CPack::PPRedirect:PNG] load into TGA %s, size %d\n", filefullpath.c_str(), *pSize);
-					return true;
-				}
+		if (_stricmp(".bmp", fileext.c_str()) == 0) {
+			std::string try_path = ppdir_str + "/" + try_filename + ".webp";
+			if (fileExists(try_path)) {
+				filename = try_filename;
+				fileext = ".tga"; // convert on the fly as TGA data
+				return 2;
 			}
 
-			return false;
+			try_path = ppdir_str + "/" + try_filename + ".png";
+			if (fileExists(try_path)) {
+				filename = try_filename;
+				fileext = ".tga"; // convert on the fly as TGA data
+				return 3;
+			}
 		}
 
-		bool subFileRead(CString* pStrSubFile, LPBYTE* ppData, DWORD* pSize)
-		{
-			auto ppdir_str = getPPFolder();
-			std::string filename, fileext;
-			std::string try_filename, try_fileext;
-			getSubFile(pStrSubFile, filename, fileext);
+		return 0;
+	}
 
-			int swapped = swapFile(pStrSubFile, try_filename, try_fileext);
+	void PPRedirect::getSubFile(CString* pStrSubFile, std::string& filename, std::string& fileext) {
+		auto subpath_str = std::string{ pStrSubFile->pszData };
 
-			if (subFileReadToTGA(try_filename, try_fileext, ppData, pSize, swapped)) {
-				if (swapped) {
-					std::string subFileName = try_filename + try_fileext;
-					CString__SetStringOrByResourceID(pStrSubFile, subFileName.c_str());
-				}
+		size_t last_slash_idx = subpath_str.find_last_of("\\/");
+			
+		if (std::string::npos != last_slash_idx) {
+			filename = subpath_str.substr(last_slash_idx + 1);
+		}
+		else {
+			filename = subpath_str;
+		}
+
+		size_t last_dot_idx = filename.find_last_of(".");
+		if (std::string::npos != last_dot_idx) {
+			fileext = filename.substr(last_dot_idx);
+			filename = filename.substr(0, last_dot_idx);
+		}
+	}
+
+	bool PPRedirect::fileExists(std::string filefullpath) {
+		std::ifstream file(filefullpath, std::ios::binary | std::ios::ate);
+		return file.is_open();
+	}
+
+	bool PPRedirect::subFileReadToTGA(std::string filename, std::string fileext, LPBYTE* ppData, DWORD* pSize, int swapped)
+	{
+		auto ppdir_str = getPPFolder();
+			
+		if (_stricmp(".tga", fileext.c_str()) != 0) return false;
+
+		std::string filefullpath;
+			
+		if (swapped == 2) {
+			filefullpath = ppdir_str + "/" + filename + ".webp";
+			if (convert_webp_to_tga_memory(filefullpath.c_str(), ppData, pSize)) {
+				DebugLog("[CPack::PPRedirect:WEBP] load into TGA %s, size %d\n", filefullpath.c_str(), *pSize);
 				return true;
 			}
+		}
 			
-			std::string filefullpath = ppdir_str + "/" + filename + fileext;
-
-			std::ifstream file(filefullpath, std::ios::binary | std::ios::ate);
-			// 1a. Check if the file exists / opened successfully
-			if (!file.is_open()) {
-				DebugLog("{CPack::PPRedirect} File does not exist %s, fallback\n", filefullpath.c_str());
-				return false;
-			}
-			
-			// 2. Check file size
-			// Since we opened it with std::ios::ate, tellg() gives us the current position (the end)
-			std::streamsize file_size = file.tellg();
-			DebugLog("[CPack::PPRedirect] File %s, size: %d\n", filefullpath.c_str(), file_size);
-
-			// 3. Read file into buffer
-			// Move the file pointer back to the beginning to start reading
-			file.seekg(0, std::ios::beg);
-
-			char* buffer = (char*)sbz::MemAllocate_719FA0(file_size);
-			if (buffer && file.read(buffer, file_size)) {
-				if (ppData)
-					*ppData = (LPBYTE)buffer;
-				if (pSize)
-					*pSize = file_size;
-
-				if (swapped) {
-					std::string subFileName = filename + fileext;
-					CString__SetStringOrByResourceID(pStrSubFile, subFileName.c_str());
-				}
+		if (swapped == 3) {
+			filefullpath = ppdir_str + "/" + filename + ".png";
+			if (convert_png_to_tga_memory(filefullpath.c_str(), ppData, pSize)) {
+				DebugLog("[CPack::PPRedirect:PNG] load into TGA %s, size %d\n", filefullpath.c_str(), *pSize);
 				return true;
 			}
+		}
+
+		return false;
+	}
+
+	bool PPRedirect::subFileRead(CString* pStrSubFile, LPBYTE* ppData, DWORD* pSize)
+	{
+		auto ppdir_str = getPPFolder();
+		std::string filename, fileext;
+		std::string try_filename, try_fileext;
+		getSubFile(pStrSubFile, filename, fileext);
+
+		int swapped = swapFile(pStrSubFile, try_filename, try_fileext);
+
+		if (subFileReadToTGA(try_filename, try_fileext, ppData, pSize, swapped)) {
+			if (swapped) {
+				std::string subFileName = try_filename + try_fileext;
+				CString__SetStringOrByResourceID(pStrSubFile, subFileName.c_str());
+			}
+			return true;
+		}
 			
-			DebugLog("{CPack::PPRedirect} Error: Could not read the entire file.\n");
+		std::string filefullpath = ppdir_str + "/" + filename + fileext;
+
+		std::ifstream file(filefullpath, std::ios::binary | std::ios::ate);
+		// 1a. Check if the file exists / opened successfully
+		if (!file.is_open()) {
+			DebugLog("{CPack::PPRedirect} File does not exist %s, fallback\n", filefullpath.c_str());
 			return false;
 		}
-	};
+			
+		// 2. Check file size
+		// Since we opened it with std::ios::ate, tellg() gives us the current position (the end)
+		std::streamsize file_size = file.tellg();
+		DebugLog("[CPack::PPRedirect] File %s, size: %d\n", filefullpath.c_str(), file_size);
+
+		// 3. Read file into buffer
+		// Move the file pointer back to the beginning to start reading
+		file.seekg(0, std::ios::beg);
+
+		char* buffer = (char*)sbz::MemAllocate_719FA0(file_size);
+		if (buffer && file.read(buffer, file_size)) {
+			if (ppData)
+				*ppData = (LPBYTE)buffer;
+			if (pSize)
+				*pSize = file_size;
+
+			if (swapped) {
+				std::string subFileName = filename + fileext;
+				CString__SetStringOrByResourceID(pStrSubFile, subFileName.c_str());
+			}
+			return true;
+		}
+			
+		DebugLog("{CPack::PPRedirect} Error: Could not read the entire file.\n");
+		return false;
+	}
+
 
 	char __fastcall hookCPack__GetSubFileFromPP_70C9C0(
 		sbz::CPack* pThis,

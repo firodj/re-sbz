@@ -11,6 +11,7 @@
 #include "sbz_header.hpp"
 #include "sbz_intern.hpp"
 #include "src/struct.hpp"
+#include "src/pack.hpp"
 
 sbz::CSBZGlobal (&g_SBZGlobal) = *(sbz::CSBZGlobal*)0x880680;
 
@@ -62,6 +63,7 @@ bool CheckIsSBZ() {
 }
 namespace sbz {
 	void register_Pack();
+	void register_Script();
 }
 HANDLE g_hStartEvent = NULL;
 void InitSBZ()
@@ -73,6 +75,8 @@ void InitSBZ()
 	util::HookOn();
 
 	sbz::register_Pack();
+	sbz::register_Script();
+
 	DebugLog("[HNH] All hooking done !\n");
 	if (g_hStartEvent)
 	{

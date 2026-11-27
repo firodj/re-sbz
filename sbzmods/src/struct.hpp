@@ -480,14 +480,11 @@ namespace sbz {
 #pragma pack(pop)
 
   void AssertStructSize();
+
   std::string_view SceneToString(ESBZScene scene);
 
   typedef bool(*EnumerateSceneCb)(ESBZScene scene, std::string_view name);
 
   void EnumerateScenes(EnumerateSceneCb callback);
-
-
-  extern LPVOID(__cdecl* MemAllocate_719FA0)(SIZE_T dwBytes);
-  extern char(__cdecl* InitScene_4951A0)(ESBZScene nNextSceneID, unsigned __int8 nStackOp, unsigned __int8 nSceneState, unsigned __int8 nTransition, int nFadeInMs, int nFadeOutMs);
 
 };

@@ -621,25 +621,25 @@ def main():
     parser.add_argument("-f", "--force", action="store_true", help="force")
 
     args = parser.parse_args()
-
+    prefix_out = "out/"
     if False:
             
-        items = os.listdir(os.path.join(appdir, 'data/sb00_00/'))
+        items = os.listdir(os.path.join(appdir, f"{prefix_out}sb00_00/"))
         for item in items:
             if item.endswith('.sdt'):
-                full_path = os.path.join(appdir, 'data/sb00_00/', item)
+                full_path = os.path.join(appdir, f"{prefix_out}sb00_00/", item)
                 with open(full_path, "rb") as f:
                     print("========== ========= ==========")
                     parser = sdtParser(f)
     
     else:
         sdt_filename = args.name
-        modfile_outpath = os.path.join(appdir, f'data/sb00_00/{sdt_filename}.mod')
-        jsonfile_path = os.path.join(appdir, f'data/sb00_00/{sdt_filename}.json')
+        modfile_outpath = os.path.join(appdir, f"{prefix_out}sb00_00/{sdt_filename}.mod")
+        jsonfile_path = os.path.join(appdir, f"{prefix_out}sb00_00/{sdt_filename}.json")
 
         if args.decode or args.test:
 
-            with open(os.path.join(appdir, f'data/sb00_00/{sdt_filename}'), "rb") as f:
+            with open(os.path.join(appdir, f'{prefix_out}sb00_00/{sdt_filename}'), "rb") as f:
                 parser = sdtParser(f)
                 jsondata = json.dumps(parser.sdt_script, indent=4, ensure_ascii=False)
 
